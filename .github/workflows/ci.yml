@@ -85,7 +85,7 @@ jobs:
           DATABASE_URL: postgresql://dinoair:testpass@localhost:5432/dinoair_test
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=test-results.xml || true
+          pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=test-results.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
