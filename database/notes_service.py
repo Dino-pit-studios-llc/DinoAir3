@@ -86,14 +86,11 @@ class NotesService:
             if not security_validation["valid"]:
                 return OperationResult(
                     success=False,
-                    error="Security validation failed: "
-                    + "; ".join(security_validation["errors"]),
+                    error="Security validation failed: " + "; ".join(security_validation["errors"]),
                 )
 
             # Security write permission check
-            can_write, write_error = self.security.can_perform_write_operation(
-                "create_note"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("create_note")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -113,9 +110,7 @@ class NotesService:
 
         except Exception as e:
             self.logger.error(f"Error creating note: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to create note: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to create note: {str(e)}")
 
     def get_note(self, note_id: str) -> OperationResult:
         """Retrieve a single note by ID"""
@@ -168,14 +163,11 @@ class NotesService:
             if not security_validation["valid"]:
                 return OperationResult(
                     success=False,
-                    error="Security validation failed: "
-                    + "; ".join(security_validation["errors"]),
+                    error="Security validation failed: " + "; ".join(security_validation["errors"]),
                 )
 
             # Security write permission check
-            can_write, write_error = self.security.can_perform_write_operation(
-                "update_note"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("update_note")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -190,22 +182,16 @@ class NotesService:
                     },
                     warnings=biz_validation.warnings,
                 )
-            return OperationResult(
-                success=False, error="Note not found or update failed"
-            )
+            return OperationResult(success=False, error="Note not found or update failed")
 
         except Exception as e:
             self.logger.error(f"Error updating note {note_id}: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to update note: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to update note: {str(e)}")
 
     def delete_note(self, note_id: str, hard_delete: bool = False) -> OperationResult:
         """Delete a note (soft delete by default)"""
         try:
-            can_write, write_error = self.security.can_perform_write_operation(
-                "delete_note"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("delete_note")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -220,39 +206,27 @@ class NotesService:
                 return OperationResult(
                     success=True, data={"message": f"Note {action} successfully"}
                 )
-            return OperationResult(
-                success=False, error="Note not found or already deleted"
-            )
+            return OperationResult(success=False, error="Note not found or already deleted")
 
         except Exception as e:
             self.logger.error(f"Error deleting note {note_id}: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to delete note: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to delete note: {str(e)}")
 
     def restore_note(self, note_id: str) -> OperationResult:
         """Restore a soft-deleted note"""
         try:
-            can_write, write_error = self.security.can_perform_write_operation(
-                "restore_note"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("restore_note")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
             repo_result = self.repository.restore_note(note_id)
             if repo_result.success and repo_result.affected_rows > 0:
-                return OperationResult(
-                    success=True, data={"message": "Note restored successfully"}
-                )
-            return OperationResult(
-                success=False, error="Note not found in deleted items"
-            )
+                return OperationResult(success=True, data={"message": "Note restored successfully"})
+            return OperationResult(success=False, error="Note not found in deleted items")
 
         except Exception as e:
             self.logger.error(f"Error restoring note {note_id}: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to restore note: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to restore note: {str(e)}")
 
     def search_notes(
         self, query: str, filter_option: str = "All", project_id: str | None = None
@@ -272,9 +246,7 @@ class NotesService:
             escaped_query = query
 
             # Perform search
-            repo_result = self.repository.search_notes(
-                escaped_query, filter_option, project_id
-            )
+            repo_result = self.repository.search_notes(escaped_query, filter_option, project_id)
             if repo_result.success:
                 return OperationResult(
                     success=True, data=repo_result.data, warnings=validation.warnings
@@ -302,9 +274,7 @@ class NotesService:
     def rename_tag(self, old_tag: str, new_tag: str) -> OperationResult:
         """Rename a tag across all notes"""
         try:
-            can_write, write_error = self.security.can_perform_write_operation(
-                "rename_tag"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("rename_tag")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -322,16 +292,12 @@ class NotesService:
 
         except Exception as e:
             self.logger.error(f"Error renaming tag: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to rename tag: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to rename tag: {str(e)}")
 
     def delete_tag(self, tag_to_delete: str) -> OperationResult:
         """Remove a tag from all notes"""
         try:
-            can_write, write_error = self.security.can_perform_write_operation(
-                "delete_tag"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("delete_tag")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -349,9 +315,7 @@ class NotesService:
 
         except Exception as e:
             self.logger.error(f"Error deleting tag: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to delete tag: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to delete tag: {str(e)}")
 
     def get_notes_by_project(self, project_id: str) -> OperationResult:
         """Get all notes for a specific project"""
@@ -367,15 +331,11 @@ class NotesService:
             return OperationResult(success=True, data=repo_result.data)
         return OperationResult(success=False, error=repo_result.error)
 
-    def assign_notes_to_project(
-        self, note_ids: list[str], project_id: str
-    ) -> OperationResult:
+    def assign_notes_to_project(self, note_ids: list[str], project_id: str) -> OperationResult:
         """Assign multiple notes to a project"""
         try:
             # Validate bulk operation
-            validation = self.validator.validate_bulk_operation(
-                note_ids, "assign_project"
-            )
+            validation = self.validator.validate_bulk_operation(note_ids, "assign_project")
             if not validation.is_valid:
                 return OperationResult(
                     success=False,
@@ -393,25 +353,19 @@ class NotesService:
             if repo_result.success:
                 return OperationResult(
                     success=True,
-                    data={
-                        "message": f"Assigned {repo_result.affected_rows} notes to project"
-                    },
+                    data={"message": f"Assigned {repo_result.affected_rows} notes to project"},
                     warnings=validation.warnings,
                 )
             return OperationResult(success=False, error=repo_result.error)
 
         except Exception as e:
             self.logger.error(f"Error assigning notes to project: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to assign notes: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to assign notes: {str(e)}")
 
     def remove_notes_from_project(self, note_ids: list[str]) -> OperationResult:
         """Remove project association from multiple notes"""
         try:
-            validation = self.validator.validate_bulk_operation(
-                note_ids, "remove_from_project"
-            )
+            validation = self.validator.validate_bulk_operation(note_ids, "remove_from_project")
             if not validation.is_valid:
                 return OperationResult(
                     success=False,
@@ -438,9 +392,7 @@ class NotesService:
 
         except Exception as e:
             self.logger.error(f"Error removing notes from project: {str(e)}")
-            return OperationResult(
-                success=False, error=f"Failed to remove notes: {str(e)}"
-            )
+            return OperationResult(success=False, error=f"Failed to remove notes: {str(e)}")
 
     def get_project_notes_count(self, project_id: str) -> OperationResult:
         """Get the count of notes associated with a project"""
@@ -456,8 +408,6 @@ class NotesService:
             return OperationResult(success=True, data=repo_result.data)
         return OperationResult(success=False, error=repo_result.error)
 
-    def update_note_project(
-        self, note_id: str, project_id: str | None
-    ) -> OperationResult:
+    def update_note_project(self, note_id: str, project_id: str | None) -> OperationResult:
         """Update a single note's project association"""
         return self.update_note(note_id, {"project_id": project_id})

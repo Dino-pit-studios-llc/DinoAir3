@@ -29,9 +29,7 @@ class LLMTranslationService(ShutdownMixin):
     languages with minimal preprocessing.
     """
 
-    def __init__(
-        self, model_service: ModelService, error_handler: ErrorHandler | None = None
-    ):
+    def __init__(self, model_service: ModelService, error_handler: ErrorHandler | None = None):
         super().__init__()
         self.model_service = model_service
         self.error_handler = error_handler or ErrorHandler(logger_name=__name__)
@@ -58,9 +56,7 @@ class LLMTranslationService(ShutdownMixin):
         logger.debug("Starting LLM translation for ID: %s", context.translation_id)
 
         # Validate input
-        is_valid, validation_error = self.model_service.validate_input(
-            context.input_text
-        )
+        is_valid, validation_error = self.model_service.validate_input(context.input_text)
         if not is_valid:
             self._failed_translations += 1
             return TranslationResult(

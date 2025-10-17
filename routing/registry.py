@@ -78,19 +78,13 @@ class ServiceRegistry:
     # -------------------------
     # CRUD / Lookup
     # -------------------------
-    def register(
-        self, desc: ServiceDescriptor | Mapping[str, Any]
-    ) -> ServiceDescriptor:
+    def register(self, desc: ServiceDescriptor | Mapping[str, Any]) -> ServiceDescriptor:
         """
         Register or replace by name.
 
         Accepts a ServiceDescriptor or plain dict. Returns stored descriptor.
         """
-        sd = (
-            desc
-            if isinstance(desc, ServiceDescriptor)
-            else ServiceDescriptor(**dict(desc))
-        )
+        sd = desc if isinstance(desc, ServiceDescriptor) else ServiceDescriptor(**dict(desc))
         with self._lock:
             self._services[sd.name] = sd
             return sd
@@ -117,9 +111,7 @@ class ServiceRegistry:
         """Return services containing the tag (case-insensitive)."""
         t = (tag or "").lower()
         with self._lock:
-            return [
-                d for d in self._services.values() if t in {x.lower() for x in d.tags}
-            ]
+            return [d for d in self._services.values() if t in {x.lower() for x in d.tags}]
 
     def list(self) -> builtins.list[ServiceDescriptor]:
         """Return all registered services."""
@@ -300,19 +292,13 @@ def _check_service_reachability(base_url: str) -> bool:
     return False
 
 
-def _mark_service_degraded(
-    registry: ServiceRegistry, service_name: str, error: str
-) -> None:
+def _mark_service_degraded(registry: ServiceRegistry, service_name: str, error: str) -> None:
     """Mark service as degraded with error message"""
     with suppress(Exception):
-        registry.update_health(
-            service_name, HealthState.DEGRADED, latency_ms=0, error=error
-        )
+        registry.update_health(service_name, HealthState.DEGRADED, latency_ms=0, error=error)
 
 
-def _update_service_health(
-    registry: ServiceRegistry, service_name: str, is_healthy: bool
-) -> None:
+def _update_service_health(registry: ServiceRegistry, service_name: str, is_healthy: bool) -> None:
     """Update service health status"""
     with suppress(Exception):
         health_state = HealthState.HEALTHY if is_healthy else HealthState.DEGRADED

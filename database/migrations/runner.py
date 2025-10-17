@@ -177,9 +177,7 @@ class MigrationRunner:
             "is_up_to_date": len(pending) == 0,
         }
 
-    def rollback_migration(
-        self, conn: sqlite3.Connection, version: str, name: str
-    ) -> None:
+    def rollback_migration(self, conn: sqlite3.Connection, version: str, name: str) -> None:
         """
         Rollback a specific migration.
 

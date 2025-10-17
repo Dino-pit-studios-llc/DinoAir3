@@ -53,9 +53,7 @@ class GitHubSecurityLoader:
         except GithubException as e:
             raise ValueError(f"Failed to authenticate with GitHub: {e}")
 
-    def get_repository_security_advisories(
-        self, repo_name: str
-    ) -> list[dict[str, Any]]:
+    def get_repository_security_advisories(self, repo_name: str) -> list[dict[str, Any]]:
         """
         Get security advisories for a specific repository.
 
@@ -71,9 +69,7 @@ class GitHubSecurityLoader:
 
             # Note: Repository-specific security advisories require special permissions
             # For now, we'll return empty list as this requires repository admin access
-            print(
-                f"ℹ️  Repository security advisories require admin access for {repo_name}"
-            )
+            print(f"ℹ️  Repository security advisories require admin access for {repo_name}")
             return advisories
 
         except GithubException as e:
@@ -105,12 +101,8 @@ class GitHubSecurityLoader:
                     "rule_description": alert.rule.description,
                     "tool_name": alert.tool.name,
                     "tool_version": alert.tool.version,
-                    "created_at": (
-                        alert.created_at.isoformat() if alert.created_at else None
-                    ),
-                    "updated_at": (
-                        alert.updated_at.isoformat() if alert.updated_at else None
-                    ),
+                    "created_at": (alert.created_at.isoformat() if alert.created_at else None),
+                    "updated_at": (alert.updated_at.isoformat() if alert.updated_at else None),
                     "url": alert.html_url,
                     "instances": [],
                 }
@@ -165,12 +157,8 @@ class GitHubSecurityLoader:
                     "state": alert.state,
                     "secret_type": alert.secret_type,
                     "secret_type_display_name": alert.secret_type_display_name,
-                    "created_at": (
-                        alert.created_at.isoformat() if alert.created_at else None
-                    ),
-                    "updated_at": (
-                        alert.updated_at.isoformat() if alert.updated_at else None
-                    ),
+                    "created_at": (alert.created_at.isoformat() if alert.created_at else None),
+                    "updated_at": (alert.updated_at.isoformat() if alert.updated_at else None),
                     "url": alert.html_url,
                     "locations": [],
                 }
@@ -179,28 +167,18 @@ class GitHubSecurityLoader:
                 for location in alert.locations:
                     location_data = {
                         "type": location.type,
-                        "path": (
-                            location.details.get("path") if location.details else None
-                        ),
+                        "path": (location.details.get("path") if location.details else None),
                         "start_line": (
-                            location.details.get("start_line")
-                            if location.details
-                            else None
+                            location.details.get("start_line") if location.details else None
                         ),
                         "end_line": (
-                            location.details.get("end_line")
-                            if location.details
-                            else None
+                            location.details.get("end_line") if location.details else None
                         ),
                         "start_column": (
-                            location.details.get("start_column")
-                            if location.details
-                            else None
+                            location.details.get("start_column") if location.details else None
                         ),
                         "end_column": (
-                            location.details.get("end_column")
-                            if location.details
-                            else None
+                            location.details.get("end_column") if location.details else None
                         ),
                     }
                     alert_data["locations"].append(location_data)
@@ -266,12 +244,8 @@ class GitHubSecurityLoader:
                         ),
                     },
                     "url": alert.html_url,
-                    "created_at": (
-                        alert.created_at.isoformat() if alert.created_at else None
-                    ),
-                    "updated_at": (
-                        alert.updated_at.isoformat() if alert.updated_at else None
-                    ),
+                    "created_at": (alert.created_at.isoformat() if alert.created_at else None),
+                    "updated_at": (alert.updated_at.isoformat() if alert.updated_at else None),
                 }
                 alerts.append(alert_data)
 
@@ -281,9 +255,7 @@ class GitHubSecurityLoader:
             print(f"❌ Error fetching Dependabot alerts for {repo_name}: {e}")
             return []
 
-    def get_all_security_issues(
-        self, repo_name: str
-    ) -> dict[str, list[dict[str, Any]]]:
+    def get_all_security_issues(self, repo_name: str) -> dict[str, list[dict[str, Any]]]:
         """
         Get all types of security issues for a repository.
 
@@ -307,12 +279,8 @@ class GitHubSecurityLoader:
         # Print summary
         print(f"📊 Security Issues Summary for {repo_name}:")
         print(f"   - Security Advisories: {len(security_data['security_advisories'])}")
-        print(
-            f"   - Code Scanning Alerts: {len(security_data['code_scanning_alerts'])}"
-        )
-        print(
-            f"   - Secret Scanning Alerts: {len(security_data['secret_scanning_alerts'])}"
-        )
+        print(f"   - Code Scanning Alerts: {len(security_data['code_scanning_alerts'])}")
+        print(f"   - Secret Scanning Alerts: {len(security_data['secret_scanning_alerts'])}")
         print(f"   - Dependabot Alerts: {len(security_data['dependabot_alerts'])}")
 
         return security_data

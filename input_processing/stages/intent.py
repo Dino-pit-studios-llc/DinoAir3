@@ -331,9 +331,7 @@ class IntentClassifier:
         combined_scores = self._combine_scores(pattern_scores, keyword_scores)
 
         # Sort intents by score
-        sorted_intents = sorted(
-            combined_scores.items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_intents = sorted(combined_scores.items(), key=lambda x: x[1], reverse=True)
 
         # Determine primary intent
         if not sorted_intents or sorted_intents[0][1] < 0.2:
@@ -353,9 +351,7 @@ class IntentClassifier:
             (intent, score)
             for intent, score in sorted_intents[1:]
             if score > 0.1  # Only include if somewhat confident
-        ][
-            :3
-        ]  # Max 3 secondary intents
+        ][:3]  # Max 3 secondary intents
 
         # Generate reasoning
         reasoning = IntentClassifier._generate_reasoning(

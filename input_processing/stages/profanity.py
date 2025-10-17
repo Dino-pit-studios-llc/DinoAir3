@@ -232,9 +232,7 @@ class ProfanityFilter:
         return False
 
     @staticmethod
-    def _get_context(
-        text: str, position: int, word_length: int, context_size: int = 30
-    ) -> str:
+    def _get_context(text: str, position: int, word_length: int, context_size: int = 30) -> str:
         """Get surrounding context for a word.
 
         Args:
@@ -323,9 +321,7 @@ class ProfanityFilter:
 
         return matches
 
-    def filter_profanity(
-        self, text: str, min_severity: Severity = Severity.mild
-    ) -> FilterResult:
+    def filter_profanity(self, text: str, min_severity: Severity = Severity.mild) -> FilterResult:
         """Filter profanity from text.
 
         Args:
@@ -348,9 +344,7 @@ class ProfanityFilter:
         matches = self.detect_profanity(text)
 
         # Filter by minimum severity
-        filtered_matches = [
-            m for m in matches if m.severity.value >= min_severity.value
-        ]
+        filtered_matches = [m for m in matches if m.severity.value >= min_severity.value]
 
         if not filtered_matches:
             return FilterResult(
@@ -366,9 +360,7 @@ class ProfanityFilter:
         filtered_text = text
 
         # Sort matches by position (reverse order for replacement)
-        sorted_matches = sorted(
-            filtered_matches, key=lambda m: m.position, reverse=True
-        )
+        sorted_matches = sorted(filtered_matches, key=lambda m: m.position, reverse=True)
 
         for match in sorted_matches:
             start = match.position
@@ -379,9 +371,7 @@ class ProfanityFilter:
             original_word = text[start:end]
             if original_word.lower() == match.word:
                 filtered_text = (
-                    filtered_text[:start]
-                    + self._mask_word(original_word)
-                    + filtered_text[end:]
+                    filtered_text[:start] + self._mask_word(original_word) + filtered_text[end:]
                 )
 
         # Calculate severity score
@@ -465,14 +455,10 @@ class ProfanityFilter:
         """
         return {
             "total_filtered": self.stats["total_filtered"],
-            "by_severity": {
-                s.name: count for s, count in self.stats["by_severity"].items()
-            },
+            "by_severity": {s.name: count for s, count in self.stats["by_severity"].items()},
             "most_common": sorted(
                 self.stats["most_common"].items(), key=lambda x: x[1], reverse=True
-            )[
-                :10
-            ],  # Top 10
+            )[:10],  # Top 10
             "timestamp": datetime.now().isoformat(),
         }
 

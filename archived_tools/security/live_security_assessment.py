@@ -93,9 +93,7 @@ class LiveSecurityAssessment:
                 "Access-Control-Request-Headers": "Content-Type",
             }
 
-            response = self.session.options(
-                f"{self.base_url}/", headers=headers, timeout=5
-            )
+            response = self.session.options(f"{self.base_url}/", headers=headers, timeout=5)
 
             if "Access-Control-Allow-Origin" in response.headers:
                 allowed_origin = response.headers["Access-Control-Allow-Origin"]
@@ -183,9 +181,7 @@ class LiveSecurityAssessment:
             xss_blocked = 0
             for payload in xss_payloads:
                 try:
-                    response = self.session.get(
-                        f"{self.base_url}/?search={payload}", timeout=5
-                    )
+                    response = self.session.get(f"{self.base_url}/?search={payload}", timeout=5)
 
                     # Check if payload is reflected unescaped
                     if payload in response.text:
@@ -342,9 +338,7 @@ class LiveSecurityAssessment:
             "security_grade": grade,
             "security_level": security_level,
             "findings": self.findings,
-            "recommendations": LiveSecurityAssessment._get_recommendations(
-                pass_percentage
-            ),
+            "recommendations": LiveSecurityAssessment._get_recommendations(pass_percentage),
         }
 
     @staticmethod
@@ -444,14 +438,10 @@ if __name__ == "__main__":
         report = run_live_security_assessment()
 
         if report and report["pass_percentage"] >= 80:
-            print(
-                f"\n🎉 CONGRATULATIONS! DinoAir has {report['security_level']} security!"
-            )
+            print(f"\n🎉 CONGRATULATIONS! DinoAir has {report['security_level']} security!")
             sys.exit(0)
         elif report:
-            print(
-                f"\n🔧 Security improvements needed - current level: {report['security_level']}"
-            )
+            print(f"\n🔧 Security improvements needed - current level: {report['security_level']}")
             sys.exit(1)
         else:
             print("\n❌ Assessment could not be completed")

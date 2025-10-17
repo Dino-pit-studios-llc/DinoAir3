@@ -8,6 +8,7 @@ from typing import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+
 from utils.metrics import get_metrics_client, track_api_request, track_security_event
 
 
@@ -27,9 +28,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         path = request.url.path
 
         # Track the incoming request
-        self.metrics.increment(
-            "api.requests.total", tags=[f"method:{method}", f"endpoint:{path}"]
-        )
+        self.metrics.increment("api.requests.total", tags=[f"method:{method}", f"endpoint:{path}"])
 
         try:
             # Process the request
@@ -57,9 +56,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             # Track response size if available
             if hasattr(response, "headers") and "content-length" in response.headers:
                 size = int(response.headers["content-length"])
-                self.metrics.histogram(
-                    "api.response.size", size, tags=[f"endpoint:{path}"]
-                )
+                self.metrics.histogram("api.response.size", size, tags=[f"endpoint:{path}"])
 
             return response
 

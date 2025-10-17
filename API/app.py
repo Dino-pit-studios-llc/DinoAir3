@@ -43,8 +43,9 @@ class TimeoutMiddleware:
 
     @staticmethod
     async def _send_timeout(scope: Scope, receive: Receive, send: Send):
-        from core_router.errors import error_response as core_error_response
         from starlette import status
+
+        from core_router.errors import error_response as core_error_response
 
         trace_id = scope.get("trace_id", "")
         method = scope.get("method", "GET")

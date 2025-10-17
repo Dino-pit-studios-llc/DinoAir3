@@ -22,6 +22,7 @@ from typing import Any, Optional
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
+
 from utils.process import safe_popen, safe_run
 
 
@@ -358,13 +359,9 @@ def main():
     """Main demo function."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Run complete Qdrant MCP demo for DinoAir3"
-    )
+    parser = argparse.ArgumentParser(description="Run complete Qdrant MCP demo for DinoAir3")
     parser.add_argument("--api-key", help="Qdrant API key")
-    parser.add_argument(
-        "--skip-qdrant", action="store_true", help="Skip starting Qdrant server"
-    )
+    parser.add_argument("--skip-qdrant", action="store_true", help="Skip starting Qdrant server")
 
     args = parser.parse_args()
 

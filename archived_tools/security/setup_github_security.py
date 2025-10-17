@@ -46,9 +46,7 @@ def setup_environment():
     print("set GITHUB_TOKEN=your_github_pat_here")
 
     print("\n📋 For permanent setup (PowerShell as Administrator):")
-    print(
-        '[Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "your_github_pat_here", "User")'
-    )
+    print('[Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "your_github_pat_here", "User")')
 
     print("\n⚠️  SECURITY NOTE:")
     print("- Never commit tokens to version control")

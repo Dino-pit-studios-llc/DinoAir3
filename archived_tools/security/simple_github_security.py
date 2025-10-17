@@ -25,9 +25,7 @@ class SimpleGitHubSecurityLoader:
         self.DEFAULT_TIMEOUT: int = 30
         self.token = token or os.getenv("GITHUB_TOKEN")
         if not self.token:
-            raise ValueError(
-                "GitHub token required. Set GITHUB_TOKEN environment variable."
-            )
+            raise ValueError("GitHub token required. Set GITHUB_TOKEN environment variable.")
 
         try:
             # Use modern auth method
@@ -78,16 +76,14 @@ class SimpleGitHubSecurityLoader:
         """Get security features status using direct API call."""
         try:
             url = f"https://api.github.com/repos/{repo_name}"
-            response = requests.get(
-                url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT
-            )
+            response = requests.get(url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT)
             if response.status_code == 200:
                 data = response.json()
                 security_analysis = data.get("security_and_analysis", {})
                 return {
-                    "advanced_security": security_analysis.get(
-                        "advanced_security", {}
-                    ).get("status", "unknown"),
+                    "advanced_security": security_analysis.get("advanced_security", {}).get(
+                        "status", "unknown"
+                    ),
                     "secret_scanning": security_analysis.get("secret_scanning", {}).get(
                         "status", "unknown"
                     ),
@@ -106,9 +102,7 @@ class SimpleGitHubSecurityLoader:
         """Get code scanning alerts using direct API call."""
         try:
             url = f"https://api.github.com/repos/{repo_name}/code-scanning/alerts"
-            response = requests.get(
-                url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT
-            )
+            response = requests.get(url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT)
 
             if response.status_code == 200:
                 alerts = response.json()
@@ -128,9 +122,7 @@ class SimpleGitHubSecurityLoader:
         """Get secret scanning alerts using direct API call."""
         try:
             url = f"https://api.github.com/repos/{repo_name}/secret-scanning/alerts"
-            response = requests.get(
-                url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT
-            )
+            response = requests.get(url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT)
 
             if response.status_code == 200:
                 alerts = response.json()
@@ -150,9 +142,7 @@ class SimpleGitHubSecurityLoader:
         """Get Dependabot alerts using direct API call."""
         try:
             url = f"https://api.github.com/repos/{repo_name}/dependabot/alerts"
-            response = requests.get(
-                url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT
-            )
+            response = requests.get(url, headers=self.headers, timeout=self.DEFAULT_TIMEOUT)
 
             if response.status_code == 200:
                 alerts = response.json()

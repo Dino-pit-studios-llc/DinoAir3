@@ -102,9 +102,7 @@ class ModelInfoProvider:
         """
         return {
             "name": model_info.get("name", "unknown"),
-            "display_name": model_info.get(
-                "display_name", model_info.get("name", "unknown")
-            ),
+            "display_name": model_info.get("display_name", model_info.get("name", "unknown")),
             "description": model_info.get("description", "No description available"),
             "version": model_info.get("version", "unknown"),
             "author": model_info.get("author", "unknown"),

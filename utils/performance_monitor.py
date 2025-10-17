@@ -104,9 +104,7 @@ class PerformanceMonitor:
         finally:
             self.end_operation(op_id)
 
-    def add_custom_collector(
-        self, name: str, collector_func: Callable[[], Any]
-    ) -> None:
+    def add_custom_collector(self, name: str, collector_func: Callable[[], Any]) -> None:
         """Add a custom metrics collector function."""
         with self._lock:
             self._custom_collectors[name] = collector_func
@@ -192,10 +190,7 @@ class PerformanceMonitor:
             memory_usage = None
             cpu_usage = None
 
-            if (
-                timer_data["initial_memory"] is not None
-                and "memory_mb" in final_metrics
-            ):
+            if timer_data["initial_memory"] is not None and "memory_mb" in final_metrics:
                 memory_usage = int(
                     final_metrics["memory_mb"] * 1024 * 1024
                 )  # Convert back to bytes
@@ -288,9 +283,7 @@ class PerformanceMonitor:
                         "performance_data": {
                             "duration": metric.duration,
                             "memory_mb": (
-                                metric.memory_usage / 1024 / 1024
-                                if metric.memory_usage
-                                else None
+                                metric.memory_usage / 1024 / 1024 if metric.memory_usage else None
                             ),
                             "cpu_percent": metric.cpu_usage,
                         },
@@ -318,9 +311,7 @@ class PerformanceMonitor:
                     return {}
 
                 durations = [m.duration for m in metrics]
-                memory_usages = [
-                    m.memory_usage for m in metrics if m.memory_usage is not None
-                ]
+                memory_usages = [m.memory_usage for m in metrics if m.memory_usage is not None]
                 cpu_usages = [m.cpu_usage for m in metrics if m.cpu_usage is not None]
 
                 result = {
@@ -335,10 +326,7 @@ class PerformanceMonitor:
                 if memory_usages:
                     result.update(
                         {
-                            "avg_memory_mb": sum(memory_usages)
-                            / len(memory_usages)
-                            / 1024
-                            / 1024,
+                            "avg_memory_mb": sum(memory_usages) / len(memory_usages) / 1024 / 1024,
                             "max_memory_mb": max(memory_usages) / 1024 / 1024,
                         }
                     )

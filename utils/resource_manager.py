@@ -40,9 +40,7 @@ class ResourceManagerLogger:
             context.update(ctx)
         return context
 
-    def _format_message(
-        self, message: str, extra_context: dict[str, Any] | None = None
-    ) -> str:
+    def _format_message(self, message: str, extra_context: dict[str, Any] | None = None) -> str:
         """Format message with context information."""
         context = self._get_context()
         if extra_context:
@@ -134,9 +132,7 @@ def timed_operation(
             rm_logger.debug(f"Completed {operation_name} in {metrics.duration:.3f}s")
         except Exception as e:
             metrics.complete(success=False, error=e)
-            rm_logger.error(
-                f"Failed {operation_name} after {metrics.duration:.3f}s: {e}"
-            )
+            rm_logger.error(f"Failed {operation_name} after {metrics.duration:.3f}s: {e}")
             raise
 
 
@@ -214,9 +210,7 @@ class ThreadSafeResourceRegistry:
     def list_by_type(self, resource_type: ResourceType) -> list[ResourceInfo]:
         """Get resources of specific type."""
         with self._read_lock:
-            return [
-                r for r in self._resources.values() if r.resource_type == resource_type
-            ]
+            return [r for r in self._resources.values() if r.resource_type == resource_type]
 
     def list_by_state(self, state: ResourceState) -> list[ResourceInfo]:
         """Get resources in specific state."""
@@ -285,9 +279,7 @@ class ResourceNotFoundError(ResourceManagerError):
     """Exception raised when a requested resource is not found."""
 
     def __init__(self, resource_id: str):
-        super().__init__(
-            f"Resource not found: {resource_id}", resource_id, "RESOURCE_NOT_FOUND"
-        )
+        super().__init__(f"Resource not found: {resource_id}", resource_id, "RESOURCE_NOT_FOUND")
 
 
 class DependencyValidationError(ResourceManagerError):
@@ -438,10 +430,7 @@ class ResourceManager:
                 last_exception = e
 
                 # Check if this exception should be retried
-                if not any(
-                    isinstance(e, exc_type)
-                    for exc_type in retry_config.retry_exceptions
-                ):
+                if not any(isinstance(e, exc_type) for exc_type in retry_config.retry_exceptions):
                     logger.warning(
                         f"{operation_name} failed for {resource_id} with non-retryable error: {e}"
                     )
@@ -522,9 +511,7 @@ class ResourceManager:
             ResourceRegistrationError: If validation fails
         """
         if not resource_id or not isinstance(resource_id, str):
-            raise ResourceRegistrationError(
-                "Resource ID must be a non-empty string", resource_id
-            )
+            raise ResourceRegistrationError("Resource ID must be a non-empty string", resource_id)
 
         if resource is None:
             raise ResourceRegistrationError("Resource cannot be None", resource_id)
@@ -604,9 +591,7 @@ class ResourceManager:
                 self._resources[resource_id] = resource_info
                 resource_info.state = ResourceState.active
 
-                logger.info(
-                    f"Registered resource: {resource_id} ({resource_type.value})"
-                )
+                logger.info(f"Registered resource: {resource_id} ({resource_type.value})")
 
         except Exception as e:
             self._handle_error(e, resource_id, "register_resource")
@@ -646,9 +631,7 @@ class ResourceManager:
         with self._lock:
             return self._resources.get(resource_id)
 
-    def list_resources(
-        self, resource_type: ResourceType | None = None
-    ) -> list[ResourceInfo]:
+    def list_resources(self, resource_type: ResourceType | None = None) -> list[ResourceInfo]:
         """List all managed resources, optionally filtered by type."""
         with self._lock:
             resources = list(self._resources.values())
@@ -669,9 +652,7 @@ class ResourceManager:
 
                 # Count by state
                 state_name = resource_info.state.value
-                resources_by_state[state_name] = (
-                    resources_by_state.get(state_name, 0) + 1
-                )
+                resources_by_state[state_name] = resources_by_state.get(state_name, 0) + 1
 
             status: dict[str, Any] = {
                 "total_resources": len(self._resources),
@@ -722,12 +703,8 @@ class ResourceManager:
 
                 individual_timeout = min(resource_info.shutdown_timeout, remaining_time)
 
-                if not ResourceManager._shutdown_single_resource(
-                    resource_info, individual_timeout
-                ):
-                    logger.error(
-                        f"Failed to shutdown resource: {resource_info.resource_id}"
-                    )
+                if not ResourceManager._shutdown_single_resource(resource_info, individual_timeout):
+                    logger.error(f"Failed to shutdown resource: {resource_info.resource_id}")
                     success = False
 
             # Clean up any remaining resources
@@ -739,9 +716,7 @@ class ResourceManager:
                 ]
 
                 if failed_resources:
-                    logger.warning(
-                        f"Resources failed to shutdown cleanly: {failed_resources}"
-                    )
+                    logger.warning(f"Resources failed to shutdown cleanly: {failed_resources}")
                     success = False
 
         except RuntimeError as e:
@@ -751,9 +726,7 @@ class ResourceManager:
         finally:
             self._shutdown_event.set()
             total_time = time.time() - start_time
-            logger.info(
-                f"Resource shutdown completed in {total_time:.2f}s (success: {success})"
-            )
+            logger.info(f"Resource shutdown completed in {total_time:.2f}s (success: {success})")
 
         return success
 
@@ -834,9 +807,7 @@ class ResourceManager:
 
         # Verify all resources were processed (no remaining cycles)
         if len(ordered_ids) != len(resources):
-            logger.warning(
-                "Dependency resolution incomplete - possible circular dependencies"
-            )
+            logger.warning("Dependency resolution incomplete - possible circular dependencies")
             return ResourceManager._fallback_priority_ordering(resources)
 
         # Convert IDs back to ResourceInfo objects
@@ -1028,10 +999,7 @@ class ResourceManager:
 
             if circular_deps:
                 issues.extend(
-                    [
-                        f"Circular dependency: {' -> '.join(cycle)}"
-                        for cycle in circular_deps
-                    ]
+                    [f"Circular dependency: {' -> '.join(cycle)}" for cycle in circular_deps]
                 )
 
             # Test dependency resolution
@@ -1179,7 +1147,6 @@ class ResourceManager:
 # Global instance
 _resource_manager: Optional[ResourceManager] = None
 _manager_lock = threading.Lock()
-
 
 _resource_manager: ResourceManager | None = None
 

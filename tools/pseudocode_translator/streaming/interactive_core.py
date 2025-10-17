@@ -67,11 +67,7 @@ def _is_parse_successful(parse_result) -> bool:
         True if parsing succeeded
     """
     success_attr = getattr(parse_result, "success", None)
-    return (
-        success_attr
-        if isinstance(success_attr, bool)
-        else (len(parse_result.errors) == 0)
-    )
+    return success_attr if isinstance(success_attr, bool) else (len(parse_result.errors) == 0)
 
 
 def _translate_blocks(
@@ -119,9 +115,7 @@ def _translate_blocks(
     return translations
 
 
-def _translate_english_block(
-    translator: StreamingTranslator, block, context: dict
-) -> str:
+def _translate_english_block(translator: StreamingTranslator, block, context: dict) -> str:
     """Translate a single English block.
 
     Args:

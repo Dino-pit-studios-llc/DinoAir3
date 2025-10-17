@@ -86,9 +86,7 @@ _ALLOWED_CMP_OPS = (
 _COMPREHENSIONS_NOT_ALLOWED = "Comprehensions are not allowed"
 
 
-class _SafeExprValidator(
-    ast.NodeVisitor
-):  # pylint: disable=invalid-name, missing-function-docstring
+class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
     """AST validator to enforce a restricted expression subset."""
 
     def __init__(self, variables: dict[str, Any]) -> None:
@@ -116,26 +114,20 @@ class _SafeExprValidator(
     # BoolOp: and/or
     def visit_BoolOp(self, node: ast.BoolOp) -> Any:
         if not isinstance(node.op, _ALLOWED_BOOL_OPS):
-            raise ValidationError(
-                f"Boolean operator not allowed: {type(node.op).__name__}"
-            )
+            raise ValidationError(f"Boolean operator not allowed: {type(node.op).__name__}")
         for v in node.values:
             self.visit(v)
 
     # Unary: not
     def visit_UnaryOp(self, node: ast.UnaryOp) -> Any:
         if not isinstance(node.op, _ALLOWED_UNARY_OPS):
-            raise ValidationError(
-                f"Unary operator not allowed: {type(node.op).__name__}"
-            )
+            raise ValidationError(f"Unary operator not allowed: {type(node.op).__name__}")
         self.visit(node.operand)
 
     # Binary arithmetic (+ - * / % //)
     def visit_BinOp(self, node: ast.BinOp) -> Any:
         if not isinstance(node.op, _ALLOWED_BINOPS):
-            raise ValidationError(
-                f"Binary operator not allowed: {type(node.op).__name__}"
-            )
+            raise ValidationError(f"Binary operator not allowed: {type(node.op).__name__}")
         self.visit(node.left)
         self.visit(node.right)
 
@@ -144,9 +136,7 @@ class _SafeExprValidator(
         self.visit(node.left)
         for op in node.ops:
             if not isinstance(op, _ALLOWED_CMP_OPS):
-                raise ValidationError(
-                    f"Comparison operator not allowed: {type(op).__name__}"
-                )
+                raise ValidationError(f"Comparison operator not allowed: {type(op).__name__}")
         for comparator in node.comparators:
             self.visit(comparator)
 
@@ -204,9 +194,7 @@ class _SafeExprValidator(
         raise ValidationError(f"Disallowed expression element: {type(node).__name__}")
 
 
-class _SafeExprEvaluator(
-    ast.NodeVisitor
-):  # pylint: disable=invalid-name, missing-function-docstring
+class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
     """
     Safely evaluates a restricted Python expression AST, as validated by _SafeExprValidator.
 
@@ -298,9 +286,7 @@ class _SafeExprEvaluator(
             elif isinstance(op, ast.NotIn):
                 result = left not in right
             else:
-                raise ValidationError(
-                    f"Unsupported comparison operator: {type(op).__name__}"
-                )
+                raise ValidationError(f"Unsupported comparison operator: {type(op).__name__}")
 
             if not result:
                 return False
@@ -338,9 +324,7 @@ class _SafeExprEvaluator(
         return result
 
 
-def evaluate_bool_expr(
-    expr: str, variables: dict[str, Any], max_length: int = 1000
-) -> bool:
+def evaluate_bool_expr(expr: str, variables: dict[str, Any], max_length: int = 1000) -> bool:
     """Validate and evaluate a restricted boolean expression.
 
     Args:
@@ -359,9 +343,7 @@ def evaluate_bool_expr(
     if not expr.strip():
         raise ValueError("Expression must be a non-empty string")
     if len(expr) > max_length:
-        raise ValueError(
-            f"Expression exceeds maximum length of {max_length} characters"
-        )
+        raise ValueError(f"Expression exceeds maximum length of {max_length} characters")
 
     # Parse and validate AST
     try:
