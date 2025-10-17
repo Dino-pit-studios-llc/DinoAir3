@@ -680,9 +680,7 @@ class TestEdgeCases:
 
         monitor = DependencyMonitor(work_dir)
 
-        with patch.object(
-            monitor, "_measure_module_import", side_effect=Exception("Test error")
-        ):
+        with patch.object(monitor, "_measure_module_import", side_effect=Exception("Test error")):
             # Should not crash, just log warning
             metrics = monitor.measure_import_performance()
 

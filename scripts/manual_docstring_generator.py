@@ -14,9 +14,7 @@ from pathlib import Path
 from typing import Any
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -78,9 +76,7 @@ def find_files_missing_docstrings(directories: list[str]) -> list[dict[str, Any]
                 tree = ast.parse(content)
 
                 has_module_doc = _has_module_docstring(tree)
-                classes_without_docs, functions_without_docs = _get_missing_doc_nodes(
-                    tree
-                )
+                classes_without_docs, functions_without_docs = _get_missing_doc_nodes(tree)
 
                 if not has_module_doc or classes_without_docs or functions_without_docs:
                     missing_docstrings.append(

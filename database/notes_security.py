@@ -34,9 +34,7 @@ class SecurityPolicy(ABC):
     """Abstract base class for security policies"""
 
     @abstractmethod
-    def validate_note_data(
-        self, title: str, content: str, tags: list[str]
-    ) -> dict[str, Any]:
+    def validate_note_data(self, title: str, content: str, tags: list[str]) -> dict[str, Any]:
         """Validate note data and return validation result"""
 
     @abstractmethod
@@ -59,9 +57,7 @@ def _load_policy_from_registry() -> SecurityPolicy | None:
 
     policy = _SECURITY_POLICY_FACTORY()
     if not isinstance(policy, SecurityPolicy):
-        raise TypeError(
-            "Registered security policy must return a SecurityPolicy instance"
-        )
+        raise TypeError("Registered security policy must return a SecurityPolicy instance")
     return policy
 
 
@@ -77,15 +73,11 @@ def _instantiate_policy_candidate(candidate: Any) -> Any:
 def _validate_policy_instance(candidate: Any) -> SecurityPolicy:
     """Validate that a candidate is a SecurityPolicy instance."""
     if not isinstance(candidate, SecurityPolicy):
-        raise TypeError(
-            "Custom notes security provider must produce a SecurityPolicy instance"
-        )
+        raise TypeError("Custom notes security provider must produce a SecurityPolicy instance")
     return candidate
 
 
-def _load_policy_by_logical_key(
-    key: str, allowed_map: dict[str, str]
-) -> SecurityPolicy:
+def _load_policy_by_logical_key(key: str, allowed_map: dict[str, str]) -> SecurityPolicy:
     """Load a security policy using a logical key from ALLOWED_SECURITY_POLICIES."""
     module = safe_import(key, allowed_map)
     _mod_path, allowed_attrs = ALLOWED_SECURITY_POLICIES[key]
@@ -143,9 +135,7 @@ def _load_policy_from_env() -> SecurityPolicy | None:
     # Case 2: policy specified as "module[:attribute]"
     module_name, _, attribute = module_spec.partition(":")
     if not module_name:
-        raise ImportError(
-            "NOTES_SECURITY_POLICY_PATH must be in the format 'module[:attribute]'"
-        )
+        raise ImportError("NOTES_SECURITY_POLICY_PATH must be in the format 'module[:attribute]'")
 
     return _load_policy_by_module_spec(module_name, attribute, allowed_map, logger)
 
@@ -177,16 +167,12 @@ class NotesSecurity:
                 self.logger.debug("Loaded notes security policy from registry.")
                 return policy
         except Exception as exc:  # pragma: no cover - defensive logging
-            self.logger.error(
-                "Registered notes security policy failed: %s", exc, exc_info=True
-            )
+            self.logger.error("Registered notes security policy failed: %s", exc, exc_info=True)
 
         try:
             policy = _load_policy_from_env()
             if policy:
-                self.logger.debug(
-                    "Loaded notes security policy from NOTES_SECURITY_POLICY_PATH."
-                )
+                self.logger.debug("Loaded notes security policy from NOTES_SECURITY_POLICY_PATH.")
                 return policy
         except Exception as exc:
             self.logger.error(
@@ -214,9 +200,7 @@ class NotesSecurity:
 
         return FallbackSecurity()
 
-    def validate_note_data(
-        self, title: str, content: str, tags: list[str]
-    ) -> dict[str, Any]:
+    def validate_note_data(self, title: str, content: str, tags: list[str]) -> dict[str, Any]:
         """Validate note data using the current security policy"""
         return self._policy.validate_note_data(title, content, tags)
 
@@ -231,9 +215,7 @@ class NotesSecurity:
         """
         # If using fallback security, check environment variable
         if isinstance(self._policy, FallbackSecurity):
-            allow = os.environ.get(
-                "ALLOW_NOTES_FALLBACK_WRITES", ""
-            ).strip().lower() in (
+            allow = os.environ.get("ALLOW_NOTES_FALLBACK_WRITES", "").strip().lower() in (
                 "1",
                 "true",
                 "yes",
@@ -260,9 +242,7 @@ class FallbackSecurity(SecurityPolicy):
     Provides basic validation when the main security module is unavailable.
     """
 
-    def validate_note_data(
-        self, title: str, content: str, tags: list[str]
-    ) -> dict[str, Any]:
+    def validate_note_data(self, title: str, content: str, tags: list[str]) -> dict[str, Any]:
         """Perform basic validation with conservative rules"""
         errors: list[str] = []
 

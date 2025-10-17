@@ -414,9 +414,7 @@ def generate_mock_embeddings(text: str, dimensions: int = 384) -> list[float]:
     for i in range(0, min(dimensions, len(hash_bytes) * 2), 2):
         # Convert 2 bytes to a float in range [-1, 1]
         if i + 1 < len(hash_bytes):
-            value = (
-                struct.unpack("H", hash_bytes[i : i + 2])[0] / 65535.0
-            )  # Normalize to [0, 1]
+            value = struct.unpack("H", hash_bytes[i : i + 2])[0] / 65535.0  # Normalize to [0, 1]
             signed_value = (value - 0.5) * 2  # Convert to [-1, 1]
             embeddings.append(signed_value)
 
@@ -589,9 +587,7 @@ def main():
         print(f"\n--- Processing {collection_name} ---")
 
         # Create collection
-        if not create_collection_with_mcp(
-            mcp_server_url, collection_name, 384, api_key
-        ):
+        if not create_collection_with_mcp(mcp_server_url, collection_name, 384, api_key):
             print(f"Skipping {collection_name} due to creation failure")
             continue
 
@@ -616,9 +612,7 @@ def main():
 
     for collection_name, query in test_queries:
         print(f"\n--- Searching '{query}' in {collection_name} ---")
-        search_vectors_with_mcp(
-            mcp_server_url, collection_name, query, api_key, limit=3
-        )
+        search_vectors_with_mcp(mcp_server_url, collection_name, query, api_key, limit=3)
 
     print("\n" + "=" * 60)
     print("POPULATION COMPLETE!")

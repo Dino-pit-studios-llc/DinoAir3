@@ -491,9 +491,7 @@ class EnhancedLogger:
                 or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
             )
 
-    def _create_file_handler(
-        self, log_dir: Path, formatter: logging.Formatter
-    ) -> logging.Handler:
+    def _create_file_handler(self, log_dir: Path, formatter: logging.Formatter) -> logging.Handler:
         """Create and configure file handler with rotation.
 
         Args:
@@ -535,9 +533,7 @@ class EnhancedLogger:
         console_handler.addFilter(filter_obj)
 
         if self.config.async_logging:
-            console_handler = AsyncLogHandler(
-                console_handler, self.config.async_queue_size
-            )
+            console_handler = AsyncLogHandler(console_handler, self.config.async_queue_size)
 
         return console_handler
 
@@ -704,9 +700,7 @@ class LogAggregationConfig:
 
     time_window_seconds: int = 300  # 5 minutes
     max_entries: int = 10000
-    aggregation_fields: list[str] = field(
-        default_factory=lambda: ["level", "logger", "component"]
-    )
+    aggregation_fields: list[str] = field(default_factory=lambda: ["level", "logger", "component"])
     enable_pattern_analysis: bool = True
     enable_error_rate_tracking: bool = True
 
@@ -721,9 +715,7 @@ class LogAggregator:
         self._start_time = time.time()
 
     @staticmethod
-    def _count_by_field(
-        entries: list[dict[str, Any]], field_name: str
-    ) -> dict[str, int]:
+    def _count_by_field(entries: list[dict[str, Any]], field_name: str) -> dict[str, int]:
         """Count entries by a specific field value."""
         counts: dict[str, int] = {}
         for entry in entries:
@@ -798,9 +790,7 @@ class LogAggregator:
     def get_error_patterns(self) -> dict[str, Any]:
         """Analyze error patterns in logs."""
         with self._lock:
-            error_entries = [
-                e for e in self._entries if e["level"] in ["ERROR", "CRITICAL"]
-            ]
+            error_entries = [e for e in self._entries if e["level"] in ["ERROR", "CRITICAL"]]
 
             patterns: dict[str, Any] = {
                 "total_errors": len(error_entries),
@@ -835,9 +825,7 @@ class LogAggregator:
         """Extract performance-related insights from logs."""
         with self._lock:
             perf_entries = [
-                e
-                for e in self._entries
-                if "performance" in str(e).lower() or "duration" in e
+                e for e in self._entries if "performance" in str(e).lower() or "duration" in e
             ]
 
             insights: dict[str, Any] = {
@@ -894,12 +882,8 @@ class LogAnalyzer:
             return {"anomalies_detected": False, "reason": "Insufficient data"}
 
         # Simple anomaly detection based on error rate spikes
-        recent_entries = [
-            e for e in entries if e["timestamp"] > time.time() - baseline_window
-        ]
-        baseline_entries = [
-            e for e in entries if e["timestamp"] <= time.time() - baseline_window
-        ]
+        recent_entries = [e for e in entries if e["timestamp"] > time.time() - baseline_window]
+        baseline_entries = [e for e in entries if e["timestamp"] <= time.time() - baseline_window]
 
         if not baseline_entries:
             return {"anomalies_detected": False, "reason": "No baseline data"}
@@ -921,7 +905,9 @@ class LogAnalyzer:
             "severity": (
                 "high"
                 if recent_error_rate > threshold * 2
-                else "medium" if recent_error_rate > threshold else "low"
+                else "medium"
+                if recent_error_rate > threshold
+                else "low"
             ),
         }
 
@@ -991,9 +977,7 @@ def detect_log_anomalies(baseline_window: int = 3600) -> dict[str, Any]:
         "recent_error_rate": error_rate,
         "baseline_error_rate": 0.05,  # Assumed baseline
         "threshold": 0.1,
-        "severity": (
-            "high" if error_rate > 0.2 else "medium" if error_rate > 0.1 else "low"
-        ),
+        "severity": ("high" if error_rate > 0.2 else "medium" if error_rate > 0.1 else "low"),
     }
 
 

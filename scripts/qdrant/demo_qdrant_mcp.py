@@ -19,9 +19,7 @@ import requests
 class QdrantMCPDemo:
     """Demonstration class for Qdrant MCP server."""
 
-    def __init__(
-        self, mcp_server_url: str = "http://localhost:8080", api_key: str = None
-    ):
+    def __init__(self, mcp_server_url: str = "http://localhost:8080", api_key: str = None):
         """Initialize demo with MCP server details."""
         self.mcp_server_url = mcp_server_url
         self.api_key = api_key or os.environ.get("QDRANT_API_KEY")
@@ -34,18 +32,14 @@ class QdrantMCPDemo:
             "Authorization": f"Bearer {self.api_key}",
         }
 
-    def call_mcp_tool(
-        self, tool_name: str, arguments: dict[str, Any]
-    ) -> dict[str, Any]:
+    def call_mcp_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         """Call an MCP tool and return the result."""
         url = f"{self.mcp_server_url}/tools/call"
 
         payload = {"name": tool_name, "arguments": arguments}
 
         try:
-            response = requests.post(
-                url, json=payload, headers=self.headers, timeout=30
-            )
+            response = requests.post(url, json=payload, headers=self.headers, timeout=30)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -75,9 +69,7 @@ class QdrantMCPDemo:
 
         # Get collection info
         print("\n3. Getting collection info...")
-        result = self.call_mcp_tool(
-            "get_collection_info", {"collection_name": "demo_collection"}
-        )
+        result = self.call_mcp_tool("get_collection_info", {"collection_name": "demo_collection"})
         print(json.dumps(result, indent=2))
 
     def demo_vector_upload(self):
@@ -269,9 +261,7 @@ class QdrantMCPDemo:
             response = requests.get(f"{self.mcp_server_url}/health", timeout=10)
             if response.status_code != 200:
                 print(f"MCP server health check failed: {response.status_code}")
-                print(
-                    "Make sure the MCP server is running: python mcp_qdrant_server.py"
-                )
+                print("Make sure the MCP server is running: python mcp_qdrant_server.py")
                 return
         except Exception as e:
             print(f"Failed to connect to MCP server: {e}")
@@ -303,9 +293,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Demo Qdrant MCP Server for DinoAir3")
-    parser.add_argument(
-        "--mcp-url", default="http://localhost:8080", help="MCP server URL"
-    )
+    parser.add_argument("--mcp-url", default="http://localhost:8080", help="MCP server URL")
     parser.add_argument("--api-key", help="Qdrant API key")
 
     args = parser.parse_args()
