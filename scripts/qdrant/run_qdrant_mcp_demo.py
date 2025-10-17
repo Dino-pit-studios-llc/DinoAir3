@@ -18,7 +18,7 @@ from pathlib import Path
 from subprocess import TimeoutExpired
 
 # Remove the import of TimeoutExpired if not used
-from typing import Any, Optional
+from typing import Any
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
@@ -166,7 +166,7 @@ class QdrantMCPDemoRunner:
         print("Timeout waiting for Qdrant")
         return False
 
-    def start_mcp_server(self) -> Optional[Any]:
+    def start_mcp_server(self) -> Any | None:
         """Start MCP server in background."""
         print("\nStarting MCP server...")
 
@@ -283,7 +283,7 @@ class QdrantMCPDemoRunner:
             return False
 
     @staticmethod
-    def cleanup(mcp_process: Optional[Any]):
+    def cleanup(mcp_process: Any | None):
         """Clean up running processes."""
         print("\nCleaning up...")
 

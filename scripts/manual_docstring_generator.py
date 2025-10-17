@@ -235,7 +235,7 @@ def add_docstrings_to_file(file_path: str, file_info: dict[str, Any]) -> bool:
 
             # Find the line with the function/class definition
             if line_num <= len(lines):
-                definition_line = lines[line_num - 1]  # Convert to 0-based index
+                lines[line_num - 1]  # Convert to 0-based index
 
                 # Get indentation level
 

@@ -9,7 +9,6 @@ file search content, including code files, documentation, notes, and projects.
 import json
 import os
 import sys
-from typing import Dict, List
 
 # Sample data representing DinoAir3 file search content
 SAMPLE_FILES_DATA = [
@@ -400,7 +399,7 @@ Use sentence-transformers all-MiniLM-L6-v2 for embeddings.
 ]
 
 
-def generate_mock_embeddings(text: str, dimensions: int = 384) -> List[float]:
+def generate_mock_embeddings(text: str, dimensions: int = 384) -> list[float]:
     """Generate mock embeddings for text content."""
     import hashlib
     import struct
@@ -462,7 +461,7 @@ def create_collection_with_mcp(
 
 
 def upload_points_with_mcp(
-    mcp_server_url: str, collection_name: str, points: List[Dict], api_key: str
+    mcp_server_url: str, collection_name: str, points: list[dict], api_key: str
 ):
     """Upload points using MCP server."""
     import requests

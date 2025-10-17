@@ -6,7 +6,6 @@ Tests for audit logging module, focusing on integrity verification and HMAC sign
 from dataclasses import asdict
 
 import pytest
-
 from utils.audit_logging import AuditEvent, AuditEventType, AuditLogger, SeverityLevel
 
 
@@ -210,7 +209,9 @@ class TestAuditLoggingIntegrity:
 
         # Force secret_key to be a string (simulating edge case)
         logger = AuditLogger("test", secret_key="test_secret")
-        logger.secret_key = os.getenv("SECRET_KEY")  # Retrieve secret key from environment variable
+        logger.secret_key = os.getenv(
+            "SECRET_KEY"
+        )  # Retrieve secret key from environment variable
 
         event = AuditEvent(
             event_id="test-id",

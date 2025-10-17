@@ -25,7 +25,7 @@ class Logger:
     _instance: Optional["Logger"] = None
     _initialized: bool = False
 
-    def __new__(cls, name: Optional[str] = None) -> Any:
+    def __new__(cls, name: str | None = None) -> Any:
         """
         Support two usages:
         - Logger() -> returns the singleton Logger utility instance
@@ -38,7 +38,7 @@ class Logger:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, name: Optional[str] = None):
+    def __init__(self, name: str | None = None):
         if not self._initialized:
             Logger._validate_security_requirements()
             self.setup_logging()

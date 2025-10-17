@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 try:
     from qdrant_client import QdrantClient
@@ -296,7 +296,7 @@ class QdrantMCPServer:
         else:
             raise ValueError(f"Unknown resource: {uri}")
 
-    async def _search_vectors(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _search_vectors(self, args: dict[str, Any]) -> dict[str, Any]:
         """Execute vector search."""
         collection_name = args["collection_name"]
         query_vector = args["query_vector"]
@@ -348,7 +348,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _upload_points(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _upload_points(self, args: dict[str, Any]) -> dict[str, Any]:
         """Upload points to collection."""
         collection_name = args["collection_name"]
         points = args["points"]
@@ -393,7 +393,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _create_collection(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _create_collection(self, args: dict[str, Any]) -> dict[str, Any]:
         """Create a new collection."""
         collection_name = args["collection_name"]
         vector_size = args["vector_size"]
@@ -438,7 +438,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _list_collections(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _list_collections(self, args: dict[str, Any]) -> dict[str, Any]:
         """List all collections."""
         try:
             collections = self.client.get_collections()
@@ -478,7 +478,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _delete_collection(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _delete_collection(self, args: dict[str, Any]) -> dict[str, Any]:
         """Delete a collection."""
         collection_name = args["collection_name"]
 
@@ -505,7 +505,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _get_collection_info(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _get_collection_info(self, args: dict[str, Any]) -> dict[str, Any]:
         """Get collection information."""
         collection_name = args["collection_name"]
 
@@ -537,7 +537,7 @@ class QdrantMCPServer:
                 "isError": True,
             }
 
-    async def _get_health_resource(self) -> Dict[str, Any]:
+    async def _get_health_resource(self) -> dict[str, Any]:
         """Get Qdrant health status."""
         try:
             health = self.client.health()
@@ -576,7 +576,7 @@ class QdrantMCPServer:
                 ]
             }
 
-    async def _get_collections_resource(self) -> Dict[str, Any]:
+    async def _get_collections_resource(self) -> dict[str, Any]:
         """Get collections list resource."""
         try:
             collections = self.client.get_collections()

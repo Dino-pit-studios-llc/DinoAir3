@@ -25,7 +25,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Pattern
+from re import Pattern
 
 
 class ValidationError(Exception):

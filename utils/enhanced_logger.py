@@ -421,7 +421,7 @@ class EnhancedLogger:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, name: Optional[str] = None):
+    def __init__(self, name: str | None = None):
         # Only perform heavy initialization once, but still allow setting a name attribute on subsequent calls
         if not hasattr(self, "_initialized"):
             self._initialized = True

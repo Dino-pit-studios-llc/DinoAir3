@@ -343,8 +343,7 @@ class StreamingPipeline:
             done, _ = wait(futures.keys(), return_when=FIRST_COMPLETED)
 
             # Process completed futures
-            for result in self._process_completed_futures(done, futures):
-                yield result
+            yield from self._process_completed_futures(done, futures)
 
     def _submit_initial_chunks(
         self,

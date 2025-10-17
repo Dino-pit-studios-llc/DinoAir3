@@ -113,7 +113,7 @@ def analyze_dependabot(alerts):
     severity_counts = Counter(
         alert["security_advisory"]["severity"] for alert in alerts
     )
-    state_counts = Counter(alert["state"] for alert in alerts)
+    Counter(alert["state"] for alert in alerts)
     ecosystem_counts = Counter(
         alert["dependency"]["package"]["ecosystem"] for alert in alerts
     )

@@ -11,7 +11,7 @@ This script demonstrates how to use the Qdrant MCP server to:
 
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 import requests
 
@@ -35,8 +35,8 @@ class QdrantMCPDemo:
         }
 
     def call_mcp_tool(
-        self, tool_name: str, arguments: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, tool_name: str, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
         """Call an MCP tool and return the result."""
         url = f"{self.mcp_server_url}/tools/call"
 

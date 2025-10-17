@@ -4,7 +4,7 @@ Integrates with the DinoAir API to collect custom business and performance metri
 """
 
 import time
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
