@@ -1,0 +1,31 @@
+[tool.ruff]
+line-length = 100
+src = ["API", "core_router", "database", "input_processing", "models", "routing", "utils", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "S", "W", "C90"]
+ignore = [
+  "S101", # assert usage ok in tests
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --cov --cov-report=term-missing"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.coverage.run]
+omit = [
+    "*/site-packages/*",
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2

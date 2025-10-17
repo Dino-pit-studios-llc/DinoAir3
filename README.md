@@ -1,93 +1,235 @@
-# DinoAir3
+# DinoAir3 Control Center
 
+> **A comprehensive productivity and development platform with AI-powered tools**
 
+DinoAir3 is a modern full-stack application that combines productivity tools, AI-powered features, and development utilities into a unified control center. Built with Python/FastAPI backend and Flutter/React frontends.
 
-## Getting started
+## ✨ Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### 🎯 Core Productivity Tools
+- **📝 Notes Management** - Rich text notes with tagging and search
+- **📋 Project Management** - Hierarchical project organization with status tracking
+- **🔍 Smart File Search** - Vector-powered semantic search across your codebase
+- **📅 Calendar Integration** - Event management and scheduling
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### 🤖 AI-Powered Tools
+- **💬 AI Chat Assistant** - Intelligent conversational AI with context awareness
+- **🔄 Pseudocode Translator** - Convert pseudocode to multiple programming languages
+- **🧠 RAG (Retrieval Augmented Generation)** - Enhanced AI responses with document context
 
-## Add your files
+### 🛠️ Developer Tools
+- **📊 Health Monitoring** - System health and performance metrics
+- **🔒 Security Scanner** - Automated vulnerability scanning
+- **📈 Performance Metrics** - Real-time application monitoring with Datadog integration
+- **🐳 Docker Support** - Containerized deployment
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### 💰 Additional Features
+- **📊 Crypto Dashboard** - Market tracking and portfolio management
+- **🌐 Multi-Platform** - Web interface and mobile Flutter app
 
+## 🏗️ Architecture
+
+### Backend Stack
+- **FastAPI** - Modern Python web framework
+- **SQLite/PostgreSQL** - Database layer with migrations
+- **Qdrant** - Vector database for semantic search
+- **Pydantic** - Data validation and serialization
+
+### Frontend Options
+- **Flutter** - Cross-platform mobile application
+- **React** - Web interface (in development)
+
+### Infrastructure
+- **Docker** - Containerization
+- **Prometheus + Grafana** - Monitoring stack
+- **GitLab CI/CD** - Automated testing and deployment
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+ (for frontend development)
+- Docker (optional)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/DinoAir3.git
+   cd DinoAir3
+   ```
+
+2. **Set up the development environment**
+   ```bash
+   # Run the bootstrap script to create virtual environment and install dependencies
+   ./scripts/dev/bootstrap.sh
+   ```
+
+3. **Activate virtual environment**
+   ```bash
+   source .venv/bin/activate
+   ```
+
+4. **Start the API server**
+   ```bash
+   uvicorn API.app:app --reload --host 127.0.0.1 --port 24801
+   ```
+
+5. **Access the application**
+   - API Documentation: http://127.0.0.1:24801/docs
+   - Health Check: http://127.0.0.1:24801/health
+
+### VS Code Development
+
+Use the included VS Code tasks for common operations:
+- **Setup venv**: Initial environment setup
+- **Run API (uvicorn)**: Start the development server
+- **Test (pytest)**: Run the test suite
+- **Lint (ruff)**: Check code quality
+- **Format (ruff)**: Auto-format code
+- **Pre-commit**: Run all checks before committing
+
+## 📋 Development Workflow
+
+### Testing
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov
+
+# Run specific test file
+pytest tests/test_notes.py
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/grumpydino/dinoair3.git
-git branch -M main
-git push -uf origin main
+
+### Code Quality
+```bash
+# Lint code
+ruff check .
+
+# Format code
+ruff format .
+
+# Run pre-commit hooks
+pre-commit run --all-files
 ```
 
-## Integrate with your tools
+### Database Operations
+```bash
+# Initialize database
+python -m database.initialize_db
 
-- [ ] [Set up project integrations](https://gitlab.com/grumpydino/dinoair3/-/settings/integrations)
+# Run migrations (when implemented)
+# python -m alembic upgrade head
+```
 
-## Collaborate with your team
+## 🌐 API Endpoints
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Core APIs
+- `GET /health` - Application health check
+- `GET /api/v1/health` - Extended health information
 
-## Test and Deploy
+### Notes API
+- `POST /api/v1/notes` - Create note
+- `GET /api/v1/notes` - List notes
+- `GET /api/v1/notes/{id}` - Get note
+- `PUT /api/v1/notes/{id}` - Update note
+- `DELETE /api/v1/notes/{id}` - Delete note
 
-Use the built-in continuous integration in GitLab.
+### Projects API
+- `POST /api/v1/projects` - Create project
+- `GET /api/v1/projects` - List projects
+- `GET /api/v1/projects/{id}` - Get project
+- `PUT /api/v1/projects/{id}` - Update project
+- `DELETE /api/v1/projects/{id}` - Delete project
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### File Search API
+- `POST /api/v1/file_search/search` - Semantic file search
+- `GET /api/v1/file_search/stats` - Search statistics
 
-***
+## 🔧 Configuration
 
-# Editing this README
+### Environment Variables
+Create `.env` file in the root directory:
+```bash
+# API Configuration
+DINOAIR_PORT=24801
+DINOAIR_HOST=127.0.0.1
+DINOAIR_ENVIRONMENT=development
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Database
+DINOAIR_DATABASE_URL=sqlite:///./dinoair.db
 
-## Suggestions for a good README
+# Security
+DINOAIR_SECRET_KEY=your-secret-key-here
+DINOAIR_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+# Optional: External Services
+DINOAIR_QDRANT_URL=http://localhost:6333
+DINOAIR_DATADOG_API_KEY=your-datadog-key
+```
 
-## Name
-Choose a self-explaining name for your project.
+## 🤝 Contributing
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Development Guidelines
+- Follow PEP 8 style guidelines
+- Write tests for new features
+- Update documentation as needed
+- Run pre-commit hooks before submitting
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 📖 Documentation
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+- [API Documentation](docs/) - Detailed API reference
+- [Flutter Integration Plan](docs/flutter-integration-plan.md) - Mobile app development
+- [Project Implementation](docs/projects-feature-implementation.md) - Feature development guide
+- [Security Setup](tools/security/) - Security configuration
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 🔒 Security
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- Built-in request validation and sanitization
+- CORS protection
+- Rate limiting capabilities
+- Automated security scanning tools
+- Input validation with Pydantic
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## 📊 Monitoring
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- Health check endpoints
+- Performance metrics collection
+- Error tracking and logging
+- Optional Datadog integration
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## 📄 License
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## 🏢 Authors
 
-## License
-For open source projects, say how it is licensed.
+**Dino Pit Studios LLC**
+- Development team focused on productivity and AI-powered tools
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 🚧 Project Status
+
+**Active Development** - DinoAir3 is under active development with regular updates and new features being added.
+
+### Current Phase
+- ✅ Backend API (FastAPI) - Complete
+- ✅ Core features (Notes, Projects, File Search) - Complete
+- 🚧 Flutter mobile app - In Progress
+- 🚧 React web interface - Planned
+- 🚧 Advanced AI features - In Progress
+
+### Roadmap
+- [ ] Complete Flutter mobile application
+- [ ] Enhanced AI chat capabilities
+- [ ] Real-time collaboration features
+- [ ] Advanced analytics dashboard
+- [ ] Plugin system for extensibility
