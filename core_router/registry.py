@@ -65,19 +65,13 @@ class ServiceRegistry:
     # -------------------------
     # CRUD / Lookup
     # -------------------------
-    def register(
-        self, desc: ServiceDescriptor | Mapping[str, Any]
-    ) -> ServiceDescriptor:
+    def register(self, desc: ServiceDescriptor | Mapping[str, Any]) -> ServiceDescriptor:
         """
         Register or replace by name.
 
         Accepts a ServiceDescriptor or plain dict. Returns stored descriptor.
         """
-        sd = (
-            desc
-            if isinstance(desc, ServiceDescriptor)
-            else ServiceDescriptor(**dict(desc))
-        )
+        sd = desc if isinstance(desc, ServiceDescriptor) else ServiceDescriptor(**dict(desc))
         with self._lock:
             self._services[sd.name] = sd
             return sd
@@ -104,9 +98,7 @@ class ServiceRegistry:
         """Return services containing the tag (case-insensitive)."""
         t = (tag or "").lower()
         with self._lock:
-            return [
-                d for d in self._services.values() if t in {x.lower() for x in d.tags}
-            ]
+            return [d for d in self._services.values() if t in {x.lower() for x in d.tags}]
 
     def list(self) -> builtins.list[ServiceDescriptor]:
         """Return all registered services."""
@@ -277,9 +269,7 @@ def _extract_base_url(service: Any) -> str | None:
     return None
 
 
-def _mark_service_degraded(
-    registry: ServiceRegistry, service_name: str, error_msg: str
-) -> None:
+def _mark_service_degraded(registry: ServiceRegistry, service_name: str, error_msg: str) -> None:
     """Mark service as degraded with error message.
 
     Args:
@@ -290,9 +280,7 @@ def _mark_service_degraded(
     from .health import HealthState as _HealthState
 
     with suppress(Exception):
-        registry.update_health(
-            service_name, _HealthState.DEGRADED, latency_ms=0, error=error_msg
-        )
+        registry.update_health(service_name, _HealthState.DEGRADED, latency_ms=0, error=error_msg)
 
 
 def _probe_service_health(base_url: str) -> bool:

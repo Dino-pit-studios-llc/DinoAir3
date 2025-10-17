@@ -217,9 +217,7 @@ class FileMonitor:
         self._update_callback: Callable | None = None
         self._error_callback: Callable | None = None
 
-    def start_monitoring(
-        self, directories: list[str], file_extensions: list[str] | None = None
-    ):
+    def start_monitoring(self, directories: list[str], file_extensions: list[str] | None = None):
         """
         Start monitoring directories for changes.
 
@@ -263,9 +261,7 @@ class FileMonitor:
         if self._monitored_dirs:
             self._observer.start()
             self._is_monitoring = True
-            self.logger.info(
-                f"File monitor started for {len(self._monitored_dirs)} directories"
-            )
+            self.logger.info(f"File monitor started for {len(self._monitored_dirs)} directories")
         else:
             self.logger.warning("No valid directories to monitor")
 
@@ -398,9 +394,7 @@ class FileMonitor:
                     continue
 
                 # Process file
-                result = self.file_processor.process_file(
-                    file_path, force_reprocess=True
-                )
+                result = self.file_processor.process_file(file_path, force_reprocess=True)
 
                 if result["success"]:
                     self.logger.info("Updated index for: %s", file_path)

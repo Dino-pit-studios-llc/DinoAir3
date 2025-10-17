@@ -10,6 +10,7 @@ import sqlite3
 import tempfile
 
 import pytest
+
 from database.file_search_db import FileSearchDB
 from database.initialize_db import DatabaseManager
 
@@ -55,14 +56,10 @@ class TestFileSearchDB:
         cursor = conn.cursor()
 
         # Check if key tables exist
-        cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='indexed_files'"
-        )
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='indexed_files'")
         assert cursor.fetchone() is not None
 
-        cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='file_chunks'"
-        )
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='file_chunks'")
         assert cursor.fetchone() is not None
 
         cursor.execute(
@@ -200,9 +197,7 @@ class TestFileSearchDB:
         assert settings["success"] is True
 
         # Test updating settings
-        update_result = file_search_db.update_search_settings(
-            "test_setting", {"key": "value"}
-        )
+        update_result = file_search_db.update_search_settings("test_setting", {"key": "value"})
         assert update_result["success"] is True
 
         # Test retrieving updated settings

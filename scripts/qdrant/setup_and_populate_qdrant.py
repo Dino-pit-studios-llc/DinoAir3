@@ -19,6 +19,7 @@ import time
 from pathlib import Path
 
 import requests
+
 from utils.process import safe_popen, safe_run
 
 
@@ -351,13 +352,9 @@ def main():
     """Main setup function."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Complete Qdrant MCP setup for DinoAir3"
-    )
+    parser = argparse.ArgumentParser(description="Complete Qdrant MCP setup for DinoAir3")
     parser.add_argument("--api-key", required=True, help="Qdrant API key")
-    parser.add_argument(
-        "--skip-deps", action="store_true", help="Skip dependency installation"
-    )
+    parser.add_argument("--skip-deps", action="store_true", help="Skip dependency installation")
 
     args = parser.parse_args()
 

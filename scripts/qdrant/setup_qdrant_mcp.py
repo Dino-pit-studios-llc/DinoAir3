@@ -71,9 +71,7 @@ class QdrantMCPSetup:
             )
             return False
 
-        print(
-            f"OK: Python {python_version.major}.{python_version.minor}.{python_version.micro}"
-        )
+        print(f"OK: Python {python_version.major}.{python_version.minor}.{python_version.micro}")
 
         # Check if pip is available
         try:
@@ -185,9 +183,7 @@ DEBUG=false
         try:
             from qdrant_client import QdrantClient
 
-            client = QdrantClient(
-                url="http://localhost:6333", api_key=self.api_key, timeout=10
-            )
+            client = QdrantClient(url="http://localhost:6333", api_key=self.api_key, timeout=10)
 
             # Test health check
             health = client.health()
@@ -246,17 +242,14 @@ DEBUG=false
                     # Update vector config if needed
                     if (
                         existing.config.params.size != collection_info["vector_size"]
-                        or existing.config.params.distance
-                        != collection_info["distance"]
+                        or existing.config.params.distance != collection_info["distance"]
                     ):
                         print(
                             f"Warning: Collection '{collection_info['name']}' exists but has different config"
                         )
                         print("   Consider recreating or updating the collection")
                     else:
-                        print(
-                            f"OK: Collection '{collection_info['name']}' already exists"
-                        )
+                        print(f"OK: Collection '{collection_info['name']}' already exists")
 
                 except Exception:
                     # Collection doesn't exist, create it
@@ -407,12 +400,8 @@ def main():
     """Main setup function."""
     parser = argparse.ArgumentParser(description="Setup Qdrant MCP Server for DinoAir3")
     parser.add_argument("--api-key", help="Qdrant API key")
-    parser.add_argument(
-        "--qdrant-url", default="http://localhost:6333", help="Qdrant server URL"
-    )
-    parser.add_argument(
-        "--skip-deps", action="store_true", help="Skip dependency installation"
-    )
+    parser.add_argument("--qdrant-url", default="http://localhost:6333", help="Qdrant server URL")
+    parser.add_argument("--skip-deps", action="store_true", help="Skip dependency installation")
 
     args = parser.parse_args()
 

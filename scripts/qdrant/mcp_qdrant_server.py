@@ -38,9 +38,7 @@ try:
     QDRANT_AVAILABLE = True
 except ImportError:
     QDRANT_AVAILABLE = False
-    print(
-        "Warning: qdrant-client not installed. Install with: pip install qdrant-client"
-    )
+    print("Warning: qdrant-client not installed. Install with: pip install qdrant-client")
 
 from mcp import McpServer
 from mcp.models import ServerCapabilities
@@ -71,9 +69,7 @@ class QdrantMCPServer:
             raise ImportError("qdrant-client is required for Qdrant MCP server")
 
         # Initialize Qdrant client
-        self.client = QdrantClient(
-            url=self.qdrant_url, api_key=self.api_key, timeout=30
-        )
+        self.client = QdrantClient(url=self.qdrant_url, api_key=self.api_key, timeout=30)
 
         # Test connection
         try:
@@ -432,9 +428,7 @@ class QdrantMCPServer:
 
         except Exception as e:
             return {
-                "content": [
-                    {"type": "text", "text": f"Create collection error: {str(e)}"}
-                ],
+                "content": [{"type": "text", "text": f"Create collection error: {str(e)}"}],
                 "isError": True,
             }
 
@@ -472,9 +466,7 @@ class QdrantMCPServer:
 
         except Exception as e:
             return {
-                "content": [
-                    {"type": "text", "text": f"List collections error: {str(e)}"}
-                ],
+                "content": [{"type": "text", "text": f"List collections error: {str(e)}"}],
                 "isError": True,
             }
 
@@ -499,9 +491,7 @@ class QdrantMCPServer:
 
         except Exception as e:
             return {
-                "content": [
-                    {"type": "text", "text": f"Delete collection error: {str(e)}"}
-                ],
+                "content": [{"type": "text", "text": f"Delete collection error: {str(e)}"}],
                 "isError": True,
             }
 
@@ -531,9 +521,7 @@ class QdrantMCPServer:
 
         except Exception as e:
             return {
-                "content": [
-                    {"type": "text", "text": f"Get collection info error: {str(e)}"}
-                ],
+                "content": [{"type": "text", "text": f"Get collection info error: {str(e)}"}],
                 "isError": True,
             }
 
@@ -621,9 +609,7 @@ class QdrantMCPServer:
             }
 
 
-def create_qdrant_mcp_server(
-    qdrant_url: str = None, api_key: str = None
-) -> QdrantMCPServer:
+def create_qdrant_mcp_server(qdrant_url: str = None, api_key: str = None) -> QdrantMCPServer:
     """Factory function to create Qdrant MCP server instance."""
     return QdrantMCPServer(qdrant_url=qdrant_url, api_key=api_key)
 

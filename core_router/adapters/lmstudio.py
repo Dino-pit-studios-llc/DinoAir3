@@ -59,8 +59,7 @@ class LMStudioAdapter(ServiceAdapter):
 
         # Resolve configuration with environment fallbacks
         raw = str(
-            cfg.get("base_url")
-            or os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234")
+            cfg.get("base_url") or os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234")
         ).strip()
         model = str(cfg.get("model") or os.getenv("LMSTUDIO_DEFAULT_MODEL", "")).strip()
         headers = cfg.get("headers", {})
@@ -144,9 +143,7 @@ class LMStudioAdapter(ServiceAdapter):
     def _sleep_backoff(self, attempt: int) -> None:
         # Exponential backoff with jitter: base * 2^(attempt-1) + random[0, base/2], capped.
         delay = min(self._backoff_cap, self._backoff_base * (2 ** max(0, attempt - 1)))
-        delay += random.uniform(
-            0, self._backoff_base / 2
-        )  # nosec B311 - non-security backoff jitter for retry timing
+        delay += random.uniform(0, self._backoff_base / 2)  # nosec B311 - non-security backoff jitter for retry timing
         delay = min(self._backoff_cap, delay)  # Reapply cap after jitter
         with suppress(Exception):
             time.sleep(delay)
@@ -169,9 +166,7 @@ class LMStudioAdapter(ServiceAdapter):
         out: list[dict[str, str]] = []
         for i, raw in enumerate(seq):
             if not isinstance(raw, Mapping):
-                raise AdapterError(
-                    adapter="lmstudio", reason=f"messages[{i}] must be object"
-                )
+                raise AdapterError(adapter="lmstudio", reason=f"messages[{i}] must be object")
             msg = cast("Mapping[str, Any]", raw)
 
             role_val = msg.get("role")
@@ -267,9 +262,7 @@ class LMStudioAdapter(ServiceAdapter):
         LMStudioAdapter._raise_fallback_error(last_exc)
         return None
 
-    def _handle_network_error(
-        self, exc: Exception, attempt: int, attempts: int
-    ) -> None:
+    def _handle_network_error(self, exc: Exception, attempt: int, attempts: int) -> None:
         """Handle network-related errors with retry logic.
 
         Args:
@@ -299,9 +292,7 @@ class LMStudioAdapter(ServiceAdapter):
         if attempt >= attempts:
             raise AdapterError(adapter="lmstudio", reason="max retries exceeded")
 
-    def _handle_request_error(
-        self, exc: httpx.RequestError, attempt: int, attempts: int
-    ) -> None:
+    def _handle_request_error(self, exc: httpx.RequestError, attempt: int, attempts: int) -> None:
         """Handle general request errors with retry logic.
 
         Args:
@@ -364,9 +355,7 @@ class LMStudioAdapter(ServiceAdapter):
         try:
             raw = resp.json()
         except (ValueError, httpx.DecodingError) as exc:
-            raise AdapterError(
-                adapter="lmstudio", reason="invalid JSON response"
-            ) from exc
+            raise AdapterError(adapter="lmstudio", reason="invalid JSON response") from exc
 
         if not isinstance(raw, Mapping):
             raise AdapterError(
@@ -393,10 +382,7 @@ class LMStudioAdapter(ServiceAdapter):
             AdapterError: Always
         """
         # Check if should retry
-        if (
-            LMStudioAdapter._should_retry_status(resp.status_code)
-            and attempt < attempts
-        ):
+        if LMStudioAdapter._should_retry_status(resp.status_code) and attempt < attempts:
             self._sleep_backoff(attempt)
             # Will be caught and retried
             raise RetryableError("Retryable status code")
@@ -405,9 +391,7 @@ class LMStudioAdapter(ServiceAdapter):
         text = ""
         with suppress(Exception):
             text = (resp.text or "")[:512]
-        raise AdapterError(
-            adapter="lmstudio", reason=f"HTTP {resp.status_code}: {text}"
-        )
+        raise AdapterError(adapter="lmstudio", reason=f"HTTP {resp.status_code}: {text}")
 
     @staticmethod
     def _raise_network_error(exc: Exception) -> None:
@@ -419,9 +403,7 @@ class LMStudioAdapter(ServiceAdapter):
         Raises:
             AdapterError: Always
         """
-        reason = (
-            "timeout" if isinstance(exc, httpx.TimeoutException) else "network error"
-        )
+        reason = "timeout" if isinstance(exc, httpx.TimeoutException) else "network error"
         raise AdapterError(adapter="lmstudio", reason=reason) from exc
 
     @staticmethod

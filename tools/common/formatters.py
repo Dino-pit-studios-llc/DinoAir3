@@ -25,9 +25,7 @@ def format_note(note: Note, preview_len: int | None = None) -> dict[str, Any]:
     content = note.content
     if preview_len is not None:
         preview_len = max(0, int(preview_len))
-        content = (
-            content[:preview_len] + "..." if len(content) > preview_len else content
-        )
+        content = content[:preview_len] + "..." if len(content) > preview_len else content
 
     return {
         "id": note.id,
@@ -54,9 +52,7 @@ def format_project(project: Project) -> dict[str, Any]:
         "name": project.name,
         "description": project.description,
         # Ensure status is serialized consistently (enum or str)
-        "status": (
-            project.status.value if hasattr(project.status, "value") else project.status
-        ),
+        "status": (project.status.value if hasattr(project.status, "value") else project.status),
         "color": project.color,
         "icon": project.icon,
         "parent_project_id": project.parent_project_id,

@@ -189,9 +189,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         """Internal registration method."""
         with self._lock:
             if name in self._dependencies:
-                raise DependencyResolutionError(
-                    f"Dependency '{name}' already registered"
-                )
+                raise DependencyResolutionError(f"Dependency '{name}' already registered")
 
             dependency_info = DependencyInfo(
                 name=name,
@@ -240,9 +238,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
                 if info.dependency_type == dependency_type:
                     return self._resolve_internal(name)
 
-            raise DependencyResolutionError(
-                f"No dependency registered for type: {dependency_type}"
-            )
+            raise DependencyResolutionError(f"No dependency registered for type: {dependency_type}")
 
     def _resolve_internal(self, name: str) -> Any:
         """Internal dependency resolution with circular dependency detection."""
@@ -278,9 +274,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         if name not in self._dependencies:
             raise DependencyResolutionError(f"Unknown dependency: {name}")
 
-    def _get_existing_instance(
-        self, name: str, dependency_info: DependencyInfo
-    ) -> Any | None:
+    def _get_existing_instance(self, name: str, dependency_info: DependencyInfo) -> Any | None:
         """Get existing instance if available based on scope.
 
         Args:
@@ -313,9 +307,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         scoped_instances = self._scoped_instances[self._current_scope]
         return scoped_instances.get(name)
 
-    def _create_and_store_instance(
-        self, name: str, dependency_info: DependencyInfo
-    ) -> Any:
+    def _create_and_store_instance(self, name: str, dependency_info: DependencyInfo) -> Any:
         """Create and store a new instance.
 
         Args:
@@ -398,9 +390,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         """
         try:
             factory = cast("Callable[..., Any]", dependency_info.factory)
-            factory_kwargs = DependencyContainer._get_factory_kwargs(
-                factory, resolved_dependencies
-            )
+            factory_kwargs = DependencyContainer._get_factory_kwargs(factory, resolved_dependencies)
             return factory(**factory_kwargs)
         except RuntimeError as e:
             raise DependencyResolutionError(
@@ -481,11 +471,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         kwargs |= DependencyContainer._match_params_by_name(sig, resolved_dependencies)
 
         # Then, try to match by type for unmatched parameters
-        kwargs.update(
-            DependencyContainer._match_params_by_type(
-                sig, resolved_dependencies, kwargs
-            )
-        )
+        kwargs.update(DependencyContainer._match_params_by_type(sig, resolved_dependencies, kwargs))
 
         return kwargs
 
@@ -527,10 +513,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         kwargs: dict[str, Any] = {}
 
         for param_name, param in sig.parameters.items():
-            if (
-                param_name in already_matched
-                or param.annotation == inspect.Parameter.empty
-            ):
+            if param_name in already_matched or param.annotation == inspect.Parameter.empty:
                 continue
 
             matched_instance = DependencyContainer._find_instance_by_type(
@@ -560,9 +543,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
                 if isinstance(annotation, str):
                     if annotation == type(dep_instance).__name__:
                         return dep_instance
-                elif isinstance(annotation, type) and isinstance(
-                    dep_instance, annotation
-                ):
+                elif isinstance(annotation, type) and isinstance(dep_instance, annotation):
                     return dep_instance
             except TypeError:
                 # annotation is not a valid type for isinstance
@@ -642,9 +623,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
     def _check_circular_dependency(self, name: str, visited: set[str]) -> None:
         """Check for circular dependencies recursively."""
         if name in visited:
-            raise CircularDependencyError(
-                f"Circular dependency detected involving: {name}"
-            )
+            raise CircularDependencyError(f"Circular dependency detected involving: {name}")
 
         if name not in self._dependencies:
             return
@@ -666,9 +645,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         try:
             # Get singletons sorted by initialization order
             singletons = [
-                info
-                for info in self._dependencies.values()
-                if info.scope == Scope.singleton
+                info for info in self._dependencies.values() if info.scope == Scope.singleton
             ]
             singletons.sort(key=lambda x: x.initialization_order)
 

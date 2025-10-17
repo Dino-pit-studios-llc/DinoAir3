@@ -15,9 +15,9 @@ try:
     from .models import BlockType, CodeBlock, ParseError, ParseResult
 except ImportError:
     # Fallback for when run as a script
-    from models import BlockType, CodeBlock, ParseError, ParseResult
-
     from exceptions import ErrorContext, ParsingError
+
+    from models import BlockType, CodeBlock, ParseError, ParseResult
 
 
 class ParserModule:
@@ -53,12 +53,8 @@ class ParserModule:
     _ENGLISH_MODAL_RE = re.compile(
         r"(should|must|need to|have to|will|would|can|could)", re.IGNORECASE
     )
-    _ENGLISH_TEMPORAL_RE = re.compile(
-        r"(then|next|after|before|when|while|until)", re.IGNORECASE
-    )
-    _ENGLISH_ARTICLE_RE = re.compile(
-        r"(a|an|the|this|that|these|those)\s+\w+", re.IGNORECASE
-    )
+    _ENGLISH_TEMPORAL_RE = re.compile(r"(then|next|after|before|when|while|until)", re.IGNORECASE)
+    _ENGLISH_ARTICLE_RE = re.compile(r"(a|an|the|this|that|these|those)\s+\w+", re.IGNORECASE)
     _ENGLISH_CONJUNC_RE = re.compile(r"\b(and|or|but|if|then|else)\b", re.IGNORECASE)
     _SENTENCE_STRUCT_RE = re.compile(r"^[A-Z].*[.!?]$")
     _PYTHON_SYNTAX_RE = re.compile(r"[(){}\[\]:]")
@@ -273,9 +269,7 @@ class ParserModule:
         max_indent = 0
 
         for line in lines:
-            max_indent = self._process_line_metadata(
-                line, metadata, indent_chars, max_indent
-            )
+            max_indent = self._process_line_metadata(line, metadata, indent_chars, max_indent)
 
         metadata["max_indent_level"] = max_indent
         if indent_chars:
@@ -560,9 +554,7 @@ class ParserModule:
         return any(re.match(pattern, line) for pattern in incomplete_patterns)
 
     @staticmethod
-    def _get_context(
-        full_text: str, start_line: int, end_line: int, context_lines: int = 2
-    ) -> str:
+    def _get_context(full_text: str, start_line: int, end_line: int, context_lines: int = 2) -> str:
         """
         Get surrounding context for a block
 
@@ -613,9 +605,7 @@ class ParserModule:
 
         return ParseResult(blocks=blocks, errors=parse_errors, warnings=self.warnings)
 
-    def streaming_parse(
-        self, input_text: str, chunk_size: int = 4096
-    ) -> Iterator[CodeBlock]:
+    def streaming_parse(self, input_text: str, chunk_size: int = 4096) -> Iterator[CodeBlock]:
         """
         Parse input text in a streaming fashion
 
@@ -695,9 +685,7 @@ class ParserModule:
                     # Split at the found point
                     chunks.append("".join(current_chunk[:split_point]))
                     current_chunk = current_chunk[split_point:]
-                    current_size = sum(
-                        len(line.encode("utf-8")) for line in current_chunk
-                    )
+                    current_size = sum(len(line.encode("utf-8")) for line in current_chunk)
                 else:
                     # No good split point, take the whole chunk
                     chunks.append("".join(current_chunk))
@@ -737,8 +725,7 @@ class ParserModule:
                 or self._DEF_CLASS_IMPORT_RE.match(line)
                 or (
                     i > 0
-                    and self._get_indent_level(lines[i])
-                    < self._get_indent_level(lines[i - 1])
+                    and self._get_indent_level(lines[i]) < self._get_indent_level(lines[i - 1])
                 )
             ):
                 return i
@@ -788,9 +775,7 @@ class ParserModule:
                 code_blocks.append(code_block)
             except ValueError as e:
                 # Create detailed parsing error for streaming
-                context = ErrorContext(
-                    line_number=current_line, code_snippet=block_text[:100]
-                )
+                context = ErrorContext(line_number=current_line, code_snippet=block_text[:100])
 
                 error = ParsingError(
                     message=str(e), block_content=block_text, context=context, cause=e

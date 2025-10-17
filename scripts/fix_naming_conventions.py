@@ -100,9 +100,7 @@ class NamingFixer:
         """
         if context == "auto":
             # Auto-detect: rename if PascalCase or camelCase
-            return bool(
-                re.match(r"^[a-z]+[A-Z]", name) or re.match(r"^[A-Z][a-z]+[A-Z]", name)
-            )
+            return bool(re.match(r"^[a-z]+[A-Z]", name) or re.match(r"^[A-Z][a-z]+[A-Z]", name))
 
         if context == "field":
             return name in self.field_renames or bool(re.match(r"^[A-Z]", name))
@@ -143,9 +141,7 @@ class NamingFixer:
                 # Check class attributes
                 if isinstance(node, ast.ClassDef):
                     for item in node.body:
-                        if isinstance(item, ast.AnnAssign) and isinstance(
-                            item.target, ast.Name
-                        ):
+                        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
                             name = item.target.id
                             if self.should_rename(name, "field"):
                                 renames[name] = self.get_renamed_name(name, "field")
@@ -154,9 +150,7 @@ class NamingFixer:
                                 if isinstance(target, ast.Name):
                                     name = target.id
                                     if self.should_rename(name, "field"):
-                                        renames[name] = self.get_renamed_name(
-                                            name, "field"
-                                        )
+                                        renames[name] = self.get_renamed_name(name, "field")
 
                 # Check function/method definitions
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -230,9 +224,7 @@ class NamingFixer:
                 print(f"    {old} -> {new}")
 
             # Apply renames
-            new_content, total_replacements = self.apply_renames(
-                original_content, renames
-            )
+            new_content, total_replacements = self.apply_renames(original_content, renames)
 
             if total_replacements == 0:
                 print("  ✓ No changes needed")

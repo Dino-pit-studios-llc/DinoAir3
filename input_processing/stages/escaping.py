@@ -140,9 +140,7 @@ class TextEscaper:
             model_type: Type of model to escape for
         """
         self.model_type = model_type.lower()
-        self.current_strategy = self.strategies.get(
-            self.model_type, self.strategies["default"]
-        )
+        self.current_strategy = self.strategies.get(self.model_type, self.strategies["default"])
 
     def escape(self, text: str) -> str:
         """Escape text using current strategy.

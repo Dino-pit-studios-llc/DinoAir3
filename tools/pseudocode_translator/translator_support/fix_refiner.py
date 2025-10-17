@@ -17,9 +17,7 @@ Note: Keep imports minimal to avoid cycles; do not import translator internals.
 from typing import Any
 
 
-def attempt_fixes(
-    model: Any, code: str, validation_result: Any
-) -> tuple[str, list[str]]:
+def attempt_fixes(model: Any, code: str, validation_result: Any) -> tuple[str, list[str]]:
     """
     Attempt to refine code using the provided model and validation errors.
 

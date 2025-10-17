@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+from fastapi import APIRouter, HTTPException, Request
+from starlette import status
+
 from core_router.errors import (
     AdapterError,
     NoHealthyService,
     ServiceNotFound,
 )
 from core_router.errors import ValidationError as CoreValidationError
-from fastapi import APIRouter, HTTPException, Request
-from starlette import status
 
 from ..schemas import (
     FileIndexStatsResponse,
@@ -37,9 +38,7 @@ def svc_keyword(body: KeywordSearchRequest) -> KeywordSearchResponse:
         result = r.execute(SEARCH_LOCAL_DEFAULT, payload)
         return KeywordSearchResponse.model_validate(result)
     except ServiceNotFound as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except NoHealthyService as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
@@ -49,9 +48,7 @@ def svc_keyword(body: KeywordSearchRequest) -> KeywordSearchResponse:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
     except AdapterError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
 
 def svc_vector(body: VectorSearchRequest) -> VectorSearchResponse:
@@ -65,9 +62,7 @@ def svc_vector(body: VectorSearchRequest) -> VectorSearchResponse:
         result = r.execute(SEARCH_LOCAL_DEFAULT, payload)
         return VectorSearchResponse.model_validate(result)
     except ServiceNotFound as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except NoHealthyService as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
@@ -77,9 +72,7 @@ def svc_vector(body: VectorSearchRequest) -> VectorSearchResponse:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
     except AdapterError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
 
 def svc_hybrid(body: HybridSearchRequest) -> HybridSearchResponse:
@@ -93,9 +86,7 @@ def svc_hybrid(body: HybridSearchRequest) -> HybridSearchResponse:
         result = r.execute(SEARCH_LOCAL_DEFAULT, payload)
         return HybridSearchResponse.model_validate(result)
     except ServiceNotFound as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except NoHealthyService as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
@@ -105,9 +96,7 @@ def svc_hybrid(body: HybridSearchRequest) -> HybridSearchResponse:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
     except AdapterError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
 
 @router.post(
@@ -116,9 +105,7 @@ def svc_hybrid(body: HybridSearchRequest) -> HybridSearchResponse:
     response_model=KeywordSearchResponse,
     status_code=status.HTTP_200_OK,
 )
-async def keyword_search(
-    _request: Request, body: KeywordSearchRequest
-) -> KeywordSearchResponse:
+async def keyword_search(_request: Request, body: KeywordSearchRequest) -> KeywordSearchResponse:
     return svc_keyword(body)
 
 
@@ -128,9 +115,7 @@ async def keyword_search(
     response_model=VectorSearchResponse,
     status_code=status.HTTP_200_OK,
 )
-async def vector_search(
-    _request: Request, body: VectorSearchRequest
-) -> VectorSearchResponse:
+async def vector_search(_request: Request, body: VectorSearchRequest) -> VectorSearchResponse:
     return svc_vector(body)
 
 
@@ -140,9 +125,7 @@ async def vector_search(
     response_model=HybridSearchResponse,
     status_code=status.HTTP_200_OK,
 )
-async def hybrid_search(
-    _request: Request, body: HybridSearchRequest
-) -> HybridSearchResponse:
+async def hybrid_search(_request: Request, body: HybridSearchRequest) -> HybridSearchResponse:
     return svc_hybrid(body)
 
 

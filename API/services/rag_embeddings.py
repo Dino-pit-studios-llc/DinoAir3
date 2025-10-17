@@ -31,14 +31,14 @@ class RagEmbeddingMaintenanceService:
 
         try:
             # pylint: disable=import-outside-toplevel
-            from rag.optimized_file_processor import BatchEmbeddingProcessor  # type: ignore
+            from rag.optimized_file_processor import (
+                BatchEmbeddingProcessor,  # type: ignore
+            )
         except ImportError:
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
         try:
-            bep = BatchEmbeddingProcessor(
-                user_name="default_user", batch_size=batch_size
-            )
+            bep = BatchEmbeddingProcessor(user_name="default_user", batch_size=batch_size)
             result = bep.generate_missing_embeddings()
             return resp(
                 bool(result.get("success", True)),

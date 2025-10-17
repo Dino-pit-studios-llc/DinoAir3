@@ -106,10 +106,7 @@ class PowerShellFixer:
         """Check for color-based categorization."""
         if "-foregroundcolor red" in line_lower or "-backgroundcolor red" in line_lower:
             return "error"
-        if (
-            "-foregroundcolor yellow" in line_lower
-            or "-foregroundcolor orange" in line_lower
-        ):
+        if "-foregroundcolor yellow" in line_lower or "-foregroundcolor orange" in line_lower:
             return "warning"
         if "-foregroundcolor green" in line_lower:
             return "success"
@@ -203,9 +200,7 @@ class PowerShellFixer:
 
         # Simple/Variable categories - both use Write-Output
         if category in ["simple", "variable"]:
-            new_line = re.sub(
-                r"Write-Host\s+", "Write-Output ", line, flags=re.IGNORECASE
-            )
+            new_line = re.sub(r"Write-Host\s+", "Write-Output ", line, flags=re.IGNORECASE)
             if new_line != line:
                 return new_line, 1
 
@@ -278,9 +273,7 @@ class PowerShellFixer:
 
             # Apply changes if not dry-run
             if self.dry_run:
-                print(
-                    f"  ✓ [DRY RUN] Would replace {total_replacements} Write-Host occurrence(s)"
-                )
+                print(f"  ✓ [DRY RUN] Would replace {total_replacements} Write-Host occurrence(s)")
                 tmp_path.unlink()
             else:
                 # Backup original file
@@ -329,9 +322,7 @@ class PowerShellFixer:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Fix Write-Host usage in PowerShell scripts"
-    )
+    parser = argparse.ArgumentParser(description="Fix Write-Host usage in PowerShell scripts")
     parser.add_argument(
         "--dry-run",
         action="store_true",

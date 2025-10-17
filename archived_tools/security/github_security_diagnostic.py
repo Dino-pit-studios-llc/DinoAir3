@@ -44,9 +44,7 @@ class GitHubSecurityDiagnostic:
     def check_token_scopes(self) -> dict[str, Any]:
         """Check what scopes the token has."""
         try:
-            response = requests.get(
-                "https://api.github.com/user", headers=self.headers, timeout=10
-            )
+            response = requests.get("https://api.github.com/user", headers=self.headers, timeout=10)
             scopes = response.headers.get("X-OAuth-Scopes", "").split(", ")
 
             print("🔑 Token scopes checked successfully.")
@@ -96,14 +94,10 @@ class GitHubSecurityDiagnostic:
                 repo_info["permissions"] = {
                     "admin": permissions.admin,
                     "maintain": (
-                        permissions.maintain
-                        if hasattr(permissions, "maintain")
-                        else False
+                        permissions.maintain if hasattr(permissions, "maintain") else False
                     ),
                     "push": permissions.push,
-                    "triage": (
-                        permissions.triage if hasattr(permissions, "triage") else False
-                    ),
+                    "triage": (permissions.triage if hasattr(permissions, "triage") else False),
                     "pull": permissions.pull,
                 }
             except (GithubException, AttributeError) as e:
@@ -128,21 +122,15 @@ class GitHubSecurityDiagnostic:
             response = requests.get(url, headers=self.headers, timeout=10)
 
             if response.status_code != 200:
-                print(
-                    f"❌ Cannot fetch repository details: HTTP {response.status_code}"
-                )
+                print(f"❌ Cannot fetch repository details: HTTP {response.status_code}")
                 return {}
 
             data = response.json()
             security_analysis = data.get("security_and_analysis", {})
 
             features = {
-                "advanced_security": security_analysis.get("advanced_security", {}).get(
-                    "status"
-                ),
-                "secret_scanning": security_analysis.get("secret_scanning", {}).get(
-                    "status"
-                ),
+                "advanced_security": security_analysis.get("advanced_security", {}).get("status"),
+                "secret_scanning": security_analysis.get("secret_scanning", {}).get("status"),
                 "secret_scanning_push_protection": security_analysis.get(
                     "secret_scanning_push_protection", {}
                 ).get("status"),
@@ -167,9 +155,7 @@ class GitHubSecurityDiagnostic:
             for feature in security_feature_list:
                 status = features.get(feature)
                 status_icon = (
-                    "✅"
-                    if status == "enabled"
-                    else "❌" if status == "disabled" else "❓"
+                    "✅" if status == "enabled" else "❌" if status == "disabled" else "❓"
                 )
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
                 # If detailed status is necessary for privileged contexts, handle it separately (not in logs)
@@ -182,15 +168,9 @@ class GitHubSecurityDiagnostic:
     def test_security_endpoints(self, repo_name: str) -> dict[str, Any]:
         """Test access to each security endpoint."""
         endpoints = {
-            "code_scanning": (
-                f"https://api.github.com/repos/{repo_name}/code-scanning/alerts"
-            ),
-            "secret_scanning": (
-                f"https://api.github.com/repos/{repo_name}/secret-scanning/alerts"
-            ),
-            "dependabot": (
-                f"https://api.github.com/repos/{repo_name}/dependabot/alerts"
-            ),
+            "code_scanning": (f"https://api.github.com/repos/{repo_name}/code-scanning/alerts"),
+            "secret_scanning": (f"https://api.github.com/repos/{repo_name}/secret-scanning/alerts"),
+            "dependabot": (f"https://api.github.com/repos/{repo_name}/dependabot/alerts"),
             "vulnerability_alerts": (
                 f"https://api.github.com/repos/{repo_name}/vulnerability-alerts"
             ),
@@ -275,9 +255,7 @@ class GitHubSecurityDiagnostic:
         print("=" * 60)
 
         results = {
-            "timestamp": requests.get(
-                "https://api.github.com/", timeout=10
-            ).headers.get("Date"),
+            "timestamp": requests.get("https://api.github.com/", timeout=10).headers.get("Date"),
             "repository": repo_name,
             "token_scopes": self.check_token_scopes(),
             "repository_access": self.check_repository_access(repo_name),
@@ -296,17 +274,10 @@ class GitHubSecurityDiagnostic:
             recommendations.append("Consider requesting admin access to the repository")
 
         if "security_events" not in results["token_scopes"].get("scopes", []):
-            recommendations.append(
-                "Token may need 'security_events' scope for security alerts"
-            )
+            recommendations.append("Token may need 'security_events' scope for security alerts")
 
-        if not any(
-            results["endpoint_tests"][ep]["accessible"]
-            for ep in results["endpoint_tests"]
-        ):
-            recommendations.append(
-                "No security endpoints accessible - check feature enablement"
-            )
+        if not any(results["endpoint_tests"][ep]["accessible"] for ep in results["endpoint_tests"]):
+            recommendations.append("No security endpoints accessible - check feature enablement")
 
         if recommendations:
             print("💡 Recommendations:")

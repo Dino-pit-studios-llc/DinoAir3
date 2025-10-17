@@ -126,9 +126,7 @@ def simulate(flag: bool = True, seed: int = 1337) -> dict:
                 model_tps=None,
             )
 
-    throughput_bps = (
-        (total_bytes / (total_time_ms / 1000.0)) if total_time_ms > 0 else 0.0
-    )
+    throughput_bps = (total_bytes / (total_time_ms / 1000.0)) if total_time_ms > 0 else 0.0
     return {
         "flag": bool(flag),
         "throughput_bytes_per_s": float(round(throughput_bps, 2)),

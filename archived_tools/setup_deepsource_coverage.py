@@ -55,9 +55,7 @@ class DeepSourceCoverageSetup:
             print("\n💡 Your DSN should look like:")
             print("   https://f86b5205816f43d5a274d22d6232be60@app.deepsource.com")
             return False
-        print(
-            f"✅ DEEPSOURCE_DSN found: {self.deepsource_dsn[:20]}...{self.deepsource_dsn[-10:]}"
-        )
+        print(f"✅ DEEPSOURCE_DSN found: {self.deepsource_dsn[:20]}...{self.deepsource_dsn[-10:]}")
         return True
 
     @staticmethod
@@ -308,9 +306,7 @@ if __name__ == "__main__":
 
         # Make executable on Unix systems with secure permissions
         if OS.name != "nt":
-            OS.chmod(
-                script_file, 0o700
-            )  # Owner: read/write/execute, Group: none, Others: none
+            OS.chmod(script_file, 0o700)  # Owner: read/write/execute, Group: none, Others: none
 
         # Make executable on Unix systems with secure permissions (best-effort on Windows, but they are already 0o700)
         try:
@@ -356,9 +352,7 @@ if __name__ == "__main__":
             _secure_write_text(
                 str(gitignore_path), new_content
             )  # restrict file permissions to 0o600
-            print(
-                f"✅ Updated .gitignore with {len(missing_patterns)} coverage patterns"
-            )
+            print(f"✅ Updated .gitignore with {len(missing_patterns)} coverage patterns")
         else:
             print("✅ .gitignore already contains coverage patterns")
 
@@ -451,10 +445,7 @@ jobs:
 
         # Check coverage tools
         tools_status = DeepSourceCoverageSetup.check_test_coverage_tools()
-        if (
-            not all(tools_status.values())
-            and not DeepSourceCoverageSetup.install_coverage_tools()
-        ):
+        if not all(tools_status.values()) and not DeepSourceCoverageSetup.install_coverage_tools():
             print("\n⚠️  Setup incomplete - coverage tools installation failed")
             return False
 

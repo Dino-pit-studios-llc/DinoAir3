@@ -612,15 +612,9 @@ class ErrorStats:
     """Statistics for error monitoring."""
 
     total_errors: int = 0
-    errors_by_category: dict[ErrorCategory, int] = field(
-        default_factory=lambda: defaultdict(int)
-    )
-    errors_by_severity: dict[ErrorSeverity, int] = field(
-        default_factory=lambda: defaultdict(int)
-    )
-    recent_errors: deque[dict[str, Any]] = field(
-        default_factory=lambda: deque(maxlen=100)
-    )
+    errors_by_category: dict[ErrorCategory, int] = field(default_factory=lambda: defaultdict(int))
+    errors_by_severity: dict[ErrorSeverity, int] = field(default_factory=lambda: defaultdict(int))
+    recent_errors: deque[dict[str, Any]] = field(default_factory=lambda: deque(maxlen=100))
 
 
 class ErrorAggregator:
@@ -688,9 +682,7 @@ def _calculate_retry_delay(config: RetryConfig, attempt: int) -> float:
 
     if config.jitter:
         # Add random jitter up to 10% of the delay
-        jitter = random.uniform(
-            0, delay * 0.1
-        )  # nosec B311 - non-security backoff jitter for retry timing
+        jitter = random.uniform(0, delay * 0.1)  # nosec B311 - non-security backoff jitter for retry timing
         delay += jitter
 
     return delay
@@ -700,9 +692,7 @@ def _calculate_retry_delay(config: RetryConfig, attempt: int) -> float:
 error_aggregator = ErrorAggregator()
 
 
-def handle_error(
-    error: Exception, context: ErrorContext | None = None
-) -> dict[str, Any]:
+def handle_error(error: Exception, context: ErrorContext | None = None) -> dict[str, Any]:
     """Legacy-compatible error handler returning a simple dict result.
 
     Returns a dict with:
@@ -712,9 +702,7 @@ def handle_error(
     """
     # Record in aggregator for diagnostics
     try:
-        op_name = (
-            context.operation if context and context.operation else type(error).__name__
-        )
+        op_name = context.operation if context and context.operation else type(error).__name__
         error_aggregator.record_error(error, op_name)
     except Exception:
         # Best-effort only; never raise from error handler
@@ -764,9 +752,7 @@ def handle_error(
     return result
 
 
-def _log_safe_failure(
-    message: str, op_name: str, e: Exception, *, async_operation: bool
-) -> None:
+def _log_safe_failure(message: str, op_name: str, e: Exception, *, async_operation: bool) -> None:
     """Internal helper to log consistent safe-operation failures with optional structured extras."""
     if enhanced_logging_available:
         extra = {
@@ -806,9 +792,7 @@ def safe_operation(
         return func(*args, **kwargs)
     except Exception as e:
         if log_errors:
-            _log_safe_failure(
-                "Safe operation failed: %s", func.__name__, e, async_operation=False
-            )
+            _log_safe_failure("Safe operation failed: %s", func.__name__, e, async_operation=False)
         error_aggregator.record_error(e, func.__name__)
         return fallback
 

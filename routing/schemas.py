@@ -22,10 +22,12 @@ from typing import TYPE_CHECKING, Any, Union, cast
 
 from pydantic import (
     BaseModel,
-    create_model,
 )
 from pydantic import Field as PydField
 from pydantic import ValidationError as PydanticValidationError
+from pydantic import (
+    create_model,
+)
 from pydantic.config import ConfigDict
 
 from .errors import ValidationError
@@ -106,9 +108,7 @@ def _map_json_type(
             it = items.get("type")
             if isinstance(it, str):
                 inner_items_raw = items.get("items")
-                inner_items = (
-                    inner_items_raw if isinstance(inner_items_raw, Mapping) else None
-                )
+                inner_items = inner_items_raw if isinstance(inner_items_raw, Mapping) else None
                 item_type = _map_json_type(it, inner_items)
         return list[item_type]  # PEP 585
 
@@ -165,18 +165,14 @@ def _array_field_def(
     return (array_type | None, None)
 
 
-def _generic_field_def(
-    ptype: JSONValue, required: list[str] | None, key: str
-) -> FieldDefinition:
+def _generic_field_def(ptype: JSONValue, required: list[str] | None, key: str) -> FieldDefinition:
     py_type = _map_json_type(ptype if isinstance(ptype, str) else None)
     if _is_required(required, key):
         return (py_type, ...)
     return (py_type | None, None)
 
 
-def _build_field_def(
-    key: str, prop: JSONValue, required: list[str] | None
-) -> FieldDefinition:
+def _build_field_def(key: str, prop: JSONValue, required: list[str] | None) -> FieldDefinition:
     if isinstance(prop, Mapping):
         typed_prop = cast(JSONValueMapping, prop)
         ptype = typed_prop.get("type")
@@ -219,9 +215,7 @@ def _build_model_from_schema(
     else:
         props = None
     req_raw = schema.get("required")
-    required_list: list[str] = (
-        cast("list[str]", req_raw) if isinstance(req_raw, list) else []
-    )
+    required_list: list[str] = cast("list[str]", req_raw) if isinstance(req_raw, list) else []
 
     field_defs: dict[str, FieldDefinition] = {}
 

@@ -38,9 +38,7 @@ class ValidationService:
         self._maybe_offload_validate = maybe_offload_validate
         self._attempt_fixes = attempt_fixes_fn
 
-    def validate_and_optionally_fix(
-        self, code: str, llm_first: bool
-    ) -> tuple[str, Any]:
+    def validate_and_optionally_fix(self, code: str, llm_first: bool) -> tuple[str, Any]:
         """
         Validate code and optionally attempt automatic fixes.
 
