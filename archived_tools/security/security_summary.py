@@ -113,7 +113,6 @@ def analyze_dependabot(alerts):
     ecosystem_counts = Counter(alert["dependency"]["package"]["ecosystem"] for alert in alerts)
 
     print(f"📊 Total Dependency Alerts: {len(alerts)}")
-    print("\n🚨 By Severity:")
     for severity, count in severity_counts.most_common():
         print(f"   • {severity}: {count}")
 
