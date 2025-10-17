@@ -189,7 +189,7 @@ jobs:
         env:
           DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
         run: |
-          deepsource report --analyzer python --analyzer secrets || echo "DeepSource analysis failed (non-blocking)"
+          deepsource report --analyzer python --analyzer secrets
         continue-on-error: true
 
   build:
