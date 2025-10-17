@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-dinoair
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC API
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - dinoair-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mcp-server:
+    build: .
+    container_name: qdrant-mcp-server
+    ports:
+      - "8080:8080"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_SERVER_PORT=8080
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    networks:
+      - dinoair-network
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  # Optional: DinoAir3 API server
+  dinoair-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: dinoair-api
+    ports:
+      - "8000:8000"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - DINOAIR_ENVIRONMENT=development
+    depends_on:
+      - qdrant
+    networks:
+      - dinoair-network
+    volumes:
+      - ./API:/app/API
+      - ./database:/app/database
+      - ./utils:/app/utils
+    restart: unless-stopped
+
+networks:
+  dinoair-network:
+    driver: bridge
+
+volumes:
+  qdrant_storage:
+    driver: local

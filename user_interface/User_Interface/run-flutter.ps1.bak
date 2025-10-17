@@ -1,0 +1,10 @@
+# Helper script to run Flutter with proper PATH
+. .\setup-env.ps1
+
+Write-Host "Environment configured:" -ForegroundColor Green
+Write-Host "  Git: $(git --version)" -ForegroundColor Cyan
+Write-Host "  Flutter: $(flutter --version --suppress-analytics | Select-Object -First 1)" -ForegroundColor Cyan
+Write-Host ""
+
+# Pass all arguments to flutter
+& flutter $args
