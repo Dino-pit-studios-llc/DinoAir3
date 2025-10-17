@@ -17,7 +17,10 @@ def check_token_detailed():
         print("❌ No GITHUB_TOKEN environment variable set")
         return
 
-    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github+json"}
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json",
+    }
 
     # Make a request to see scopes
     response = requests.get("https://api.github.com/user", headers=headers, timeout=10)
@@ -46,7 +49,9 @@ def check_token_detailed():
 
     # Test repository access specifically
     repo_response = requests.get(
-        "https://api.github.com/repos/dinoopitstudios/DinoAir", headers=headers, timeout=10
+        "https://api.github.com/repos/dinoopitstudios/DinoAir",
+        headers=headers,
+        timeout=10,
     )
     print(f"\nRepository Access Test: HTTP {repo_response.status_code}")
 

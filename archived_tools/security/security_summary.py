@@ -41,7 +41,9 @@ def analyze_code_scanning_alerts(alerts):
     print(f"📊 Total Alerts: {len(alerts)}")
     print("\n🚨 By Severity:")
     for severity, count in severity_counts.most_common():
-        severity_icon = {"error": "🔴", "warning": "🟡", "note": "ℹ️"}.get(severity, "❓")
+        severity_icon = {"error": "🔴", "warning": "🟡", "note": "ℹ️"}.get(
+            severity, "❓"
+        )
         print(f"   {severity_icon} {severity.title()}: {count}")
 
     print("\n📋 By State:")
@@ -92,7 +94,11 @@ def analyze_secret_scanning(alerts):
     for state, count in state_counts.most_common():
         print(f"   • {state}: {count}")
 
-    return {"total": len(alerts), "by_type": dict(secret_types), "by_state": dict(state_counts)}
+    return {
+        "total": len(alerts),
+        "by_type": dict(secret_types),
+        "by_state": dict(state_counts),
+    }
 
 
 def analyze_dependabot(alerts):
@@ -104,9 +110,13 @@ def analyze_dependabot(alerts):
         print("✅ No vulnerable dependencies found!")
         return {"total": 0}
 
-    severity_counts = Counter(alert["security_advisory"]["severity"] for alert in alerts)
+    severity_counts = Counter(
+        alert["security_advisory"]["severity"] for alert in alerts
+    )
     state_counts = Counter(alert["state"] for alert in alerts)
-    ecosystem_counts = Counter(alert["dependency"]["package"]["ecosystem"] for alert in alerts)
+    ecosystem_counts = Counter(
+        alert["dependency"]["package"]["ecosystem"] for alert in alerts
+    )
 
     print(f"📊 Total Dependency Alerts: {len(alerts)}")
     print("\n🚨 By Severity:")
@@ -134,11 +144,17 @@ def generate_security_summary():
 
     print(f"Repository: {data['repository']}")
     print(f"Scan Time: {data['timestamp']}")
-    print(f"Repository Type: {'Private' if data['repository_info']['private'] else 'Public'}")
+    print(
+        f"Repository Type: {'Private' if data['repository_info']['private'] else 'Public'}"
+    )
 
     # Analyze each type of security alert
-    code_analysis = analyze_code_scanning_alerts(data["security_alerts"]["code_scanning"])
-    secret_analysis = analyze_secret_scanning(data["security_alerts"]["secret_scanning"])
+    code_analysis = analyze_code_scanning_alerts(
+        data["security_alerts"]["code_scanning"]
+    )
+    secret_analysis = analyze_secret_scanning(
+        data["security_alerts"]["secret_scanning"]
+    )
     dependabot_analysis = analyze_dependabot(data["security_alerts"]["dependabot"])
 
     # Overall summary
@@ -169,7 +185,9 @@ def generate_security_summary():
     # Recommendations
     print("\n💡 Recommendations:")
     if code_analysis.get("by_severity", {}).get("error", 0) > 0:
-        print(f"   1. Fix {code_analysis['by_severity']['error']} high-priority CodeQL errors")
+        print(
+            f"   1. Fix {code_analysis['by_severity']['error']} high-priority CodeQL errors"
+        )
     if secret_analysis.get("total", 0) > 0:
         print("   2. Address all exposed secrets immediately")
     if dependabot_analysis.get("total", 0) > 0:
@@ -179,7 +197,9 @@ def generate_security_summary():
 
     print("\n🔗 View Details:")
     print(f"   GitHub Security Tab: https://github.com/{data['repository']}/security")
-    print(f"   Code Scanning: https://github.com/{data['repository']}/security/code-scanning")
+    print(
+        f"   Code Scanning: https://github.com/{data['repository']}/security/code-scanning"
+    )
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 
 
 class NamingFixer:
@@ -75,7 +75,7 @@ class NamingFixer:
             Tuple of (is_valid, error_message)
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
             return True, ""
@@ -207,7 +207,7 @@ class NamingFixer:
 
         try:
             # Read original content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_content = f.read()
 
             # Validate original file first

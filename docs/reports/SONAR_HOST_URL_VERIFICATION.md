@@ -1,7 +1,7 @@
 # SONAR_HOST_URL Verification Report
 
-**Date:** 2025-10-15  
-**Issue:** Code review advisory about SONAR_HOST_URL environment variable  
+**Date:** 2025-10-15
+**Issue:** Code review advisory about SONAR_HOST_URL environment variable
 **Status:** ✅ VERIFIED - No changes required
 
 ## Issue Description
@@ -10,9 +10,9 @@ A code review tool flagged the following advisory:
 
 > The SONAR_HOST_URL environment variable is not needed when using the SonarCloud GitHub action, as it defaults to SonarCloud. This variable is typically used for self-hosted SonarQube instances.
 
-**File:** `.github/workflows/build.yml`  
-**Line:** 36  
-**Category:** code-review  
+**File:** `.github/workflows/build.yml`
+**Line:** 36
+**Category:** code-review
 **Severity:** medium
 
 ## Verification Results

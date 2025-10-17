@@ -4,7 +4,9 @@
 import ast
 
 try:
-    with open(r"c:\Users\DinoP\Documents\DinoAir\database\artifacts_db.py", encoding="utf-8") as f:
+    with open(
+        r"c:\Users\DinoP\Documents\DinoAir\database\artifacts_db.py", encoding="utf-8"
+    ) as f:
         content = f.read()
 
     # Try to parse with AST

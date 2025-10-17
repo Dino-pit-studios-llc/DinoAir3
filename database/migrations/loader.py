@@ -39,7 +39,11 @@ def load_migration_from_file(migration_file: Path) -> BaseMigration:
     migration_class = None
     for attr_name in dir(module):
         attr = getattr(module, attr_name)
-        if isinstance(attr, type) and issubclass(attr, BaseMigration) and attr != BaseMigration:
+        if (
+            isinstance(attr, type)
+            and issubclass(attr, BaseMigration)
+            and attr != BaseMigration
+        ):
             migration_class = attr
             break
 

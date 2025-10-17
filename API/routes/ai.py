@@ -11,15 +11,14 @@ import logging
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any, cast
 
-from fastapi import APIRouter, HTTPException
-from starlette import status
-
 from core_router.errors import (
     AdapterError,
     NoHealthyService,
     ServiceNotFound,
 )
 from core_router.errors import ValidationError as CoreValidationError
+from fastapi import APIRouter, HTTPException
+from starlette import status
 
 from ..schemas import ChatRequest, ChatResponse
 from ..services import router_client

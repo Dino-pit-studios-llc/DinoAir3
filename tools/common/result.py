@@ -9,7 +9,9 @@ from __future__ import annotations
 from typing import Any
 
 
-def build_success(payload: dict[str, Any], extra: dict[str, Any] | None = None) -> dict[str, Any]:
+def build_success(
+    payload: dict[str, Any], extra: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Build a success result by merging payload and optional extra.
 
     Behavior:

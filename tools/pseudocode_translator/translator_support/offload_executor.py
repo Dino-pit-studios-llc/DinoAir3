@@ -62,7 +62,9 @@ class OffloadExecutor:
     - No new telemetry section names are introduced; process_pool handles existing counters.
     """
 
-    def __init__(self, dispatcher: Any, recorder: Any, exec_cfg: Any, ensure_pool_cb: Any) -> None:
+    def __init__(
+        self, dispatcher: Any, recorder: Any, exec_cfg: Any, ensure_pool_cb: Any
+    ) -> None:
         self._dispatcher = dispatcher
         self._rec = recorder
         self._cfg = exec_cfg
@@ -84,7 +86,9 @@ class OffloadExecutor:
         # Unknown kinds are not offloaded
         return False
 
-    def submit(self, kind: str, payload: Any, timeout: float | None = None) -> tuple[bool, Any]:
+    def submit(
+        self, kind: str, payload: Any, timeout: float | None = None
+    ) -> tuple[bool, Any]:
         """
         Attempt to offload work of the given kind.
 

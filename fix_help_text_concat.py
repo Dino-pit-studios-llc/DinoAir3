@@ -3,7 +3,7 @@
 import re
 
 # Read the file
-with open("tools/security/security_issues_list.py", "r", encoding="utf-8") as f:
+with open("tools/security/security_issues_list.py", encoding="utf-8") as f:
     content = f.read()
 
 # Fix the missing + operators where help text constants are followed by string literals

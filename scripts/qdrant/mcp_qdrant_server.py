@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict
 
 try:
     from qdrant_client import QdrantClient

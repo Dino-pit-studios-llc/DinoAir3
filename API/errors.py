@@ -3,14 +3,13 @@ from __future__ import annotations
 import logging
 from collections.abc import Iterable
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
+from core_router.errors import error_response as core_error_response
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from starlette import status
 from starlette.exceptions import HTTPException as StarletteHTTPException
-
-from core_router.errors import error_response as core_error_response
 
 from .metrics_state import inc_counter
 

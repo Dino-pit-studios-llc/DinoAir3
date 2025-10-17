@@ -1,7 +1,7 @@
 # Medium-Severity Code Health Issues - Resolution
 
-**Date:** October 15, 2025  
-**Branch:** copilot/resolve-code-health-issues  
+**Date:** October 15, 2025
+**Branch:** copilot/resolve-code-health-issues
 **Status:** ✅ Resolved
 
 ## Overview
@@ -20,14 +20,14 @@ Bandit scan identified **3 medium-severity issues**:
 
 ### 1. SQL Injection in projects_db.py (Line 159)
 
-**Issue Type:** B608 - Hardcoded SQL expressions  
-**Severity:** Medium  
+**Issue Type:** B608 - Hardcoded SQL expressions
+**Severity:** Medium
 **Confidence:** Medium
 
-**Root Cause:**  
+**Root Cause:**
 Bandit flagged an f-string SQL query as a potential injection vulnerability.
 
-**Analysis:**  
+**Analysis:**
 This is a **false positive**. The code already validates table names against a whitelist before use:
 
 ```python
@@ -36,7 +36,7 @@ if table not in allowed_tables:
     continue  # Skip invalid table names
 ```
 
-**Fix Applied:**  
+**Fix Applied:**
 Improved the `# nosec B608` comment placement for proper bandit recognition:
 
 ```python
@@ -56,14 +56,14 @@ cursor.execute(sql, (project_id, cutoff_iso))
 
 ### 2 & 3. Unsafe HuggingFace Downloads (Lines 174 & 192)
 
-**Issue Type:** B615 - Unsafe HuggingFace Hub download without revision pinning  
-**Severity:** Medium  
+**Issue Type:** B615 - Unsafe HuggingFace Hub download without revision pinning
+**Severity:** Medium
 **Confidence:** High
 
-**Root Cause:**  
+**Root Cause:**
 The `from_pretrained()` calls did not specify a `revision` parameter, which could lead to supply chain attacks if the model repository is compromised.
 
-**Fix Applied:**  
+**Fix Applied:**
 Added revision pinning support with configurable default:
 
 1. **Added config parameter:**

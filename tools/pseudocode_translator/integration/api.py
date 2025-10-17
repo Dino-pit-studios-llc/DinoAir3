@@ -51,7 +51,9 @@ class TranslatorAPI(ShutdownMixin):
         # Auto-enable streaming for large files
         self._streaming_threshold = 50000
 
-    def translate(self, pseudocode: str, language: str | None = None, **kwargs) -> dict[str, Any]:
+    def translate(
+        self, pseudocode: str, language: str | None = None, **kwargs
+    ) -> dict[str, Any]:
         """
         Translate pseudocode to the specified language
 
@@ -430,7 +432,9 @@ async def translate_async(
         Dictionary with translation results
     """
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, translate, pseudocode, language, config_path)
+    return await loop.run_in_executor(
+        None, translate, pseudocode, language, config_path
+    )
 
 
 def batch_translate(

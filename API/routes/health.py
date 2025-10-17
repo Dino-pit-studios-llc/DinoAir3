@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from core_router.health import health_response, version_info
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
-from core_router.health import health_response, version_info
 
 router = APIRouter()
 

@@ -50,7 +50,7 @@ def register_security_policy(factory: SecurityPolicyFactory) -> None:
     _SECURITY_POLICY_FACTORY = factory
 
 
-def _load_policy_from_registry() -> "SecurityPolicy" | None:
+def _load_policy_from_registry() -> SecurityPolicy | None:
     """Return a registered security policy instance if available."""
 
     if _SECURITY_POLICY_FACTORY is None:
@@ -126,7 +126,7 @@ def _load_policy_by_module_spec(
     return _validate_policy_instance(candidate)
 
 
-def _load_policy_from_env() -> "SecurityPolicy" | None:
+def _load_policy_from_env() -> SecurityPolicy | None:
     """Load a security policy using NOTES_SECURITY_POLICY_PATH environment variable."""
     module_spec = os.environ.get("NOTES_SECURITY_POLICY_PATH", "").strip()
     if not module_spec:
@@ -334,6 +334,6 @@ class FallbackSecurity(SecurityPolicy):
         return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
-def get_notes_security() -> "SecurityPolicy":
+def get_notes_security() -> SecurityPolicy:
     """Default factory for allowlisted policy resolution."""
     return FallbackSecurity()

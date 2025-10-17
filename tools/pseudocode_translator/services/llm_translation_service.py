@@ -8,7 +8,7 @@ for pseudocode to programming language translation.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from utils.shutdown_protocols import ShutdownMixin
 

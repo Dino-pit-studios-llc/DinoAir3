@@ -470,7 +470,9 @@ class ProfanityFilter:
             },
             "most_common": sorted(
                 self.stats["most_common"].items(), key=lambda x: x[1], reverse=True
-            )[:10],  # Top 10
+            )[
+                :10
+            ],  # Top 10
             "timestamp": datetime.now().isoformat(),
         }
 

@@ -103,10 +103,14 @@ def get_lmstudio_env() -> LMStudioEnv:
         LMStudioEnv: snapshot with base_url, api_key, default_model, and
         request_timeout_s.
     """
-    base_url = os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234") or "http://127.0.0.1:1234"
+    base_url = (
+        os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234")
+        or "http://127.0.0.1:1234"
+    )
     api_key = os.getenv("LMSTUDIO_API_KEY") or None
     default_model = (
-        os.getenv("LMSTUDIO_DEFAULT_MODEL", "llama-3.1-8b-instruct") or "llama-3.1-8b-instruct"
+        os.getenv("LMSTUDIO_DEFAULT_MODEL", "llama-3.1-8b-instruct")
+        or "llama-3.1-8b-instruct"
     )
     timeout_s = _parse_int(os.getenv("LMSTUDIO_REQUEST_TIMEOUT_S"), 30)
     return LMStudioEnv(
@@ -142,7 +146,9 @@ class Settings:
 
     def __init__(self) -> None:
         # Environment
-        self.environment: str = (_get_env("DINOAIR_ENV", "dev") or "dev").strip().lower()
+        self.environment: str = (
+            (_get_env("DINOAIR_ENV", "dev") or "dev").strip().lower()
+        )
         self.is_dev: bool = self.environment in {"dev", "development"}
 
         # Network
@@ -197,16 +203,31 @@ class Settings:
             _get_env("DINOAIR_RAG_CACHE_TTL_SECONDS"), 3600
         )
         self.rag_embed_model: str = (
-            _get_env("DINOAIR_RAG_EMBED_MODEL", "all-MiniLM-L6-v2") or "all-MiniLM-L6-v2"
+            _get_env("DINOAIR_RAG_EMBED_MODEL", "all-MiniLM-L6-v2")
+            or "all-MiniLM-L6-v2"
         )
-        self.rag_embed_max_length: int = _parse_int(_get_env("DINOAIR_RAG_EMBED_MAX_LENGTH"), 256)
-        self.rag_embed_device: str = _get_env("DINOAIR_RAG_EMBED_DEVICE", "auto") or "auto"
+        self.rag_embed_max_length: int = _parse_int(
+            _get_env("DINOAIR_RAG_EMBED_MAX_LENGTH"), 256
+        )
+        self.rag_embed_device: str = (
+            _get_env("DINOAIR_RAG_EMBED_DEVICE", "auto") or "auto"
+        )
         self.rag_chunk_size: int = _parse_int(_get_env("DINOAIR_RAG_CHUNK_SIZE"), 1000)
-        self.rag_chunk_overlap: int = _parse_int(_get_env("DINOAIR_RAG_CHUNK_OVERLAP"), 200)
-        self.rag_min_chunk_size: int = _parse_int(_get_env("DINOAIR_RAG_MIN_CHUNK_SIZE"), 100)
-        self.rag_allowed_dirs: list[str] = _parse_csv(_get_env("DINOAIR_RAG_ALLOWED_DIRS"))
-        self.rag_excluded_dirs: list[str] = _parse_csv(_get_env("DINOAIR_RAG_EXCLUDED_DIRS"))
-        self.rag_file_extensions: list[str] = _parse_csv(_get_env("DINOAIR_RAG_FILE_EXTENSIONS"))
+        self.rag_chunk_overlap: int = _parse_int(
+            _get_env("DINOAIR_RAG_CHUNK_OVERLAP"), 200
+        )
+        self.rag_min_chunk_size: int = _parse_int(
+            _get_env("DINOAIR_RAG_MIN_CHUNK_SIZE"), 100
+        )
+        self.rag_allowed_dirs: list[str] = _parse_csv(
+            _get_env("DINOAIR_RAG_ALLOWED_DIRS")
+        )
+        self.rag_excluded_dirs: list[str] = _parse_csv(
+            _get_env("DINOAIR_RAG_EXCLUDED_DIRS")
+        )
+        self.rag_file_extensions: list[str] = _parse_csv(
+            _get_env("DINOAIR_RAG_FILE_EXTENSIONS")
+        )
         self.rag_watchdog_enabled: bool = _parse_bool(
             _get_env("DINOAIR_RAG_WATCHDOG_ENABLED"), False
         )
@@ -216,4 +237,6 @@ class Settings:
 
         # Optional override for services config path (used by ServiceRouter)
         # Env var: DINOAIR_SERVICES_FILE
-        self.services_config_path: str | None = _get_env("DINOAIR_SERVICES_FILE") or None
+        self.services_config_path: str | None = (
+            _get_env("DINOAIR_SERVICES_FILE") or None
+        )

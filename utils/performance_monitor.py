@@ -91,7 +91,7 @@ class PerformanceMonitor:
         self._custom_collectors: dict[str, Callable[[], Any]] = {}
 
     @contextmanager
-    def timer(self, operation: str, **context: Any) -> "Generator[None, None, None]":
+    def timer(self, operation: str, **context: Any) -> Generator[None, None, None]:
         """Context manager compatible method used by tests.
 
         Usage:

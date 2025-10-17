@@ -68,7 +68,7 @@ def check_unreachable_except(filepath):
     """Check a Python file for unreachable except blocks."""
     issues = []
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content, str(filepath))
 

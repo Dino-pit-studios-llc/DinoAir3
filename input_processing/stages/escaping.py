@@ -4,8 +4,6 @@ Escapes special characters based on the target LLM model
 to prevent prompt injection and formatting issues.
 """
 
-from typing import Any
-
 from .claude_escaper import ClaudeEscaper
 from .default_escaper import DefaultEscaper
 from .escape_strategy import EscapeStrategy

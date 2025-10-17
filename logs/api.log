@@ -1,0 +1,9 @@
+{"message": "Starting DinoAir API", "env": "dev", "port": 24801, "ts": "2025-10-17T17:04:41-0400", "level": "info", "logger": "api.app"}
+{"message": "Added Datadog metrics middleware", "ts": "2025-10-17T17:04:41-0400", "level": "info", "logger": "api.app"}
+{"message": "Failed to include projects router", "exc_info": "Traceback (most recent call last):\n  File \"/home/kevin/Documents/DinoAir3/API/app.py\", line 182, in create_app\n    from .routes.projects import router as projects_router\n  File \"/home/kevin/Documents/DinoAir3/API/routes/projects.py\", line 13, in <module>\n    from database.projects_db import ProjectsDatabase\n  File \"/home/kevin/Documents/DinoAir3/database/projects_db.py\", line 34, in <module>\n    ProjectStatus.ACTIVE.value: {\"completed_at\": None, \"archived_at\": None},\n    ^^^^^^^^^^^^^^^^^^^^\nAttributeError: type object 'ProjectStatus' has no attribute 'ACTIVE'", "ts": "2025-10-17T17:04:41-0400", "level": "error", "logger": "api.app"}
+{"message": "Starting DinoAir API", "env": "dev", "port": 24801, "ts": "2025-10-17T17:05:02-0400", "level": "info", "logger": "api.app"}
+{"message": "Added Datadog metrics middleware", "ts": "2025-10-17T17:05:02-0400", "level": "info", "logger": "api.app"}
+{"message": "Starting DinoAir API", "env": "dev", "port": 24801, "ts": "2025-10-17T17:05:02-0400", "level": "info", "logger": "api.app"}
+{"message": "Added Datadog metrics middleware", "ts": "2025-10-17T17:05:02-0400", "level": "info", "logger": "api.app"}
+{"message": "Starting DinoAir API", "env": "dev", "port": 24801, "ts": "2025-10-17T17:05:12-0400", "level": "info", "logger": "api.app"}
+{"message": "Added Datadog metrics middleware", "ts": "2025-10-17T17:05:12-0400", "level": "info", "logger": "api.app"}

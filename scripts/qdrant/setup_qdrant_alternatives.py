@@ -12,7 +12,6 @@ This script provides multiple ways to set up Qdrant:
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
 
 from utils.process import safe_run
 

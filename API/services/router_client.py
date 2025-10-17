@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping, Sequence
-from functools import lru_cache
 from contextlib import suppress
+from functools import lru_cache
 from typing import Any, cast
 
 from core_router.config import load_services_from_file

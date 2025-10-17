@@ -20,7 +20,9 @@ class TranslationContext:
     """
 
     input_text: str
-    target_language: Any  # Same type translator expects (e.g., OutputLanguage), kept as Any here
+    target_language: (
+        Any  # Same type translator expects (e.g., OutputLanguage), kept as Any here
+    )
     start_time: float
     translation_id: int
     model: Any  # Active model instance; kept as Any to avoid tight coupling

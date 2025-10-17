@@ -5,12 +5,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
-
 from database.appointments_db import AppointmentsDatabase
 from database.initialize_db import DatabaseManager
+from fastapi import APIRouter, HTTPException, status
 from models.calendar_event import CalendarEvent
+from pydantic import BaseModel, Field
 
 log = logging.getLogger("api.routes.calendar")
 

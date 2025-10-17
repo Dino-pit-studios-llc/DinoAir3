@@ -33,7 +33,7 @@ def check_all_python_files():
                 filepath = os.path.join(root, file)
                 count += 1
                 try:
-                    with open(filepath, "r", encoding="utf-8") as f:
+                    with open(filepath, encoding="utf-8") as f:
                         ast.parse(f.read())
                 except SyntaxError as e:
                     errors.append(f"{filepath}: {e}")
@@ -74,7 +74,7 @@ def verify_specific_fixes():
     )
     if os.path.exists(local_transformer_path):
         try:
-            with open(local_transformer_path, "r", encoding="utf-8") as f:
+            with open(local_transformer_path, encoding="utf-8") as f:
                 content = f.read()
                 ast.parse(content)
 

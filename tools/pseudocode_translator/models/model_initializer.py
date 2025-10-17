@@ -31,7 +31,9 @@ class ModelInitializer:
         """
         if not model_exists(model_name):
             available = ", ".join(list_available_models())
-            raise ValueError(f"Model '{model_name}' not found. Available models: {available}")
+            raise ValueError(
+                f"Model '{model_name}' not found. Available models: {available}"
+            )
 
     @staticmethod
     def create_and_initialize_model(

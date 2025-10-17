@@ -124,13 +124,8 @@ class StreamingTranslator:
                 self, accumulated_input, on_update
             )
         )
-        self._process_interactive_input = (
-            lambda user_input,
-            session_context,
-            interaction_count,
-            on_update=None: process_interactive_input(
-                self, user_input, session_context, interaction_count, on_update
-            )
+        self._process_interactive_input = lambda user_input, session_context, interaction_count, on_update=None: process_interactive_input(
+            self, user_input, session_context, interaction_count, on_update
         )
 
     def add_event_listener(self, listener: Callable[[StreamingEventData], None]):

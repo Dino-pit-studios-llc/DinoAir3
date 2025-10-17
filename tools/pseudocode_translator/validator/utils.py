@@ -56,7 +56,9 @@ def get_cache_key(code: str, validation_type: str) -> str:
     return f"{validation_type}_{code_hash}"
 
 
-def get_surrounding_lines(lines: list[str], line_no: int, context_size: int = 2) -> list[str]:
+def get_surrounding_lines(
+    lines: list[str], line_no: int, context_size: int = 2
+) -> list[str]:
     """
     Get surrounding lines for error context.
 
@@ -159,7 +161,9 @@ def extract_code_metrics(code: str) -> dict[str, int]:
 
     # Calculate average line length (excluding blank lines)
     non_blank_lines = [line for line in lines if line.strip()]
-    avg_line_length = sum(len(line) for line in non_blank_lines) // max(len(non_blank_lines), 1)
+    avg_line_length = sum(len(line) for line in non_blank_lines) // max(
+        len(non_blank_lines), 1
+    )
 
     # Find longest line
     max_line_length = max(len(line) for line in lines) if lines else 0

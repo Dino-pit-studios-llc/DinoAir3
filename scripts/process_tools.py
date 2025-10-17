@@ -7,7 +7,9 @@ import re
 from pathlib import Path
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 TOOL_MAPPING = {
@@ -83,7 +85,9 @@ def generate_description_from_name(name: str) -> str:
     return "TODO: Add description."
 
 
-def generate_function_docstring(name: str, args: list, has_return: bool, indent: int) -> str:
+def generate_function_docstring(
+    name: str, args: list, has_return: bool, indent: int
+) -> str:
     """Generate a Google-style docstring for a function."""
     base_indent = " " * indent
     description = generate_description_from_name(name)

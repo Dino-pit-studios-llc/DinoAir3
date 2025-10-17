@@ -17,7 +17,6 @@ import os
 # removed: import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict
 
 import yaml
 
@@ -159,7 +158,7 @@ DEBUG=false
 
             # Load and update config file
             if self.config_file.exists():
-                with open(self.config_file, "r") as f:
+                with open(self.config_file) as f:
                     config = yaml.safe_load(f)
 
                 # Update with API key

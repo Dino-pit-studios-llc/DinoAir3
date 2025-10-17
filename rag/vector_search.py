@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 import numpy as np
-
 from database.file_search_db import FileSearchDB
 
 # Import DinoAir components

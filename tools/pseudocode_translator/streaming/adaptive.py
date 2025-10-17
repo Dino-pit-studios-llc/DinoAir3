@@ -153,7 +153,9 @@ class AdaptiveChunkSizer:
             self.smoothed_latency_ms = obs
         else:
             a = self.config.alpha
-            self.smoothed_latency_ms = a * obs + (1.0 - a) * float(self.smoothed_latency_ms)
+            self.smoothed_latency_ms = a * obs + (1.0 - a) * float(
+                self.smoothed_latency_ms
+            )
 
         # Record signals for next decision
         self._last_queue_util = float(max(0.0, min(1.0, queue_utilization)))

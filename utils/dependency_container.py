@@ -84,7 +84,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
                 name=name,
                 dependency_type=type(obj),
                 factory=obj,
-                scope=Scope.SINGLETON,
+                scope=Scope.singleton,
                 dependencies=[],
                 initialization_order=100,
             )
@@ -113,7 +113,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             name,
             dependency_type,
             factory,
-            Scope.SINGLETON,
+            Scope.singleton,
             dependencies,
             initialization_order,
         )
@@ -131,7 +131,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             name,
             dependency_type,
             factory,
-            Scope.TRANSIENT,
+            Scope.transient,
             dependencies,
             initialization_order,
         )
@@ -149,7 +149,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             name,
             dependency_type,
             factory,
-            Scope.SCOPED,
+            Scope.scoped,
             dependencies,
             initialization_order,
         )
@@ -166,9 +166,9 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
                 name=name,
                 dependency_type=type(instance),
                 instance=instance,
-                scope=Scope.SINGLETON,
+                scope=Scope.singleton,
                 dependencies=dependencies or [],
-                state=LifecycleState.CREATED,
+                state=LifecycleState.created,
             )
 
             self._dependencies[name] = dependency_info
@@ -255,7 +255,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             return existing_instance
 
         # For scoped, if no current scope, return None
-        if dependency_info.scope == Scope.SCOPED and not self._current_scope:
+        if dependency_info.scope == Scope.scoped and not self._current_scope:
             return None
 
         # Create new instance
@@ -290,10 +290,10 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         Returns:
             Existing instance or None if not found
         """
-        if dependency_info.scope == Scope.SINGLETON:
+        if dependency_info.scope == Scope.singleton:
             return self._instances.get(name)
 
-        if dependency_info.scope == Scope.SCOPED:
+        if dependency_info.scope == Scope.scoped:
             return self._get_scoped_instance(name)
 
         return None
@@ -327,10 +327,10 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         """
         try:
             self._resolution_stack.append(name)
-            dependency_info.state = LifecycleState.CREATING
+            dependency_info.state = LifecycleState.creating
 
             instance = self._create_instance(dependency_info)
-            dependency_info.state = LifecycleState.CREATED
+            dependency_info.state = LifecycleState.created
 
             self._store_instance(name, instance, dependency_info.scope)
             return instance
@@ -346,9 +346,9 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             instance: Created instance
             scope: Dependency scope
         """
-        if scope == Scope.SINGLETON:
+        if scope == Scope.singleton:
             self._instances[name] = instance
-        elif scope == Scope.SCOPED and self._current_scope:
+        elif scope == Scope.scoped and self._current_scope:
             if self._current_scope not in self._scoped_instances:
                 self._scoped_instances[self._current_scope] = {}
             self._scoped_instances[self._current_scope][name] = instance
@@ -668,7 +668,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             singletons = [
                 info
                 for info in self._dependencies.values()
-                if info.scope == Scope.SINGLETON
+                if info.scope == Scope.singleton
             ]
             singletons.sort(key=lambda x: x.initialization_order)
 
@@ -701,7 +701,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             singletons = [
                 (name, info)
                 for name, info in self._dependencies.items()
-                if info.scope == Scope.SINGLETON and name in self._instances
+                if info.scope == Scope.singleton and name in self._instances
             ]
             singletons.sort(key=lambda x: x[1].initialization_order, reverse=True)
 
@@ -709,7 +709,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
                 try:
                     instance = self._instances[name]
                     DependencyContainer._dispose_instance(instance)
-                    info.state = LifecycleState.DISPOSED
+                    info.state = LifecycleState.disposed
                 except RuntimeError as e:
                     logger.warning(f"Error disposing {name}: {e}")
 

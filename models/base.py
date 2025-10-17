@@ -292,7 +292,11 @@ def validate_model_invariants(model: ModelSerializationMixin) -> list[str]:
 
     # Check that model serialization maintains arrays
     model_dict = model.to_model_dict()
-    if hasattr(model, "tags") and "tags" in model_dict and not isinstance(model_dict["tags"], list):
+    if (
+        hasattr(model, "tags")
+        and "tags" in model_dict
+        and not isinstance(model_dict["tags"], list)
+    ):
         errors.append(
             f"Model serialization should maintain tags as array, got {type(model_dict['tags'])}"
         )
@@ -308,7 +312,11 @@ def validate_model_invariants(model: ModelSerializationMixin) -> list[str]:
 
     # Check that repository serialization flattens arrays
     repo_dict = model.to_db_dict()
-    if hasattr(model, "tags") and "tags" in repo_dict and not isinstance(repo_dict["tags"], str):
+    if (
+        hasattr(model, "tags")
+        and "tags" in repo_dict
+        and not isinstance(repo_dict["tags"], str)
+    ):
         errors.append(
             f"Repository serialization should flatten tags to string, got {type(repo_dict['tags'])}"
         )

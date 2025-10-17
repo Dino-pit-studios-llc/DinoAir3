@@ -17,10 +17,8 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
 
 import requests
-
 from utils.process import safe_popen, safe_run
 
 

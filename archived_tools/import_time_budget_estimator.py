@@ -24,7 +24,15 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 # Known heavy modules (can be expanded)
-HEAVY_MODULES = {"numpy", "pandas", "requests", "torch", "tensorflow", "scipy", "sklearn"}
+HEAVY_MODULES = {
+    "numpy",
+    "pandas",
+    "requests",
+    "torch",
+    "tensorflow",
+    "scipy",
+    "sklearn",
+}
 
 
 REPORT_PATH = "import_time_budget_report.json"
@@ -87,7 +95,9 @@ def build_reverse_import_graph(results: dict) -> dict[str, set]:
 def cold_start_hotspot_analysis(results: dict) -> dict:
     reverse_graph = build_reverse_import_graph(results)
     hotspots = {
-        mod: list(importers) for mod, importers in reverse_graph.items() if len(importers) > 1
+        mod: list(importers)
+        for mod, importers in reverse_graph.items()
+        if len(importers) > 1
     }
     sorted_hotspots = sorted(hotspots.items(), key=lambda x: len(x[1]), reverse=True)
     return dict(sorted_hotspots)

@@ -144,7 +144,9 @@ class LMStudioAdapter(ServiceAdapter):
     def _sleep_backoff(self, attempt: int) -> None:
         # Exponential backoff with jitter: base * 2^(attempt-1) + random[0, base/2], capped.
         delay = min(self._backoff_cap, self._backoff_base * (2 ** max(0, attempt - 1)))
-        delay += random.uniform(0, self._backoff_base / 2)  # nosec B311 - non-security backoff jitter for retry timing
+        delay += random.uniform(
+            0, self._backoff_base / 2
+        )  # nosec B311 - non-security backoff jitter for retry timing
         delay = min(self._backoff_cap, delay)  # Reapply cap after jitter
         with suppress(Exception):
             time.sleep(delay)

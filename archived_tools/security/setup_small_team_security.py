@@ -4,7 +4,10 @@ DinoAir Security Configuration Example for Small Teams
 This shows how to set up relaxed security settings for a 2-person company.
 """
 
-from utils.network_security import NetworkSecurityManager, create_small_team_security_config
+from utils.network_security import (
+    NetworkSecurityManager,
+    create_small_team_security_config,
+)
 
 
 def setup_small_team_security():

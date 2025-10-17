@@ -921,9 +921,7 @@ class LogAnalyzer:
             "severity": (
                 "high"
                 if recent_error_rate > threshold * 2
-                else "medium"
-                if recent_error_rate > threshold
-                else "low"
+                else "medium" if recent_error_rate > threshold else "low"
             ),
         }
 

@@ -74,7 +74,10 @@ class MigrationRunner:
         return pending
 
     def run_migrations(
-        self, conn: sqlite3.Connection, dry_run: bool = False, target_version: str | None = None
+        self,
+        conn: sqlite3.Connection,
+        dry_run: bool = False,
+        target_version: str | None = None,
     ) -> list[BaseMigration]:
         """
         Run all pending migrations.
@@ -143,7 +146,9 @@ class MigrationRunner:
                 raise MigrationError(error_msg) from e
 
         LOGGER.info(
-            "Successfully executed %d migrations for database '%s'", len(executed), self.db_key
+            "Successfully executed %d migrations for database '%s'",
+            len(executed),
+            self.db_key,
         )
         return executed
 
@@ -172,7 +177,9 @@ class MigrationRunner:
             "is_up_to_date": len(pending) == 0,
         }
 
-    def rollback_migration(self, conn: sqlite3.Connection, version: str, name: str) -> None:
+    def rollback_migration(
+        self, conn: sqlite3.Connection, version: str, name: str
+    ) -> None:
         """
         Rollback a specific migration.
 
@@ -200,7 +207,9 @@ class MigrationRunner:
 
         try:
             LOGGER.info(
-                "Rolling back migration %s for database '%s'", migration.full_name, self.db_key
+                "Rolling back migration %s for database '%s'",
+                migration.full_name,
+                self.db_key,
             )
 
             # Execute rollback

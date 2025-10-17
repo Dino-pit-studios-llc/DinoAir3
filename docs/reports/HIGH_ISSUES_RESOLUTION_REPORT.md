@@ -1,7 +1,7 @@
 # HIGH-Severity Issues Resolution Report
 
-**Date:** 2025-10-13  
-**Task:** Address all issues tagged HIGH  
+**Date:** 2025-10-13
+**Task:** Address all issues tagged HIGH
 **Status:** ✅ COMPLETED
 
 ## Summary

@@ -29,7 +29,9 @@ def _parse_bool_env(value: str | None, default: bool) -> bool:
     return default
 
 
-def _filter_kwargs_for_callable(callable_obj: Any, kwargs: dict[str, Any]) -> dict[str, Any]:
+def _filter_kwargs_for_callable(
+    callable_obj: Any, kwargs: dict[str, Any]
+) -> dict[str, Any]:
     """
     Filter kwargs to only those accepted by callable_obj's signature.
     Safe-forward only supported parameters to avoid TypeErrors.
@@ -40,7 +42,9 @@ def _filter_kwargs_for_callable(callable_obj: Any, kwargs: dict[str, Any]) -> di
         for name, param in sig.parameters.items():
             if name == "self":
                 continue
-            if name in kwargs and (param.kind in (param.POSITIONAL_OR_KEYWORD, param.KEYWORD_ONLY)):
+            if name in kwargs and (
+                param.kind in (param.POSITIONAL_OR_KEYWORD, param.KEYWORD_ONLY)
+            ):
                 accepted[name] = kwargs[name]
         return accepted
     except (TypeError, AttributeError, ValueError):
@@ -111,7 +115,9 @@ def get_search_engine(
             "user_name": user_name,
             "embedding_generator": embedding_generator,
         }
-        init_kwargs = _filter_kwargs_for_callable(VectorSearchEngine.__init__, init_kwargs)
+        init_kwargs = _filter_kwargs_for_callable(
+            VectorSearchEngine.__init__, init_kwargs
+        )
         logger.debug("Creating VectorSearchEngine via factory")
         return VectorSearchEngine(**init_kwargs)
     except Exception as e:
@@ -142,7 +148,9 @@ def get_context_provider(
             module = import_module("rag.enhanced_context_provider")
             EnhancedContextProvider = module.EnhancedContextProvider
             init_kwargs = {"user_name": user_name, **kwargs}
-            init_kwargs = _filter_kwargs_for_callable(EnhancedContextProvider.__init__, init_kwargs)
+            init_kwargs = _filter_kwargs_for_callable(
+                EnhancedContextProvider.__init__, init_kwargs
+            )
             logger.debug("Creating EnhancedContextProvider via factory")
             return EnhancedContextProvider(**init_kwargs)
         except ImportError as e:

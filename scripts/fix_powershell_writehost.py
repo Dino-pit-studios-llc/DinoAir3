@@ -16,7 +16,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 
 class PowerShellFixer:
@@ -223,7 +223,7 @@ class PowerShellFixer:
 
         try:
             # Read original content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_content = f.read()
                 lines = original_content.splitlines(keepends=True)
 

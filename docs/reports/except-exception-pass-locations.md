@@ -1,6 +1,6 @@
 # Exception Suppression Analysis Report
 
-**Generated:** October 15, 2025  
+**Generated:** October 15, 2025
 **Pattern:** `except Exception: pass` (and variants)
 
 ## Executive Summary

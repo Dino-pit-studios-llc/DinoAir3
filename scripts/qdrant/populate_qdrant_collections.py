@@ -9,7 +9,7 @@ file search content, including code files, documentation, notes, and projects.
 import json
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Dict, List
 
 # Sample data representing DinoAir3 file search content
 SAMPLE_FILES_DATA = [

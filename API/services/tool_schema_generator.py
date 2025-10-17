@@ -48,7 +48,11 @@ def extract_docstring_info(func: Callable[..., Any]) -> dict[str, Any]:
             in_args = False
             continue
 
-        if in_args and stripped and (match := re.match(r"^(\w+)\s*\([^)]*\):\s*(.+)$", stripped)):
+        if (
+            in_args
+            and stripped
+            and (match := re.match(r"^(\w+)\s*\([^)]*\):\s*(.+)$", stripped))
+        ):
             name, type_str, desc = match.groups()
             params[name] = {"type": type_str.strip(), "description": desc.strip()}
         elif not in_args and stripped:
@@ -96,7 +100,11 @@ def generate_schema(func: Callable[..., Any]) -> dict[str, Any]:
     return {
         "name": func.__name__,
         "description": doc_info["description"] or f"Call the {func.__name__} function",
-        "parameters": {"type": "object", "properties": properties, "required": required},
+        "parameters": {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+        },
     }
 
 
@@ -108,7 +116,9 @@ class ToolRegistry:
         self._tools: dict[str, Callable[..., Any]] = {}
 
     @staticmethod
-    def get_tool_schemas(requested_tools: list[str] | None = None) -> list[dict[str, Any]]:
+    def get_tool_schemas(
+        requested_tools: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
         """Return empty tool schemas for now."""
         return []
 

@@ -6,11 +6,10 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, cast
 
+from database.file_search_db import FileSearchDB
 from fastapi import HTTPException
 from pydantic import ValidationError
 from starlette import status
-
-from database.file_search_db import FileSearchDB
 
 from ..schemas import (
     DirectorySettingsResponse,
@@ -341,7 +340,7 @@ _search_singleton: SearchService | None = None
 _search_service_singleton: SearchService = None
 
 
-@lru_cache()
+@lru_cache
 def get_search_service() -> SearchService:
     return SearchService()
 

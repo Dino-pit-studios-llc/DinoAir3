@@ -8,7 +8,7 @@ for testing and development without requiring Docker or external services.
 
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 import numpy as np
 

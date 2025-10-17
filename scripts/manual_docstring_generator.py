@@ -14,7 +14,9 @@ from pathlib import Path
 from typing import Any
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +32,9 @@ def _has_module_docstring(tree: ast.AST) -> bool:
     )
 
 
-def _get_missing_doc_nodes(tree: ast.AST) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def _get_missing_doc_nodes(
+    tree: ast.AST,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Return lists of classes and functions missing docstrings."""
     classes_without_docs: list[dict[str, Any]] = []
     functions_without_docs: list[dict[str, Any]] = []
@@ -74,7 +78,9 @@ def find_files_missing_docstrings(directories: list[str]) -> list[dict[str, Any]
                 tree = ast.parse(content)
 
                 has_module_doc = _has_module_docstring(tree)
-                classes_without_docs, functions_without_docs = _get_missing_doc_nodes(tree)
+                classes_without_docs, functions_without_docs = _get_missing_doc_nodes(
+                    tree
+                )
 
                 if not has_module_doc or classes_without_docs or functions_without_docs:
                     missing_docstrings.append(
@@ -245,7 +251,10 @@ def add_docstrings_to_file(file_path: str, file_info: dict[str, Any]) -> bool:
                 modified = True
 
                 logger.info(
-                    "Added docstring to %s '%s' at line %s", item_type, item_info["name"], line_num
+                    "Added docstring to %s '%s' at line %s",
+                    item_type,
+                    item_info["name"],
+                    line_num,
                 )
 
         # Write back if modified
@@ -266,7 +275,11 @@ def add_docstrings_to_file(file_path: str, file_info: dict[str, Any]) -> bool:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
 
-            logger.info("Updated %s with generated docstrings (backup: %s)", file_path, backup_path)
+            logger.info(
+                "Updated %s with generated docstrings (backup: %s)",
+                file_path,
+                backup_path,
+            )
 
         return modified
 
@@ -322,7 +335,11 @@ def main():
             success_count += 1
 
     logger.info("Successfully processed %d/%d files", success_count, len(missing_files))
-    logger.info("Added docstrings to %d functions and %d classes", total_functions, total_classes)
+    logger.info(
+        "Added docstrings to %d functions and %d classes",
+        total_functions,
+        total_classes,
+    )
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ for easy access to the dependency injection system.
 """
 
 import threading
-from typing import Any, Optional, TypeVar
+from typing import Any
 
 from .dependency_container import DependencyContainer
 

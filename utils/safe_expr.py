@@ -86,7 +86,9 @@ _ALLOWED_CMP_OPS = (
 _COMPREHENSIONS_NOT_ALLOWED = "Comprehensions are not allowed"
 
 
-class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
+class _SafeExprValidator(
+    ast.NodeVisitor
+):  # pylint: disable=invalid-name, missing-function-docstring
     """AST validator to enforce a restricted expression subset."""
 
     def __init__(self, variables: dict[str, Any]) -> None:
@@ -202,7 +204,9 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
         raise ValidationError(f"Disallowed expression element: {type(node).__name__}")
 
 
-class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
+class _SafeExprEvaluator(
+    ast.NodeVisitor
+):  # pylint: disable=invalid-name, missing-function-docstring
     """
     Safely evaluates a restricted Python expression AST, as validated by _SafeExprValidator.
 

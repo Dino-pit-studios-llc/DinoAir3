@@ -630,7 +630,7 @@ def safe_popen(
 # Backward-compatible helpers expected by tests/test_utils_core.py
 # -----------------------------------------------------------------------------
 def run_subprocess(
-    command: "Sequence[str]", timeout: int | None = None, cwd: Path | None = None
+    command: Sequence[str], timeout: int | None = None, cwd: Path | None = None
 ) -> dict[str, Any]:
     """
     Backward-compatible wrapper around safe_run that returns a dict result.

@@ -66,7 +66,7 @@ Create helper scripts to automate repetitive fixes:
 - `extract_constants.py` - Find and extract duplicate strings
 - `simplify_regex.py` - Replace verbose patterns
 
-**Time Investment:** 8-10 hours  
+**Time Investment:** 8-10 hours
 **Time Savings:** 30-40 hours
 
 ### Testing Strategy

@@ -169,9 +169,7 @@ class GitHubSecurityDiagnostic:
                 status_icon = (
                     "✅"
                     if status == "enabled"
-                    else "❌"
-                    if status == "disabled"
-                    else "❓"
+                    else "❌" if status == "disabled" else "❓"
                 )
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
                 # If detailed status is necessary for privileged contexts, handle it separately (not in logs)

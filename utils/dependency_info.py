@@ -20,7 +20,7 @@ class DependencyInfo:
     dependency_type: type[Any]
     factory: Callable[..., Any] | None = None
     instance: Any | None = None
-    scope: Scope = Scope.SINGLETON
+    scope: Scope = Scope.singleton
     dependencies: list[str] = field(default_factory=list)
-    state: LifecycleState = LifecycleState.REGISTERED
+    state: LifecycleState = LifecycleState.registered
     initialization_order: int = 100  # Higher = later

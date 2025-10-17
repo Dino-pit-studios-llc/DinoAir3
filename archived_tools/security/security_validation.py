@@ -358,9 +358,9 @@ def run_security_validation():
     validation_results["tests"]["rbac_system"] = test_rbac_system()
     validation_results["tests"]["audit_logging"] = test_audit_logging()
     validation_results["tests"]["network_security"] = test_network_security()
-    validation_results["tests"]["security_configuration"] = (
-        test_security_configuration()
-    )
+    validation_results["tests"][
+        "security_configuration"
+    ] = test_security_configuration()
 
     # Calculate overall score
     total_tests = 0

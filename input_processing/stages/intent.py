@@ -353,7 +353,9 @@ class IntentClassifier:
             (intent, score)
             for intent, score in sorted_intents[1:]
             if score > 0.1  # Only include if somewhat confident
-        ][:3]  # Max 3 secondary intents
+        ][
+            :3
+        ]  # Max 3 secondary intents
 
         # Generate reasoning
         reasoning = IntentClassifier._generate_reasoning(

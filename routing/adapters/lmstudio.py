@@ -144,7 +144,9 @@ class LMStudioAdapter(ServiceAdapter):
     def _sleep_backoff(self, attempt: int) -> None:
         # Exponential backoff with jitter: base * 2^(attempt-1) + random[0, base/2], capped.
         delay = min(self._backoff_cap, self._backoff_base * (2 ** max(0, attempt - 1)))
-        delay += random.uniform(0, self._backoff_base / 2)  # nosec B311 - non-security backoff jitter for retry timing
+        delay += random.uniform(
+            0, self._backoff_base / 2
+        )  # nosec B311 - non-security backoff jitter for retry timing
         with suppress(Exception):
             time.sleep(delay)
 
@@ -389,11 +391,9 @@ class LMStudioAdapter(ServiceAdapter):
             resp: HTTP response
             attempt: Current attempt number
             attempts: Total attempts
-        
+
         Returns:
-            Error handling result
-        """
-            Never returns, always raises
+            Error handling result - never returns, always raises
 
         Raises:
             AdapterError: Always

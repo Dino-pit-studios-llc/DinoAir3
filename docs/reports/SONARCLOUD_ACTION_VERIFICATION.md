@@ -1,7 +1,7 @@
 # SonarCloud Action Verification Report
 
-**Date:** October 15, 2025  
-**Issue:** The action 'SonarSource/sonarqube-scan-action@v6' is for SonarQube, not SonarCloud  
+**Date:** October 15, 2025
+**Issue:** The action 'SonarSource/sonarqube-scan-action@v6' is for SonarQube, not SonarCloud
 **Status:** ✅ VERIFIED AND RESOLVED
 
 ## Issue Summary

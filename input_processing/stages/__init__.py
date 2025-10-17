@@ -26,7 +26,13 @@ from .intent import IntentClassification, IntentClassifier, IntentType, classify
 from .pattern import FuzzyMatcher, PatternNormalizer, fuzzy_match, normalize_input
 
 # Profanity filtering module
-from .profanity import FilterResult, ProfanityFilter, ProfanityMatch, Severity, filter_profanity
+from .profanity import (
+    FilterResult,
+    ProfanityFilter,
+    ProfanityMatch,
+    Severity,
+    filter_profanity,
+)
 
 # Rate limiting module
 from .rate_limiter import (

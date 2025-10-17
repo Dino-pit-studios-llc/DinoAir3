@@ -7,7 +7,9 @@ import re
 from pathlib import Path
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -73,7 +75,9 @@ def generate_class_docstring(name: str, indent: int) -> str:
     return f'{base_indent}"""{description}"""'
 
 
-def generate_function_docstring(name: str, args: list, has_return: bool, indent: int) -> str:
+def generate_function_docstring(
+    name: str, args: list, has_return: bool, indent: int
+) -> str:
     """Generate a Google-style docstring for a function."""
     base_indent = " " * indent
     description = generate_description_from_name(name)
@@ -109,7 +113,9 @@ def get_missing_docstring_items(content: str) -> list:
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             if ast.get_docstring(node) is None:
-                missing_items.append({"type": "class", "name": node.name, "lineno": node.lineno})
+                missing_items.append(
+                    {"type": "class", "name": node.name, "lineno": node.lineno}
+                )
         elif isinstance(node, ast.FunctionDef):
             if ast.get_docstring(node) is None and not node.name.startswith("_"):
                 args = [arg.arg for arg in node.args.args]
@@ -228,13 +234,17 @@ def main():
                         if not ast.get_docstring(node):
                             file_classes += 1
                     elif isinstance(node, ast.FunctionDef):
-                        if not ast.get_docstring(node) and not node.name.startswith("_"):
+                        if not ast.get_docstring(node) and not node.name.startswith(
+                            "_"
+                        ):
                             file_functions += 1
 
                 total_functions += file_functions
                 total_classes += file_classes
 
-                logger.info("Expected: %s functions, %s classes", file_functions, file_classes)
+                logger.info(
+                    "Expected: %s functions, %s classes", file_functions, file_classes
+                )
 
             except Exception as e:
                 logger.warning("Could not analyze %s: %s", file_path, e)

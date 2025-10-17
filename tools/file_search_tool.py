@@ -102,7 +102,9 @@ def _handle_db_add_result(db_result: dict, file_info: dict) -> dict:
     }
 
 
-def _compute_file_metadata(path_obj: Path, file_type: str | None) -> tuple[str, int, datetime, str]:
+def _compute_file_metadata(
+    path_obj: Path, file_type: str | None
+) -> tuple[str, int, datetime, str]:
     """
     Compute file hash, size, modified date, and resolved type.
 
@@ -350,7 +352,9 @@ def add_file_to_index(
         }
 
 
-def remove_file_from_index(file_path: str, user_name: str = "default_user") -> dict[str, Any]:
+def remove_file_from_index(
+    file_path: str, user_name: str = "default_user"
+) -> dict[str, Any]:
     """
     Remove a file from the search index.
 
@@ -619,7 +623,9 @@ def optimize_search_database(user_name: str = "default_user") -> dict[str, Any]:
         }
 
 
-def get_file_embeddings(file_path: str, user_name: str = "default_user") -> dict[str, Any]:
+def get_file_embeddings(
+    file_path: str, user_name: str = "default_user"
+) -> dict[str, Any]:
     """
     Retrieve embeddings for a specific indexed file.
 

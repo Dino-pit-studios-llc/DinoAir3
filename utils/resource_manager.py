@@ -211,14 +211,14 @@ class ThreadSafeResourceRegistry:
         with self._read_lock:
             return list(self._resources.values())
 
-    def list_by_type(self, resource_type: "ResourceType") -> list["ResourceInfo"]:
+    def list_by_type(self, resource_type: ResourceType) -> list[ResourceInfo]:
         """Get resources of specific type."""
         with self._read_lock:
             return [
                 r for r in self._resources.values() if r.resource_type == resource_type
             ]
 
-    def list_by_state(self, state: "ResourceState") -> list["ResourceInfo"]:
+    def list_by_state(self, state: ResourceState) -> list[ResourceInfo]:
         """Get resources in specific state."""
         with self._read_lock:
             return [r for r in self._resources.values() if r.state == state]
@@ -1177,7 +1177,7 @@ class ResourceManager:
 
 
 # Global instance
-_resource_manager: Optional["ResourceManager"] = None
+_resource_manager: Optional[ResourceManager] = None
 _manager_lock = threading.Lock()
 
 

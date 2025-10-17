@@ -31,9 +31,9 @@ ALLOWED_UPDATE_FIELDS: list[str] = [
 ]
 
 STATUS_TIMESTAMPS: dict[str, dict[str, Any]] = {
-    ProjectStatus.ACTIVE.value: {"completed_at": None, "archived_at": None},
-    ProjectStatus.COMPLETED.value: {"completed_at": "NOW"},
-    ProjectStatus.ARCHIVED.value: {"archived_at": "NOW"},
+    ProjectStatus.active.value: {"completed_at": None, "archived_at": None},
+    ProjectStatus.completed.value: {"completed_at": "NOW"},
+    ProjectStatus.archived.value: {"archived_at": "NOW"},
 }
 
 

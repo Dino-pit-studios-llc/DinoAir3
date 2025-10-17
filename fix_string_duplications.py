@@ -1,7 +1,7 @@
 """Script to fix string duplication issues in security_issues_list.py"""
 
 # Read the file
-with open("tools/security/security_issues_list.py", "r", encoding="utf-8") as f:
+with open("tools/security/security_issues_list.py", encoding="utf-8") as f:
     content = f.read()
 
 # Define replacements (in order of specificity to avoid partial matches)

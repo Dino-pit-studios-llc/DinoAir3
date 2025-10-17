@@ -77,7 +77,9 @@ def create_note(
         notes_db = get_notes_db(user_name)
 
         # Create note object
-        note = Note(title=title, content=content, tags=tags or [], project_id=project_id)
+        note = Note(
+            title=title, content=content, tags=tags or [], project_id=project_id
+        )
 
         # Create in database
         result = notes_db.create_note(note, content_html=content_html)

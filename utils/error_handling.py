@@ -688,7 +688,9 @@ def _calculate_retry_delay(config: RetryConfig, attempt: int) -> float:
 
     if config.jitter:
         # Add random jitter up to 10% of the delay
-        jitter = random.uniform(0, delay * 0.1)  # nosec B311 - non-security backoff jitter for retry timing
+        jitter = random.uniform(
+            0, delay * 0.1
+        )  # nosec B311 - non-security backoff jitter for retry timing
         delay += jitter
 
     return delay
