@@ -150,7 +150,7 @@ jobs:
           DATABASE_URL: sqlite:///test.db
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --cov=. --cov-report=xml 2>/dev/null || true
+          pytest --cov=. --cov-report=xml
           ls -la coverage.xml || echo "No coverage.xml found"
 
       - name: Run Codacy Coverage Reporter
