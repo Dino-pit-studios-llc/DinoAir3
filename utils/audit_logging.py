@@ -161,7 +161,7 @@ class AuditLogger:
 
         # Set up rotating file handler
         self.logger = logging.getLogger(f"audit.{uuid.uuid4().hex}")
-        self.logger.setLevel(logging.info)
+        self.logger.setLevel(logging.INFO)
 
         # Clear any existing handlers
         self.logger.handlers.clear()
@@ -331,7 +331,8 @@ class AuditLogger:
             if calculated_checksum != stored_checksum:
                 return False
 
-            # If no signature was stored and no secret is configured, checksum verification is sufficient
+            # If no signature was stored and no secret is configured,
+            # checksum verification is sufficient
             if not stored_signature and not self.secret_key:
                 return True
 
