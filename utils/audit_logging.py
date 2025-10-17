@@ -151,9 +151,7 @@ class AuditLogger:
             # Provide a default component attribute
             self.component = "audit"
 
-        self.secret_key = (
-            secret_key.encode() if isinstance(secret_key, str) else secret_key
-        )
+        self.secret_key = secret_key.encode() if isinstance(secret_key, str) else secret_key
         self.encrypt_logs = encrypt_logs
 
         # Ensure log directory exists
@@ -254,9 +252,7 @@ class AuditLogger:
                 if isinstance(self.secret_key, str)
                 else self.secret_key
             )
-            signature = hmac.new(
-                key, canonical_json.encode(), hashlib.sha256
-            ).hexdigest()
+            signature = hmac.new(key, canonical_json.encode(), hashlib.sha256).hexdigest()
 
         # Remove event_type and severity from dict to avoid duplicate keyword arguments
         event_dict.pop("event_type", None)
@@ -322,9 +318,7 @@ class AuditLogger:
                 return False
 
             # Recreate canonical JSON
-            canonical_json = json.dumps(
-                event_data, sort_keys=True, separators=(",", ":")
-            )
+            canonical_json = json.dumps(event_data, sort_keys=True, separators=(",", ":"))
 
             # Verify checksum
             calculated_checksum = hashlib.sha256(canonical_json.encode()).hexdigest()
@@ -379,11 +373,7 @@ class SecurityAuditManager:
         details = {"reason": reason} if reason else {}
         details.update(kwargs)
 
-        severity = (
-            SeverityLevel.warning
-            if "failure" in event_type.value
-            else SeverityLevel.info
-        )
+        severity = SeverityLevel.warning if "failure" in event_type.value else SeverityLevel.info
 
         return self.audit_logger.audit(
             event_type=event_type,
@@ -480,11 +470,7 @@ class SecurityAuditManager:
         # Remove None values
         details = {k: v for k, v in details.items() if v is not None}
 
-        severity = (
-            SeverityLevel.error
-            if status_code and status_code >= 400
-            else SeverityLevel.info
-        )
+        severity = SeverityLevel.error if status_code and status_code >= 400 else SeverityLevel.info
         outcome = "failure" if status_code and status_code >= 400 else "success"
 
         return self.audit_logger.audit(
@@ -533,12 +519,9 @@ def create_security_audit_manager(
 # Global audit manager instance
 _audit_manager: SecurityAuditManager | None = None
 
-
 _audit_manager = None
 
-
 _audit_manager: SecurityAuditManager = None
-
 
 _audit_manager: SecurityAuditManager = None
 
@@ -558,9 +541,7 @@ def audit_login_success(user_id: str, source_ip: str, **kwargs) -> str:
     )
 
 
-def audit_login_failure(
-    user_id: str | None, source_ip: str, reason: str, **kwargs
-) -> str:
+def audit_login_failure(user_id: str | None, source_ip: str, reason: str, **kwargs) -> str:
     """Audit failed login attempt."""
     return get_audit_manager().log_authentication(
         AuditEventType.login_failure, user_id, source_ip, reason=reason, **kwargs
