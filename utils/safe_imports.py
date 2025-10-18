@@ -8,8 +8,7 @@ from typing import Any
 try:
     """Module module."""
     # tools/common/logging_utils may provide get_logger in some environments
-    from tools.common.logging_utils import \
-        get_logger  # type: ignore[attr-defined]
+    from tools.common.logging_utils import get_logger  # type: ignore[attr-defined]
 except Exception:
     try:
         # Enhanced logger used elsewhere in the repo

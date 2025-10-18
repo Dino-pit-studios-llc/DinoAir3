@@ -171,6 +171,7 @@ class DinoAirMetrics:
 
         def decorator(func):
             """Decorator that wraps the target function to measure execution time."""
+
             @wraps(func)
             def wrapper(*args, **kwargs):
                 """Wrapper function that times the execution of the target function and returns the result."""

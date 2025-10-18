@@ -120,7 +120,12 @@ class SimpleDocstringFixer:
         """Find top-level functions missing docstrings."""
         results = []
         for node in tree.body:
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not self._has_docstring(node) and not node.name.startswith("_") and not node.name.startswith("test_"):
+            if (
+                isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and not self._has_docstring(node)
+                and not node.name.startswith("_")
+                and not node.name.startswith("test_")
+            ):
                 name = node.name
                 results.append(("function", node.lineno, name, 8))
         return results

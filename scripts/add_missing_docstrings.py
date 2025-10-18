@@ -190,8 +190,18 @@ class DocstringGenerator:
             {"type": "prefix", "key": "set_", "template": "Set {noun}.", "slice": 4},
             {"type": "prefix", "key": "create_", "template": "Create {noun}.", "slice": 7},
             {"type": "prefix", "key": "build_", "template": "Build {noun}.", "slice": 6},
-            {"type": "prefix", "key": "init_", "template": "Initialize {target}.", "use_parent": True},
-            {"type": "exact",  "key": "__init__", "template": "Initialize {target}.", "use_parent": True},
+            {
+                "type": "prefix",
+                "key": "init_",
+                "template": "Initialize {target}.",
+                "use_parent": True,
+            },
+            {
+                "type": "exact",
+                "key": "__init__",
+                "template": "Initialize {target}.",
+                "use_parent": True,
+            },
             {"type": "prefix", "key": "validate_", "template": "Validate {noun}.", "slice": 9},
             {"type": "prefix", "key": "process_", "template": "Process {noun}.", "slice": 8},
             {"type": "prefix", "key": "handle_", "template": "Handle {noun}.", "slice": 7},
@@ -204,20 +214,24 @@ class DocstringGenerator:
             {"type": "prefix", "key": "is_", "template": "Check if {noun}.", "slice": 3},
             {"type": "prefix", "key": "has_", "template": "Check if {noun}.", "slice": 4},
             {"type": "prefix", "key": "can_", "template": "Check if can {noun}.", "slice": 4},
-            {"type": "exact",  "key": "__str__", "template": "Return string representation."},
-            {"type": "exact",  "key": "__repr__", "template": "Return detailed string representation."},
-            {"type": "exact",  "key": "__call__", "template": "Make instance callable."},
+            {"type": "exact", "key": "__str__", "template": "Return string representation."},
+            {
+                "type": "exact",
+                "key": "__repr__",
+                "template": "Return detailed string representation.",
+            },
+            {"type": "exact", "key": "__call__", "template": "Make instance callable."},
         ]
         for rule in function_summary_rules:
             if rule["type"] == "prefix" and name.startswith(rule["key"]):
                 if rule.get("use_parent"):
-                    target = self._humanize_name(func_info.parent_class or 'instance')
+                    target = self._humanize_name(func_info.parent_class or "instance")
                     return rule["template"].format(target=target)
-                noun = self._humanize_name(name[rule["slice"]:])
+                noun = self._humanize_name(name[rule["slice"] :])
                 return rule["template"].format(noun=noun)
             if rule["type"] == "exact" and name == rule["key"]:
                 if rule.get("use_parent"):
-                    target = self._humanize_name(func_info.parent_class or 'instance')
+                    target = self._humanize_name(func_info.parent_class or "instance")
                     return rule["template"].format(target=target)
                 return rule["template"]
         if name.startswith("__") and name.endswith("__"):
@@ -230,24 +244,24 @@ class DocstringGenerator:
 
         # Rules for class summary generation
         class_summary_rules = [
-            {"suffix": "Manager",       "length": 7,  "template": "Manages {noun} operations."},
-            {"suffix": "Handler",       "length": 7,  "template": "Handles {noun} events."},
-            {"suffix": "Controller",    "length": 10, "template": "Controls {noun} behavior."},
-            {"suffix": "Service",       "length": 7,  "template": "Provides {noun} services."},
-            {"suffix": "Factory",       "length": 7,  "template": "Creates {noun} instances."},
-            {"suffix": "Builder",       "length": 7,  "template": "Builds {noun} objects."},
-            {"suffix": "Parser",        "length": 6,  "template": "Parses {noun} data."},
-            {"suffix": "Validator",     "length": 9,  "template": "Validates {noun} input."},
-            {"suffix": "Exception",     "length": 9,  "template": "Exception for {noun} errors."},
-            {"suffix": "Error",         "length": 5,  "template": "Exception for {noun} errors."},
-            {"suffix": "Config",        "length": 6,  "template": "Configuration for {noun}."},
+            {"suffix": "Manager", "length": 7, "template": "Manages {noun} operations."},
+            {"suffix": "Handler", "length": 7, "template": "Handles {noun} events."},
+            {"suffix": "Controller", "length": 10, "template": "Controls {noun} behavior."},
+            {"suffix": "Service", "length": 7, "template": "Provides {noun} services."},
+            {"suffix": "Factory", "length": 7, "template": "Creates {noun} instances."},
+            {"suffix": "Builder", "length": 7, "template": "Builds {noun} objects."},
+            {"suffix": "Parser", "length": 6, "template": "Parses {noun} data."},
+            {"suffix": "Validator", "length": 9, "template": "Validates {noun} input."},
+            {"suffix": "Exception", "length": 9, "template": "Exception for {noun} errors."},
+            {"suffix": "Error", "length": 5, "template": "Exception for {noun} errors."},
+            {"suffix": "Config", "length": 6, "template": "Configuration for {noun}."},
             {"suffix": "Configuration", "length": 13, "template": "Configuration for {noun}."},
-            {"suffix": "Proto",         "length": 5,  "template": "Protocol defining {noun} interface."},
-            {"suffix": "Protocol",      "length": 8,  "template": "Protocol defining {noun} interface."},
+            {"suffix": "Proto", "length": 5, "template": "Protocol defining {noun} interface."},
+            {"suffix": "Protocol", "length": 8, "template": "Protocol defining {noun} interface."},
         ]
         for rule in class_summary_rules:
             if name.endswith(rule["suffix"]):
-                noun = self._humanize_name(name[:-rule["length"]])
+                noun = self._humanize_name(name[: -rule["length"]])
                 return rule["template"].format(noun=noun)
         return f"{self._humanize_name(name)} implementation."
 
@@ -471,7 +485,9 @@ class DocstringFixer:
         with open(filepath, "r", encoding="utf-8") as f:
             return f.read()
 
-    def _add_module_docstring(self, module_info: ModuleInfo, name: str, lines: List[str]) -> (bool, int):
+    def _add_module_docstring(
+        self, module_info: ModuleInfo, name: str, lines: List[str]
+    ) -> (bool, int):
         if not module_info.has_module_docstring and (module_info.classes or module_info.functions):
             if self._should_add_docstring("module", name):
                 docstring = self.generator.generate_module_docstring(module_info)
@@ -496,7 +512,9 @@ class DocstringFixer:
         items.sort(key=lambda x: x[1].lineno, reverse=True)
         return items
 
-    def _process_items(self, items, lines: List[str], offset: int, module_info: ModuleInfo) -> (bool, int):
+    def _process_items(
+        self, items, lines: List[str], offset: int, module_info: ModuleInfo
+    ) -> (bool, int):
         changed = False
         added = 0
         for item_type, item_info in items:
@@ -584,7 +602,21 @@ class DocstringFixer:
 def find_all_python_files() -> List[Path]:
     files = []
     for root, dirs, filenames in os.walk("."):
-        dirs[:] = [d for d in dirs if d not in {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv", "build", "dist"}]
+        dirs[:] = [
+            d
+            for d in dirs
+            if d
+            not in {
+                ".git",
+                "__pycache__",
+                ".pytest_cache",
+                "node_modules",
+                ".venv",
+                "venv",
+                "build",
+                "dist",
+            }
+        ]
         for file in filenames:
             if file.endswith(".py"):
                 files.append(Path(root) / file)

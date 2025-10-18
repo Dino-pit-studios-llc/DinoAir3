@@ -128,7 +128,11 @@ class SimpleDocstringFixer:
         if not self._has_docstring(node):
             missing.append(("class", node.lineno, node.name, 8))
         for child in node.body:
-            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)) and not self._has_docstring(child) and not child.name.startswith("_"):
+            if (
+                isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and not self._has_docstring(child)
+                and not child.name.startswith("_")
+            ):
                 missing.append(("method", child.lineno, child.name, 12))
         return missing
 
@@ -186,7 +190,7 @@ class SimpleDocstringFixer:
         indent_str = " " * indent
 
         if item_type == "module":
-            return f'"""{self._make_readable(name)} module.""' 
+            return f'"""{self._make_readable(name)} module.""'
         if item_type == "class":
             return f'{indent_str}"""{self._make_readable(name)} class.""'
         if item_type == "function":

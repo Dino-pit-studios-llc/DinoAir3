@@ -62,9 +62,7 @@ def parse_stats(output: str):
 def print_relevant_lines(output: str):
     lines = output.splitlines()
     relevant_lines = [
-        line
-        for line in lines
-        if "Would add" in line or "Added" in line or "✓" in line
+        line for line in lines if "Would add" in line or "Added" in line or "✓" in line
     ]
     if not relevant_lines:
         return

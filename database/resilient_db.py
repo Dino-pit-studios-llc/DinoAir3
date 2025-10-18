@@ -9,8 +9,9 @@ from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
-
 """Module for resilient SQLite database connections with safe initialization and automatic recovery from corrupted files."""
+
+
 class ResilientDB:
     """A wrapper that makes SQLite initialization and recovery safer and more user-friendly."""
 

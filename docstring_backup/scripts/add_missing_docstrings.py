@@ -188,22 +188,43 @@ class DocstringGenerator:
             (lambda n: n.startswith("set_"), lambda n: f"Set {self._humanize_name(n[4:])}."),
             (lambda n: n.startswith("create_"), lambda n: f"Create {self._humanize_name(n[7:])}."),
             (lambda n: n.startswith("build_"), lambda n: f"Build {self._humanize_name(n[6:])}."),
-            (lambda n: n.startswith("init_") or n == "__init__", lambda n: f"Initialize {self._humanize_name(func_info.parent_class or 'instance')}."),
-            (lambda n: n.startswith("validate_"), lambda n: f"Validate {self._humanize_name(n[9:])}."),
-            (lambda n: n.startswith("process_"), lambda n: f"Process {self._humanize_name(n[8:])}."),
+            (
+                lambda n: n.startswith("init_") or n == "__init__",
+                lambda n: f"Initialize {self._humanize_name(func_info.parent_class or 'instance')}.",
+            ),
+            (
+                lambda n: n.startswith("validate_"),
+                lambda n: f"Validate {self._humanize_name(n[9:])}.",
+            ),
+            (
+                lambda n: n.startswith("process_"),
+                lambda n: f"Process {self._humanize_name(n[8:])}.",
+            ),
             (lambda n: n.startswith("handle_"), lambda n: f"Handle {self._humanize_name(n[7:])}."),
             (lambda n: n.startswith("parse_"), lambda n: f"Parse {self._humanize_name(n[6:])}."),
             (lambda n: n.startswith("load_"), lambda n: f"Load {self._humanize_name(n[5:])}."),
             (lambda n: n.startswith("save_"), lambda n: f"Save {self._humanize_name(n[5:])}."),
             (lambda n: n.startswith("update_"), lambda n: f"Update {self._humanize_name(n[7:])}."),
-            (lambda n: n.startswith("delete_") or n.startswith("remove_"), lambda n: f"Delete {self._humanize_name(n[7:])}."),
-            (lambda n: n.startswith("is_") or n.startswith("has_"), lambda n: f"Check if {self._humanize_name(n[3:] if n.startswith('is_') else n[4:])}."),
-            (lambda n: n.startswith("can_"), lambda n: f"Check if can {self._humanize_name(n[4:])}."),
+            (
+                lambda n: n.startswith("delete_") or n.startswith("remove_"),
+                lambda n: f"Delete {self._humanize_name(n[7:])}.",
+            ),
+            (
+                lambda n: n.startswith("is_") or n.startswith("has_"),
+                lambda n: f"Check if {self._humanize_name(n[3:] if n.startswith('is_') else n[4:])}.",
+            ),
+            (
+                lambda n: n.startswith("can_"),
+                lambda n: f"Check if can {self._humanize_name(n[4:])}.",
+            ),
             (lambda n: n == "__str__", lambda n: "Return string representation."),
             (lambda n: n == "__repr__", lambda n: "Return detailed string representation."),
             (lambda n: n == "__call__", lambda n: "Make instance callable."),
-            (lambda n: n.startswith("__") and n.endswith("__"), lambda n: f"Implement {n} magic method."),
-            (lambda n: True, lambda n: f"{self._humanize_name(n).capitalize()}.")
+            (
+                lambda n: n.startswith("__") and n.endswith("__"),
+                lambda n: f"Implement {n} magic method.",
+            ),
+            (lambda n: True, lambda n: f"{self._humanize_name(n).capitalize()}."),
         ]
         formatter = next(formatter for cond, formatter in cases if cond(name))
         return formatter(name)
@@ -212,17 +233,50 @@ class DocstringGenerator:
         """Generate a summary line for a class."""
         name = class_info.name
         cases = [
-            (lambda n: n.endswith("Manager"), lambda n: f"Manages {self._humanize_name(n[:-7])} operations."),
-            (lambda n: n.endswith("Handler"), lambda n: f"Handles {self._humanize_name(n[:-7])} events."),
-            (lambda n: n.endswith("Controller"), lambda n: f"Controls {self._humanize_name(n[:-10])} behavior."),
-            (lambda n: n.endswith("Service"), lambda n: f"Provides {self._humanize_name(n[:-7])} services."),
-            (lambda n: n.endswith("Factory"), lambda n: f"Creates {self._humanize_name(n[:-7])} instances."),
-            (lambda n: n.endswith("Builder"), lambda n: f"Builds {self._humanize_name(n[:-7])} objects."),
-            (lambda n: n.endswith("Parser"), lambda n: f"Parses {self._humanize_name(n[:-6])} data."),
-            (lambda n: n.endswith("Validator"), lambda n: f"Validates {self._humanize_name(n[:-9])} input."),
-            (lambda n: n.endswith("Exception") or n.endswith("Error"), lambda n: f"Exception for {self._humanize_name(n[:-9] if n.endswith('Exception') else n[:-5])} errors."),
-            (lambda n: n.endswith("Config") or n.endswith("Configuration"), lambda n: f"Configuration for {self._humanize_name(n[:-6] if n.endswith('Config') else n[:-13])}."),
-            (lambda n: n.endswith("Proto") or n.endswith("Protocol"), lambda n: f"Protocol defining {self._humanize_name(n[:-5] if n.endswith('Proto') else n[:-8])} interface."),
+            (
+                lambda n: n.endswith("Manager"),
+                lambda n: f"Manages {self._humanize_name(n[:-7])} operations.",
+            ),
+            (
+                lambda n: n.endswith("Handler"),
+                lambda n: f"Handles {self._humanize_name(n[:-7])} events.",
+            ),
+            (
+                lambda n: n.endswith("Controller"),
+                lambda n: f"Controls {self._humanize_name(n[:-10])} behavior.",
+            ),
+            (
+                lambda n: n.endswith("Service"),
+                lambda n: f"Provides {self._humanize_name(n[:-7])} services.",
+            ),
+            (
+                lambda n: n.endswith("Factory"),
+                lambda n: f"Creates {self._humanize_name(n[:-7])} instances.",
+            ),
+            (
+                lambda n: n.endswith("Builder"),
+                lambda n: f"Builds {self._humanize_name(n[:-7])} objects.",
+            ),
+            (
+                lambda n: n.endswith("Parser"),
+                lambda n: f"Parses {self._humanize_name(n[:-6])} data.",
+            ),
+            (
+                lambda n: n.endswith("Validator"),
+                lambda n: f"Validates {self._humanize_name(n[:-9])} input.",
+            ),
+            (
+                lambda n: n.endswith("Exception") or n.endswith("Error"),
+                lambda n: f"Exception for {self._humanize_name(n[:-9] if n.endswith('Exception') else n[:-5])} errors.",
+            ),
+            (
+                lambda n: n.endswith("Config") or n.endswith("Configuration"),
+                lambda n: f"Configuration for {self._humanize_name(n[:-6] if n.endswith('Config') else n[:-13])}.",
+            ),
+            (
+                lambda n: n.endswith("Proto") or n.endswith("Protocol"),
+                lambda n: f"Protocol defining {self._humanize_name(n[:-5] if n.endswith('Proto') else n[:-8])} interface.",
+            ),
             (lambda n: True, lambda n: f"{self._humanize_name(n)} implementation."),
         ]
         for cond, formatter in cases:
@@ -532,9 +586,7 @@ class DocstringFixer:
         self, module_info: ModuleInfo, lines: List[str], filepath: Path, offset: int
     ) -> (bool, int):
         changed = False
-        if not module_info.has_module_docstring and (
-            module_info.classes or module_info.functions
-        ):
+        if not module_info.has_module_docstring and (module_info.classes or module_info.functions):
             if self._should_add_docstring("module", filepath.stem):
                 module_docstring = self.generator.generate_module_docstring(module_info)
                 lines.insert(0, module_docstring)
@@ -545,9 +597,7 @@ class DocstringFixer:
                 self.stats["docstrings_added"] += 1
         return changed, offset
 
-    def _gather_items(
-        self, module_info: ModuleInfo, lines: List[str], offset: int
-    ) -> List[tuple]:
+    def _gather_items(self, module_info: ModuleInfo, lines: List[str], offset: int) -> List[tuple]:
         items = []
         for class_info in module_info.classes:
             if not self._has_docstring_at_line(lines, class_info.lineno + offset):
@@ -619,9 +669,7 @@ class DocstringFixer:
             return response.lower() in ("y", "yes")
         return True
 
-    def _generate_docstring(
-        self, item_type: str, item_info: Any, module_info: ModuleInfo
-    ) -> str:
+    def _generate_docstring(self, item_type: str, item_info: Any, module_info: ModuleInfo) -> str:
         """Generate appropriate docstring for the item."""
         if item_type == "class":
             return self.generator.generate_class_docstring(item_info)
@@ -651,10 +699,21 @@ class DocstringFixer:
 def _find_all_python_files() -> List[Path]:
     files_to_process = []
     for root, dirs, files in os.walk("."):
-        dirs[:] = [d for d in dirs if d not in {
-            ".git", "__pycache__", ".pytest_cache", "node_modules",
-            ".venv", "venv", "build", "dist"
-        }]
+        dirs[:] = [
+            d
+            for d in dirs
+            if d
+            not in {
+                ".git",
+                "__pycache__",
+                ".pytest_cache",
+                "node_modules",
+                ".venv",
+                "venv",
+                "build",
+                "dist",
+            }
+        ]
         for file in files:
             if file.endswith(".py"):
                 files_to_process.append(Path(root) / file)
@@ -716,6 +775,7 @@ Examples:
         fixer.fix_file(filepath)
     fixer.print_stats()
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
