@@ -22,14 +22,28 @@ Go to your GitHub repository settings at **Settings > Secrets and variables > Ac
 #### Required Secrets:
 
 **CODACY_PROJECT_TOKEN**
+
+⚠️ **The value below is a PLACEHOLDER. You must obtain your actual token from Codacy:**
+1. Log in to [Codacy](https://app.codacy.com)
+2. Navigate to your DinoAir3 project
+3. Go to **Settings → Coverage → Project API token**
+4. Copy your actual project token
+
 ```
-57bf25909dcf40a7b25b5177de1436e9
+YOUR_ACTUAL_CODACY_TOKEN_HERE
 ```
 This token enables Codacy coverage reporting.
 
 **DEEPSOURCE_DSN**
+
+⚠️ **The value below is a PLACEHOLDER. You must obtain your actual DSN from DeepSource:**
+1. Log in to [DeepSource](https://deepsource.io)
+2. Navigate to your DinoAir3 repository
+3. Go to **Settings → Code Coverage**
+4. Copy your actual repository DSN (starts with `dsp_`)
+
 ```
-dsp_bbee27baf1dfad854b491f14005cdb58939e
+YOUR_ACTUAL_DEEPSOURCE_DSN_HERE
 ```
 This DSN enables DeepSource analysis reporting.
 

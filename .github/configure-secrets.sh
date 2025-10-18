@@ -62,12 +62,31 @@ echo -e "${YELLOW}Adding GitHub Secrets${NC}"
 echo "--------------------"
 echo ""
 
+# ⚠️ WARNING: The values below are PLACEHOLDER EXAMPLES
+# You MUST replace them with your actual tokens from:
+# - Codacy: https://app.codacy.com/gh/Dino-pit-studios-llc/DinoAir3/settings/coverage
+# - DeepSource: https://deepsource.io/gh/Dino-pit-studios-llc/DinoAir3/settings
+
+echo -e "${RED}⚠️  WARNING: PLACEHOLDER VALUES DETECTED${NC}"
+echo "The default values in this script are examples and MUST be replaced."
+echo ""
+echo "To get your actual secrets:"
+echo "1. Codacy token: Log in to Codacy → Project Settings → Coverage"
+echo "2. DeepSource DSN: Log in to DeepSource → Repository Settings → Code Coverage"
+echo ""
+read -p "Have you updated the secret values in this script? (yes/no): " confirmation
+
+if [[ "$confirmation" != "yes" ]]; then
+    echo -e "${RED}✗ Please update the secret values in this script before running.${NC}"
+    exit 1
+fi
+
 set_secret "CODACY_PROJECT_TOKEN" \
-    "57bf25909dcf40a7b25b5177de1436e9" \
+    "YOUR_CODACY_PROJECT_TOKEN_HERE" \
     "Codacy project token for coverage reporting"
 
 set_secret "DEEPSOURCE_DSN" \
-    "dsp_bbee27baf1dfad854b491f14005cdb58939e" \
+    "YOUR_DEEPSOURCE_DSN_HERE" \
     "DeepSource repository DSN for code analysis"
 
 echo -e "${GREEN}✓ All secrets configured successfully!${NC}"

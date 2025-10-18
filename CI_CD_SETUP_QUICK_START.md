@@ -22,12 +22,12 @@ Your GitHub Actions CI/CD pipeline has been successfully configured with Codacy 
 4. **Codacy Analysis** (10-20 min)
    - Code quality metrics
    - Coverage reporting
-   - 🔑 Token: `57bf25909dcf40a7b25b5177de1436e9`
+   - ⚠️ Requires your actual Codacy token (see Step 1 below)
 
 5. **DeepSource Analysis** (10-20 min)
    - Python code analysis
    - Secret scanning
-   - 🔑 DSN: `dsp_bbee27baf1dfad854b491f14005cdb58939e`
+   - ⚠️ Requires your actual DeepSource DSN (see Step 1 below)
 
 6. **Docker Build** (15-30 min)
    - Builds and pushes to GitHub Container Registry (ghcr.io)
@@ -49,22 +49,30 @@ Your GitHub Actions CI/CD pipeline has been successfully configured with Codacy 
 
 You **MUST** add two secrets to your GitHub repository for Codacy and DeepSource to work.
 
+⚠️ **IMPORTANT:** The values shown previously were PLACEHOLDER examples. You must obtain your actual secrets:
+
+**Get Your Actual Secrets:**
+- **Codacy Token:** Log in to [Codacy](https://app.codacy.com) → Your Project → Settings → Coverage → Project API token
+- **DeepSource DSN:** Log in to [DeepSource](https://deepsource.io) → Your Repository → Settings → Code Coverage → DSN (starts with `dsp_`)
+
 **Option A: Web UI (Easiest)**
 1. Go to: https://github.com/Dino-pit-studios-llc/DinoAir3/settings/secrets/actions
 2. Click **New repository secret**
-3. Add `CODACY_PROJECT_TOKEN` = `57bf25909dcf40a7b25b5177de1436e9`
-4. Add `DEEPSOURCE_DSN` = `dsp_bbee27baf1dfad854b491f14005cdb58939e`
+3. Add `CODACY_PROJECT_TOKEN` = (paste your actual Codacy token)
+4. Add `DEEPSOURCE_DSN` = (paste your actual DeepSource DSN)
 
-**Option B: GitHub CLI**
+**Option B: GitHub CLI Script**
 ```bash
+# First, edit .github/configure-secrets.sh and replace placeholder values with your actual secrets
 chmod +x .github/configure-secrets.sh
 .github/configure-secrets.sh
 ```
 
 **Option C: Manual CLI**
 ```bash
-gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "57bf25909dcf40a7b25b5177de1436e9"
-gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "dsp_bbee27baf1dfad854b491f14005cdb58939e"
+# Replace the placeholder values with your actual secrets
+gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_CODACY_TOKEN"
+gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_DEEPSOURCE_DSN"
 ```
 
 ### Step 2: Push to GitHub
