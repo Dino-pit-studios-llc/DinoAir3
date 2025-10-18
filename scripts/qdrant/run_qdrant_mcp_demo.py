@@ -16,6 +16,7 @@ import sys
 import time
 from pathlib import Path
 from subprocess import TimeoutExpired
+
 # Remove the import of TimeoutExpired if not used
 from typing import Any
 
