@@ -201,7 +201,6 @@ def process_file(file_path: str) -> bool:
 
 def main():
     """Process tools files for docstring generation."""
-
     # Key tool files to process
     target_files = [
         "tools/notes_tool.py",

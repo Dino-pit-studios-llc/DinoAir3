@@ -30,18 +30,16 @@ class ShutdownMixin:
     @property
     def is_shutdown(self) -> bool:
         """Return ``True`` when shutdown has already completed."""
-
         return self._is_shutdown
 
     def register_shutdown_callback(self, callback: ShutdownCallback) -> None:
         """Register a callback executed after primary cleanup.
 
-        Callbacks are invoked in *last-in, first-out* order once the
+        Callbacks are invoked in *last-in, first-in, first-out* order once the
         shutdown sequence completes successfully. If the component was
         already shut down, the callback executes immediately to guarantee
         consistent semantics.
         """
-
         if not callable(callback):
             raise TypeError("callback must be callable")
 
@@ -53,7 +51,6 @@ class ShutdownMixin:
 
     def shutdown(self) -> None:
         """Perform shutdown exactly once, swallowing non-critical errors."""
-
         with self._shutdown_lock:
             if self._is_shutdown:
                 return
@@ -74,7 +71,6 @@ class ShutdownMixin:
 
     def _run_cleanup(self) -> None:
         """Invoke ``_cleanup_resources`` if implemented by the subclass."""
-
         cleanup = getattr(self, "_cleanup_resources", None)
         if cleanup is None:
             return
@@ -86,7 +82,6 @@ class ShutdownMixin:
 
     def _run_callbacks(self) -> None:
         """Invoke registered shutdown callbacks in LIFO order."""
-
         while self._shutdown_callbacks:
             callback = self._shutdown_callbacks.pop()
             ShutdownMixin._invoke_callback(callback)

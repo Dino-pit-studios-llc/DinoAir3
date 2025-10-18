@@ -44,14 +44,12 @@ class SecurityPolicy(ABC):
 
 def register_security_policy(factory: SecurityPolicyFactory) -> None:
     """Register a custom factory that provides a notes SecurityPolicy."""
-
     global _SECURITY_POLICY_FACTORY
     _SECURITY_POLICY_FACTORY = factory
 
 
 def _load_policy_from_registry() -> SecurityPolicy | None:
     """Return a registered security policy instance if available."""
-
     if _SECURITY_POLICY_FACTORY is None:
         return None
 

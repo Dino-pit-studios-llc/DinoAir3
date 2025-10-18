@@ -129,7 +129,6 @@ def _validate_argument(
 
 def _call_validator(validator: "Callable[..., None]", arg_name: str, value: Any) -> None:
     """Call validator with appropriate signature"""
-
     try:
         sig = _inspect.signature(validator)
         param_count = len(sig.parameters)

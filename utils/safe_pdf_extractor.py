@@ -287,7 +287,7 @@ class SafePDFProcessor:
             # Fourth pass: Fix '%' followed by non-printable characters - process in chunks for large files
             chunk_size = 65536  # 64KB chunks
             overlap = 10  # Small overlap to preserve boundary matches
-            
+
             if len(content_str) < 100000:
                 # Small files: process normally
                 content_str = re.sub(NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, content_str)
@@ -295,23 +295,25 @@ class SafePDFProcessor:
                 # Large files: process in overlapping chunks
                 sanitized_chunks = []
                 start = 0
-                
+
                 while start < len(content_str):
                     end = min(start + chunk_size, len(content_str))
                     chunk = content_str[start:end]
-                    
+
                     # Apply sanitization to chunk
-                    sanitized_chunk = re.sub(NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk)
-                    
+                    sanitized_chunk = re.sub(
+                        NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk
+                    )
+
                     # For non-first chunks, skip the overlap portion to avoid duplicates
                     if start > 0:
                         sanitized_chunk = sanitized_chunk[overlap:]
-                    
+
                     sanitized_chunks.append(sanitized_chunk)
-                    
+
                     # Move start forward, accounting for overlap
                     start = end - overlap if end < len(content_str) else end
-                
+
                 content_str = "".join(sanitized_chunks)
 
             # Convert back to bytes

@@ -32,7 +32,7 @@ def sanitize_for_log(value: Any, max_length: int = 200) -> str:
     # Convert to string and limit size immediately to prevent DoS
     str_value = str(value)
     if len(str_value) > max_length * 2:  # Pre-truncate very large input
-        str_value = str_value[:max_length * 2]
+        str_value = str_value[: max_length * 2]
 
     # Replace newlines and carriage returns with escaped versions
     sanitized = str_value.replace("\n", "\\n").replace("\r", "\\r")

@@ -266,7 +266,6 @@ class UserManager:
         **kwargs,
     ) -> User:
         """Create a new user account."""
-
         # Validate inputs
         if self.get_user_by_username(username):
             raise ValueError(f"Username '{username}' already exists")
@@ -313,7 +312,6 @@ class UserManager:
         require_mfa: bool = True,
     ) -> Session | None:
         """Authenticate user and create session."""
-
         auth_user = self.get_user_by_username(username)
         if not auth_user:
             return None
@@ -356,7 +354,6 @@ class UserManager:
 
     def verify_mfa(self, session_id: str, mfa_code: str) -> bool:
         """Verify MFA code and update session."""
-
         auth_session = self.sessions.get(session_id)
         if not auth_session or auth_session.is_expired():
             return False
@@ -382,7 +379,6 @@ class UserManager:
 
     def enable_mfa(self, user_id: str) -> dict[str, Any]:
         """Enable MFA for user and return setup information."""
-
         target_user = self.users.get(user_id)
         if not target_user:
             raise ValueError("User not found")
@@ -413,7 +409,6 @@ class UserManager:
 
     def change_password(self, user_id: str, old_password: str, new_password: str) -> None:
         """Change user password with policy validation."""
-
         target_user = self.users.get(user_id)
         if not target_user:
             raise ValueError("User not found")
@@ -483,7 +478,6 @@ class UserManager:
         mfa_verified: bool = False,
     ) -> Session:
         """Create new user session."""
-
         session_id = secrets.token_urlsafe(32)
         now = datetime.now(UTC)
 
@@ -623,7 +617,6 @@ class AuthenticationMiddleware:
 
     async def get_current_user(self, credentials: HTTPAuthorizationCredentials = Depends()) -> User:
         """Get current authenticated user."""
-
         if not credentials:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -676,7 +669,6 @@ class AuthenticationMiddleware:
 
 def get_role_permissions() -> dict[UserRole, set[Permission]]:
     """Get role-to-permission mapping."""
-
     return {
         # Administrative Roles
         UserRole.system_admin: {
