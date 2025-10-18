@@ -208,7 +208,7 @@ class AlertManager:
         msg.attach(MIMEText(body, "plain"))
         return msg
 
-        @staticmethod
+    @staticmethod
     def _format_email_body(alert: Alert) -> str:
         """Format email body for alert."""
         metric_line = (

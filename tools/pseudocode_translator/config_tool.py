@@ -94,7 +94,7 @@ def validate_config(path: str, lenient: bool = False) -> tuple[int, dict]:
             return cfg_result
 
         cfg = cfg_result[1].get("config")
-        validation_result = _validate_config_with_manager(cfg, lenient, str(p))
+        validation_result = _validate_config(cfg, lenient, str(p))
         return validation_result
 
     finally:
@@ -233,7 +233,7 @@ def _apply_streaming_section(cfg, raw: dict) -> None:
                 setattr(cfg.streaming, k, v)
 
 
-return (0, {})
+def _validate_config(cfg, lenient: bool = False, path: str = "") -> tuple[int, dict]:
     """Validate configuration using ConfigManager.
 
     Args:
