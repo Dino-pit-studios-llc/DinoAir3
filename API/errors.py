@@ -1,3 +1,10 @@
+"""
+Utilities for API error handling.
+
+Provides functions to extract trace identifiers, normalize and flatten validation errors, record metrics,
+and generate standardized JSON error responses for various exception types in FastAPI applications.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -32,6 +39,7 @@ VALIDATION_MESSAGE = "One or more validation errors occurred."
 
 
 def _trace_id_from_request(request: Request) -> str:
+    """Retrieve a trace identifier from the request scope or headers for request correlation."""
     # Prefer the middleware-assigned trace_id in scope
     trace_id = request.scope.get("trace_id")
     if isinstance(trace_id, str) and trace_id:
@@ -42,6 +50,7 @@ def _trace_id_from_request(request: Request) -> str:
 
 
 def _normalize_loc(v: JSONValue) -> list[str]:
+    """Normalize the location field in validation errors to a list of strings."""
     # Treat strings as a single location element instead of an iterable of chars
     if isinstance(v, str):
         return [v]
@@ -53,6 +62,7 @@ def _normalize_loc(v: JSONValue) -> list[str]:
 def _flatten_validation_errors(
     exc: ValidationError | RequestValidationError,
 ) -> list[dict[str, str | list[str]]]:
+    """Flatten Pydantic or FastAPI validation errors into a list of dictionaries with loc, msg, and type."""
     errors_attr = getattr(exc, "errors", None)
     if not callable(errors_attr):
         return []
@@ -85,6 +95,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
 
 def _record_metrics(status_code: int) -> None:
+    """Increment metrics counters based on the HTTP status code (total, 4xx, 5xx, and specific known codes)."""
     try:
         inc_counter("requests_total")
         if 400 <= status_code < 500:
@@ -111,6 +122,7 @@ def _json_error_response(
     message: str,
     details: ErrorDetails = None,
 ) -> JSONResponse:
+    """Build a standardized JSON error response including trace ID, endpoint, operation ID, and error details."""
     # Derive identifiers and context
     # Use unified helper that prefers scope 'trace_id', then headers
     rid = _trace_id_from_request(request)
@@ -136,6 +148,7 @@ def _json_error_response(
 
 
 def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Handle HTTP exceptions by mapping status codes to error codes, recording metrics, logging, and returning a JSON error response."""
     exc_obj = cast("StarletteHTTPException", exc)
     status_code = exc_obj.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
     message = str(exc_obj.detail)
@@ -181,6 +194,7 @@ def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
 
 
 def request_validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Handle FastAPI request validation errors by flattening error details, recording metrics, logging, and returning a JSON response."""
     exc_obj = cast("RequestValidationError", exc)
     status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     errors = _flatten_validation_errors(exc_obj)
@@ -210,6 +224,7 @@ def request_validation_exception_handler(request: Request, exc: Exception) -> JS
 
 
 def validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Handle Pydantic validation exceptions by flattening error details, recording metrics, logging, and returning a JSON response."""
     exc_obj = cast("ValidationError", exc)
     status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     errors = _flatten_validation_errors(exc_obj)
@@ -239,6 +254,7 @@ def validation_exception_handler(request: Request, exc: Exception) -> JSONRespon
 
 
 def unhandled_exception_handler(request: Request, _exc: Exception) -> JSONResponse:
+    """Handle uncaught exceptions by recording metrics, logging the exception, and returning a generic JSON error response."""
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
     _record_metrics(status_code)
