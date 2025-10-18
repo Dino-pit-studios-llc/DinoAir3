@@ -12,8 +12,32 @@ This script demonstrates how to use the Qdrant MCP server to:
 import json
 import os
 from typing import Any
-
+import urllib.parse
 import requests
+
+
+def is_safe_url(url: str) -> bool:
+    """Restrict URLs to http/https and prevent local/private IPs."""
+    try:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme not in ["http", "https"]:
+            return False
+        host = parsed.hostname
+        # Block localhost and private IP ranges (examples shown, expand as needed)
+        if host in ("localhost", "127.0.0.1", "::1"):
+            return False
+        # Block RFC1918 private ranges (10.*, 172.16-31.*, 192.168.*)
+        if host:
+            parts = host.split(".")
+            if (
+                parts[0] == "10"
+                or (parts[0] == "172" and 16 <= int(parts[1]) <= 31)
+                or (parts[0] == "192" and parts[1] == "168")
+            ):
+                return False
+        return True
+    except Exception:
+        return False
 
 
 class QdrantMCPDemo:
@@ -21,6 +45,8 @@ class QdrantMCPDemo:
 
     def __init__(self, mcp_server_url: str = "http://localhost:8080", api_key: str = None):
         """Initialize demo with MCP server details."""
+        if not is_safe_url(mcp_server_url):
+            raise ValueError(f"Unsafe MCP server URL: {mcp_server_url}")
         self.mcp_server_url = mcp_server_url
         self.api_key = api_key or os.environ.get("QDRANT_API_KEY")
         if not self.api_key:
