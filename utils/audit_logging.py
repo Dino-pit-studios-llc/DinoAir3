@@ -33,7 +33,7 @@ class AuditEventType(Enum):
     login_failure = "auth.login.failure"
     logout = "auth.logout"
     session_timeout = "auth.session.timeout"
-    password_change = "auth.password.change"
+    password_change = "auth.password.change"  # noqa: S105
     mfa_success = "auth.mfa.success"
     mfa_failure = "auth.mfa.failure"
 
@@ -518,12 +518,6 @@ def create_security_audit_manager(
 
 # Global audit manager instance
 _audit_manager: SecurityAuditManager | None = None
-
-_audit_manager = None
-
-_audit_manager: SecurityAuditManager = None
-
-_audit_manager: SecurityAuditManager = None
 
 
 def get_audit_manager() -> SecurityAuditManager:
