@@ -205,7 +205,7 @@ def _apply_llm_models(cfg, llm_data: dict) -> None:
         }
         try:
             cfg.llm.models[name] = ModelConfig(**mc)
-        except Exception:  # noqa: S110
+        except (TypeError, ValueError):  # noqa: S110
             # If construction fails, skip this model
             pass
 
