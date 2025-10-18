@@ -25,3 +25,4 @@ htmlcov/
 # Editor
 .vscode/*.log
 .vscode/ipch/
+.pre-commit-config.yaml
