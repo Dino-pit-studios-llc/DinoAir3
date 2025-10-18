@@ -29,16 +29,10 @@ name = "ktlint"
 name = "google-java-format"
 
 [[transformers]]
-name = "isort"
-
-[[transformers]]
-name = "black"
-
-[[transformers]]
 name = "ruff"
 
 [[transformers]]
-name = "yapf"
+name = "clang-format"
 
 [[transformers]]
-name = "clang-format"
+name = "isort"
