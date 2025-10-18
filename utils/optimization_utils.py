@@ -184,9 +184,7 @@ class StringBuilder:
         """Append text with newline"""
         return self.append(text + "\n")
 
-    def append_format(
-        self, format_str: str, *args: Any, **kwargs: Any
-    ) -> StringBuilder:
+    def append_format(self, format_str: str, *args: Any, **kwargs: Any) -> StringBuilder:
         """Append formatted text"""
         return self.append(format_str.format(*args, **kwargs))
 
@@ -427,11 +425,7 @@ class LazyComponentManager:
         metrics: dict[str, Any] = {
             "total_components": len(self._components),
             "initialized_components": len(
-                [
-                    c
-                    for c in self._components.values()
-                    if c.state == ComponentState.initialized
-                ]
+                [c for c in self._components.values() if c.state == ComponentState.initialized]
             ),
             "initialization_order": self._initialization_order.copy(),
             "component_times": {},
@@ -525,8 +519,7 @@ class SignalConnectionManager:
             "total_connections": total_connections,
             "connection_groups": total_groups,
             "group_details": {
-                group: len(conn_ids)
-                for group, conn_ids in self._connection_groups.items()
+                group: len(conn_ids) for group, conn_ids in self._connection_groups.items()
             },
         }
 
@@ -562,9 +555,7 @@ class DebouncedEventHandler:
     def _execute_callback(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Execute the debounced callback."""
         if event_id in self._callbacks:
-            operation_id = self._performance_monitor.start_operation(
-                f"debounced_event_{event_id}"
-            )
+            operation_id = self._performance_monitor.start_operation(f"debounced_event_{event_id}")
             try:
                 self._callbacks[event_id](*args, **kwargs)
             except RuntimeError as e:
@@ -691,9 +682,7 @@ def get_batch_update_manager() -> BatchUpdateManager:
     return batch_update_manager
 
 
-def debounce_event(
-    event_id: str, callback: Callable[..., Any], *args: Any, **kwargs: Any
-) -> None:
+def debounce_event(event_id: str, callback: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
     """Debounce an event using the global event handler."""
     debounced_event_handler.debounce(event_id, callback, *args, **kwargs)
 

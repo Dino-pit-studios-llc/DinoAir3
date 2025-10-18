@@ -42,10 +42,7 @@ except ImportError:
 
 from mcp import McpServer
 from mcp.models import ServerCapabilities
-from mcp.types import (
-    Resource,
-    Tool,
-)
+from mcp.types import Resource, Tool
 
 # Constants
 QDRANT_DEFAULT_URL = "http://localhost:6333"

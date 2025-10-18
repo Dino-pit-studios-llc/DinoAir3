@@ -9,9 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from .safe_imports import (
-    safe_import_module,  # safe dynamic imports within allowed namespaces
-)
+from .safe_imports import safe_import_module  # safe dynamic imports within allowed namespaces
 
 
 class BlockType(Enum):
@@ -102,8 +100,6 @@ def auto_discover_models() -> None:
             try:
                 # Use validated, allowlisted absolute module path instead of relative import
                 full_module = f"{__name__}.{module_name}"
-                safe_import_module(
-                    full_module
-                )  # validate and import within allowed packages
+                safe_import_module(full_module)  # validate and import within allowed packages
             except Exception as e:
                 logging.debug("Model module '%s' not ready: %s", module_name, e)

@@ -90,9 +90,7 @@ class DependencyContainer:
     def is_registered(self, service_type: type[T]) -> bool:
         """Check if a service type is registered."""
         key = DependencyContainer._get_key(service_type)
-        return (
-            key in self._services or key in self._factories or key in self._singletons
-        )
+        return key in self._services or key in self._factories or key in self._singletons
 
     def clear(self) -> None:
         """Clear all registered services."""

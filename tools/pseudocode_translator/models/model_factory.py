@@ -425,16 +425,11 @@ class ModelFactory:
             failed_priority = ModelPriority.fallback  # Worst priority to include all
 
         # Sort models by priority
-        sorted_models = sorted(
-            cls._registry.items(), key=lambda x: (x[1].priority.value, x[0])
-        )
+        sorted_models = sorted(cls._registry.items(), key=lambda x: (x[1].priority.value, x[0]))
 
         # Add models with same or better priority
         for name, registration in sorted_models:
-            if (
-                name != failed_model
-                and registration.priority.value <= failed_priority.value
-            ):
+            if name != failed_model and registration.priority.value <= failed_priority.value:
                 fallbacks.append(name)
 
         return fallbacks
@@ -466,9 +461,7 @@ class ModelFactory:
             if require_streaming and not cls._supports_streaming(caps):
                 continue
 
-            streaming_match = (
-                1 if (require_streaming and cls._supports_streaming(caps)) else 0
-            )
+            streaming_match = 1 if (require_streaming and cls._supports_streaming(caps)) else 0
             quality_score = cls._get_quality_score(caps)
             tps_max = cls._get_tps_max(caps)
 
@@ -590,8 +583,7 @@ class ModelFactory:
     def _is_model_registered(cls, model_class: type[BaseTranslationModel]) -> bool:
         """Check if a model class is already registered"""
         return any(
-            registration.model_class == model_class
-            for registration in cls._registry.values()
+            registration.model_class == model_class for registration in cls._registry.values()
         )
 
     @classmethod

@@ -658,9 +658,7 @@ def is_safe_user_root(path: Path) -> bool:
     resolved = str(path)
     if os.name == "nt":
         for d in unsafe_windows:
-            if resolved.lower() == d.lower() or resolved.lower().startswith(
-                d.lower() + "\\"
-            ):
+            if resolved.lower() == d.lower() or resolved.lower().startswith(d.lower() + "\\"):
                 return False
     else:
         for d in unsafe_unix:
@@ -685,9 +683,7 @@ if os.name == "nt":
     )
     # Validate that the root_dir is safe, else use fallback
     if not is_safe_user_root(root_dir):
-        logging.warning(
-            "Rejected LOCALAPPDATA environment var as unsafe. Using default location."
-        )
+        logging.warning("Rejected LOCALAPPDATA environment var as unsafe. Using default location.")
         root_dir = get_default_root_dir()
     root_sub = "DinoAir"
 else:
@@ -750,9 +746,7 @@ class DatabaseManager:
         self.user_name = self._determine_user_name(user_name)
         self.user_feedback = user_feedback or print
         self._single_db_path: Path | None = Path(db_path).resolve() if db_path else None
-        self.db_path: str | None = (
-            str(self._single_db_path) if self._single_db_path else None
-        )
+        self.db_path: str | None = str(self._single_db_path) if self._single_db_path else None
         self.base_dir = self._determine_base_dir(base_dir)
         self._handle_pytest_redirection()
         self._validate_and_set_base_dir()
@@ -809,14 +803,9 @@ class DatabaseManager:
             DatabaseManager._validate_user_data_permissions(self.base_dir)
         except OSError as e:
             # For tests or when permissions fail, fall back to temp directory
-            if (
-                os.environ.get("PYTEST_CURRENT_TEST")
-                or "test" in str(self.base_dir).lower()
-            ):
+            if os.environ.get("PYTEST_CURRENT_TEST") or "test" in str(self.base_dir).lower():
                 temp_fallback = (
-                    Path(tempfile.gettempdir())
-                    / "DinoAir_fallback"
-                    / f"user_{os.getpid()}"
+                    Path(tempfile.gettempdir()) / "DinoAir_fallback" / f"user_{os.getpid()}"
                 )
                 self.user_feedback(
                     f"Permission issue with {self.base_dir}, using temp fallback: {temp_fallback}"
@@ -916,9 +905,7 @@ class DatabaseManager:
         cur = conn.cursor()
         try:
             # Check if table exists
-            tables = cur.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
             table_names = {t[0] for t in tables}
             if "note_list" in table_names:
                 cur.execute("PRAGMA table_info(note_list)")
@@ -989,9 +976,7 @@ class DatabaseManager:
         if self._single_db_path is not None and db_key == "file_search":
             # Use an in-memory database associated to the file path to avoid Windows file locking.
             # The temp file still exists and can be unlinked by the test teardown.
-            db_path_str = (
-                f"file:{self._single_db_path.as_posix()}?mode=memory&cache=shared"
-            )
+            db_path_str = f"file:{self._single_db_path.as_posix()}?mode=memory&cache=shared"
             db_path = Path(db_path_str)
         else:
             filename = DB_FILES[db_key]
@@ -1179,9 +1164,7 @@ class DatabaseManager:
                 cursor = conn.cursor()
 
                 # Remove expired session data
-                cursor.execute(
-                    "DELETE FROM session_data WHERE expires_at < CURRENT_TIMESTAMP"
-                )
+                cursor.execute("DELETE FROM session_data WHERE expires_at < CURRENT_TIMESTAMP")
 
                 # Keep only last {MAX_RECENT_NOTES_LIMIT} recent notes
                 cursor.execute(
@@ -1197,9 +1180,7 @@ class DatabaseManager:
                 )
 
                 # Clean old watchdog metrics based on retention policy (parameterized)
-                cutoff = (
-                    datetime.now() - timedelta(days=int(watchdog_retention_days))
-                ).isoformat()
+                cutoff = (datetime.now() - timedelta(days=int(watchdog_retention_days))).isoformat()
                 cursor.execute(
                     """
                     DELETE FROM watchdog_metrics
@@ -1239,21 +1220,14 @@ class DatabaseManager:
                 except OSError:
                     continue
 
-    def _cleanup_old_backups(
-        self, stats: dict[str, int | float], max_backup_age_days: int
-    ) -> None:
-        cutoff_time = time.time() - (
-            max_backup_age_days * HOURS_PER_DAY * SECONDS_PER_HOUR
-        )
+    def _cleanup_old_backups(self, stats: dict[str, int | float], max_backup_age_days: int) -> None:
+        cutoff_time = time.time() - (max_backup_age_days * HOURS_PER_DAY * SECONDS_PER_HOUR)
         backup_patterns = ["*backup*", "*.bak", "*_old*"]
         base_dir = self.user_db_dir.parent
         for pattern in backup_patterns:
             for backup_file in base_dir.glob(f"**/{pattern}"):
                 try:
-                    if (
-                        not backup_file.is_file()
-                        or backup_file.stat().st_mtime >= cutoff_time
-                    ):
+                    if not backup_file.is_file() or backup_file.stat().st_mtime >= cutoff_time:
                         continue
                     backup_file.unlink()
                     stats["backups_removed"] += 1

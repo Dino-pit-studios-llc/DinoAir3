@@ -108,11 +108,7 @@ class EventRuntime:
     def wait_if_paused(self) -> None:
         """Block while paused; returns immediately if not paused."""
         # Spin-wait with short sleep to avoid busy looping.
-        while (
-            self._paused.is_set()
-            and self._running.is_set()
-            and not self._cancelled.is_set()
-        ):
+        while self._paused.is_set() and self._running.is_set() and not self._cancelled.is_set():
             time.sleep(0.01)
 
     def add_listener(self, listener: Callable[[StreamingEventData], None]) -> None:

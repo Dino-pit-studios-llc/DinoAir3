@@ -191,9 +191,7 @@ class QwenModel(BaseModel):
             logger.error("Generation failed: %s", str(e))
             raise RuntimeError(f"Failed to generate text: {str(e)}")
 
-    def translate_instruction(
-        self, instruction: str, context: dict[str, Any] | None = None
-    ) -> str:
+    def translate_instruction(self, instruction: str, context: dict[str, Any] | None = None) -> str:
         """
         Translate an English instruction to Python code
 
@@ -245,9 +243,7 @@ class QwenModel(BaseModel):
         full_prompt = f"{PromptLibrary.SYSTEM_PROMPT}\n\n{prompt}"
 
         # Generate with lower temperature for refinement
-        generated_text = self.generate(
-            full_prompt, temperature=self.config["temperature"] * 0.8
-        )
+        generated_text = self.generate(full_prompt, temperature=self.config["temperature"] * 0.8)
 
         # Extract and validate refined code
         refined_code = self.prompt_engineer.extract_code_from_response(generated_text)

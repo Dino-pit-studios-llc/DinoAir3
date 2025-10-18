@@ -54,9 +54,7 @@ class AddNotesIsDeletedMigration(BaseMigration):
 
                 if "is_deleted" not in columns:
                     # Add the is_deleted column with default value 0
-                    cursor.execute(
-                        "ALTER TABLE note_list ADD COLUMN is_deleted INTEGER DEFAULT 0"
-                    )
+                    cursor.execute("ALTER TABLE note_list ADD COLUMN is_deleted INTEGER DEFAULT 0")
                     conn.commit()
                 else:
                     pass

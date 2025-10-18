@@ -53,9 +53,7 @@ def _ast_to_dict(node: ast.AST, max_depth: int = 500) -> dict[str, Any]:
         _add_node_attributes(n, result)
         return result
 
-    def _add_node_fields(
-        n: ast.AST, result: dict[str, Any], current_depth: int
-    ) -> None:
+    def _add_node_fields(n: ast.AST, result: dict[str, Any], current_depth: int) -> None:
         """Add AST node fields to result."""
         for field_name in n._fields:
             try:
@@ -92,9 +90,7 @@ def _ast_to_dict(node: ast.AST, max_depth: int = 500) -> dict[str, Any]:
 
     def _convert_node(obj: Any, current_depth: int = 0) -> Any:
         if current_depth > max_depth:
-            logger.warning(
-                "AST conversion exceeded max depth %s, truncating", max_depth
-            )
+            logger.warning("AST conversion exceeded max depth %s, truncating", max_depth)
             return _handle_depth_exceeded(obj)
         for typ, func in _convertors:
             if isinstance(obj, typ):
@@ -184,9 +180,7 @@ class ASTCache:
         self.max_memory_bytes = int(max_memory_mb * 1024 * 1024)
         self.enable_compression = enable_compression
         # Eviction policy
-        self.eviction_mode = (
-            eviction_mode if eviction_mode in ("lru", "lfu_lite") else "lru"
-        )
+        self.eviction_mode = eviction_mode if eviction_mode in ("lru", "lfu_lite") else "lru"
         # Bound on LFU-lite scan window (first K items of OrderedDict)
         self._lfu_scan_limit = 64
 
@@ -215,9 +209,7 @@ class ASTCache:
         if ttl_seconds:
             self._start_cleanup_thread()
 
-    def parse(
-        self, source: str | bytes, filename: str = "<unknown>", mode: str = "exec"
-    ) -> Any:
+    def parse(self, source: str | bytes, filename: str = "<unknown>", mode: str = "exec") -> Any:
         """
         Parse source code into an AST, using the cache when possible.
 
@@ -245,26 +237,22 @@ class ASTCache:
                 self._hits += 1
                 # Telemetry: increment-only cache hit counter.
                 # This is effectively free when telemetry is disabled because get_recorder() returns a no-op.
-                from pseudocode_translator.telemetry import (  # lazy import to avoid overhead when disabled
+                from pseudocode_translator.telemetry import (
                     get_recorder,
-                )
+                )  # lazy import to avoid overhead when disabled
 
-                get_recorder().record_event(
-                    "cache", counters={"hit": 1}
-                )  # counters: "hit"
+                get_recorder().record_event("cache", counters={"hit": 1})  # counters: "hit"
                 return entry.ast_obj
 
             # Not in cache, parse it
             self._misses += 1
             # Telemetry: increment-only cache miss counter.
             # Negligible cost when telemetry is disabled due to no-op recorder.
-            from pseudocode_translator.telemetry import (  # lazy import to avoid overhead when disabled
+            from pseudocode_translator.telemetry import (
                 get_recorder,
-            )
+            )  # lazy import to avoid overhead when disabled
 
-            get_recorder().record_event(
-                "cache", counters={"miss": 1}
-            )  # counters: "miss"
+            get_recorder().record_event("cache", counters={"miss": 1})  # counters: "miss"
 
         # Parse outside the lock to avoid blocking
         ast_obj = ast.parse(source, filename, mode)
@@ -308,24 +296,20 @@ class ASTCache:
                 entry.update_access()
                 self._hits += 1
                 # Telemetry: increment-only cache hit counter (no-op when disabled).
-                from pseudocode_translator.telemetry import (  # lazy import to avoid overhead when disabled
+                from pseudocode_translator.telemetry import (
                     get_recorder,
-                )
+                )  # lazy import to avoid overhead when disabled
 
-                get_recorder().record_event(
-                    "cache", counters={"hit": 1}
-                )  # counters: "hit"
+                get_recorder().record_event("cache", counters={"hit": 1})  # counters: "hit"
                 return entry.ast_obj
 
             self._misses += 1
             # Telemetry: increment-only cache miss counter (no-op when disabled).
-            from pseudocode_translator.telemetry import (  # lazy import to avoid overhead when disabled
+            from pseudocode_translator.telemetry import (
                 get_recorder,
-            )
+            )  # lazy import to avoid overhead when disabled
 
-            get_recorder().record_event(
-                "cache", counters={"miss": 1}
-            )  # counters: "miss"
+            get_recorder().record_event("cache", counters={"miss": 1})  # counters: "miss"
             return None
 
     def put(
@@ -378,14 +362,10 @@ class ASTCache:
         """
         with self._lock:
             total_requests = self._hits + self._misses
-            hit_rate = (
-                (self._hits / total_requests * 100) if total_requests > 0 else 0.0
-            )
+            hit_rate = (self._hits / total_requests * 100) if total_requests > 0 else 0.0
 
             # Calculate average entry size
-            avg_entry_size = (
-                self._current_memory_usage / len(self._cache) if self._cache else 0
-            )
+            avg_entry_size = self._current_memory_usage / len(self._cache) if self._cache else 0
 
             # Find hottest entries
             hot_entries = sorted(
@@ -478,13 +458,9 @@ class ASTCache:
                         json.dump(cache_data, gz, indent=None, separators=(",", ":"))
                     gz_file.rename(self.persistent_path / "cache.json.gz")
                 else:
-                    with open(
-                        temp_file.with_suffix(".json"), "w", encoding="utf-8"
-                    ) as f:
+                    with open(temp_file.with_suffix(".json"), "w", encoding="utf-8") as f:
                         json.dump(cache_data, f, indent=None, separators=(",", ":"))
-                    temp_file.with_suffix(".json").rename(
-                        self.persistent_path / "cache.json"
-                    )
+                    temp_file.with_suffix(".json").rename(self.persistent_path / "cache.json")
 
                 logger.info("Saved %d entries to disk", len(cache_data["entries"]))
                 return True
@@ -534,11 +510,7 @@ class ASTCache:
                     # Handle both new JSON-serialized "ast" entries and legacy entries
                     # Security improvement: safe JSON deserialization instead of pickle
                     ast_data = data.get("ast")
-                    if (
-                        ast_data
-                        and isinstance(ast_data, dict)
-                        and "_ast_type" in ast_data
-                    ):
+                    if ast_data and isinstance(ast_data, dict) and "_ast_type" in ast_data:
                         # New JSON format - deserialize from dict to AST
                         try:
                             ast_obj = _dict_to_ast(ast_data)
@@ -601,10 +573,7 @@ class ASTCache:
     def _add_entry(self, cache_key: str, entry: CacheEntry) -> None:
         """Add an entry to the cache with eviction handling"""
         # Check if we need to evict based on memory (policy-based eviction)
-        while (
-            self._current_memory_usage + entry.size_bytes > self.max_memory_bytes
-            and self._cache
-        ):
+        while self._current_memory_usage + entry.size_bytes > self.max_memory_bytes and self._cache:
             self._evict_one(reason="memory")
 
         # Check if we need to evict based on count (policy-based eviction)
@@ -780,10 +749,7 @@ class ASTCache:
         """Check if source code is in the cache"""
         cache_key = ASTCache._generate_cache_key(source, "<unknown>", "exec")
         with self._lock:
-            return (
-                cache_key in self._cache
-                and self._get_valid_entry(cache_key) is not None
-            )
+            return cache_key in self._cache and self._get_valid_entry(cache_key) is not None
 
     def __del__(self):
         """Cleanup when cache is destroyed"""
@@ -806,9 +772,7 @@ _global_cache = ASTCache(
 
 
 # Convenience functions that use the global cache
-def parse_cached(
-    source: str | bytes, filename: str = "<unknown>", mode: str = "exec"
-) -> Any:
+def parse_cached(source: str | bytes, filename: str = "<unknown>", mode: str = "exec") -> Any:
     """
     Parse source code using the global AST cache.
 
@@ -867,8 +831,6 @@ def configure_global_cache(
         persistent_path=persistent_path,
         enable_compression=True,
         eviction_mode=(
-            eviction_mode
-            if eviction_mode is not None
-            else getattr(cache, "eviction_mode", "lru")
+            eviction_mode if eviction_mode is not None else getattr(cache, "eviction_mode", "lru")
         ),
     )

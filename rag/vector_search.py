@@ -17,7 +17,8 @@ from utils.logger import Logger
 
 # Import RAG components
 from .embedding_generator import EmbeddingGenerator, get_embedding_generator
-from .search_common import compute_cosine_scores, extract_keywords  # shared utilities
+from .search_common import compute_cosine_scores  # shared utilities
+from .search_common import extract_keywords
 
 
 @dataclass

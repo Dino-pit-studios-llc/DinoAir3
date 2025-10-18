@@ -82,9 +82,7 @@ class Project:
             "name": self.name,
             "description": self.description,
             "status": (
-                self.status.value
-                if isinstance(self.status, ProjectStatus)
-                else str(self.status)
+                self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)
             ),
             "color": self.color,
             "icon": self.icon,
@@ -117,9 +115,7 @@ class Project:
             "name": self.name,
             "description": self.description,
             "status": (
-                self.status.value
-                if isinstance(self.status, ProjectStatus)
-                else str(self.status)
+                self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)
             ),
             "color": self.color,
             "icon": self.icon,
@@ -168,9 +164,7 @@ class Project:
             ProjectStatus.archived: "📦",
         }
         emoji = status_emoji.get(self.status, "❓")
-        parent_info = (
-            f" (child of {self.parent_project_id})" if self.parent_project_id else ""
-        )
+        parent_info = f" (child of {self.parent_project_id})" if self.parent_project_id else ""
         return f"{emoji} {self.name}{parent_info}"
 
 
@@ -235,9 +229,7 @@ class ProjectStatistics:
         """Calculate completion percentage with proper error handling."""
         try:
             self.completion_percentage = (
-                (self.completed_items / self.total_items) * 100.0
-                if self.total_items
-                else 0.0
+                (self.completed_items / self.total_items) * 100.0 if self.total_items else 0.0
             )
         except (ZeroDivisionError, TypeError, AttributeError):
             self.completion_percentage = 0.0

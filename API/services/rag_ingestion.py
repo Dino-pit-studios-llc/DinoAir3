@@ -33,9 +33,7 @@ class RagIngestionService:
         if not getattr(self.settings, "rag_enabled", True):
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
-        guard = guard_imports(
-            ("rag.directory_validator", "rag.optimized_file_processor")
-        )
+        guard = guard_imports(("rag.directory_validator", "rag.optimized_file_processor"))
         if guard is not None:
             return guard
 
@@ -44,9 +42,7 @@ class RagIngestionService:
             from rag.directory_validator import DirectoryValidator  # type: ignore
 
             # pylint: disable=import-outside-toplevel
-            from rag.optimized_file_processor import (
-                OptimizedFileProcessor,  # type: ignore
-            )
+            from rag.optimized_file_processor import OptimizedFileProcessor  # type: ignore
         except ImportError:
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
@@ -90,15 +86,11 @@ class RagIngestionService:
             log.exception("ingest_directory failed")
             return resp(False, None, str(e), 500)
 
-    def ingest_files(
-        self, paths: list[str], force_reprocess: bool = False
-    ) -> dict[str, Any]:
+    def ingest_files(self, paths: list[str], force_reprocess: bool = False) -> dict[str, Any]:
         if not getattr(self.settings, "rag_enabled", True):
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
-        guard = guard_imports(
-            ("rag.directory_validator", "rag.optimized_file_processor")
-        )
+        guard = guard_imports(("rag.directory_validator", "rag.optimized_file_processor"))
         if guard is not None:
             return guard
 
@@ -107,9 +99,7 @@ class RagIngestionService:
             from rag.directory_validator import DirectoryValidator  # type: ignore
 
             # pylint: disable=import-outside-toplevel
-            from rag.optimized_file_processor import (
-                OptimizedFileProcessor,  # type: ignore
-            )
+            from rag.optimized_file_processor import OptimizedFileProcessor  # type: ignore
         except ImportError:
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
@@ -160,9 +150,7 @@ class RagIngestionService:
                     res = proc.run_single(path, force_reprocess=force_reprocess)
                 else:
                     # Align with FileProcessor signature to ensure DB storage
-                    res = proc.process_file(
-                        path, force_reprocess=force_reprocess, store_in_db=True
-                    )
+                    res = proc.process_file(path, force_reprocess=force_reprocess, store_in_db=True)
 
                 # Normalize and collect minimal stable shape for the response
                 success = bool(res.get("success"))

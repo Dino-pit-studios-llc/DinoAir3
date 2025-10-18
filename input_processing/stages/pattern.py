@@ -329,9 +329,7 @@ class FuzzyMatcher:
         self.candidates: list[str] = [c.lower() for c in candidates]
         self.original_candidates: list[str] = candidates
 
-    def find_best_match(
-        self, query: str, threshold: float = 0.6
-    ) -> tuple[str, float] | None:
+    def find_best_match(self, query: str, threshold: float = 0.6) -> tuple[str, float] | None:
         """Find best matching candidate for query.
 
         Args:
@@ -416,9 +414,7 @@ def normalize_input(text: str) -> tuple[str, dict[str, Any]]:
     return normalizer.normalize(text)
 
 
-def fuzzy_match(
-    query: str, candidates: list[str], threshold: float = 0.6
-) -> str | None:
+def fuzzy_match(query: str, candidates: list[str], threshold: float = 0.6) -> str | None:
     """Find best fuzzy match from candidates.
 
     Args:

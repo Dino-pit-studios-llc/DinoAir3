@@ -79,9 +79,7 @@ class TagTableFallbackMigration(BaseMigration):
         """Populate tag table from existing JSON tag data"""
 
         # Get all notes with tags
-        cursor.execute(
-            "SELECT id, tags FROM note_list WHERE tags IS NOT NULL AND tags != ''"
-        )
+        cursor.execute("SELECT id, tags FROM note_list WHERE tags IS NOT NULL AND tags != ''")
 
         tag_insertions = []
         for row in cursor.fetchall():
@@ -148,17 +146,13 @@ class TagTableHelper:
 
             # Insert new tags
             if tags:
-                normalized_tags = [
-                    (note_id, tag.lower().strip()) for tag in tags if tag.strip()
-                ]
+                normalized_tags = [(note_id, tag.lower().strip()) for tag in tags if tag.strip()]
                 cursor.executemany(
                     "INSERT INTO note_tags (note_id, tag) VALUES (?, ?)",
                     normalized_tags,
                 )
 
-    def get_notes_by_tag_fallback(
-        self, tag: str, table_name: str = "note_list"
-    ) -> list[tuple]:
+    def get_notes_by_tag_fallback(self, tag: str, table_name: str = "note_list") -> list[tuple]:
         """Get notes by tag using normalized tag table"""
         # Enforce allowlisted identifier; default to 'note_list' when invalid
         safe_table = table_name if table_name in SAFE_NOTE_TABLES else "note_list"
@@ -166,9 +160,7 @@ class TagTableHelper:
 
         with self.db_manager.get_notes_connection() as conn:
             cursor = conn.cursor()
-            query = SQL_GET_NOTES_BY_TAG.get(
-                safe_table, SQL_GET_NOTES_BY_TAG["note_list"]
-            )
+            query = SQL_GET_NOTES_BY_TAG.get(safe_table, SQL_GET_NOTES_BY_TAG["note_list"])
             cursor.execute(
                 query,
                 (normalized_tag,),

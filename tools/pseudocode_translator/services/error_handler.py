@@ -119,9 +119,7 @@ class ErrorHandler:
         # Add stack trace for debugging if needed
         if severity in (ErrorSeverity.high, ErrorSeverity.critical):
             metadata["stack_trace"] = "".join(
-                traceback.format_exception(
-                    type(exception), exception, exception.__traceback__
-                )
+                traceback.format_exception(type(exception), exception, exception.__traceback__)
             )
 
         # Track error frequency
@@ -180,9 +178,7 @@ class ErrorHandler:
 
         # Add cause details if available
         if error_info.cause:
-            parts.append(
-                f"Caused by: {type(error_info.cause).__name__}: {error_info.cause}"
-            )
+            parts.append(f"Caused by: {type(error_info.cause).__name__}: {error_info.cause}")
 
         return "\n".join(parts)
 
@@ -268,9 +264,7 @@ class ErrorHandler:
                 ]
             )
         elif category == ErrorCategory.parsing:
-            suggestions.extend(
-                ["Check input format", "Verify encoding", "Review parsing rules"]
-            )
+            suggestions.extend(["Check input format", "Verify encoding", "Review parsing rules"])
         elif category == ErrorCategory.model:
             suggestions.extend(
                 [

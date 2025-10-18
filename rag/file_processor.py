@@ -172,9 +172,7 @@ class FileProcessor:
                                 }
                             )
                             results["stats"]["processed"] += 1
-                            results["stats"]["total_chunks"] += len(
-                                file_result.get("chunks", [])
-                            )
+                            results["stats"]["total_chunks"] += len(file_result.get("chunks", []))
                             results["stats"]["total_embeddings"] += (
                                 file_result.get("stats", {}) or {}
                             ).get("embeddings_generated", 0)
@@ -190,9 +188,7 @@ class FileProcessor:
                     results["stats"]["skipped"] += 1
                 except Exception as e:  # pragma: no cover - defensive
                     self.logger.error("Error processing file %s: %s", file_path, str(e))
-                    results["failed_files"].append(
-                        {"file_path": file_path, "error": str(e)}
-                    )
+                    results["failed_files"].append({"file_path": file_path, "error": str(e)})
                     results["stats"]["failed"] += 1
 
             # If any failures, mark overall as not fully successful
@@ -262,9 +258,7 @@ class FileProcessor:
             self.logger.error("Failed to initialize embedding generator: %s", str(e))
             self._embedding_generator = None
 
-    def _find_files(
-        self, root: str, recursive: bool, file_extensions: Iterable[str]
-    ) -> list[str]:
+    def _find_files(self, root: str, recursive: bool, file_extensions: Iterable[str]) -> list[str]:
         """
         Enumerate files under root matching allowed extensions.
 
@@ -303,9 +297,7 @@ class FileProcessor:
             for ext in (file_extensions or [])
         }
 
-    def _find_files_non_recursive(
-        self, root: str, normalized_exts: set[str]
-    ) -> list[str]:
+    def _find_files_non_recursive(self, root: str, normalized_exts: set[str]) -> list[str]:
         """Find files in a single directory (non-recursive).
 
         Args:

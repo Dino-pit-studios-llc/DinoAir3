@@ -143,9 +143,7 @@ def error_response(
     )
 
 
-def not_implemented(
-    method: str, path: str, operation_id: str | None = None
-) -> JSONResponse:
+def not_implemented(method: str, path: str, operation_id: str | None = None) -> JSONResponse:
     """Canonical 501 Not Implemented payload for unimplemented HTTP endpoints."""
     return error_response(
         status=501,

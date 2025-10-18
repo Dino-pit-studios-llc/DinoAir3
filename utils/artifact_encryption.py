@@ -64,9 +64,7 @@ class ArtifactEncryption:
         # CBC requires unpredictable IVs; 16 bytes = 128-bit block size for AES
         return os.urandom(self.iv_length)
 
-    def encrypt_data(
-        self, data: str | bytes, key: bytes | None = None
-    ) -> dict[str, str]:
+    def encrypt_data(self, data: str | bytes, key: bytes | None = None) -> dict[str, str]:
         """
         Encrypt data using AES-256-CBC
 
@@ -113,9 +111,7 @@ class ArtifactEncryption:
             "iv": base64.b64encode(iv).decode("utf-8"),
         }
 
-    def decrypt_data(
-        self, encrypted_data: dict[str, str], key: bytes | None = None
-    ) -> bytes:
+    def decrypt_data(self, encrypted_data: dict[str, str], key: bytes | None = None) -> bytes:
         """
         Decrypt data encrypted with encrypt_data
 

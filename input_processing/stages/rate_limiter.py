@@ -73,9 +73,7 @@ class RateLimiter:
         self.config = config or RateLimitConfig()
 
         # Storage for different strategies
-        self.fixed_windows: dict[str, dict[str, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
+        self.fixed_windows: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
         self.sliding_windows: dict[str, deque] = defaultdict(deque)
         self.token_buckets: dict[str, dict[str, float]] = defaultdict(
             lambda: {
@@ -143,9 +141,7 @@ class RateLimiter:
 
             # Check if penalty should be applied
             if status.violations >= self.config.penalty_threshold:
-                penalty_until = datetime.now() + timedelta(
-                    seconds=self.config.penalty_duration
-                )
+                penalty_until = datetime.now() + timedelta(seconds=self.config.penalty_duration)
                 self.penalties[key] = penalty_until
                 status.penalty_until = penalty_until
                 status.message = f"Too many violations. Penalty applied until {penalty_until.strftime('%H:%M:%S')}"
@@ -181,9 +177,7 @@ class RateLimiter:
         current_count = self.fixed_windows[key][window_key]
 
         if current_count >= limit:
-            reset_time = datetime.fromtimestamp(
-                (current_window + 1) * self.config.window_seconds
-            )
+            reset_time = datetime.fromtimestamp((current_window + 1) * self.config.window_seconds)
             return RateLimitStatus(
                 allowed=False,
                 remaining_requests=0,
@@ -194,9 +188,7 @@ class RateLimiter:
         # Increment counter
         self.fixed_windows[key][window_key] += 1
 
-        reset_time = datetime.fromtimestamp(
-            (current_window + 1) * self.config.window_seconds
-        )
+        reset_time = datetime.fromtimestamp((current_window + 1) * self.config.window_seconds)
 
         return RateLimitStatus(
             allowed=True,

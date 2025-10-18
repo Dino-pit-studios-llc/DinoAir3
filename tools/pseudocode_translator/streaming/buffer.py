@@ -223,8 +223,7 @@ class StreamBuffer:
                 "size": self._current_size,
                 "chunks": len(self._buffer),
                 "hit_rate": (
-                    self._stats["hits"]
-                    / max(1, self._stats["hits"] + self._stats["misses"])
+                    self._stats["hits"] / max(1, self._stats["hits"] + self._stats["misses"])
                 ),
             }
 
@@ -244,9 +243,7 @@ class StreamBuffer:
             json_bytes = json_str.encode("utf-8")
 
             # Compress
-            return gzip.compress(
-                json_bytes, compresslevel=self.config.compression_level
-            )
+            return gzip.compress(json_bytes, compresslevel=self.config.compression_level)
 
         except Exception as e:
             logger.error("Compression error: %s", e)

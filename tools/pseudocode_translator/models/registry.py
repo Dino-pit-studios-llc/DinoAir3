@@ -56,9 +56,7 @@ class ModelRegistry:
         if model_name in cls._models:
             existing = cls._models[model_name]
             if existing != model_class:
-                raise ValueError(
-                    f"Model '{model_name}' already registered as {existing.__name__}"
-                )
+                raise ValueError(f"Model '{model_name}' already registered as {existing.__name__}")
             return  # Same class, skip re-registration
 
         # Register the model

@@ -139,9 +139,7 @@ class GPT2Model(BaseModel):
             return "class GeneratedClass:\n    def __init__(self):\n        pass"
         return "# Generated code would appear here"
 
-    def translate_instruction(
-        self, instruction: str, context: dict[str, Any] | None = None
-    ) -> str:
+    def translate_instruction(self, instruction: str, context: dict[str, Any] | None = None) -> str:
         """Translate instruction to code using GPT-2"""
         # Format instruction as a prompt
         prompt = f"# Instruction: {instruction}\n# Python code:\n"
@@ -166,9 +164,7 @@ class GPT2Model(BaseModel):
         """GPT-2 supports streaming generation"""
         return True
 
-    def stream_generate(
-        self, prompt: str, callback: Callable[[str], None], **kwargs
-    ) -> None:
+    def stream_generate(self, prompt: str, callback: Callable[[str], None], **kwargs) -> None:
         """
         Stream generation token by token
 

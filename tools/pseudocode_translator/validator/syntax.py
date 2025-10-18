@@ -77,9 +77,7 @@ class SyntaxValidator:
                 config=self.config,
                 line_number=e.lineno,
                 column_number=e.offset,
-                code_snippet=(
-                    lines[e.lineno - 1] if e.lineno and e.lineno <= len(lines) else None
-                ),
+                code_snippet=(lines[e.lineno - 1] if e.lineno and e.lineno <= len(lines) else None),
                 surrounding_lines=(
                     SyntaxValidator(self.config)._get_surrounding_lines(lines, e.lineno)
                     if e.lineno
@@ -113,9 +111,7 @@ class SyntaxValidator:
             result.add_error(error.format_error())
             return None
 
-    def _apply_syntax_checks(
-        self, tree: ast.AST, code: str, result: ValidationResult
-    ) -> None:
+    def _apply_syntax_checks(self, tree: ast.AST, code: str, result: ValidationResult) -> None:
         """Apply various syntax-related checks."""
         self._apply_indentation_checks(code, result)
         self._apply_import_checks(tree, result)
@@ -143,9 +139,7 @@ class SyntaxValidator:
             for issue in common_issues:
                 result.add_warning(issue)
 
-    def _apply_unsafe_operation_checks(
-        self, code: str, result: ValidationResult
-    ) -> None:
+    def _apply_unsafe_operation_checks(self, code: str, result: ValidationResult) -> None:
         """Apply unsafe operation checks if not allowed."""
         if not self.allow_unsafe:
             unsafe_ops = self._check_unsafe_operations(code)
@@ -296,9 +290,7 @@ class SyntaxValidator:
         except Exception as e:
             return [f"Unexpected tokenization error: {e}"]
 
-    def _add_syntax_suggestions(
-        self, error: ValidationError, syntax_error: SyntaxError, code: str
-    ):
+    def _add_syntax_suggestions(self, error: ValidationError, syntax_error: SyntaxError, code: str):
         """Add automatic suggestions for syntax errors."""
         if syntax_error.text:
             suggestion = self._suggest_syntax_fix(code, syntax_error)
@@ -328,9 +320,7 @@ class SyntaxValidator:
     @staticmethod
     def _syntax_mismatch_fix(problem_line: str) -> str | None:
         """Fix common syntax mismatches."""
-        if problem_line.strip().startswith(
-            "if "
-        ) and not problem_line.rstrip().endswith(":"):
+        if problem_line.strip().startswith("if ") and not problem_line.rstrip().endswith(":"):
             return problem_line.rstrip() + ":"
         return None
 
@@ -357,9 +347,7 @@ class SyntaxValidator:
         return None
 
     @staticmethod
-    def _process_bracket_char(
-        char: str, brackets: dict, stack: list, line: str
-    ) -> str | None:
+    def _process_bracket_char(char: str, brackets: dict, stack: list, line: str) -> str | None:
         """Process a single character for bracket matching."""
         if char in brackets:
             stack.append(brackets[char])
@@ -411,9 +399,7 @@ class SyntaxValidator:
         return SyntaxValidator._handle_unclosed_string(line, in_string, quote_char)
 
     @staticmethod
-    def _handle_unclosed_string(
-        line: str, in_string: bool, quote_char: str | None
-    ) -> str | None:
+    def _handle_unclosed_string(line: str, in_string: bool, quote_char: str | None) -> str | None:
         """Handle unclosed string at end of line."""
         if in_string and quote_char:
             return line + quote_char

@@ -381,9 +381,7 @@ def execute_system_command(command: str, timeout: int = 30) -> dict[str, Any]:
                 "error": "Command cannot be empty",
             }
 
-        proc = safe_run(
-            parts, allowed_binaries=ALLOWED_BINARIES, timeout=timeout, text=True
-        )
+        proc = safe_run(parts, allowed_binaries=ALLOWED_BINARIES, timeout=timeout, text=True)
         execution_time = (datetime.datetime.now() - start_time).total_seconds()
 
         return build_success(
@@ -431,9 +429,7 @@ def execute_system_command(command: str, timeout: int = 30) -> dict[str, Any]:
         }
 
 
-def create_json_data(
-    data: dict[str, Any], file_path: str | None = None
-) -> dict[str, Any]:
+def create_json_data(data: dict[str, Any], file_path: str | None = None) -> dict[str, Any]:
     r"""
     Create or manipulate JSON data with optional file output.
 

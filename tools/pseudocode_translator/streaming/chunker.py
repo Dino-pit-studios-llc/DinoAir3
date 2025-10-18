@@ -99,16 +99,12 @@ class CodeChunker:
             try:
                 return self._chunk_by_ast(code, filename)
             except SyntaxError as e:
-                logger.warning(
-                    "AST parsing failed, falling back to line-based chunking: %s", e
-                )
+                logger.warning("AST parsing failed, falling back to line-based chunking: %s", e)
 
         # Fall back to line-based chunking
         return self._chunk_by_lines(code)
 
-    def stream_chunks(
-        self, code: str, filename: str | None = None
-    ) -> Iterator[CodeChunk]:
+    def stream_chunks(self, code: str, filename: str | None = None) -> Iterator[CodeChunk]:
         """
         Stream code chunks as they are generated
 
@@ -224,11 +220,7 @@ class CodeChunker:
         """Check if node is a function, class, or import definition"""
         return isinstance(
             node,
-            ast.FunctionDef
-            | ast.AsyncFunctionDef
-            | ast.ClassDef
-            | ast.Import
-            | ast.ImportFrom,
+            ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef | ast.Import | ast.ImportFrom,
         )
 
     @staticmethod
@@ -393,9 +385,7 @@ class CodeChunker:
             ):
                 # Try to find a good split point
                 if self.config.respect_boundaries:
-                    split_point = CodeChunker._find_line_split_point(
-                        current_chunk_lines
-                    )
+                    split_point = CodeChunker._find_line_split_point(current_chunk_lines)
                     if split_point < len(current_chunk_lines) - 1:
                         # Split at the found point
                         chunk_content = "".join(current_chunk_lines[: split_point + 1])
@@ -407,8 +397,7 @@ class CodeChunker:
                                 start_line=chunk_start_line + 1,
                                 end_line=chunk_start_line + split_point + 1,
                                 start_byte=chunk_start_byte,
-                                end_byte=chunk_start_byte
-                                + len(chunk_content.encode("utf-8")),
+                                end_byte=chunk_start_byte + len(chunk_content.encode("utf-8")),
                                 chunk_index=len(chunks),
                                 metadata={"line_based": True},
                             )
@@ -503,9 +492,7 @@ class CodeChunker:
         """Get indentation level of a line"""
         return len(line) - len(line.lstrip())
 
-    def _add_overlap(
-        self, chunks: list[CodeChunk], lines: list[str]
-    ) -> list[CodeChunk]:
+    def _add_overlap(self, chunks: list[CodeChunk], lines: list[str]) -> list[CodeChunk]:
         """
         Add overlap between chunks for better context
 
@@ -537,8 +524,7 @@ class CodeChunker:
                     new_start_line = max(1, chunk.start_line - len(overlap_lines))
                     new_start_byte = max(
                         0,
-                        chunk.start_byte
-                        - sum(len(line.encode("utf-8")) for line in overlap_lines),
+                        chunk.start_byte - sum(len(line.encode("utf-8")) for line in overlap_lines),
                     )
 
             overlapped_chunks.append(

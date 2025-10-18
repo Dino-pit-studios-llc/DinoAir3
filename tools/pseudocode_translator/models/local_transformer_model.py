@@ -85,9 +85,7 @@ class LocalTransformerModel(BaseTranslationModel):
         # Set default configuration
         self.config.setdefault("model_name", "Salesforce/codegen-350M-mono")
         self.config.setdefault("device", "cuda" if torch.cuda.is_available() else "cpu")
-        self.config.setdefault(
-            "torch_dtype", "float16" if torch.cuda.is_available() else "float32"
-        )
+        self.config.setdefault("torch_dtype", "float16" if torch.cuda.is_available() else "float32")
         self.config.setdefault("temperature", 0.3)
         self.config.setdefault("top_p", 0.9)
         self.config.setdefault("top_k", 40)
@@ -161,9 +159,7 @@ class LocalTransformerModel(BaseTranslationModel):
             model_path: Optional local path to model
             **kwargs: Additional initialization parameters
         """
-        model_name_or_path = (
-            str(model_path) if model_path else self.config["model_name"]
-        )
+        model_name_or_path = str(model_path) if model_path else self.config["model_name"]
         logger.info("Loading transformer model: %s", model_name_or_path)
 
         try:
@@ -258,9 +254,7 @@ class LocalTransformerModel(BaseTranslationModel):
                 )
 
             # Decode output
-            generated_text = self._tokenizer.decode(
-                outputs[0], skip_special_tokens=True
-            )
+            generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             # Remove prompt from output
             if generated_text.startswith(prompt):

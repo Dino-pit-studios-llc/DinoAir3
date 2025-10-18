@@ -13,9 +13,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..models.base_model import TranslationResult as ModelTranslationResult
-from ..models.safe_imports import (
-    safe_import_module,  # Validated import to prevent injection
-)
+from ..models.safe_imports import safe_import_module  # Validated import to prevent injection
 
 if TYPE_CHECKING:
     from collections.abc import Callable

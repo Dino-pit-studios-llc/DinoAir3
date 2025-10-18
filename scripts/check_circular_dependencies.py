@@ -229,9 +229,7 @@ def format_output(
             "circular_dependencies": [
                 {
                     "cycle": cycle,
-                    "files": [
-                        str(module_paths.get(module, "unknown")) for module in cycle
-                    ],
+                    "files": [str(module_paths.get(module, "unknown")) for module in cycle],
                     "suggestions": suggestions.get(" -> ".join(cycle), []),
                 }
                 for cycle in cycles

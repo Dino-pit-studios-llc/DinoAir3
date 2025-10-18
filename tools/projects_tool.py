@@ -525,9 +525,7 @@ def search_projects(query: str, user_name: str = "default_user") -> dict[str, An
         }
 
 
-def get_projects_by_status(
-    status: str, user_name: str = "default_user"
-) -> dict[str, Any]:
+def get_projects_by_status(status: str, user_name: str = "default_user") -> dict[str, Any]:
     """
     Retrieve all projects with the specified status.
 
@@ -606,9 +604,7 @@ def get_projects_by_status(
         }
 
 
-def get_project_statistics(
-    project_id: str, user_name: str = "default_user"
-) -> dict[str, Any]:
+def get_project_statistics(project_id: str, user_name: str = "default_user") -> dict[str, Any]:
     """
     Get comprehensive statistics for a specific project.
 
@@ -662,9 +658,7 @@ def get_project_statistics(
             "completion_percentage": stats.completion_percentage,
             "days_since_last_activity": stats.days_since_last_activity,
             "last_activity_date": (
-                stats.last_activity_date.isoformat()
-                if stats.last_activity_date
-                else None
+                stats.last_activity_date.isoformat() if stats.last_activity_date else None
             ),
         }
 
@@ -683,9 +677,7 @@ def get_project_statistics(
         }
 
 
-def get_project_tree(
-    project_id: str, user_name: str = "default_user"
-) -> dict[str, Any]:
+def get_project_tree(project_id: str, user_name: str = "default_user") -> dict[str, Any]:
     """
     Get the hierarchical tree structure starting from a project.
 

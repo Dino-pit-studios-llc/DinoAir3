@@ -44,9 +44,7 @@ def worker_validate(ast_obj) -> ValidationResult:
     Creates a fresh Validator with default config to keep isolation.
     """
     code = ast_obj if isinstance(ast_obj, str) else str(ast_obj)
-    cfg = (
-        TranslatorConfig()
-    )  # use defaults; validation semantics match in-process defaults
+    cfg = TranslatorConfig()  # use defaults; validation semantics match in-process defaults
     validator = Validator(cfg)
     return validator.validate_syntax(code)
 
@@ -123,9 +121,7 @@ class ParseValidateExecutor:
     def _emit(self, et: EventType, **data) -> None:
         if self._dispatcher:
             with contextlib.suppress(Exception):
-                self._dispatcher.dispatch_event(
-                    et, source=self.__class__.__name__, **data
-                )
+                self._dispatcher.dispatch_event(et, source=self.__class__.__name__, **data)
 
     def _ensure_pool(self) -> None:
         if self._pool is not None:
@@ -179,12 +175,8 @@ class ParseValidateExecutor:
         # job size guardrail
         cap = int(self._config.process_pool_job_max_chars)
         if cap > 0 and len(text) > cap:
-            self._emit(
-                EventType.EXEC_POOL_FALLBACK, kind="parse", reason="job_too_large"
-            )
-            self._rec.record_event(
-                "exec_pool.fallback", counters={"exec_pool.fallback": 1}
-            )
+            self._emit(EventType.EXEC_POOL_FALLBACK, kind="parse", reason="job_too_large")
+            self._rec.record_event("exec_pool.fallback", counters={"exec_pool.fallback": 1})
             return _ImmediateFallback("job_too_large")
 
         # respect target
@@ -193,9 +185,7 @@ class ParseValidateExecutor:
 
         self._ensure_pool()
         # submit
-        self._emit(
-            EventType.EXEC_POOL_TASK_SUBMITTED, kind="parse", size_chars=len(text)
-        )
+        self._emit(EventType.EXEC_POOL_TASK_SUBMITTED, kind="parse", size_chars=len(text))
         self._rec.record_event("exec_pool.submit", counters={"exec_pool.submit": 1})
         spec = _TaskSpec(kind="parse", func=self._parse_fn, args=(text,))
         # type: ignore[arg-type]
@@ -257,9 +247,7 @@ class ParseValidateExecutor:
                 kind=self._spec.kind,
                 duration_ms=dur_ms,
             )
-            self._p.record_event(
-                "exec_pool.complete", counters={"exec_pool.complete": 1}
-            )
+            self._p.record_event("exec_pool.complete", counters={"exec_pool.complete": 1})
             self._p.record_event("exec_pool.task_ms", duration_ms=dur_ms)
             return res
 
@@ -304,9 +292,7 @@ class ParseValidateExecutor:
                 kind=self._spec.kind,
                 reason=reason,
             )
-            self._p.record_event(
-                "exec_pool.fallback", counters={"exec_pool.fallback": 1}
-            )
+            self._p.record_event("exec_pool.fallback", counters={"exec_pool.fallback": 1})
             raise ValueError("Failed to emit fallback telemetry")
 
         def _emit_unexpected_fallback_and_raise(self) -> None:
@@ -316,7 +302,5 @@ class ParseValidateExecutor:
                 kind=self._spec.kind,
                 reason="broken_pool",
             )
-            self._p.record_event(
-                "exec_pool.fallback", counters={"exec_pool.fallback": 1}
-            )
+            self._p.record_event("exec_pool.fallback", counters={"exec_pool.fallback": 1})
             raise RuntimeError("Unexpected execution pool fallback")

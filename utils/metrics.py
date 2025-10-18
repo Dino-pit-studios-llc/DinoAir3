@@ -42,9 +42,7 @@ except Exception:  # pragma: no cover - fallback for test environments without d
 class DinoAirMetrics:
     """Central metrics collection class for DinoAir application."""
 
-    def __init__(
-        self, host: str = "localhost", port: int = 8125, prefix: str = "dinoair"
-    ):
+    def __init__(self, host: str = "localhost", port: int = 8125, prefix: str = "dinoair"):
         """
         Initialize the metrics client.
 
@@ -65,9 +63,7 @@ class DinoAirMetrics:
 
         self.logger.info("Initialized DinoAir metrics client: %s:%s", host, port)
 
-    def increment(
-        self, metric_name: str, value: int = 1, tags: list[str] | None = None
-    ) -> None:
+    def increment(self, metric_name: str, value: int = 1, tags: list[str] | None = None) -> None:
         """
         Increment a counter metric.
 
@@ -80,9 +76,7 @@ class DinoAirMetrics:
         self.client.increment(metric_name, value=value, tags=all_tags)
         self.logger.debug("Incremented metric %s by %s", metric_name, value)
 
-    def decrement(
-        self, metric_name: str, value: int = 1, tags: list[str] | None = None
-    ) -> None:
+    def decrement(self, metric_name: str, value: int = 1, tags: list[str] | None = None) -> None:
         """
         Decrement a counter metric.
 
@@ -95,9 +89,7 @@ class DinoAirMetrics:
         self.client.decrement(metric_name, value=value, tags=all_tags)
         self.logger.debug("Decremented metric %s by %s", metric_name, value)
 
-    def gauge(
-        self, metric_name: str, value: float, tags: list[str] | None = None
-    ) -> None:
+    def gauge(self, metric_name: str, value: float, tags: list[str] | None = None) -> None:
         """
         Set a gauge metric value.
 
@@ -110,9 +102,7 @@ class DinoAirMetrics:
         self.client.gauge(metric_name, value=value, tags=all_tags)
         self.logger.debug("Set gauge %s to %s", metric_name, value)
 
-    def histogram(
-        self, metric_name: str, value: float, tags: list[str] | None = None
-    ) -> None:
+    def histogram(self, metric_name: str, value: float, tags: list[str] | None = None) -> None:
         """
         Record a histogram value.
 
@@ -125,9 +115,7 @@ class DinoAirMetrics:
         self.client.histogram(metric_name, value=value, tags=all_tags)
         self.logger.debug("Recorded histogram %s value %s", metric_name, value)
 
-    def timing(
-        self, metric_name: str, value: float, tags: list[str] | None = None
-    ) -> None:
+    def timing(self, metric_name: str, value: float, tags: list[str] | None = None) -> None:
         """
         Record a timing metric in milliseconds.
 
@@ -208,9 +196,7 @@ def get_metrics_client() -> DinoAirMetrics:
 
 
 # Convenience functions
-def increment_counter(
-    metric_name: str, value: int = 1, tags: list[str] | None = None
-) -> None:
+def increment_counter(metric_name: str, value: int = 1, tags: list[str] | None = None) -> None:
     """Increment a counter metric using the global client."""
     get_metrics_client().increment(metric_name, value, tags)
 
@@ -220,9 +206,7 @@ def record_gauge(metric_name: str, value: float, tags: list[str] | None = None) 
     get_metrics_client().gauge(metric_name, value, tags)
 
 
-def record_timing(
-    metric_name: str, value: float, tags: list[str] | None = None
-) -> None:
+def record_timing(metric_name: str, value: float, tags: list[str] | None = None) -> None:
     """Record a timing metric using the global client."""
     get_metrics_client().timing(metric_name, value, tags)
 
@@ -236,9 +220,7 @@ def track_page_view(page_name: str, user_id: str | None = None) -> None:
     increment_counter("page.views", tags=tags)
 
 
-def track_api_request(
-    endpoint: str, method: str, status_code: int, duration_ms: float
-) -> None:
+def track_api_request(endpoint: str, method: str, status_code: int, duration_ms: float) -> None:
     """Track an API request."""
     tags = [f"endpoint:{endpoint}", f"method:{method}", f"status_code:{status_code}"]
 
@@ -266,9 +248,7 @@ def track_security_event(
     increment_counter("security.events", tags=tags)
 
 
-def track_translation_request(
-    source_lang: str, target_lang: str, success: bool
-) -> None:
+def track_translation_request(source_lang: str, target_lang: str, success: bool) -> None:
     """Track a translation request."""
     tags = [
         f"source_lang:{source_lang}",
@@ -292,9 +272,7 @@ _request_counts: dict[str, int] = {}
 _response_times: list[float] = []
 
 
-def track_request(
-    endpoint: str, method: str, status_code: int, duration_ms: float
-) -> None:
+def track_request(endpoint: str, method: str, status_code: int, duration_ms: float) -> None:
     """
     Minimal request tracking for tests:
     - Count requests per method

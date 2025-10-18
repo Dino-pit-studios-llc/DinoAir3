@@ -63,9 +63,7 @@ class ImprovementAnalyzer:
         """Check style violations for a single line."""
         violations = []
         violations.extend(ImprovementAnalyzer._check_line_length(line, line_num))
-        violations.extend(
-            ImprovementAnalyzer._check_trailing_whitespace(line, line_num)
-        )
+        violations.extend(ImprovementAnalyzer._check_trailing_whitespace(line, line_num))
         violations.extend(ImprovementAnalyzer._check_naming_conventions(line))
         violations.extend(ImprovementAnalyzer._check_spacing_style(line, line_num))
         return violations
@@ -99,11 +97,8 @@ class ImprovementAnalyzer:
         if function_match:
             func_name = function_match.group(1)
             if (
-                func_name != func_name.lower()
-                or not re.match(r"^[a-z_][a-z0-9_]*$", func_name)
-            ) and not func_name.startswith(
-                "_"
-            ):  # Allow private methods to be different
+                func_name != func_name.lower() or not re.match(r"^[a-z_][a-z0-9_]*$", func_name)
+            ) and not func_name.startswith("_"):  # Allow private methods to be different
                 return [f"Function '{func_name}' should use snake_case naming"]
         return []
 
@@ -194,9 +189,7 @@ class ImprovementAnalyzer:
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
-                suggestions.extend(
-                    ImprovementAnalyzer._check_function_readability(node)
-                )
+                suggestions.extend(ImprovementAnalyzer._check_function_readability(node))
             elif isinstance(node, ast.ClassDef):
                 suggestions.extend(ImprovementAnalyzer._check_class_readability(node))
 
@@ -270,11 +263,7 @@ class ImprovementAnalyzer:
         suggestions = []
 
         # Check for missing docstrings
-        if (
-            not ast.get_docstring(node)
-            and not node.name.startswith("_")
-            and len(node.body) > 5
-        ):
+        if not ast.get_docstring(node) and not node.name.startswith("_") and len(node.body) > 5:
             suggestions.append(
                 f"Function '{node.name}' at line {node.lineno} should have a docstring"
             )
@@ -313,15 +302,11 @@ class ImprovementAnalyzer:
 
         for pattern, message in secret_patterns:
             if re.search(pattern, code, re.IGNORECASE):
-                suggestions.append(
-                    f"{message} - use environment variables or config files"
-                )
+                suggestions.append(f"{message} - use environment variables or config files")
 
         # Check for SQL concatenation
         if re.search(r"['\"][^'\"]*SELECT[^'\"]*['\"].+\+", code, re.IGNORECASE):
-            suggestions.append(
-                "Potential SQL injection risk - use parameterized queries"
-            )
+            suggestions.append("Potential SQL injection risk - use parameterized queries")
 
         # Check for shell command construction
         if re.search(r"os\.system\s*\(['\"][^'\"]*['\"].+\+", code):

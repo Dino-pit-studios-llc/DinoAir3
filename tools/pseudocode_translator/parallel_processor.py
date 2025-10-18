@@ -243,9 +243,7 @@ class ParallelProcessor:
         if self.mode == ProcessingMode.thread:
             return self._process_with_threads(tasks, progress_callback, error_callback)
         if self.mode == ProcessingMode.process:
-            return self._process_with_processes(
-                tasks, progress_callback, error_callback
-            )
+            return self._process_with_processes(tasks, progress_callback, error_callback)
         # hybrid
         return self._process_hybrid(tasks, progress_callback, error_callback)
 
@@ -391,16 +389,12 @@ class ParallelProcessor:
 
         # Process small files in threads
         if small_tasks:
-            thread_results = self._process_with_threads(
-                small_tasks, None, error_callback
-            )
+            thread_results = self._process_with_threads(small_tasks, None, error_callback)
             results.extend(thread_results)
 
         # Process large files in processes
         if large_tasks:
-            process_results = self._process_with_processes(
-                large_tasks, None, error_callback
-            )
+            process_results = self._process_with_processes(large_tasks, None, error_callback)
             results.extend(process_results)
 
         # Final progress update
@@ -504,9 +498,7 @@ class ParallelProcessor:
 
         except Exception as e:
             logger.error("Processing error for %s: %s", task.file_path, e)
-            return ProcessingResult(
-                file_path=task.file_path, success=False, errors=[str(e)]
-            )
+            return ProcessingResult(file_path=task.file_path, success=False, errors=[str(e)])
 
     def process_directory(
         self,
@@ -532,11 +524,7 @@ class ParallelProcessor:
             raise ValueError(f"Not a directory: {directory}")
 
         # Find matching files
-        files = (
-            list(directory.rglob(pattern))
-            if recursive
-            else list(directory.glob(pattern))
-        )
+        files = list(directory.rglob(pattern)) if recursive else list(directory.glob(pattern))
 
         logger.info("Found %d files matching '%s'", len(files), pattern)
 
@@ -552,12 +540,8 @@ class ParallelProcessor:
 
             # Calculate averages
             if stats["files_processed"] > 0:
-                stats["avg_time_per_file"] = (
-                    stats["total_time"] / stats["files_processed"]
-                )
-                stats["success_rate"] = (
-                    stats["files_succeeded"] / stats["files_processed"] * 100
-                )
+                stats["avg_time_per_file"] = stats["total_time"] / stats["files_processed"]
+                stats["success_rate"] = stats["files_succeeded"] / stats["files_processed"] * 100
             else:
                 stats["avg_time_per_file"] = 0
                 stats["success_rate"] = 0
@@ -577,9 +561,7 @@ class ParallelProcessor:
 
 
 # Helper function for process pool
-def _process_file_in_subprocess(
-    task: FileTask, config: TranslatorConfig
-) -> ProcessingResult:
+def _process_file_in_subprocess(task: FileTask, config: TranslatorConfig) -> ProcessingResult:
     """
     Process a file in a subprocess (for process pool)
 
@@ -714,9 +696,7 @@ class BatchProcessor:
         # Process files
         results = self.processor.process_files(
             all_files,
-            progress_callback=lambda p, m: logger.info(
-                "Progress: %.1f%% - %s", p * 100, m
-            ),
+            progress_callback=lambda p, m: logger.info("Progress: %.1f%% - %s", p * 100, m),
         )
 
         # Handle results

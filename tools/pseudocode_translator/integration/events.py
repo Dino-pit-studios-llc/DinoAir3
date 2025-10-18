@@ -217,9 +217,7 @@ class EventDispatcher(ShutdownMixin):
                 try:
                     handler.handle(event)
                 except Exception as e:
-                    logger.error(
-                        "Error delivering event %s to handler: %s", event.name, e
-                    )
+                    logger.error("Error delivering event %s to handler: %s", event.name, e)
 
     def register(self, handler: EventHandler) -> None:
         """
@@ -240,9 +238,7 @@ class EventDispatcher(ShutdownMixin):
             handler: Handler to unregister
         """
         with self._lock:
-            self._handlers = [
-                h for h in self._handlers if h() is not None and h() != handler
-            ]
+            self._handlers = [h for h in self._handlers if h() is not None and h() != handler]
 
     def dispatch(self, event: TranslationEvent) -> None:
         """
@@ -260,9 +256,7 @@ class EventDispatcher(ShutdownMixin):
             # Sync delivery
             self._deliver_event(event)
 
-    def dispatch_event(
-        self, event_type: EventType, source: str | None = None, **data
-    ) -> None:
+    def dispatch_event(self, event_type: EventType, source: str | None = None, **data) -> None:
         """
         Convenience method to create and dispatch an event
 
@@ -321,9 +315,7 @@ class EventMixin:
             **data: Event data
         """
         if self._event_dispatcher:
-            self._event_dispatcher.dispatch_event(
-                event_type, source=self._event_source, **data
-            )
+            self._event_dispatcher.dispatch_event(event_type, source=self._event_source, **data)
 
 
 def create_event_dispatcher() -> EventDispatcher:
@@ -344,9 +336,7 @@ def create_event_dispatcher() -> EventDispatcher:
         elif event.type == EventType.system_warning:
             level = logging.WARNING
 
-        logger.log(
-            level, "Event: %s from %s", event.name, event.source, extra=event.data
-        )
+        logger.log(level, "Event: %s from %s", event.name, event.source, extra=event.data)
 
     log_handler = EventHandler(
         log_event, filter_func=lambda e: e.type != EventType.translation_progress

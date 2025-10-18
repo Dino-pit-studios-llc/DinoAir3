@@ -201,11 +201,7 @@ class HealthChecker:
             )
         try:
             redis_client: Any = aioredis.from_url(  # type: ignore[union-attr]
-                (
-                    f"redis://:{password}@{host}:{port}"
-                    if password
-                    else f"redis://{host}:{port}"
-                ),
+                (f"redis://:{password}@{host}:{port}" if password else f"redis://{host}:{port}"),
                 decode_responses=True,
             )
 
@@ -253,9 +249,7 @@ class HealthChecker:
             )
 
     @retry_on_failure()
-    async def check_postgres(
-        self, name: str = "postgres", dsn: str | None = None
-    ) -> HealthCheck:
+    async def check_postgres(self, name: str = "postgres", dsn: str | None = None) -> HealthCheck:
         """Check PostgreSQL health."""
         start_time = time.perf_counter()
 
@@ -299,9 +293,7 @@ class HealthChecker:
             if result == 1:
                 version_str = str(stats["version"])
                 version_parts = version_str.split()
-                version_fmt = (
-                    " ".join(version_parts[:2]) if version_parts else version_str
-                )
+                version_fmt = " ".join(version_parts[:2]) if version_parts else version_str
                 return HealthCheck(
                     name=name,
                     status=HealthStatus.healthy,

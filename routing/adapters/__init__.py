@@ -32,15 +32,15 @@ def make_adapter(kind: str, adapter_config: Mapping[str, Any]) -> ServiceAdapter
     """
     k = (kind or "").strip().lower()
     if k == "local_python":
-        from .local_python import (  # lazy import  # pylint: disable=import-outside-toplevel
+        from .local_python import (
             LocalPythonAdapter,
-        )
+        )  # lazy import  # pylint: disable=import-outside-toplevel
 
         return LocalPythonAdapter(adapter_config)
     if k == "lmstudio":
-        from .lmstudio import (  # lazy import  # pylint: disable=import-outside-toplevel
+        from .lmstudio import (
             LMStudioAdapter,
-        )
+        )  # lazy import  # pylint: disable=import-outside-toplevel
 
         return LMStudioAdapter(adapter_config)
     raise AdapterError(

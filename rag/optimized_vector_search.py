@@ -18,7 +18,8 @@ import numpy as np
 # Import DinoAir components
 from utils import Logger
 
-from .search_common import compute_cosine_scores, text_similarity  # shared utilities
+from .search_common import compute_cosine_scores  # shared utilities
+from .search_common import text_similarity
 
 # Import RAG components
 from .vector_search import SearchResult, VectorSearchEngine
@@ -57,9 +58,7 @@ def _compute_cosine_chunk_scores(
     filter by threshold, and return (score, emb_data) pairs.
     """
     # Convert query to list[float] deterministically
-    query_list = [
-        float(x) for x in np.asarray(query_embedding, dtype=np.float64).tolist()
-    ]
+    query_list = [float(x) for x in np.asarray(query_embedding, dtype=np.float64).tolist()]
     scores = compute_cosine_scores(query_list, docs_list, mode="auto")
     results: list[tuple[float, dict[str, Any]]] = [
         (float(sim), emb_data)
@@ -213,9 +212,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
                     return cached_results
 
             # Generate query embedding
-            query_embedding = self.embedding_generator.generate_embedding(
-                query, normalize=True
-            )
+            query_embedding = self.embedding_generator.generate_embedding(query, normalize=True)
 
             # Get embeddings (with caching)
             all_embeddings = self._get_cached_embeddings(file_types)
@@ -243,9 +240,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
             self.logger.error("Error performing optimized search: %s", str(e))
             return []
 
-    def _get_cached_embeddings(
-        self, file_types: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    def _get_cached_embeddings(self, file_types: list[str] | None = None) -> list[dict[str, Any]]:
         """Get embeddings with caching"""
         # Check if cache needs refresh
         current_time = time.time()
@@ -266,11 +261,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
 
         # Filter by file types if needed
         if file_types and self._embeddings_cache:
-            return [
-                emb
-                for emb in self._embeddings_cache
-                if emb.get("file_type") in file_types
-            ]
+            return [emb for emb in self._embeddings_cache if emb.get("file_type") in file_types]
 
         return self._embeddings_cache or []
 
@@ -287,15 +278,12 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
         # Split embeddings for parallel processing
         chunk_size = max(100, len(all_embeddings) // self.max_workers)
         chunks = [
-            all_embeddings[i : i + chunk_size]
-            for i in range(0, len(all_embeddings), chunk_size)
+            all_embeddings[i : i + chunk_size] for i in range(0, len(all_embeddings), chunk_size)
         ]
 
         # Process chunks in parallel
         all_results: list[tuple[float, dict[str, Any]]] = []
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.max_workers
-        ) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             future_to_chunk = {
                 executor.submit(
                     self._process_embedding_chunk,
@@ -327,9 +315,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
         """Process a chunk of embeddings"""
         if distance_metric == "cosine":
             docs_list, meta_ref = _prepare_docs_for_cosine(embeddings_chunk)
-            return _compute_cosine_chunk_scores(
-                query_embedding, docs_list, meta_ref, threshold
-            )
+            return _compute_cosine_chunk_scores(query_embedding, docs_list, meta_ref, threshold)
         # Euclidean path (unchanged)
         results: list[tuple[float, dict[str, Any]]] = []
         for emb_data in embeddings_chunk:
@@ -431,9 +417,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
                     file_types,
                 )
 
-                keyword_future = executor.submit(
-                    self.keyword_search, query, top_k * 2, file_types
-                )
+                keyword_future = executor.submit(self.keyword_search, query, top_k * 2, file_types)
 
                 # Get results
                 vector_results = vector_future.result()
@@ -488,12 +472,9 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
             search_func = self.hybrid_search
 
         # Process queries in parallel
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.max_workers
-        ) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             future_to_query = {
-                executor.submit(search_func, query, top_k, **kwargs): query
-                for query in queries
+                executor.submit(search_func, query, top_k, **kwargs): query for query in queries
             }
 
             for future in concurrent.futures.as_completed(future_to_query):
@@ -655,9 +636,7 @@ class SearchOptimizer:
         words = query.lower().split()
 
         # Remove stop words and short words
-        key_terms = [
-            word for word in words if word not in self.stop_words and len(word) > 2
-        ]
+        key_terms = [word for word in words if word not in self.stop_words and len(word) > 2]
 
         # Add bigrams for better context
         bigrams = []
@@ -725,8 +704,7 @@ class SearchOptimizer:
                 # Check content similarity
                 if (
                     # shared utility
-                    text_similarity(result.content, kept_result.content)
-                    > similarity_threshold
+                    text_similarity(result.content, kept_result.content) > similarity_threshold
                 ):
                     is_duplicate = True
                     break

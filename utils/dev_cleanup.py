@@ -32,9 +32,7 @@ class UserDataCleanupManager:
 
         # Configure logging
         level = logging.DEBUG if verbose else logging.INFO
-        logging.basicConfig(
-            level=level, format="%(asctime)s - %(levelname)s - %(message)s"
-        )
+        logging.basicConfig(level=level, format="%(asctime)s - %(levelname)s - %(message)s")
 
     @staticmethod
     def get_user_data_directories() -> dict[str, Path]:
@@ -178,9 +176,7 @@ class UserDataCleanupManager:
                             size_mb,
                         )
                     else:
-                        LOGGER.info(
-                            "Removing test directory: %s (%.2f MB)", test_dir, size_mb
-                        )
+                        LOGGER.info("Removing test directory: %s (%.2f MB)", test_dir, size_mb)
                         shutil.rmtree(test_dir)
 
                     stats["directories_removed"] += 1
@@ -244,9 +240,7 @@ class UserDataCleanupManager:
 
         return stats
 
-    def cleanup_database_connections(
-        self, user_name: str | None = None
-    ) -> dict[str, int]:
+    def cleanup_database_connections(self, user_name: str | None = None) -> dict[str, int]:
         """Clean up active database connections and memory data.
 
         Args:
@@ -267,9 +261,7 @@ class UserDataCleanupManager:
             manager = DatabaseManager(user_name=user_name or "cleanup_user")
 
             # Clean memory database (this also closes connections)
-            manager.clean_memory_database(
-                watchdog_retention_days=0
-            )  # Aggressive cleanup
+            manager.clean_memory_database(watchdog_retention_days=0)  # Aggressive cleanup
             stats["memory_cleaned"] = 1
 
             LOGGER.info("Cleaned database connections and memory data")
@@ -315,8 +307,7 @@ class UserDataCleanupManager:
         # 4. Summary
         total_space_freed = sum(r.get("space_freed_mb", 0) for r in results.values())
         total_items_removed = sum(
-            r.get("directories_removed", 0) + r.get("files_removed", 0)
-            for r in results.values()
+            r.get("directories_removed", 0) + r.get("files_removed", 0) for r in results.values()
         )
 
         results["summary"] = {

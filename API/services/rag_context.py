@@ -59,9 +59,7 @@ class RagContextService:
             log.exception("get_context provider invocation failed")
             return resp(False, None, str(e), 500)
 
-        success_val, normalized_data, error_msg = (
-            RagContextService._normalize_context_data(data)
-        )
+        success_val, normalized_data, error_msg = RagContextService._normalize_context_data(data)
         return resp(success_val, normalized_data, error_msg, 200)
 
     # -------------------------
@@ -81,9 +79,7 @@ class RagContextService:
         return (method if callable(method) else None), False
 
     @staticmethod
-    def _filtered_kwargs(
-        method: Callable[..., Any], kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _filtered_kwargs(method: Callable[..., Any], kwargs: dict[str, Any]) -> dict[str, Any]:
         try:
             sig = inspect.signature(method)
             return {k: v for k, v in kwargs.items() if k in sig.parameters}

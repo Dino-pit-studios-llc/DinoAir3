@@ -266,9 +266,7 @@ class BaseTranslationModel(ABC, ShutdownMixin):
                 logger.error("Failed to translate instruction %d: %s", i + 1, e)
                 language = config.target_language if config else OutputLanguage.python
                 results.append(
-                    TranslationResult(
-                        success=False, code=None, language=language, errors=[str(e)]
-                    )
+                    TranslationResult(success=False, code=None, language=language, errors=[str(e)])
                 )
 
         return results
@@ -308,9 +306,7 @@ class BaseTranslationModel(ABC, ShutdownMixin):
             True if language is supported, False otherwise
         """
         if not self.metadata.supports_language(language):
-            logger.warning(
-                "Language %s not supported by %s", language.value, self.metadata.name
-            )
+            logger.warning("Language %s not supported by %s", language.value, self.metadata.name)
             return False
 
         return True

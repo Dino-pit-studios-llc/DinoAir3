@@ -202,9 +202,7 @@ class StructuredParsingService(ShutdownMixin):
                 return self._translate_pseudocode_block(block, target_language)
             if block_type_name == "COMMENT":
                 # Comment block
-                return StructuredParsingService._translate_comment_block(
-                    block, target_language
-                )
+                return StructuredParsingService._translate_comment_block(block, target_language)
             # Mixed or unknown block
             return self._translate_mixed_block(block, target_language)
 
@@ -212,9 +210,7 @@ class StructuredParsingService(ShutdownMixin):
             logger.warning("Failed to translate block %d: %s", block_index, e)
             return None
 
-    def _translate_python_block(
-        self, block: str, target_language: OutputLanguage
-    ) -> str:
+    def _translate_python_block(self, block: str, target_language: OutputLanguage) -> str:
         """Translate Python code block to target language."""
         if target_language == OutputLanguage.PYTHON:
             # Already Python, just clean up
@@ -224,18 +220,14 @@ class StructuredParsingService(ShutdownMixin):
         # For other languages, add a comment noting the conversion
         return f"# Python code block (conversion to {target_language.value} needed):\n# {block}"
 
-    def _translate_pseudocode_block(
-        self, block: str, target_language: OutputLanguage
-    ) -> str:
+    def _translate_pseudocode_block(self, block: str, target_language: OutputLanguage) -> str:
         """Translate natural language pseudocode to target language."""
         # Basic rule-based translation for common patterns
         lines = block.split("\n")
         translated_lines = []
 
         for line in lines:
-            translated_line = self._translate_pseudocode_line(
-                line.strip(), target_language
-            )
+            translated_line = self._translate_pseudocode_line(line.strip(), target_language)
             if translated_line:
                 translated_lines.append(translated_line)
 
@@ -247,22 +239,16 @@ class StructuredParsingService(ShutdownMixin):
         if target_language == OutputLanguage.PYTHON:
             # Python uses # for comments
             lines = block.split("\n")
-            return "\n".join(
-                f"# {line.strip()}" if line.strip() else "#" for line in lines
-            )
+            return "\n".join(f"# {line.strip()}" if line.strip() else "#" for line in lines)
         if target_language == OutputLanguage.JAVASCRIPT:
             # JavaScript uses // for single line comments
             lines = block.split("\n")
-            return "\n".join(
-                f"// {line.strip()}" if line.strip() else "//" for line in lines
-            )
+            return "\n".join(f"// {line.strip()}" if line.strip() else "//" for line in lines)
         # Default to # style comments
         lines = block.split("\n")
         return "\n".join(f"# {line.strip()}" if line.strip() else "#" for line in lines)
 
-    def _translate_mixed_block(
-        self, block: str, target_language: OutputLanguage
-    ) -> str:
+    def _translate_mixed_block(self, block: str, target_language: OutputLanguage) -> str:
         """Translate mixed content block."""
         # For mixed blocks, try to identify and translate components
         lines = block.split("\n")
@@ -286,9 +272,7 @@ class StructuredParsingService(ShutdownMixin):
 
         return "\n".join(translated_lines)
 
-    def _translate_pseudocode_line(
-        self, line: str, target_language: OutputLanguage
-    ) -> str:
+    def _translate_pseudocode_line(self, line: str, target_language: OutputLanguage) -> str:
         """Translate a single pseudocode line to target language."""
         line_lower = line.lower()
         translator = self._find_pseudocode_translator(line_lower)
@@ -328,9 +312,7 @@ class StructuredParsingService(ShutdownMixin):
         return StructuredParsingService._default_pseudocode_line(line, target_language)
 
     @staticmethod
-    def _handle_while(
-        line: str, line_lower: str, target_language: OutputLanguage
-    ) -> str:
+    def _handle_while(line: str, line_lower: str, target_language: OutputLanguage) -> str:
         condition = line[6:-1].strip()
         if target_language == OutputLanguage.PYTHON:
             return f"while {condition}:"
@@ -339,9 +321,7 @@ class StructuredParsingService(ShutdownMixin):
         return StructuredParsingService._default_pseudocode_line(line, target_language)
 
     @staticmethod
-    def _handle_function(
-        line: str, line_lower: str, target_language: OutputLanguage
-    ) -> str:
+    def _handle_function(line: str, line_lower: str, target_language: OutputLanguage) -> str:
         if target_language == OutputLanguage.PYTHON:
             return line.replace("function ", "def ")
         if target_language == OutputLanguage.JAVASCRIPT:
@@ -416,9 +396,7 @@ class StructuredParsingService(ShutdownMixin):
         js_lines = []
 
         for line in lines:
-            js_line = StructuredParsingService._translate_code_line(
-                line, OutputLanguage.JAVASCRIPT
-            )
+            js_line = StructuredParsingService._translate_code_line(line, OutputLanguage.JAVASCRIPT)
             # Handle indentation (convert Python indentation to braces)
             if line.strip() and not line.strip().startswith("#"):
                 js_lines.append(js_line)
@@ -426,16 +404,12 @@ class StructuredParsingService(ShutdownMixin):
         return "\n".join(js_lines)
 
     @staticmethod
-    def _combine_blocks(
-        translated_blocks: list[str], target_language: OutputLanguage
-    ) -> str:
+    def _combine_blocks(translated_blocks: list[str], target_language: OutputLanguage) -> str:
         """Combine translated blocks into final code."""
         return "\n\n".join(block for block in translated_blocks if block.strip())
 
     @staticmethod
-    def _validate_generated_code(
-        code: str, target_language: OutputLanguage
-    ) -> list[str]:
+    def _validate_generated_code(code: str, target_language: OutputLanguage) -> list[str]:
         """Validate generated code and return warnings."""
         warnings = []
 

@@ -78,9 +78,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
             "safe_import import failed",
             extra={"key": k, "module": module_name, "error": str(exc)},
         )
-        raise SafeImportError(
-            f"import failed for allowed module: {module_name!r}"
-        ) from exc
+        raise SafeImportError(f"import failed for allowed module: {module_name!r}") from exc
 
 
 def safe_load_attr(module: ModuleType, name: str, allowed: set[str]) -> Any:

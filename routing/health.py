@@ -96,13 +96,8 @@ def _adapter_registration_status() -> str:
     """
     # Prefer core_router's local singleton first
     try:
-        from .router import (
-            get_router as _core_get_router,  # local import to avoid cycles
-        )
-        from .router import (
-            router_singleton,
-            router_singleton_lock,
-        )
+        from .router import get_router as _core_get_router  # local import to avoid cycles
+        from .router import router_singleton, router_singleton_lock
 
         sr = _core_get_router(router_singleton, router_singleton_lock)
         registry = getattr(sr, "_registry", None)
@@ -117,9 +112,7 @@ def _adapter_registration_status() -> str:
 
     # Fallback to API router client, if available
     try:
-        from api.services.router_client import (
-            get_router as _api_get_router,  # type: ignore
-        )
+        from api.services.router_client import get_router as _api_get_router  # type: ignore
 
         sr = _api_get_router(router_singleton, router_singleton_lock)
         registry = getattr(sr, "_registry", None)

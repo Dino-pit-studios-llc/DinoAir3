@@ -85,9 +85,7 @@ class JSONFileExporter(TelemetryExporter):
                 with open(self.output_file, "w", encoding="utf-8") as f:
                     json.dump(existing_data, f, indent=2, default=str)
 
-                logger.debug(
-                    "Exported %d metrics to %s", len(metrics), self.output_file
-                )
+                logger.debug("Exported %d metrics to %s", len(metrics), self.output_file)
                 return True
 
         except OSError as e:
@@ -133,11 +131,7 @@ class PrometheusExporter(TelemetryExporter):
             prometheus_lines = []
 
             for metric in metrics:
-                operation = (
-                    metric.get("operation", "unknown")
-                    .replace("-", "_")
-                    .replace(".", "_")
-                )
+                operation = metric.get("operation", "unknown").replace("-", "_").replace(".", "_")
                 timestamp = int(metric.get("timestamp", time.time()) * 1000)
 
                 # Duration metric
@@ -262,9 +256,7 @@ class TelemetryManager:
                     output_file = self.config.output_file or "telemetry_metrics.prom"
                     self._exporter = PrometheusExporter(output_file)
                 else:
-                    raise ValueError(
-                        f"Unsupported export format: {self.config.export_format}"
-                    )
+                    raise ValueError(f"Unsupported export format: {self.config.export_format}")
 
             elif self.config.export_destination == "http":
                 if not self.config.http_endpoint:
@@ -437,10 +429,7 @@ class TelemetryManager:
     def get_metrics_count(self) -> dict[str, int]:
         """Get current metrics count by operation."""
         with self._lock:
-            return {
-                operation: len(metrics)
-                for operation, metrics in self._metrics_buffer.items()
-            }
+            return {operation: len(metrics) for operation, metrics in self._metrics_buffer.items()}
 
     def get_total_metrics_count(self) -> int:
         """Get total number of buffered metrics."""

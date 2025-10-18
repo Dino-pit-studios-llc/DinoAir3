@@ -49,9 +49,7 @@ class ValidationResult:
     issues: list[tuple[str, ValidationLevel, str]] = field(
         default_factory=lambda: cast("list[tuple[str, ValidationLevel, str]]", [])
     )
-    corrected_config: dict[str, Any] = field(
-        default_factory=lambda: cast("dict[str, Any]", {})
-    )
+    corrected_config: dict[str, Any] = field(default_factory=lambda: cast("dict[str, Any]", {}))
 
     def add_issue(self, param: str, level: ValidationLevel, message: str):
         """Add a validation issue."""
@@ -205,9 +203,7 @@ class WatchdogConfigValidator:
             ),
         }
 
-    def _check_unknown_params(
-        self, config: dict[str, Any], result: ValidationResult
-    ) -> None:
+    def _check_unknown_params(self, config: dict[str, Any], result: ValidationResult) -> None:
         known_params = set(self.rules.keys())
         for param in config:
             if param not in known_params:

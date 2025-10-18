@@ -26,9 +26,7 @@ class EmbeddingGenerator:
     default_batch_size = 32  # Default batch size for processing
 
     # Model cache directory
-    model_cache_dir = os.path.join(
-        os.path.expanduser("~"), ".dinoair", "models", "embeddings"
-    )
+    model_cache_dir = os.path.join(os.path.expanduser("~"), ".dinoair", "models", "embeddings")
 
     def __init__(
         self,
@@ -102,9 +100,7 @@ class EmbeddingGenerator:
 
             # Get model info
             embedding_dim = self._model.get_sentence_embedding_dimension()
-            self.logger.info(
-                f"Model loaded successfully. Embedding dimension: {embedding_dim}"
-            )
+            self.logger.info(f"Model loaded successfully. Embedding dimension: {embedding_dim}")
 
         except Exception as e:
             self.logger.error("Error loading embedding model: %s", str(e))
@@ -313,9 +309,7 @@ class EmbeddingGenerator:
             if self._model is not None:
                 info.update(
                     {
-                        "embedding_dimension": (
-                            self._model.get_sentence_embedding_dimension()
-                        ),
+                        "embedding_dimension": (self._model.get_sentence_embedding_dimension()),
                         "tokenizer_info": {
                             "type": type(self._model.tokenizer).__name__,
                             "vocab_size": (

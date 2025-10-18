@@ -150,9 +150,7 @@ class OptimizedFileProcessor(FileProcessor):
         stat = os.stat(file_path)
         size = int(stat.st_size)
         modified_dt = datetime.fromtimestamp(stat.st_mtime)
-        file_type = (os.path.splitext(file_path)[1] or "").lstrip(
-            "."
-        ).lower() or "unknown"
+        file_type = (os.path.splitext(file_path)[1] or "").lstrip(".").lower() or "unknown"
         return size, modified_dt, file_type
 
     @staticmethod
@@ -242,14 +240,10 @@ class OptimizedFileProcessor(FileProcessor):
                 },
             }
         except Exception as e:
-            self.logger.error(
-                f"Unexpected error in process_file for {file_path}: {str(e)}"
-            )
+            self.logger.error(f"Unexpected error in process_file for {file_path}: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def _validate_and_prepare_file(
-        self, file_path: str, force_reprocess: bool
-    ) -> dict[str, Any]:
+    def _validate_and_prepare_file(self, file_path: str, force_reprocess: bool) -> dict[str, Any]:
         """Validate file and prepare for processing.
 
         Args:
@@ -263,16 +257,12 @@ class OptimizedFileProcessor(FileProcessor):
         if error:
             return error
 
-        size, modified_dt, file_type = OptimizedFileProcessor._gather_file_stats(
-            file_path
-        )
+        size, modified_dt, file_type = OptimizedFileProcessor._gather_file_stats(file_path)
         file_hash = self._calculate_file_hash(
             file_path, chunk_size=getattr(self, "chunk_size", 65536)
         )
         existing = self.db.get_file_by_path(os.path.normpath(file_path))
-        skip_resp = OptimizedFileProcessor._should_skip(
-            existing, size, file_hash, force_reprocess
-        )
+        skip_resp = OptimizedFileProcessor._should_skip(existing, size, file_hash, force_reprocess)
         if skip_resp:
             return skip_resp
 
@@ -281,9 +271,7 @@ class OptimizedFileProcessor(FileProcessor):
             return read_error
 
         norm_path = os.path.normpath(file_path)
-        file_id, index_error = self._index_file(
-            norm_path, file_hash, size, modified_dt, file_type
-        )
+        file_id, index_error = self._index_file(norm_path, file_hash, size, modified_dt, file_type)
         if index_error:
             return index_error
 
@@ -343,9 +331,7 @@ class OptimizedFileProcessor(FileProcessor):
                 )
         return chunk_ids
 
-    def _process_embeddings(
-        self, chunks: list[dict[str, Any]], chunk_ids: list[str]
-    ) -> int:
+    def _process_embeddings(self, chunks: list[dict[str, Any]], chunk_ids: list[str]) -> int:
         """Process embeddings for chunks if enabled.
 
         Args:
@@ -370,17 +356,13 @@ class OptimizedFileProcessor(FileProcessor):
         )
 
     # Adapter to ensure child dispatch for single-file ingestion
-    def run_single(
-        self, file_path: str, *, force_reprocess: bool = False
-    ) -> dict[str, Any]:
+    def run_single(self, file_path: str, *, force_reprocess: bool = False) -> dict[str, Any]:
         """
         Adapter method used by API services to process a single file, ensuring
         this class's process_file implementation is invoked.
         """
         try:
-            return self.process_file(
-                file_path, force_reprocess=force_reprocess, store_in_db=True
-            )
+            return self.process_file(file_path, force_reprocess=force_reprocess, store_in_db=True)
         except Exception as e:
             self.logger.error("run_single failed for %s: %s", file_path, str(e))
             return {"success": False, "error": str(e)}
@@ -448,9 +430,7 @@ class OptimizedFileProcessor(FileProcessor):
             start_time = time.time()
 
             # Process files in parallel
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=self.max_workers
-            ) as executor:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
                 # Submit all files for processing
                 future_to_file = {
                     executor.submit(
@@ -492,9 +472,7 @@ class OptimizedFileProcessor(FileProcessor):
 
                     except Exception as e:
                         self.logger.error("Error processing %s: %s", file_path, str(e))
-                        results["failed_files"].append(
-                            {"file_path": file_path, "error": str(e)}
-                        )
+                        results["failed_files"].append({"file_path": file_path, "error": str(e)})
                         results["stats"]["failed"] += 1
 
             # Calculate final statistics
@@ -539,9 +517,7 @@ class OptimizedFileProcessor(FileProcessor):
                 if cached_result:
                     return cached_result
 
-            result = self.process_file(
-                file_path, force_reprocess=force_reprocess, store_in_db=True
-            )
+            result = self.process_file(file_path, force_reprocess=force_reprocess, store_in_db=True)
 
             # Track processing time
             processing_time = time.time() - start_time
@@ -603,9 +579,7 @@ class OptimizedFileProcessor(FileProcessor):
         except Exception as e:
             self.logger.debug("Failed to cache result for %s: %s", file_path, str(e))
 
-    def _calculate_file_hash(
-        self, file_path: str, chunk_size: int = 1024 * 1024
-    ) -> str:
+    def _calculate_file_hash(self, file_path: str, chunk_size: int = 1024 * 1024) -> str:
         """Calculate file hash with caching"""
         cache_key = None
         if self.enable_caching:
@@ -646,12 +620,10 @@ class OptimizedFileProcessor(FileProcessor):
                         }
                     )
                     results["stats"]["processed"] += 1
-                    results["stats"]["total_chunks"] += len(
-                        file_result.get("chunks", [])
+                    results["stats"]["total_chunks"] += len(file_result.get("chunks", []))
+                    results["stats"]["total_embeddings"] += file_result.get("stats", {}).get(
+                        "embeddings_generated", 0
                     )
-                    results["stats"]["total_embeddings"] += file_result.get(
-                        "stats", {}
-                    ).get("embeddings_generated", 0)
             else:
                 results["failed_files"].append(
                     {
@@ -687,9 +659,7 @@ class OptimizedFileProcessor(FileProcessor):
         embeddings_to_generate: list[tuple[int, str, str]] = []
         cached_embeddings: list[tuple[int, str, Any]] = []
         if self.enable_caching:
-            for i, (chunk_id, chunk_text) in enumerate(
-                zip(chunk_ids, chunk_texts, strict=False)
-            ):
+            for i, (chunk_id, chunk_text) in enumerate(zip(chunk_ids, chunk_texts, strict=False)):
                 cached = self.embedding_cache.get(chunk_id)
                 if cached:
                     cached_embeddings.append((i, chunk_id, cached))
@@ -760,8 +730,7 @@ class OptimizedFileProcessor(FileProcessor):
         if self.processing_times:
             stats.update(
                 {
-                    "average_file_time": sum(self.processing_times)
-                    / len(self.processing_times),
+                    "average_file_time": sum(self.processing_times) / len(self.processing_times),
                     "total_files_processed": len(self.processing_times),
                     "min_file_time": min(self.processing_times),
                     "max_file_time": max(self.processing_times),
@@ -869,8 +838,7 @@ class BatchEmbeddingProcessor:
                     "total_chunks": total_chunks,
                     "embeddings_generated": embeddings_generated,
                     "processing_time": end_time - start_time,
-                    "embeddings_per_second": embeddings_generated
-                    / (end_time - start_time),
+                    "embeddings_per_second": embeddings_generated / (end_time - start_time),
                 },
             }
 

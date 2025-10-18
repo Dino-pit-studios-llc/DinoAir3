@@ -162,9 +162,7 @@ class QwenModel(BaseTranslationModel):
                 model_path = Path(model_path)
 
         if not model_path:
-            raise ValueError(
-                "Model path must be provided either in config or as parameter"
-            )
+            raise ValueError("Model path must be provided either in config or as parameter")
 
         if not model_path.exists():
             raise FileNotFoundError(
@@ -233,9 +231,7 @@ class QwenModel(BaseTranslationModel):
             )
 
             # Select best prompting style
-            prompt_style = self.prompt_engineer.select_best_style(
-                instruction, code_context
-            )
+            prompt_style = self.prompt_engineer.select_best_style(instruction, code_context)
 
             # Create prompt with language specification
             base_prompt = self.prompt_engineer.create_prompt(
@@ -243,9 +239,7 @@ class QwenModel(BaseTranslationModel):
             )
 
             # Combine with language prompt
-            full_prompt = (
-                f"{PromptLibrary.SYSTEM_PROMPT}\n\n{lang_prompt}\n\n{base_prompt}"
-            )
+            full_prompt = f"{PromptLibrary.SYSTEM_PROMPT}\n\n{lang_prompt}\n\n{base_prompt}"
 
             # Generate code
             logger.debug(
@@ -309,9 +303,7 @@ class QwenModel(BaseTranslationModel):
             Tuple of (is_valid, error_message)
         """
         # Use helper function for basic validation
-        is_valid, error = validate_instruction(
-            instruction, min_length=3, max_length=1000
-        )
+        is_valid, error = validate_instruction(instruction, min_length=3, max_length=1000)
 
         if not is_valid:
             return is_valid, error
@@ -338,9 +330,7 @@ class QwenModel(BaseTranslationModel):
         return {
             "model_name": self.metadata.name,
             "version": self.metadata.version,
-            "supported_languages": [
-                lang.value for lang in self.metadata.supported_languages
-            ],
+            "supported_languages": [lang.value for lang in self.metadata.supported_languages],
             "max_context_length": self.metadata.max_context_length,
             "features": {
                 "multi_language": True,

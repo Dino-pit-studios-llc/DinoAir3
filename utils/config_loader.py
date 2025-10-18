@@ -69,9 +69,7 @@ class ConfigLoader:
 
         # If a dict is provided, treat as in-memory config (test helper path)
         if isinstance(config_path, dict):
-            self.config_path = (
-                Path(__file__).parent.parent.parent / "config" / "app_config.json"
-            )
+            self.config_path = Path(__file__).parent.parent.parent / "config" / "app_config.json"
             self.env_path = Path(__file__).parent.parent.parent / ".env"
             Logger().debug("ConfigLoader init - using in-memory config dict")
             # Seed with defaults then merge provided dict
@@ -82,8 +80,7 @@ class ConfigLoader:
 
         # Normal file-based behavior
         self.config_path = (
-            config_path
-            or Path(__file__).parent.parent.parent / "config" / "app_config.json"
+            config_path or Path(__file__).parent.parent.parent / "config" / "app_config.json"
         )
         Logger().debug(f"ConfigLoader init - config_path: {self.config_path}")
 
@@ -132,9 +129,7 @@ class ConfigLoader:
                         deep_merge(base[key], value)
                     elif isinstance(base[key], list) and isinstance(value, list):
                         # Merge lists: concatenate and deduplicate, preserving order
-                        merged_list = base[key] + [
-                            item for item in value if item not in base[key]
-                        ]
+                        merged_list = base[key] + [item for item in value if item not in base[key]]
                         base[key] = merged_list
                     else:
                         # For non-dict, non-list types, override
@@ -415,9 +410,7 @@ def save_json_config(config_data: Any, config_path: Path, indent: int = 4) -> bo
         return False
 
 
-async def save_json_config_async(
-    config_data: Any, config_path: Path, indent: int = 4
-) -> bool:
+async def save_json_config_async(config_data: Any, config_path: Path, indent: int = 4) -> bool:
     """
     Async version of save_json_config.
 

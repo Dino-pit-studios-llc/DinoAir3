@@ -44,9 +44,7 @@ class NotesDatabase:
     # ===== HELPER METHODS FOR CODE DEDUPLICATION =====
 
     @staticmethod
-    def _handle_data_result(
-        operation_result: OperationResult, default_value: Any = None
-    ) -> Any:
+    def _handle_data_result(operation_result: OperationResult, default_value: Any = None) -> Any:
         """Handle OperationResult for methods that return data or default value."""
         return operation_result.data if operation_result.success else default_value
 
@@ -147,9 +145,7 @@ class NotesDatabase:
         Returns:
             Dict with success status and message
         """
-        return NotesDatabase._handle_success_result(
-            self._service.update_note(note_id, updates)
-        )
+        return NotesDatabase._handle_success_result(self._service.update_note(note_id, updates))
 
     def delete_note(self, note_id: str, hard_delete: bool = False) -> dict[str, Any]:
         """
@@ -163,9 +159,7 @@ class NotesDatabase:
         Returns:
             Dict with success status and message
         """
-        return self._handle_success_result(
-            self._service.delete_note(note_id, hard_delete)
-        )
+        return self._handle_success_result(self._service.delete_note(note_id, hard_delete))
 
     # ===== SEARCH AND TAG METHODS =====
 

@@ -51,17 +51,13 @@ class TagNormalizationMigration(BaseMigration):
 
         except Exception as e:
             conn.rollback()
-            raise MigrationError(
-                f"Failed to apply tag normalization migration: {e}"
-            ) from e
+            raise MigrationError(f"Failed to apply tag normalization migration: {e}") from e
 
     @staticmethod
     def _normalize_existing_tags(cursor: sqlite3.Cursor) -> None:
         """Normalize existing tag data to lowercase"""
         # Get all notes with tags
-        cursor.execute(
-            "SELECT id, tags FROM note_list WHERE tags IS NOT NULL AND tags != ''"
-        )
+        cursor.execute("SELECT id, tags FROM note_list WHERE tags IS NOT NULL AND tags != ''")
         notes_to_update = []
 
         for row in cursor.fetchall():
@@ -83,9 +79,7 @@ class TagNormalizationMigration(BaseMigration):
 
                         # Only update if normalization changed the tags
                         if normalized_tags != tags:
-                            notes_to_update.append(
-                                (note_id, json.dumps(normalized_tags))
-                            )
+                            notes_to_update.append((note_id, json.dumps(normalized_tags)))
 
                 except (json.JSONDecodeError, TypeError):
                     # Handle malformed tag data by setting to empty array
@@ -197,9 +191,7 @@ class TagNormalizationMigration(BaseMigration):
 
         except Exception as e:
             conn.rollback()
-            raise MigrationError(
-                f"Failed to rollback tag normalization migration: {e}"
-            ) from e
+            raise MigrationError(f"Failed to rollback tag normalization migration: {e}") from e
 
 
 # Migration instance

@@ -75,9 +75,7 @@ class DirectoryValidator:
                     self._allowed_dirs.add(abs_path)
                     self.logger.info("Added allowed directory: %s", abs_path)
             except Exception as e:
-                self.logger.error(
-                    f"Error adding allowed directory {directory}: {str(e)}"
-                )
+                self.logger.error(f"Error adding allowed directory {directory}: {str(e)}")
 
     def set_excluded_directories(self, directories: list[str]) -> None:
         """Set the list of excluded directories.
@@ -93,9 +91,7 @@ class DirectoryValidator:
                     self._excluded_dirs.add(abs_path)
                     self.logger.info("Added excluded directory: %s", abs_path)
             except Exception as e:
-                self.logger.error(
-                    f"Error adding excluded directory {directory}: {str(e)}"
-                )
+                self.logger.error(f"Error adding excluded directory {directory}: {str(e)}")
 
     def is_path_allowed(self, path: str) -> bool:
         """Check if a path is allowed for access.
@@ -114,26 +110,20 @@ class DirectoryValidator:
 
             # Check if it's a critical system file
             if DirectoryValidator._is_critical_system_file(abs_path):
-                self.logger.warning(
-                    f"Access denied to critical system file: {abs_path}"
-                )
+                self.logger.warning(f"Access denied to critical system file: {abs_path}")
                 return False
 
             # Check against excluded directories
             for excluded in self._excluded_dirs:
                 if abs_path.lower().startswith(excluded.lower()):
-                    self.logger.debug(
-                        f"Path {abs_path} is in excluded directory {excluded}"
-                    )
+                    self.logger.debug(f"Path {abs_path} is in excluded directory {excluded}")
                     return False
 
             # If we have allowed directories, check if path is within them
             if self._allowed_dirs:
                 for allowed in self._allowed_dirs:
                     if abs_path.lower().startswith(allowed.lower()):
-                        self.logger.debug(
-                            f"Path {abs_path} is in allowed directory {allowed}"
-                        )
+                        self.logger.debug(f"Path {abs_path} is in allowed directory {allowed}")
                         return True
                 # Path not in any allowed directory
                 self.logger.debug("Path %s is not in any allowed directory", abs_path)
@@ -289,9 +279,7 @@ class DirectoryValidator:
 
         # Check critical paths
         path_lower = path.lower()
-        return any(
-            path_lower.startswith(critical.lower()) for critical in critical_paths
-        )
+        return any(path_lower.startswith(critical.lower()) for critical in critical_paths)
 
     def get_statistics(self) -> dict[str, Any]:
         """Get statistics about current directory settings.
@@ -307,9 +295,7 @@ class DirectoryValidator:
             "has_restrictions": bool(self._allowed_dirs),
         }
 
-    def log_access_attempt(
-        self, path: str, allowed: bool, reason: str | None = None
-    ) -> None:
+    def log_access_attempt(self, path: str, allowed: bool, reason: str | None = None) -> None:
         """Log an access attempt for security auditing.
 
         Args:
@@ -352,9 +338,7 @@ class DirectoryValidator:
                         {"path": directory, "reason": "Path is not a directory"}
                     )
             else:
-                results["invalid"].append(
-                    {"path": directory, "reason": validation["message"]}
-                )
+                results["invalid"].append({"path": directory, "reason": validation["message"]})
 
             # Check for potentially problematic paths
             if validation.get("resolved_path"):
