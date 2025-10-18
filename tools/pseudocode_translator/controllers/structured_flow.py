@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..exceptions import ParsingError, TranslatorError  # type: ignore
+
 """Module module."""
 """Module module."""
 

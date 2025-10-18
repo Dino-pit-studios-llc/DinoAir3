@@ -28,7 +28,6 @@ import argparse
 import importlib
 import json
 import logging
-
 # removed: import subprocess
 import sys
 import time
