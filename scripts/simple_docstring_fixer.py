@@ -17,7 +17,7 @@ import argparse
 
 class SimpleDocstringFixer:
     """Simple docstring fixer for Python files."""
-    
+
     def __init__(self, dry_run: bool = False):
         """Initialize the fixer.
         
@@ -27,35 +27,35 @@ class SimpleDocstringFixer:
         self.dry_run = dry_run
         self.files_processed = 0
         self.docstrings_added = 0
-    
+
     def fix_file(self, filepath: Path) -> bool:
         """Fix missing docstrings in a Python file.
         
         Args:
             filepath: Path to the Python file to process
-            
+        
         Returns:
             True if changes were made, False otherwise
         """
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             tree = ast.parse(content)
             lines = content.splitlines()
             changes_made = False
-            
+
             # Process from bottom to top to maintain line numbers
             items_to_fix = self._find_missing_docstrings(tree)
             items_to_fix.sort(key=lambda x: x[1], reverse=True)  # Sort by line number desc
-            
+
             for item_type, lineno, name, indent in items_to_fix:
                 docstring = self._generate_simple_docstring(item_type, name, indent)
-                
+
                 # Insert docstring after the definition line
                 # Find the end of the function signature (after the colon)
                 definition_line_idx = lineno - 1  # Convert to 0-based
-                
+
                 # Look for the function definition line and find the colon
                 for i in range(definition_line_idx, min(definition_line_idx + 10, len(lines))):
                     if ':' in lines[i]:
@@ -63,14 +63,14 @@ class SimpleDocstringFixer:
                         break
                 else:
                     insert_pos = definition_line_idx + 1
-                
+
                 lines.insert(insert_pos, docstring)
                 changes_made = True
                 self.docstrings_added += 1
-                
+
                 if not self.dry_run:
                     print(f"  + Added {item_type} docstring: {name}")
-            
+
             if changes_made:
                 if self.dry_run:
                     print(f"[DRY RUN] {filepath}: Would add {len(items_to_fix)} docstrings")
@@ -79,25 +79,25 @@ class SimpleDocstringFixer:
                     with open(filepath, 'w', encoding='utf-8') as f:
                         f.write(new_content)
                     print(f"✓ {filepath}: Added {len(items_to_fix)} docstrings")
-            
+
             self.files_processed += 1
             return changes_made
-            
+
         except Exception as e:
             print(f"Error processing {filepath}: {e}")
             return False
-    
+
     def _find_missing_docstrings(self, tree) -> List[tuple]:
         """Find functions and classes missing docstrings.
         
         Args:
             tree: AST tree of the Python file
-            
+        
         Returns:
             List of tuples: (type, lineno, name, indent_level)
         """
         missing = []
-        
+
         # Check module level
         has_module_docstring = (
             len(tree.body) > 0 and
@@ -105,22 +105,22 @@ class SimpleDocstringFixer:
             isinstance(tree.body[0].value, ast.Constant) and
             isinstance(tree.body[0].value.value, str)
         )
-        
+
         if not has_module_docstring:
             missing.append(('module', 0, 'module', 0))
-        
+
         # Walk the AST to find classes and functions
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not self._has_docstring(node):
                     missing.append(('class', node.lineno, node.name, 8))  # 8 spaces for class docstring
-                
+
                 # Check methods within the class
                 for child in node.body:
                     if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if not self._has_docstring(child) and not child.name.startswith('_'):
                             missing.append(('method', child.lineno, child.name, 12))  # 12 spaces for method docstring
-            
+
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Only top-level functions (not nested or methods)
                 if (not self._has_docstring(node) and 
@@ -128,15 +128,15 @@ class SimpleDocstringFixer:
                     not node.name.startswith('test_') and
                     self._is_top_level(node, tree)):
                     missing.append(('function', node.lineno, node.name, 8))  # 8 spaces for function docstring
-        
+
         return missing
-    
+
     def _has_docstring(self, node) -> bool:
         """Check if a node has a docstring.
         
         Args:
             node: AST node to check
-            
+        
         Returns:
             True if node has a docstring
         """
@@ -144,19 +144,19 @@ class SimpleDocstringFixer:
                 isinstance(node.body[0], ast.Expr) and
                 isinstance(node.body[0].value, ast.Constant) and
                 isinstance(node.body[0].value.value, str))
-    
+
     def _is_top_level(self, func_node, tree) -> bool:
         """Check if function is at module level (not nested).
         
         Args:
             func_node: Function AST node
             tree: Module AST tree
-            
+        
         Returns:
             True if function is at module level
         """
         return func_node in tree.body
-    
+
     def _generate_simple_docstring(self, item_type: str, name: str, indent: int) -> str:
         """Generate a simple docstring.
         
@@ -164,12 +164,12 @@ class SimpleDocstringFixer:
             item_type: Type of item ('function', 'class', 'method', 'module')
             name: Name of the item
             indent: Indentation level in spaces
-            
+        
         Returns:
             Formatted docstring
         """
         indent_str = ' ' * indent
-        
+
         if item_type == 'module':
             return f'"""{self._make_readable(name)} module."""'
         elif item_type == 'class':
@@ -180,19 +180,19 @@ class SimpleDocstringFixer:
             return f'{indent_str}"""{self._make_readable(name)} method."""'
         else:
             return f'{indent_str}"""TODO: Add description."""'
-    
+
     def _make_readable(self, name: str) -> str:
         """Convert name to readable format.
         
         Args:
             name: Variable/function/class name
-            
+        
         Returns:
             Human readable version
         """
         if name == 'module':
             return 'Module'
-        
+
         # Handle common patterns
         if name.endswith('_manager'):
             return name.replace('_', ' ').replace(' manager', ' manager').title()
@@ -213,7 +213,7 @@ class SimpleDocstringFixer:
         else:
             # Convert snake_case to Title Case
             return name.replace('_', ' ').title()
-    
+
     def process_directory(self, directory: Path) -> None:
         """Process all Python files in a directory.
         
@@ -221,24 +221,24 @@ class SimpleDocstringFixer:
             directory: Directory to process recursively
         """
         python_files = list(directory.rglob('*.py'))
-        
+
         # Filter out common non-source directories
         python_files = [f for f in python_files if not any(
             part in str(f) for part in ['.git', '__pycache__', '.pytest_cache', 
                                        'node_modules', '.venv', 'venv', 'build', 'dist']
         )]
-        
+
         print(f"Found {len(python_files)} Python files to process")
-        
+
         for filepath in python_files:
             self.fix_file(filepath)
-    
+
     def print_summary(self) -> None:
         """Print processing summary."""
         print(f"\nSummary:")
         print(f"  Files processed: {self.files_processed}")
         print(f"  Docstrings added: {self.docstrings_added}")
-        
+
         if self.dry_run:
             print("  [DRY RUN] No files were modified")
 
@@ -250,17 +250,17 @@ def main():
                        help='Directory or file to process (default: current directory)')
     parser.add_argument('--dry-run', action='store_true',
                        help='Show what would be changed without making changes')
-    
+
     args = parser.parse_args()
-    
+
     target_path = Path(args.path)
-    
+
     if not target_path.exists():
         print(f"Error: Path {target_path} does not exist")
         return 1
-    
+
     fixer = SimpleDocstringFixer(dry_run=args.dry_run)
-    
+
     if target_path.is_file():
         if target_path.suffix == '.py':
             fixer.fix_file(target_path)
@@ -269,7 +269,7 @@ def main():
             return 1
     else:
         fixer.process_directory(target_path)
-    
+
     fixer.print_summary()
     return 0
 

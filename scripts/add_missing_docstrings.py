@@ -30,7 +30,6 @@ import argparse
 import glob
 from datetime import datetime
 
-
 @dataclass
 class FunctionInfo:
     """Information about a function or method."""
@@ -47,7 +46,6 @@ class FunctionInfo:
     decorators: List[str]
     parent_class: Optional[str] = None
 
-
 @dataclass
 class ClassInfo:
     """Information about a class."""
@@ -59,7 +57,6 @@ class ClassInfo:
     methods: List[FunctionInfo]
     properties: List[str]
 
-
 @dataclass
 class ModuleInfo:
     """Information about a module."""
@@ -69,10 +66,8 @@ class ModuleInfo:
     imports: List[str]
     has_module_docstring: bool
 
-
 class DocstringGenerator:
     """Generates appropriate docstring templates based on code analysis."""
-    
     def __init__(self, templates_dir: Optional[Path] = None):
         """Initialize the docstring generator."""
         self.templates_dir = templates_dir
@@ -80,15 +75,12 @@ class DocstringGenerator:
             "ValueError", "TypeError", "KeyError", "AttributeError", 
             "FileNotFoundError", "ConnectionError", "TimeoutError"
         }
-        
     def generate_function_docstring(self, func_info: FunctionInfo) -> str:
         """Generate a docstring for a function or method."""
         lines = []
-        
         # Generate summary based on function name and context
         summary = self._generate_function_summary(func_info)
         lines.append(f'    """{summary}')
-        
         # Add parameter documentation if function has parameters
         if func_info.args and not (len(func_info.args) == 1 and func_info.args[0] in ('self', 'cls')):
             lines.append("")
@@ -97,14 +89,12 @@ class DocstringGenerator:
                 if arg not in ('self', 'cls'):
                     arg_desc = self._generate_arg_description(arg, func_info.name)
                     lines.append(f"        {arg}: {arg_desc}")
-        
         # Add return documentation if function has return type annotation
         if func_info.return_type and func_info.return_type != "None":
             lines.append("")
             lines.append("    Returns:")
             return_desc = self._generate_return_description(func_info.return_type, func_info.name)
             lines.append(f"        {return_desc}")
-        
         # Add raises section for common exception patterns
         potential_exceptions = self._detect_potential_exceptions(func_info)
         if potential_exceptions:
@@ -113,18 +103,14 @@ class DocstringGenerator:
             for exc in potential_exceptions:
                 exc_desc = self._generate_exception_description(exc, func_info.name)
                 lines.append(f"        {exc}: {exc_desc}")
-        
         lines.append('    """')
         return "\n".join(lines)
-    
     def generate_class_docstring(self, class_info: ClassInfo) -> str:
         """Generate a docstring for a class."""
         lines = []
-        
         # Generate summary based on class name and structure
         summary = self._generate_class_summary(class_info)
         lines.append(f'    """{summary}')
-        
         # Add attributes section if class likely has important attributes
         attributes = self._detect_class_attributes(class_info)
         if attributes:
@@ -133,7 +119,6 @@ class DocstringGenerator:
             for attr in attributes:
                 attr_desc = self._generate_attribute_description(attr, class_info.name)
                 lines.append(f"        {attr}: {attr_desc}")
-        
         # Add usage example for complex classes
         if len(class_info.methods) > 3:
             lines.append("")
@@ -141,40 +126,31 @@ class DocstringGenerator:
             example = self._generate_class_example(class_info)
             for line in example:
                 lines.append(f"        {line}")
-        
         lines.append('    """')
         return "\n".join(lines)
-    
     def generate_module_docstring(self, module_info: ModuleInfo) -> str:
         """Generate a docstring for a module."""
         lines = []
-        
         # Generate module summary
         module_name = module_info.filepath.stem
         summary = self._generate_module_summary(module_name, module_info)
         lines.append(f'"""{summary}')
-        
         # Add main components
         if module_info.classes or module_info.functions:
             lines.append("")
             lines.append("Main components:")
-            
             for class_info in module_info.classes:
                 class_desc = self._generate_class_summary(class_info)
                 lines.append(f"    {class_info.name}: {class_desc}")
-            
             for func_info in module_info.functions:
-                if not func_info.name.startswith('_'):  # Skip private functions
+                if not func_info.name.startswith('_'):
                     func_desc = self._generate_function_summary(func_info)
                     lines.append(f"    {func_info.name}(): {func_desc}")
-        
         lines.append('"""')
         return "\n".join(lines)
-    
     def _generate_function_summary(self, func_info: FunctionInfo) -> str:
         """Generate a summary line for a function."""
         name = func_info.name
-        
         # Common patterns for function names
         if name.startswith('get_'):
             return f"Get {self._humanize_name(name[4:])}."
@@ -218,11 +194,9 @@ class DocstringGenerator:
             return f"Implement {name} magic method."
         else:
             return f"{self._humanize_name(name).capitalize()}."
-    
     def _generate_class_summary(self, class_info: ClassInfo) -> str:
         """Generate a summary line for a class."""
         name = class_info.name
-        
         # Common patterns for class names
         if name.endswith('Manager'):
             return f"Manages {self._humanize_name(name[:-7])} operations."
@@ -250,31 +224,23 @@ class DocstringGenerator:
             return f"Protocol defining {self._humanize_name(name[:-suffix_len])} interface."
         else:
             return f"{self._humanize_name(name)} implementation."
-    
     def _generate_module_summary(self, module_name: str, module_info: ModuleInfo) -> str:
         """Generate a summary for a module."""
         humanized = self._humanize_name(module_name)
-        
         if len(module_info.classes) > len(module_info.functions):
             return f"{humanized.capitalize()} classes and utilities."
         elif len(module_info.functions) > 0:
             return f"{humanized.capitalize()} utility functions."
         else:
             return f"{humanized.capitalize()} module."
-    
     def _humanize_name(self, name: str) -> str:
         """Convert snake_case or CamelCase to human readable form."""
-        # Handle CamelCase
         name = re.sub(r'([A-Z])', r' \1', name).strip()
-        # Handle snake_case
         name = name.replace('_', ' ')
-        # Clean up multiple spaces
         name = re.sub(r'\s+', ' ', name)
         return name.lower()
-    
     def _generate_arg_description(self, arg_name: str, func_name: str) -> str:
         """Generate description for a function argument."""
-        # Common argument patterns
         if arg_name in ('data', 'content'):
             return "The data to process"
         elif arg_name in ('filename', 'filepath', 'path'):
@@ -295,7 +261,6 @@ class DocstringGenerator:
             return "Value to process"
         else:
             return f"{self._humanize_name(arg_name).capitalize()}"
-    
     def _generate_return_description(self, return_type: str, func_name: str) -> str:
         """Generate description for return value."""
         if return_type in ('bool', 'Boolean'):
@@ -312,7 +277,6 @@ class DocstringGenerator:
             return "Result if successful, None otherwise"
         else:
             return f"{return_type} result"
-    
     def _generate_exception_description(self, exc_name: str, func_name: str) -> str:
         """Generate description for potential exceptions."""
         if exc_name == 'ValueError':
@@ -329,66 +293,50 @@ class DocstringGenerator:
             return "If operation times out"
         else:
             return f"If {self._humanize_name(exc_name.replace('Error', '').replace('Exception', ''))} error occurs"
-    
     def _generate_attribute_description(self, attr_name: str, class_name: str) -> str:
         """Generate description for class attributes."""
         return f"{self._humanize_name(attr_name).capitalize()} attribute"
-    
     def _generate_class_example(self, class_info: ClassInfo) -> List[str]:
         """Generate usage example for a class."""
         class_name = class_info.name
         instance_name = class_name.lower()
-        
         lines = [
             f"{instance_name} = {class_name}()",
             f"result = {instance_name}.method()"
         ]
         return lines
-    
     def _detect_potential_exceptions(self, func_info: FunctionInfo) -> List[str]:
         """Detect potential exceptions based on function patterns."""
         exceptions = []
         name = func_info.name
-        
         if 'validate' in name or any('validate' in arg for arg in func_info.args):
             exceptions.append('ValueError')
-        
         if 'file' in name or any('file' in arg for arg in func_info.args):
             exceptions.append('FileNotFoundError')
-        
         if 'connect' in name or 'network' in name:
             exceptions.extend(['ConnectionError', 'TimeoutError'])
-        
         return exceptions
-    
     def _detect_class_attributes(self, class_info: ClassInfo) -> List[str]:
         """Detect likely class attributes from method names."""
         attributes = []
-        
         for method in class_info.methods:
             if method.name.startswith('get_') and len(method.args) <= 1:
                 attr_name = method.name[4:]
                 if attr_name not in attributes:
                     attributes.append(attr_name)
-        
-        return attributes[:5]  # Limit to 5 most likely attributes
-
+        return attributes[:5]
 
 class DocstringAnalyzer:
     """Analyzes Python files to find missing docstrings."""
-    
     def __init__(self):
         """Initialize the analyzer."""
         self.generator = DocstringGenerator()
-    
     def analyze_file(self, filepath: Path) -> ModuleInfo:
         """Analyze a Python file for missing docstrings."""
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
             tree = ast.parse(content, filename=str(filepath))
-            
             # Check for module docstring
             has_module_docstring = (
                 len(tree.body) > 0 and
@@ -396,11 +344,9 @@ class DocstringAnalyzer:
                 isinstance(tree.body[0].value, ast.Constant) and
                 isinstance(tree.body[0].value.value, str)
             )
-            
             classes = []
             functions = []
             imports = []
-            
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     class_info = self._analyze_class(node)
@@ -411,7 +357,6 @@ class DocstringAnalyzer:
                         functions.append(func_info)
                 elif isinstance(node, (ast.Import, ast.ImportFrom)):
                     imports.append(ast.unparse(node))
-            
             return ModuleInfo(
                 filepath=filepath,
                 classes=classes,
@@ -419,28 +364,21 @@ class DocstringAnalyzer:
                 imports=imports,
                 has_module_docstring=has_module_docstring
             )
-            
         except Exception as e:
             print(f"Error analyzing {filepath}: {e}")
             return ModuleInfo(filepath, [], [], [], True)
-    
     def _analyze_class(self, class_node: ast.ClassDef) -> ClassInfo:
         """Analyze a class definition."""
         methods = []
         properties = []
-        
         for node in class_node.body:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 method_info = self._analyze_function(node, parent_class=class_node.name)
                 methods.append(method_info)
-                
-                # Check for properties
                 if any(isinstance(d, ast.Name) and d.id == 'property' for d in node.decorator_list):
                     properties.append(node.name)
-        
         bases = [ast.unparse(base) for base in class_node.bases]
         decorators = [ast.unparse(d) for d in class_node.decorator_list]
-        
         return ClassInfo(
             name=class_node.name,
             lineno=class_node.lineno,
@@ -450,22 +388,17 @@ class DocstringAnalyzer:
             methods=methods,
             properties=properties
         )
-    
     def _analyze_function(self, func_node: Union[ast.FunctionDef, ast.AsyncFunctionDef], 
                          parent_class: Optional[str] = None) -> FunctionInfo:
         """Analyze a function definition."""
         args = [arg.arg for arg in func_node.args.args]
-        
         return_type = None
         if func_node.returns:
             return_type = ast.unparse(func_node.returns)
-        
         decorators = [ast.unparse(d) for d in func_node.decorator_list]
-        
         is_property = any('property' in d for d in decorators)
         is_classmethod = any('classmethod' in d for d in decorators)
         is_staticmethod = any('staticmethod' in d for d in decorators)
-        
         return FunctionInfo(
             name=func_node.name,
             lineno=func_node.lineno,
@@ -480,7 +413,6 @@ class DocstringAnalyzer:
             decorators=decorators,
             parent_class=parent_class
         )
-    
     def _is_nested_function(self, func_node: Union[ast.FunctionDef, ast.AsyncFunctionDef], 
                            tree: ast.AST) -> bool:
         """Check if function is nested inside another function."""
@@ -490,7 +422,6 @@ class DocstringAnalyzer:
                     if child == func_node:
                         return True
         return False
-    
     def has_docstring(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> bool:
         """Check if a node has a docstring."""
         if (len(node.body) > 0 and
@@ -503,7 +434,7 @@ class DocstringAnalyzer:
 
 class DocstringFixer:
     """Fixes missing docstrings by adding them to Python files."""
-    
+
     def __init__(self, dry_run: bool = False, interactive: bool = False):
         """Initialize the fixer."""
         self.dry_run = dry_run
@@ -517,23 +448,23 @@ class DocstringFixer:
             'classes_fixed': 0,
             'modules_fixed': 0
         }
-    
+
     def fix_file(self, filepath: Path) -> bool:
         """Fix missing docstrings in a single file."""
         print(f"Processing {filepath}")
-        
+
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 original_content = f.read()
-            
+
             tree = ast.parse(original_content, filename=str(filepath))
             module_info = self.analyzer.analyze_file(filepath)
-            
+
             # Track line adjustments as we add docstrings
             line_offset = 0
             lines = original_content.splitlines()
             changes_made = False
-            
+
             # Add module docstring if missing
             if not module_info.has_module_docstring and (module_info.classes or module_info.functions):
                 if self._should_add_docstring("module", filepath.stem):
@@ -544,52 +475,52 @@ class DocstringFixer:
                     changes_made = True
                     self.stats['modules_fixed'] += 1
                     self.stats['docstrings_added'] += 1
-            
+
             # Process classes and functions in reverse order (bottom to top)
             # to maintain correct line numbers
             all_items = []
-            
+
             for class_info in module_info.classes:
                 if not self._has_docstring_at_line(lines, class_info.lineno + line_offset):
                     all_items.append(('class', class_info))
-                
+
                 for method in class_info.methods:
                     if not self._has_docstring_at_line(lines, method.lineno + line_offset):
                         all_items.append(('method', method))
-            
+
             for func_info in module_info.functions:
                 if not self._has_docstring_at_line(lines, func_info.lineno + line_offset):
                     all_items.append(('function', func_info))
-            
+
             # Sort by line number in reverse order
             all_items.sort(key=lambda x: x[1].lineno, reverse=True)
-            
+
             for item_type, item_info in all_items:
                 if self._should_add_docstring(item_type, item_info.name):
                     docstring = self._generate_docstring(item_type, item_info, module_info)
                     insert_line = item_info.lineno + line_offset
-                    
+
                     # Find the correct position to insert docstring
                     # (after the function/class definition line)
                     while (insert_line < len(lines) and 
                            lines[insert_line - 1].strip().endswith(':')):
                         break
-                    
+
                     # Insert docstring
                     lines.insert(insert_line, docstring)
                     lines.insert(insert_line + 1, "")  # Add blank line
                     line_offset += 2
                     changes_made = True
-                    
+
                     if item_type == 'class':
                         self.stats['classes_fixed'] += 1
                     else:
                         self.stats['functions_fixed'] += 1
                     self.stats['docstrings_added'] += 1
-            
+
             if changes_made:
                 new_content = '\n'.join(lines)
-                
+
                 if self.dry_run:
                     print(f"  [DRY RUN] Would add {self.stats['docstrings_added']} docstrings")
                 else:
@@ -598,19 +529,19 @@ class DocstringFixer:
                     print(f"  ✓ Added docstrings")
             else:
                 print(f"  No missing docstrings found")
-            
+
             self.stats['files_processed'] += 1
             return changes_made
-            
+
         except Exception as e:
             print(f"  Error processing {filepath}: {e}")
             return False
-    
+
     def _has_docstring_at_line(self, lines: List[str], lineno: int) -> bool:
         """Check if there's already a docstring at the given line."""
         if lineno >= len(lines):
             return False
-        
+
         # Look for docstring in the next few lines after the definition
         for i in range(lineno, min(lineno + 5, len(lines))):
             line = lines[i].strip()
@@ -619,25 +550,25 @@ class DocstringFixer:
             if line and not line.startswith('#'):
                 # Found non-comment, non-docstring code
                 break
-        
+
         return False
-    
+
     def _should_add_docstring(self, item_type: str, name: str) -> bool:
         """Check if we should add a docstring for this item."""
         # Skip private functions/methods (but not __init__, __str__, etc.)
         if name.startswith('_') and not (name.startswith('__') and name.endswith('__')):
             return False
-        
+
         # Skip test functions
         if name.startswith('test_'):
             return False
-        
+
         if self.interactive:
             response = input(f"Add docstring to {item_type} '{name}'? [y/N]: ")
             return response.lower() in ('y', 'yes')
-        
+
         return True
-    
+
     def _generate_docstring(self, item_type: str, item_info: Any, module_info: ModuleInfo) -> str:
         """Generate appropriate docstring for the item."""
         if item_type == 'class':
@@ -648,7 +579,7 @@ class DocstringFixer:
             return self.generator.generate_module_docstring(module_info)
         else:
             return '    """TODO: Add description."""'
-    
+
     def print_stats(self):
         """Print statistics about the fixing process."""
         print("\n" + "="*50)
@@ -659,7 +590,7 @@ class DocstringFixer:
         print(f"  - Modules: {self.stats['modules_fixed']}")
         print(f"  - Classes: {self.stats['classes_fixed']}")
         print(f"  - Functions/Methods: {self.stats['functions_fixed']}")
-        
+
         if self.dry_run:
             print("\n[DRY RUN] No changes were made to files.")
         else:
@@ -678,7 +609,7 @@ Examples:
   python scripts/add_missing_docstrings.py --interactive --files "core/*.py"
         """
     )
-    
+
     parser.add_argument('--dry-run', action='store_true',
                        help='Show what would be changed without making changes')
     parser.add_argument('--files', type=str,
@@ -689,49 +620,49 @@ Examples:
                        help='Ask for confirmation before each change')
     parser.add_argument('--templates', type=str,
                        help='Use custom template directory')
-    
+
     args = parser.parse_args()
-    
+
     if not args.files and not args.fix_all:
         print("Error: Must specify --files PATTERN or --fix-all")
         parser.print_help()
         return 1
-    
+
     # Find files to process
     files_to_process = []
-    
+
     if args.fix_all:
         # Find all Python files in the project
         for root, dirs, files in os.walk('.'):
             # Skip common non-source directories
             dirs[:] = [d for d in dirs if d not in {'.git', '__pycache__', '.pytest_cache', 
                                                     'node_modules', '.venv', 'venv', 'build', 'dist'}]
-            
+
             for file in files:
                 if file.endswith('.py'):
                     filepath = Path(root) / file
                     files_to_process.append(filepath)
-    
+
     elif args.files:
         # Use glob pattern
         files_to_process = [Path(f) for f in glob.glob(args.files, recursive=True)]
         files_to_process = [f for f in files_to_process if f.suffix == '.py']
-    
+
     if not files_to_process:
         print("No Python files found to process.")
         return 1
-    
+
     print(f"Found {len(files_to_process)} Python files to process.")
-    
+
     if args.dry_run:
         print("[DRY RUN MODE] No files will be modified.")
-    
+
     # Create fixer and process files
     fixer = DocstringFixer(dry_run=args.dry_run, interactive=args.interactive)
-    
+
     for filepath in files_to_process:
         fixer.fix_file(filepath)
-    
+
     fixer.print_stats()
     return 0
 
