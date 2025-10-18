@@ -9,7 +9,6 @@ from utils.network_security import NetworkSecurityManager, create_small_team_sec
 
 def setup_small_team_security():
     """Set up security for a small team (you and your partner)."""
-
     # Create relaxed security configuration
     security_config = create_small_team_security_config()
     security_manager = NetworkSecurityManager(security_config)
@@ -27,7 +26,6 @@ def setup_small_team_security():
 
 def integrate_with_fastapi():
     """Show how to integrate with your FastAPI app."""
-
     # Example FastAPI integration
     example_code = """
 # In your API_files/app.py or wherever you configure FastAPI:

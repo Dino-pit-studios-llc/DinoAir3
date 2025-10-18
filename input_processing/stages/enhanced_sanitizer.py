@@ -160,7 +160,6 @@ class EnhancedInputSanitizer:
         strict_mode: bool,
     ) -> str:
         """Dispatch to context-specific sanitizers."""
-
         if context == self.context_html:
             if self.xss_protection.detect_xss_attempt(sanitized):
                 self.security_monitor.log_attack_attempt("XSS", sanitized)

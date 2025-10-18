@@ -223,7 +223,6 @@ def format_output(
     module_paths: dict[str, Path],
 ) -> str:
     """Format output in the specified format."""
-
     if format_type == "json":
         result = {
             "circular_dependencies": [

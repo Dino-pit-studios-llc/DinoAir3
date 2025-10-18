@@ -58,7 +58,6 @@ class ComprehensiveIndexMigration(BaseMigration):
     @staticmethod
     def _add_single_column_indexes(cursor: sqlite3.Cursor) -> None:
         """Add missing single-column indexes"""
-
         # Add is_deleted index if not exists (critical for all queries)
         cursor.execute(
             """
@@ -78,7 +77,6 @@ class ComprehensiveIndexMigration(BaseMigration):
     @staticmethod
     def _add_compound_indexes(cursor: sqlite3.Cursor) -> None:
         """Add compound indexes for common query patterns"""
-
         # Most common pattern: is_deleted + updated_at DESC for chronological listings
         cursor.execute(
             """
@@ -114,7 +112,6 @@ class ComprehensiveIndexMigration(BaseMigration):
     @staticmethod
     def _add_partial_indexes(cursor: sqlite3.Cursor) -> None:
         """Add partial indexes for specific use cases"""
-
         # Index for notes with tags (excludes NULL and empty JSON arrays)
         cursor.execute(
             """
@@ -145,7 +142,6 @@ class ComprehensiveIndexMigration(BaseMigration):
     @staticmethod
     def _optimize_existing_indexes(cursor: sqlite3.Cursor) -> None:
         """Optimize existing indexes by dropping and recreating if needed"""
-
         # Check if we need to update the tags index to be more specific
         try:
             # Drop old basic tags index if it exists

@@ -297,7 +297,6 @@ class ParserModule:
         Returns:
             The updated maximum indentation level for the block.
         """
-
         # Check for imports
         if self._IMPORT_RE.match(line):
             metadata["has_imports"] = True

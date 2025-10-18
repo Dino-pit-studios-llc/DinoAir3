@@ -224,7 +224,6 @@ class NotesRepository:
 
     def update_note(self, note_id: str, updates: dict[str, Any]) -> QueryResult:
         """Update a note with the provided field updates."""
-
         processed_updates = self._process_note_updates(updates)
         if not processed_updates:
             return QueryResult(success=False, error="No valid fields to update")

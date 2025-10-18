@@ -36,7 +36,6 @@ DEFAULT_REPORT_FILENAME = "security_validation_report.json"
 
 def test_security_imports():
     """Test that all security modules can be imported."""
-
     print("🔍 Testing Security Module Imports...")
 
     modules = [
@@ -63,7 +62,6 @@ def test_security_imports():
 
 def test_password_security():
     """Test password security implementation."""
-
     print("\n🔐 Testing Password Security...\n")
 
     try:
@@ -103,7 +101,6 @@ def test_password_security():
 
 def test_rbac_system():
     """Test Role-Based Access Control system."""
-
     print("\n👥 Testing RBAC System...")
 
     try:
@@ -145,7 +142,6 @@ def test_rbac_system():
 
 def test_audit_logging():
     """Test audit logging system."""
-
     print("\n📝 Testing Audit Logging...")
 
     try:
@@ -206,7 +202,6 @@ def test_audit_logging():
 
 def test_network_security():
     """Test network security configuration."""
-
     print("\n🌐 Testing Network Security...")
 
     try:
@@ -245,7 +240,6 @@ def test_network_security():
 
 def test_security_configuration():
     """Test overall security configuration."""
-
     print("\n⚙️  Testing Security Configuration...")
 
     try:
@@ -346,7 +340,6 @@ def report_security_validation_results(
 
 def run_security_validation():
     """Run complete security validation."""
-
     print("🛡️  DinoAir Security Validation")
     print("=" * 50)
 

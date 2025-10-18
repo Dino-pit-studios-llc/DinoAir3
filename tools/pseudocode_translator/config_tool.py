@@ -57,7 +57,6 @@ def validate_config(path: str, lenient: bool = False) -> tuple[int, dict]:
       (exit_code, result_dict) where result_dict includes:
       {"errors": [...], "warnings": [...], "path": path}
     """
-
     p = Path(path)
     err = _ensure_file_readable(p)
     if err:
@@ -439,7 +438,6 @@ class ConfigTool:
     @staticmethod
     def cmd_check(args) -> int:
         """Check configuration and environment"""
-
         # Check configuration file if provided
         if args.config_file:
             config_path = Path(args.config_file)

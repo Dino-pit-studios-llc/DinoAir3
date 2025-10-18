@@ -77,7 +77,6 @@ class TagTableFallbackMigration(BaseMigration):
     @staticmethod
     def _populate_tag_table(cursor: sqlite3.Cursor) -> None:
         """Populate tag table from existing JSON tag data"""
-
         # Get all notes with tags
         cursor.execute("SELECT id, tags FROM note_list WHERE tags IS NOT NULL AND tags != ''")
 

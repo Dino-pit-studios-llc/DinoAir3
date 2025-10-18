@@ -274,7 +274,6 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
         distance_metric: str,
     ) -> list[SearchResult]:
         """Perform similarity search in parallel"""
-
         # Split embeddings for parallel processing
         chunk_size = max(100, len(all_embeddings) // self.max_workers)
         chunks = [

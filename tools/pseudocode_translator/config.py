@@ -658,7 +658,6 @@ class Config:
     @staticmethod
     def _coerce_override_value(path: str, raw: str) -> tuple[bool, Any]:
         """Coerce raw env value to expected type with identical error logging."""
-
         # Helpers to preserve original warning messages
         def _try_float(val: str, warn_msg: str) -> tuple[bool, Any]:
             """Try to convert a string to a float.
