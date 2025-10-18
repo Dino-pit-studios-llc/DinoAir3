@@ -237,7 +237,7 @@ class AuditLogger:
         event_dict["severity"] = event.severity.value
 
         # Create canonical JSON representation
-        canonical_json = json.dumps(event_dict, sort_keys=True, separators=("," , ":"))
+        canonical_json = json.dumps(event_dict, sort_keys=True, separators=(",", ":"))
 
         # Calculate checksum
         checksum = hashlib.sha256(canonical_json.encode()).hexdigest()
@@ -281,7 +281,7 @@ class AuditLogger:
             log_data = AuditLogger._encrypt_log_data(log_data)
 
         # Write to log
-        log_line = json.dumps(log_data, separators=("," ,":"))
+        log_line = json.dumps(log_data, separators=(",", ":"))
         self.logger.info(log_line)
 
     @staticmethod
