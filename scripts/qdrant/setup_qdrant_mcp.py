@@ -13,6 +13,7 @@ This script helps set up and configure Qdrant MCP server integration:
 # ... existing code ...
 import argparse
 import os
+
 # removed: import subprocess
 import sys
 from pathlib import Path

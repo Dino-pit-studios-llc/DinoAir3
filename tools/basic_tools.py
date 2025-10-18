@@ -16,9 +16,11 @@ from subprocess import TimeoutExpired
 from typing import Any
 
 from utils.process import safe_run
+
 from .common.result import build_success
 from .common.validators import validate_path_exists
 from .file_search_tool import FILE_SEARCH_TOOLS
+
 # Import the new AI-accessible tool modules
 from .notes_tool import NOTES_TOOLS
 from .projects_tool import PROJECTS_TOOLS
@@ -381,9 +383,7 @@ def execute_system_command(command: str, timeout: int = 30) -> dict[str, Any]:
                 "error": "Command cannot be empty",
             }
 
-        proc = safe_run(
-            parts, allowed_binaries=ALLOWED_BINARIES, timeout=timeout, text=True
-        )
+        proc = safe_run(parts, allowed_binaries=ALLOWED_BINARIES, timeout=timeout, text=True)
         execution_time = (datetime.datetime.now() - start_time).total_seconds()
 
         return build_success(
@@ -431,9 +431,7 @@ def execute_system_command(command: str, timeout: int = 30) -> dict[str, Any]:
         }
 
 
-def create_json_data(
-    data: dict[str, Any], file_path: str | None = None
-) -> dict[str, Any]:
+def create_json_data(data: dict[str, Any], file_path: str | None = None) -> dict[str, Any]:
     r"""
     Create or manipulate JSON data with optional file output.
 

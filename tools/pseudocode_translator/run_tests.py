@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 from utils.process import safe_run
+
 from .environment import change_to_project_dir, configure_environment
 from .quality import run_quality_checks
 from .test_args import add_quality_args
@@ -76,13 +77,9 @@ def add_test_selection_args(parser):
 def add_test_options_args(parser):
     """Add standard test options like verbosity, exit on first failure, keyword and mark filtering."""
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
-    parser.add_argument(
-        "-vv", "--very-verbose", action="store_true", help="Very verbose output"
-    )
+    parser.add_argument("-vv", "--very-verbose", action="store_true", help="Very verbose output")
     parser.add_argument("-q", "--quiet", action="store_true", help="Quiet output")
-    parser.add_argument(
-        "-x", "--exitfirst", action="store_true", help="Exit on first failure"
-    )
+    parser.add_argument("-x", "--exitfirst", action="store_true", help="Exit on first failure")
     parser.add_argument(
         "-k",
         "--keyword",
@@ -108,9 +105,7 @@ def add_coverage_args(parser):
         default="term",
         help="Coverage report format (default: term)",
     )
-    parser.add_argument(
-        "--cov-html", action="store_true", help="Generate HTML coverage report"
-    )
+    parser.add_argument("--cov-html", action="store_true", help="Generate HTML coverage report")
 
 
 def add_performance_args(parser):
@@ -127,9 +122,7 @@ def add_performance_args(parser):
 
 def add_general_args(parser):
     """Add general test and collection options to the parser."""
-    parser.add_argument(
-        "--pdb", action="store_true", help="Drop into debugger on failures"
-    )
+    parser.add_argument("--pdb", action="store_true", help="Drop into debugger on failures")
     parser.add_argument(
         "--lf",
         "--last-failed",
@@ -145,9 +138,7 @@ def add_general_args(parser):
         help="Run all tests but run failed tests first",
     )
     parser.add_argument("--markers", action="store_true", help="Show available markers")
-    parser.add_argument(
-        "--fixtures", action="store_true", help="Show available fixtures"
-    )
+    parser.add_argument("--fixtures", action="store_true", help="Show available fixtures")
 
 
 def run_post_quality_format_check(args):
