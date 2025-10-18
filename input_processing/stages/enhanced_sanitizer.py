@@ -38,7 +38,9 @@ class SecurityMonitor:
         self.attack_counts[attack_type] += 1
 
         # Log the attempt
-        log_message = f"SECURITY: {attack_type} attack detected at {timestamp} Payload: {payload[:100]}..."
+        log_message = (
+            f"SECURITY: {attack_type} attack detected at {timestamp} Payload: {payload[:100]}..."
+        )
 
         if source_info:
             log_message += f" Source: {source_info}"
@@ -122,9 +124,7 @@ class EnhancedInputSanitizer:
 
         # Log original input for debugging (be careful with sensitive data)
         if self.logger:
-            self.logger.debug(
-                f"Sanitizing input (context={context}, length={len(user_input)})"
-            )
+            self.logger.debug(f"Sanitizing input (context={context}, length={len(user_input)})")
 
         # Apply Unicode normalization and attack checks
         sanitized = self._apply_unicode_protection(
@@ -167,9 +167,7 @@ class EnhancedInputSanitizer:
             return self.xss_protection.sanitize(sanitized, allow_html=not strict_mode)
         if context == self.context_sql:
             if self.sql_protection.detect_sql_injection(sanitized):
-                self.security_monitor.log_attack_attempt(
-                    self.ATTACK_TYPE_SQL_INJECTION, sanitized
-                )
+                self.security_monitor.log_attack_attempt(self.ATTACK_TYPE_SQL_INJECTION, sanitized)
                 if strict_mode:
                     # In strict mode, reject SQL injection attempts
                     raise ValueError("SQL injection attempt detected")
@@ -201,9 +199,7 @@ class EnhancedInputSanitizer:
         strict_mode: bool,
     ) -> str:
         if self.sql_protection.detect_sql_injection(sanitized):
-            self.security_monitor.log_attack_attempt(
-                self.ATTACK_TYPE_SQL_INJECTION, sanitized
-            )
+            self.security_monitor.log_attack_attempt(self.ATTACK_TYPE_SQL_INJECTION, sanitized)
             if strict_mode:
                 raise ValueError("SQL injection attempt detected")
         return self.sql_protection.sanitize_sql_input(sanitized)
@@ -237,18 +233,12 @@ class EnhancedInputSanitizer:
 
         # Check for SQL injection
         if self.sql_protection.detect_sql_injection(sanitized):
-            self.security_monitor.log_attack_attempt(
-                self.ATTACK_TYPE_SQL_INJECTION, sanitized
-            )
+            self.security_monitor.log_attack_attempt(self.ATTACK_TYPE_SQL_INJECTION, sanitized)
             sanitized = self.sql_protection.sanitize_sql_input(sanitized)
 
         # Step 3: Final validation
-        if (
-            not sanitized or (strict_mode and sanitized != self.user_input)
-        ) and self.logger:
-            self.logger.info(
-                f"Input modified during sanitization (context={self.context})"
-            )
+        if (not sanitized or (strict_mode and sanitized != self.user_input)) and self.logger:
+            self.logger.info(f"Input modified during sanitization (context={self.context})")
 
         # Apply final length limit
         if self.max_length and len(sanitized) > self.max_length:

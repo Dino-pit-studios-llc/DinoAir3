@@ -302,9 +302,7 @@ class StreamingProtocolAdapter:
         self._message_queue: list[StreamMessage] = []
         self._sequence_number = 0
 
-    def adapt_input(
-        self, raw_input: str, chunk_index: int | None = None
-    ) -> DataMessage:
+    def adapt_input(self, raw_input: str, chunk_index: int | None = None) -> DataMessage:
         """Adapt raw input to protocol message"""
         self._sequence_number += 1
 
@@ -366,9 +364,7 @@ class StreamingProtocolAdapter:
             sequence_number=self._sequence_number,
         )
 
-    def create_error_message(
-        self, error: Exception, recoverable: bool = True
-    ) -> ErrorMessage:
+    def create_error_message(self, error: Exception, recoverable: bool = True) -> ErrorMessage:
         """Create an error message from exception"""
         self._sequence_number += 1
 
@@ -407,7 +403,9 @@ class StreamMessageFormatter:
 
         if isinstance(message, ErrorMessage):
             severity = "recoverable" if message.recoverable else "fatal"
-            return f"[{timestamp}] Error ({severity}): {message.error_type} - {message.error_message}"
+            return (
+                f"[{timestamp}] Error ({severity}): {message.error_type} - {message.error_message}"
+            )
 
         if isinstance(message, ControlMessage):
             return f"[{timestamp}] Control: {message.command}"
@@ -535,9 +533,7 @@ class FullDocumentProtocol:
         self.chunks = []
         self.total_size = 0
 
-    def process_chunk(
-        self, chunk: str, chunk_index: int, total_chunks: int
-    ) -> ProgressMessage:
+    def process_chunk(self, chunk: str, chunk_index: int, total_chunks: int) -> ProgressMessage:
         """Process a document chunk"""
         self.chunks.append(chunk)
         self.total_size += len(chunk)

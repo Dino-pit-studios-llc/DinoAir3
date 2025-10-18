@@ -117,9 +117,7 @@ class TelemetryRecorder:
         self._seq: int = 0  # used by sampling wrapper (set in get_recorder())
 
         # Optional JSON logging flag (checked at construction time, only when enabled)
-        self._do_log: bool = (
-            os.getenv("PSEUDOCODE_TELEMETRY_LOG", "").strip().lower() in _TRUTHY
-        )
+        self._do_log: bool = os.getenv("PSEUDOCODE_TELEMETRY_LOG", "").strip().lower() in _TRUTHY
         self._logger = logging.getLogger("pseudocode.telemetry")
 
         # Tiny internal sanity check (best-effort, never raises)
@@ -135,9 +133,7 @@ class TelemetryRecorder:
             end = time.perf_counter()
             duration_ms = (end - start) * 1000.0
             # Sampling (if any) is applied via record_event() wrapper created in get_recorder()
-            NoOpTelemetryRecorder.record_event(
-                name, duration_ms=duration_ms, extra=extra
-            )
+            NoOpTelemetryRecorder.record_event(name, duration_ms=duration_ms, extra=extra)
 
     def record_event(
         self,
@@ -224,9 +220,7 @@ class TelemetryRecorder:
             line = {
                 "event": name,
                 "ts": datetime.now(UTC).isoformat(),
-                "duration_ms": (
-                    float(duration_ms) if duration_ms is not None else None
-                ),
+                "duration_ms": (float(duration_ms) if duration_ms is not None else None),
                 "extra": extra,
                 "counters": counters,
                 "pid": self._pid,

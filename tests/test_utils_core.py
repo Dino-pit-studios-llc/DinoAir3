@@ -110,9 +110,7 @@ class TestMetricsUtils:
         from utils.metrics import track_request
 
         # Test tracking a request - should not raise an exception
-        track_request(
-            endpoint="/test/endpoint", method="GET", status_code=200, duration_ms=150.5
-        )
+        track_request(endpoint="/test/endpoint", method="GET", status_code=200, duration_ms=150.5)
 
     @staticmethod
     def test_metrics_summary():
@@ -214,9 +212,7 @@ class TestNetworkSecurity:
         assert clean_url == "https://example.com/path?param=value"
 
         # Test with potentially dangerous content
-        clean_url = sanitize_url(
-            'https://example.com/path?param=<script>alert("xss")</script>'
-        )
+        clean_url = sanitize_url('https://example.com/path?param=<script>alert("xss")</script>')
         assert "<script>" not in clean_url
 
 

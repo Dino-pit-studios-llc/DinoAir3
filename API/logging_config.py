@@ -274,13 +274,10 @@ class RedactionFilter(logging.Filter):
             if record.args:
                 if isinstance(record.args, dict):
                     record.args = {
-                        k: self.redaction_service.redact_value(v)
-                        for k, v in record.args.items()
+                        k: self.redaction_service.redact_value(v) for k, v in record.args.items()
                     }
                 elif isinstance(record.args, tuple):
-                    record.args = tuple(
-                        self.redaction_service.redact_value(a) for a in record.args
-                    )
+                    record.args = tuple(self.redaction_service.redact_value(a) for a in record.args)
 
     def _redact_extra_fields(self, record: logging.LogRecord) -> None:
         """Redact sensitive extra fields in log records."""
@@ -291,9 +288,7 @@ class RedactionFilter(logging.Filter):
                         record.__dict__[key]
                     )
                 elif isinstance(record.__dict__[key], str):
-                    record.__dict__[key] = self.redaction_service.redact_text(
-                        record.__dict__[key]
-                    )
+                    record.__dict__[key] = self.redaction_service.redact_text(record.__dict__[key])
 
 
 class ISOFormatter(JsonFormatter):
@@ -335,9 +330,7 @@ class ISOFormatter(JsonFormatter):
             log_record["ts"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     @staticmethod
-    def _normalize_level(
-        log_record: dict[str, JSONValue], record: logging.LogRecord
-    ) -> None:
+    def _normalize_level(log_record: dict[str, JSONValue], record: logging.LogRecord) -> None:
         """Normalize the log level to lowercase."""
         lvl = (
             log_record.get("level")
@@ -353,9 +346,7 @@ class ISOFormatter(JsonFormatter):
             log_record["level"] = "info"
 
     @staticmethod
-    def _add_logger_name(
-        log_record: dict[str, JSONValue], record: logging.LogRecord
-    ) -> None:
+    def _add_logger_name(log_record: dict[str, JSONValue], record: logging.LogRecord) -> None:
         """Add logger name to the record."""
         log_record["logger"] = record.name
 
@@ -378,9 +369,7 @@ class ISOFormatter(JsonFormatter):
     ) -> None:
         """Copy configured structured fields."""
         for field_name in self.config.structured_log_fields:
-            value = ISOFormatter._get_field_value(
-                field_name, message_dict, log_record, record
-            )
+            value = ISOFormatter._get_field_value(field_name, message_dict, log_record, record)
             if value is not None:
                 log_record[field_name] = value
 
@@ -561,9 +550,7 @@ def _clear_existing_handlers(logger: logging.Logger) -> None:
     Args:
         logger: The logger to clear handlers from
     """
-    for handler in logger.handlers[
-        :
-    ]:  # Create a copy to avoid modification during iteration
+    for handler in logger.handlers[:]:  # Create a copy to avoid modification during iteration
         logger.removeHandler(handler)
         with contextlib.suppress(Exception):
             handler.close()
@@ -595,9 +582,7 @@ class RequestResponseLoggerMiddleware:
 
         await self._process_http_request(scope, receive, send)
 
-    async def _process_http_request(
-        self, scope: Scope, receive: Receive, send: Send
-    ) -> None:
+    async def _process_http_request(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Process an HTTP request and handle logging.
 
         Args:
@@ -607,9 +592,7 @@ class RequestResponseLoggerMiddleware:
         """
         start_ns = time.perf_counter_ns()
         status_holder: dict[str, int | None] = {"status": None}
-        send_wrapper = RequestResponseLoggerMiddleware._create_send_wrapper(
-            send, status_holder
-        )
+        send_wrapper = RequestResponseLoggerMiddleware._create_send_wrapper(send, status_holder)
 
         try:
             await self.app(scope, receive, send_wrapper)
@@ -635,9 +618,7 @@ class RequestResponseLoggerMiddleware:
 
         return send_wrapper
 
-    def _log_request_info(
-        self, scope: Scope, start_ns: int, status: int | None
-    ) -> None:
+    def _log_request_info(self, scope: Scope, start_ns: int, status: int | None) -> None:
         """Log request information.
 
         Args:

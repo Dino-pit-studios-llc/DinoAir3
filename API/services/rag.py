@@ -99,9 +99,7 @@ class RagService:
             "RagService initialized",
             extra={
                 "rag_enabled": getattr(self.settings, "rag_enabled", True),
-                "watchdog_enabled": getattr(
-                    self.settings, "rag_watchdog_enabled", False
-                ),
+                "watchdog_enabled": getattr(self.settings, "rag_watchdog_enabled", False),
             },
         )
 
@@ -124,9 +122,7 @@ class RagService:
             force_reprocess=force_reprocess,
         )
 
-    def ingest_files(
-        self, paths: list[str], force_reprocess: bool = False
-    ) -> dict[str, Any]:
+    def ingest_files(self, paths: list[str], force_reprocess: bool = False) -> dict[str, Any]:
         """Ingest a list of file paths.
 
         Validates against allowed/excluded directories, processes each file, and returns
@@ -152,9 +148,7 @@ class RagService:
         """
         try:
             # pylint: disable=import-outside-toplevel
-            from .search import (
-                SearchService,  # local import to avoid circular dependency
-            )
+            from .search import SearchService  # local import to avoid circular dependency
 
             svc = SearchService()
             resp = svc.get_index_stats()
@@ -282,9 +276,7 @@ class RagService:
     ) -> dict[str, Any]:
         """Start monitoring directories for changes."""
         # delegated to sub-service
-        return self._monitor.monitor_start(
-            directories=directories, file_extensions=file_extensions
-        )
+        return self._monitor.monitor_start(directories=directories, file_extensions=file_extensions)
 
     def monitor_stop(self) -> dict[str, Any]:
         """Stop the file monitor if running."""
@@ -342,9 +334,7 @@ class RagService:
                     res = proc.run_single(path, force_reprocess=force_reprocess)
                 else:
                     # Align with FileProcessor signature to ensure DB storage
-                    res = proc.process_file(
-                        path, force_reprocess=force_reprocess, store_in_db=True
-                    )
+                    res = proc.process_file(path, force_reprocess=force_reprocess, store_in_db=True)
 
                 # Normalize and collect minimal stable shape for the response
                 success = bool(res.get("success"))
@@ -407,9 +397,7 @@ class RagService:
         has_run_single = hasattr(proc, "run_single")
 
         # Process files with reduced branching
-        results, stats = self._process_files(
-            proc, allowed, force_reprocess, has_run_single
-        )
+        results, stats = self._process_files(proc, allowed, force_reprocess, has_run_single)
 
         out: dict[str, Any] = {
             "success": stats["failed"] == 0,
@@ -443,9 +431,7 @@ class RagService:
         return (method if callable(method) else None), False
 
     @staticmethod
-    def _filtered_kwargs(
-        method: Callable[..., Any], kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _filtered_kwargs(method: Callable[..., Any], kwargs: dict[str, Any]) -> dict[str, Any]:
         """Filter kwargs to only those accepted by the callable."""
         try:
             sig = inspect.signature(method)

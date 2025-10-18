@@ -75,9 +75,7 @@ class WatchdogCommandHandler:
             True if this handler can process the command
         """
         command_lower = command.lower().strip()
-        return any(
-            re.match(pattern, command_lower) for pattern in self.command_patterns
-        )
+        return any(re.match(pattern, command_lower) for pattern in self.command_patterns)
 
     def handle_command(self, command: str) -> CommandResult:
         """Handle a watchdog command.
@@ -104,9 +102,7 @@ class WatchdogCommandHandler:
                 args = match.groups() if match.groups() else ()
                 return handler(*args)
 
-        return CommandResult(
-            success=False, message=f"❌ Unknown watchdog command: {command}"
-        )
+        return CommandResult(success=False, message=f"❌ Unknown watchdog command: {command}")
 
     def handle_status(self) -> CommandResult:
         """Handle watchdog status command."""
@@ -140,56 +136,38 @@ class WatchdogCommandHandler:
                 message="⚠️ No metrics available. Watchdog may be initializing.",
             )
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error getting status: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error getting status: {str(e)}")
 
     def handle_start(self) -> CommandResult:
         """Handle watchdog start command."""
         try:
             if self.watchdog.monitoring:
-                return CommandResult(
-                    success=True, message="ℹ️ Watchdog is already running."
-                )
+                return CommandResult(success=True, message="ℹ️ Watchdog is already running.")
 
             self.watchdog.start_monitoring()
-            return CommandResult(
-                success=True, message="✅ Watchdog monitoring started."
-            )
+            return CommandResult(success=True, message="✅ Watchdog monitoring started.")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error starting watchdog: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error starting watchdog: {str(e)}")
 
     def handle_stop(self) -> CommandResult:
         """Handle watchdog stop command."""
         try:
             if not self.watchdog.monitoring:
-                return CommandResult(
-                    success=True, message="ℹ️ Watchdog is already stopped."
-                )
+                return CommandResult(success=True, message="ℹ️ Watchdog is already stopped.")
 
             self.watchdog.stop_monitoring()
-            return CommandResult(
-                success=True, message="✅ Watchdog monitoring stopped."
-            )
+            return CommandResult(success=True, message="✅ Watchdog monitoring stopped.")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error stopping watchdog: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error stopping watchdog: {str(e)}")
 
     def handle_restart(self) -> CommandResult:
         """Handle watchdog restart command."""
         try:
             self.watchdog.stop_monitoring()
             self.watchdog.start_monitoring()
-            return CommandResult(
-                success=True, message="✅ Watchdog restarted successfully."
-            )
+            return CommandResult(success=True, message="✅ Watchdog restarted successfully.")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error restarting watchdog: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error restarting watchdog: {str(e)}")
 
     def handle_pause(self) -> CommandResult:
         """Handle watchdog pause command."""
@@ -204,24 +182,18 @@ class WatchdogCommandHandler:
             self.watchdog.stop_monitoring()
             return CommandResult(success=True, message="⏸️ Watchdog monitoring paused.")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error pausing watchdog: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error pausing watchdog: {str(e)}")
 
     def handle_resume(self) -> CommandResult:
         """Handle watchdog resume command."""
         try:
             if self.watchdog.monitoring:
-                return CommandResult(
-                    success=True, message="ℹ️ Watchdog is already running."
-                )
+                return CommandResult(success=True, message="ℹ️ Watchdog is already running.")
 
             self.watchdog.start_monitoring()
             return CommandResult(success=True, message="▶️ Watchdog monitoring resumed.")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error resuming watchdog: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error resuming watchdog: {str(e)}")
 
     def handle_set_threshold(self, threshold_name: str, value: str) -> CommandResult:
         """Handle setting a threshold value.
@@ -268,9 +240,7 @@ class WatchdogCommandHandler:
                 success=False, message=f"❌ Invalid value: '{value}' is not a number"
             )
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error setting threshold: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error setting threshold: {str(e)}")
 
     def handle_get_threshold(self, threshold_name: str) -> CommandResult:
         """Handle getting a threshold value.
@@ -286,21 +256,14 @@ class WatchdogCommandHandler:
                 )
 
             # Get the threshold value
-            if (
-                hasattr(self.watchdog, "thresholds")
-                and threshold_name in self.watchdog.thresholds
-            ):
+            if hasattr(self.watchdog, "thresholds") and threshold_name in self.watchdog.thresholds:
                 value = self.watchdog.thresholds[threshold_name]
                 return CommandResult(
                     success=True, message=f"📊 {threshold_name} threshold: {value}"
                 )
-            return CommandResult(
-                success=False, message=f"❌ Cannot get {threshold_name} threshold"
-            )
+            return CommandResult(success=False, message=f"❌ Cannot get {threshold_name} threshold")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error getting threshold: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error getting threshold: {str(e)}")
 
     def handle_list_thresholds(self) -> CommandResult:
         """Handle listing all thresholds."""
@@ -311,13 +274,9 @@ class WatchdogCommandHandler:
                     lines.append(f"  • {name}: {value}")
 
                 return CommandResult(success=True, message="\n".join(lines))
-            return CommandResult(
-                success=False, message="❌ Threshold information not available"
-            )
+            return CommandResult(success=False, message="❌ Threshold information not available")
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error listing thresholds: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error listing thresholds: {str(e)}")
 
     def handle_kill_process(self, process_name: str) -> CommandResult:
         """Handle killing a process.
@@ -358,9 +317,7 @@ class WatchdogCommandHandler:
                 message="❌ Process killing not supported by current watchdog",
             )
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error killing process: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error killing process: {str(e)}")
 
     def handle_metrics(self) -> CommandResult:
         """Handle showing current metrics."""
@@ -387,20 +344,14 @@ class WatchdogCommandHandler:
                         lines.append(f"  CPU: {entry['cpu_percent']:.1f}%")
 
                     return CommandResult(success=True, message="\n".join(lines))
-                return CommandResult(
-                    success=True, message="ℹ️ No metrics history available"
-                )
-            return CommandResult(
-                success=False, message="❌ Metrics history not available"
-            )
+                return CommandResult(success=True, message="ℹ️ No metrics history available")
+            return CommandResult(success=False, message="❌ Metrics history not available")
         except ValueError:
             return CommandResult(
                 success=False, message=f"❌ Invalid count: '{count}' is not a number"
             )
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error getting history: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error getting history: {str(e)}")
 
     def handle_clear_history(self) -> CommandResult:
         """Handle clearing metrics history."""
@@ -413,9 +364,7 @@ class WatchdogCommandHandler:
                 message="❌ Cannot clear history - method not available",
             )
         except Exception as e:
-            return CommandResult(
-                success=False, message=f"❌ Error clearing history: {str(e)}"
-            )
+            return CommandResult(success=False, message=f"❌ Error clearing history: {str(e)}")
 
     @staticmethod
     def handle_help() -> CommandResult:

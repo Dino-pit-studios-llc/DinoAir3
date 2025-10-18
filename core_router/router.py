@@ -22,12 +22,7 @@ from typing import Any, NoReturn, cast
 
 from .adapters import make_adapter
 from .adapters.base import ServiceAdapter
-from .errors import (
-    NoHealthyService,
-    ServiceNotFound,
-    ValidationError,
-    not_implemented,
-)
+from .errors import NoHealthyService, ServiceNotFound, ValidationError, not_implemented
 
 # Import HealthState for runtime use
 from .health import HealthState
@@ -64,9 +59,7 @@ def create_router(services_file: str | None = None) -> ServiceRouter:
     import os  # local to keep import-time surface minimal
 
     from .registry_base import ServiceRegistry as LocalServiceRegistry  # noqa: WPS433
-    from .registry_base import (
-        auto_register_from_config_and_env,
-    )
+    from .registry_base import auto_register_from_config_and_env
 
     if services_file is not None:
         file_path: str = services_file
@@ -221,9 +214,7 @@ class ServiceRouter:
     ) -> NoReturn:
         result = int(round((time.monotonic() - started) * 1000))
         record_error(desc.name, result, str(exc))
-        self._registry.update_health(
-            desc.name, HealthState.DOWN, latency_ms=result, error=str(exc)
-        )
+        self._registry.update_health(desc.name, HealthState.DOWN, latency_ms=result, error=str(exc))
         self._log_event(
             service=desc.name,
             event="execute",
@@ -653,13 +644,9 @@ file_index_stats_get.__doc__ = (
 )
 
 
-config_dirs_get = _make_ni_noargs(
-    "GET", "/config/dirs", "get_config_dirs_config_dirs_get"
-)
+config_dirs_get = _make_ni_noargs("GET", "/config/dirs", "get_config_dirs_config_dirs_get")
 config_dirs_get.__name__ = "config_dirs_get"
-config_dirs_get.__doc__ = (
-    "GET /config/dirs — operationId: get_config_dirs_config_dirs_get"
-)
+config_dirs_get.__doc__ = "GET /config/dirs — operationId: get_config_dirs_config_dirs_get"
 
 
 def metrics_get() -> Any:
@@ -672,9 +659,7 @@ ai_chat_post.__name__ = "ai_chat_post"
 ai_chat_post.__doc__ = "POST /ai/chat — operationId: ai_chat_ai_chat_post"
 
 
-router_execute_post = _make_ni_body(
-    "POST", "/router/execute", "router_execute_router_execute_post"
-)
+router_execute_post = _make_ni_body("POST", "/router/execute", "router_execute_router_execute_post")
 router_execute_post.__name__ = "router_execute_post"
 router_execute_post.__doc__ = (
     "POST /router/execute — operationId: router_execute_router_execute_post"
@@ -690,10 +675,6 @@ router_execute_by_post.__doc__ = (
 )
 
 
-router_metrics_get = _make_ni_noargs(
-    "GET", "/router/metrics", "router_metrics_router_metrics_get"
-)
+router_metrics_get = _make_ni_noargs("GET", "/router/metrics", "router_metrics_router_metrics_get")
 router_metrics_get.__name__ = "router_metrics_get"
-router_metrics_get.__doc__ = (
-    "GET /router/metrics — operationId: router_metrics_router_metrics_get"
-)
+router_metrics_get.__doc__ = "GET /router/metrics — operationId: router_metrics_router_metrics_get"

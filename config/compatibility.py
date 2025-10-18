@@ -21,9 +21,7 @@ class ConfigMigrator:
             old_config_path: Path to old configuration file
         """
         base_dir = Path(__file__).parent.parent
-        self.old_config_path = old_config_path or (
-            base_dir / "config" / "app_config.json"
-        )
+        self.old_config_path = old_config_path or (base_dir / "config" / "app_config.json")
         self.new_config_path = base_dir / "config" / "app_config.json"
         self.backup_path = base_dir / "config" / "app_config.json.backup"
 

@@ -112,8 +112,7 @@ class Enums:
         return [
             name
             for name in dir(cls)
-            if isinstance(getattr(cls, name), type)
-            and issubclass(getattr(cls, name), Enum)
+            if isinstance(getattr(cls, name), type) and issubclass(getattr(cls, name), Enum)
         ]
 
     @staticmethod

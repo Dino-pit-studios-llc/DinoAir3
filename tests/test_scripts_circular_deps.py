@@ -62,9 +62,7 @@ class TestCircularDependencyDetector:
     def test_analyze_file_from_imports(tmp_path):
         """Test analyzing a file with from imports."""
         test_file = tmp_path / "test_module.py"
-        test_file.write_text(
-            "from pathlib import Path\nfrom collections import defaultdict\n"
-        )
+        test_file.write_text("from pathlib import Path\nfrom collections import defaultdict\n")
 
         detector = CircularDependencyDetector(tmp_path)
         imports = detector.analyze_file(test_file)
@@ -245,9 +243,7 @@ class TestCircularDependencyDetector:
 
         assert "a -> b" in suggestions
         assert len(suggestions["a -> b"]) > 0
-        assert any(
-            "dependency injection" in fix.lower() for fix in suggestions["a -> b"]
-        )
+        assert any("dependency injection" in fix.lower() for fix in suggestions["a -> b"])
 
     @staticmethod
     def test_suggest_fixes_three_module_cycle():

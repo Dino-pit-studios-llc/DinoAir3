@@ -13,10 +13,7 @@ from typing import TYPE_CHECKING, Any
 
 from utils.shutdown_protocols import ShutdownMixin
 
-from ..models.base_model import (
-    BaseTranslationModel,
-    OutputLanguage,
-)
+from ..models.base_model import BaseTranslationModel, OutputLanguage
 from ..models.base_model import TranslationConfig as ModelTranslationConfig
 from ..models.model_factory import ModelFactory
 from ..models.model_initializer import ModelInitializer
@@ -107,9 +104,7 @@ class ModelService(ShutdownMixin):
                 e, ErrorCategory.MODEL, additional_context="Model initialization"
             )
 
-            raise RuntimeError(
-                f"Failed to initialize model '{model_name}': {str(e)}"
-            ) from e
+            raise RuntimeError(f"Failed to initialize model '{model_name}': {str(e)}") from e
 
     def translate_text(
         self,
@@ -140,9 +135,7 @@ class ModelService(ShutdownMixin):
             self._translation_count += 1
 
             # Build translation config
-            translation_config = self._build_translation_config(
-                target_language, config_overrides
-            )
+            translation_config = self._build_translation_config(target_language, config_overrides)
 
             logger.debug("Translating text with model: %s", self._model_name)
 

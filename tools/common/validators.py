@@ -122,9 +122,7 @@ def _validate_argument(
         _call_validator(validator, arg_name, value)
 
 
-def _call_validator(
-    validator: "Callable[..., None]", arg_name: str, value: Any
-) -> None:
+def _call_validator(validator: "Callable[..., None]", arg_name: str, value: Any) -> None:
     """Call validator with appropriate signature"""
 
     try:

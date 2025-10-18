@@ -12,12 +12,10 @@ from utils.process import safe_run
 
 try:
     from defusedxml import (
-        ElementTree as ET,  # Use defusedxml to prevent XXE/entity expansion vulnerabilities
-    )
+        ElementTree as ET,
+    )  # Use defusedxml to prevent XXE/entity expansion vulnerabilities
 except ImportError as e:
-    raise ImportError(
-        "defusedxml is required; install with: pip install defusedxml"
-    ) from e
+    raise ImportError("defusedxml is required; install with: pip install defusedxml") from e
 
 
 def main():

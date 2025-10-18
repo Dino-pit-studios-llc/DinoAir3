@@ -38,9 +38,7 @@ class LogicValidator:
             ValidationResult with logic validation details
         """
         # Parse using helper
-        tree, parse_error_result = LogicValidator(
-            self.config
-        )._try_parse_tree_for_logic(code)
+        tree, parse_error_result = LogicValidator(self.config)._try_parse_tree_for_logic(code)
         if parse_error_result is not None:
             return parse_error_result
 
@@ -133,9 +131,7 @@ class LogicValidator:
         return getattr(module_scope, "star_import_present", False)
 
     @staticmethod
-    def _process_undefined_names(
-        undefined_names: list, defined_names: set
-    ) -> list[str]:
+    def _process_undefined_names(undefined_names: list, defined_names: set) -> list[str]:
         """Process undefined names and generate issue messages."""
         builtin_names = get_builtin_names()
         normalized = LogicValidator._normalize_undefined_names(undefined_names)
@@ -184,16 +180,12 @@ class LogicValidator:
         """Generate issue messages for undefined variables."""
         issues = []
         for name, line, col in sorted_items:
-            issue_msg = LogicValidator._format_undefined_issue(
-                name, line, col, defined_names
-            )
+            issue_msg = LogicValidator._format_undefined_issue(name, line, col, defined_names)
             issues.append(issue_msg)
         return issues
 
     @staticmethod
-    def _format_undefined_issue(
-        name: str, line: int, col: int | None, defined_names: set
-    ) -> str:
+    def _format_undefined_issue(name: str, line: int, col: int | None, defined_names: set) -> str:
         """Format a single undefined variable issue message."""
         similar = LogicValidator._find_similar_name(name, defined_names)
         loc = LogicValidator._format_location(line, col)
@@ -269,9 +261,7 @@ class LogicValidator:
                 found_return = False
                 for stmt in node.body:
                     if found_return and not isinstance(stmt, ast.Pass):
-                        self.issues.append(
-                            f"Unreachable code after return at line {stmt.lineno}"
-                        )
+                        self.issues.append(f"Unreachable code after return at line {stmt.lineno}")
                         break
                     if isinstance(stmt, ast.Return):
                         found_return = True
@@ -323,13 +313,9 @@ class LogicValidator:
                 # Check for simple infinite loops
                 if isinstance(node.test, ast.Constant) and node.test.value is True:
                     # Check if there's a break statement
-                    has_break = any(
-                        isinstance(stmt, ast.Break) for stmt in ast.walk(node)
-                    )
+                    has_break = any(isinstance(stmt, ast.Break) for stmt in ast.walk(node))
                     if not has_break:
-                        self.issues.append(
-                            f"Potential infinite loop at line {node.lineno}"
-                        )
+                        self.issues.append(f"Potential infinite loop at line {node.lineno}")
                 self.generic_visit(node)
 
         detector = InfiniteLoopDetector()
@@ -350,9 +336,7 @@ class LogicValidator:
                     return
 
                 # Check if function has any return statements
-                has_return = any(
-                    isinstance(stmt, ast.Return) for stmt in ast.walk(node)
-                )
+                has_return = any(isinstance(stmt, ast.Return) for stmt in ast.walk(node))
 
                 # Skip if function name suggests it doesn't return anything
                 if not has_return and not node.name.startswith(

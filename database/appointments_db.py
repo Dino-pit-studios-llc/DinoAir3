@@ -102,9 +102,7 @@ class AppointmentsDatabase:
                 participants_value: str | None = None
                 raw_participants = event_dict.get("participants")
                 if isinstance(raw_participants, list):
-                    participants_value = (
-                        ",".join(raw_participants) if raw_participants else None
-                    )
+                    participants_value = ",".join(raw_participants) if raw_participants else None
                 elif isinstance(raw_participants, str):
                     participants_value = raw_participants or None
 
@@ -116,16 +114,12 @@ class AppointmentsDatabase:
                     tags_value = raw_tags or None
 
                 metadata_value = (
-                    json.dumps(event.metadata)
-                    if isinstance(event.metadata, dict)
-                    else None
+                    json.dumps(event.metadata) if isinstance(event.metadata, dict) else None
                 )
 
                 # Normalize recurrence_pattern; bind "none" when None to align with schema default
                 recurrence_pattern = (
-                    event.recurrence_pattern
-                    if event.recurrence_pattern is not None
-                    else "none"
+                    event.recurrence_pattern if event.recurrence_pattern is not None else "none"
                 )
 
                 cursor.execute(
@@ -185,9 +179,7 @@ class AppointmentsDatabase:
 
                 # Build atomic update statement with parameterized placeholders
                 set_clauses, params = self._prepare_update_components(updates)
-                reminder_raw = (
-                    updates.get("reminder_minutes_before") if updates else None
-                )
+                reminder_raw = updates.get("reminder_minutes_before") if updates else None
                 reminder_update_requested = "reminder_minutes_before" in updates
 
                 if not set_clauses:
@@ -278,9 +270,7 @@ class AppointmentsDatabase:
             self.logger.error(f"Failed to get event: {str(e)}")
             return None
 
-    def get_events_for_date_range(
-        self, start_date: date, end_date: date
-    ) -> list[CalendarEvent]:
+    def get_events_for_date_range(self, start_date: date, end_date: date) -> list[CalendarEvent]:
         """Get all events within a date range"""
         try:
             with self._get_connection() as conn:
@@ -412,9 +402,7 @@ class AppointmentsDatabase:
             self.logger.error(f"Failed to mark reminder sent: {str(e)}")
             return False
 
-    def get_events_by_status(
-        self, status: str, limit: int = 100
-    ) -> list[CalendarEvent]:
+    def get_events_by_status(self, status: str, limit: int = 100) -> list[CalendarEvent]:
         """Get events by status"""
         try:
             with self._get_connection() as conn:
@@ -487,9 +475,7 @@ class AppointmentsDatabase:
                     GROUP BY status
                 """
                 )
-                stats["events_by_status"] = {
-                    row[0]: row[1] for row in cursor.fetchall()
-                }
+                stats["events_by_status"] = {row[0]: row[1] for row in cursor.fetchall()}
 
                 # Events by type
                 cursor.execute(
@@ -536,9 +522,7 @@ class AppointmentsDatabase:
         # Calculate reminder time
         event_datetime = event.get_datetime()
         if event_datetime:
-            reminder_time = event_datetime - timedelta(
-                minutes=event.reminder_minutes_before
-            )
+            reminder_time = event_datetime - timedelta(minutes=event.reminder_minutes_before)
 
             cursor.execute(
                 """

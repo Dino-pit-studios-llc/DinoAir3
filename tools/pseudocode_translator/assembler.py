@@ -124,9 +124,7 @@ class CodeAssembler:
         except Exception as e:
             error = AssemblyError(
                 "Failed to assemble code blocks",
-                blocks_info=[
-                    {"type": b.type.value, "lines": b.line_numbers} for b in blocks
-                ],
+                blocks_info=[{"type": b.type.value, "lines": b.line_numbers} for b in blocks],
                 assembly_stage="assembly",
                 cause=e,
             )
@@ -164,9 +162,7 @@ class CodeAssembler:
             List of Python code blocks, excluding other block types.
         """
         python_blocks = [
-            block
-            for block in blocks
-            if block.type in (BlockType.PYTHON, BlockType.MIXED)
+            block for block in blocks if block.type in (BlockType.PYTHON, BlockType.MIXED)
         ]
 
         if not python_blocks:
@@ -334,9 +330,7 @@ class CodeAssembler:
 
         return sections
 
-    def _merge_definitions(
-        self, functions: list[str], classes: list[str]
-    ) -> tuple[str, str]:
+    def _merge_definitions(self, functions: list[str], classes: list[str]) -> tuple[str, str]:
         """
         Merge function and class definitions, handling duplicates.
 

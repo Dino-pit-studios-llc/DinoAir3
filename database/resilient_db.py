@@ -40,12 +40,8 @@ class ResilientDB:
         try:
             return self._attempt_connection()
         except sqlite3.OperationalError as e:
-            if "unable to open database file" in str(
-                e
-            ) or "no such file or directory" in str(e):
-                self.log(
-                    "Creating database folder - this is normal for first-time setup."
-                )
+            if "unable to open database file" in str(e) or "no such file or directory" in str(e):
+                self.log("Creating database folder - this is normal for first-time setup.")
                 self.db_path.parent.mkdir(parents=True, exist_ok=True)
                 return self._attempt_connection()
             if "database is locked" in str(e):
@@ -54,12 +50,8 @@ class ResilientDB:
                 return self._attempt_connection()
             raise
         except sqlite3.DatabaseError as e:
-            if "file is not a database" in str(
-                e
-            ) or "database disk image is malformed" in str(e):
-                self.log(
-                    "Found a damaged database file. Creating a backup and starting fresh..."
-                )
+            if "file is not a database" in str(e) or "database disk image is malformed" in str(e):
+                self.log("Found a damaged database file. Creating a backup and starting fresh...")
                 self._backup_corrupted_db()
                 return self._attempt_connection()
             raise
@@ -67,14 +59,10 @@ class ResilientDB:
             self.log(
                 "Permission denied accessing database folder. Please check folder permissions or run as administrator."
             )
-            raise RuntimeError(
-                "Cannot access database due to permission restrictions."
-            ) from exc
+            raise RuntimeError("Cannot access database due to permission restrictions.") from exc
         except Exception as e:
             self.log(f"Unexpected database issue: {str(e)}")
-            raise RuntimeError(
-                "Database setup failed due to an unexpected error."
-            ) from e
+            raise RuntimeError("Database setup failed due to an unexpected error.") from e
 
     def _attempt_connection(self) -> sqlite3.Connection:
         # Allow cross-thread usage/closing to support multi-threaded tests on Windows.
@@ -101,9 +89,7 @@ class ResilientDB:
             self.db_path.unlink(missing_ok=True)
             self.log("Removed damaged database file.")
 
-    def connect_with_retry(
-        self, retries: int = 3, delay: int = 1
-    ) -> sqlite3.Connection:
+    def connect_with_retry(self, retries: int = 3, delay: int = 1) -> sqlite3.Connection:
         """Connect with retry.
 
         Args:
@@ -142,9 +128,5 @@ class ResilientDB:
             # Re-raise database errors as-is for test compatibility
             raise last_exc
 
-        self.log(
-            "Database setup failed after multiple attempts. Please contact support."
-        )
-        raise RuntimeError(
-            "Database initialization failed after all retry attempts."
-        ) from last_exc
+        self.log("Database setup failed after multiple attempts. Please contact support.")
+        raise RuntimeError("Database initialization failed after all retry attempts.") from last_exc

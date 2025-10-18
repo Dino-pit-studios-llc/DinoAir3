@@ -102,9 +102,7 @@ class TranslatorError(Exception):
                 setattr(self.context, key, value)
         return self
 
-    def format_error(
-        self, include_suggestions: bool = True, include_context: bool = True
-    ) -> str:
+    def format_error(self, include_suggestions: bool = True, include_context: bool = True) -> str:
         """
         Format the error message with full context
 
@@ -143,9 +141,7 @@ class TranslatorError(Exception):
 
         # Add cause if present
         if self.cause:
-            parts.append(
-                f"\n  Caused by: {type(self.cause).__name__}: {str(self.cause)}"
-            )
+            parts.append(f"\n  Caused by: {type(self.cause).__name__}: {str(self.cause)}")
 
         return "\n".join(parts)
 
@@ -198,19 +194,13 @@ class ParsingError(TranslatorError):
         message_lower = message.lower()
 
         if "indent" in message_lower:
-            self.add_suggestion(
-                "Check indentation - ensure consistent use of spaces or tabs"
-            )
-            self.add_suggestion(
-                "Verify that block indentation matches the expected level"
-            )
+            self.add_suggestion("Check indentation - ensure consistent use of spaces or tabs")
+            self.add_suggestion("Verify that block indentation matches the expected level")
 
         if "syntax" in message_lower:
             keywords = ["if", "for", "while", "def", "class"]
             if ":" not in content and any(kw in content for kw in keywords):
-                self.add_suggestion(
-                    "Add missing colon (:) at the end of control statements"
-                )
+                self.add_suggestion("Add missing colon (:) at the end of control statements")
 
             if content.count("(") != content.count(")"):
                 self.add_suggestion("Check for mismatched parentheses")
@@ -604,9 +594,7 @@ def format_syntax_error(e: SyntaxError, code: str) -> ParsingError:
     context = ErrorContext(
         line_number=e.lineno,
         column_number=e.offset,
-        code_snippet=(
-            lines[e.lineno - 1] if e.lineno and e.lineno <= len(lines) else None
-        ),
+        code_snippet=(lines[e.lineno - 1] if e.lineno and e.lineno <= len(lines) else None),
         surrounding_lines=surrounding,
     )
 

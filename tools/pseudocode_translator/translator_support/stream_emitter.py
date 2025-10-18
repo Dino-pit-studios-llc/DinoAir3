@@ -71,9 +71,7 @@ class StreamEmitter:
                     source=self._source,
                 )
 
-    def stream_chunk_processed(
-        self, chunk_index: int, processing_time: float, success: bool
-    ):
+    def stream_chunk_processed(self, chunk_index: int, processing_time: float, success: bool):
         # STREAM_CHUNK_PROCESSED payload keys: index, success, duration_ms
         with contextlib.suppress(Exception):
             duration_ms = int(processing_time * 1000.0)

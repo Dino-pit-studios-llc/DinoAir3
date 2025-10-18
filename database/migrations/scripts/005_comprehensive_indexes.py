@@ -198,9 +198,7 @@ class ComprehensiveIndexMigration(BaseMigration):
 
         except Exception as e:
             conn.rollback()
-            raise MigrationError(
-                f"Failed to rollback comprehensive indexes: {e}"
-            ) from e
+            raise MigrationError(f"Failed to rollback comprehensive indexes: {e}") from e
 
 
 # Migration instance

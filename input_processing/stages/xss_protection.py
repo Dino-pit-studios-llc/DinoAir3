@@ -112,23 +112,17 @@ class XSSProtection:
         text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
 
         # Remove all script tags and their content
-        text = re.sub(
-            r"<script[^>]*>.*?</script[^>]*>", "", text, flags=re.DOTALL | re.IGNORECASE
-        )
+        text = re.sub(r"<script[^>]*>.*?</script[^>]*>", "", text, flags=re.DOTALL | re.IGNORECASE)
 
         # Remove all style tags and their content
-        text = re.sub(
-            r"<style[^>]*>.*?</style[^>]*>", "", text, flags=re.DOTALL | re.IGNORECASE
-        )
+        text = re.sub(r"<style[^>]*>.*?</style[^>]*>", "", text, flags=re.DOTALL | re.IGNORECASE)
 
         # Remove all remaining tags
         text = re.sub(r"<[^>]+>", "", text)
 
         # Remove dangerous protocols
         for protocol in XSSProtection.dangerous_protocols:
-            text = re.sub(
-                rf'{re.escape(protocol)}[^"\'\s]*', "", text, flags=re.IGNORECASE
-            )
+            text = re.sub(rf'{re.escape(protocol)}[^"\'\s]*', "", text, flags=re.IGNORECASE)
 
         return text.strip()
 
@@ -208,9 +202,7 @@ class XSSProtection:
             r"\\u003cscript",  # Unicode encoded
         ]
 
-        return any(
-            re.search(pattern, text, re.IGNORECASE) for pattern in encoded_patterns
-        )
+        return any(re.search(pattern, text, re.IGNORECASE) for pattern in encoded_patterns)
 
     @staticmethod
     def decode_all_encodings(text: str) -> str:

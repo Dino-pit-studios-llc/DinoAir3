@@ -266,9 +266,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         if temp_name:
             self.current_scope.remove_definition(temp_name, node.lineno)
 
-    def _define_names(
-        self, node: ast.AST, line_no: int, target_scope: Scope | None = None
-    ):
+    def _define_names(self, node: ast.AST, line_no: int, target_scope: Scope | None = None):
         """Helper to define names from assignment targets."""
         scope = target_scope or self.current_scope
         if isinstance(node, ast.Name):
@@ -371,9 +369,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         self.current_scope = old_scope
 
     # Comprehensions
-    def _visit_comprehension(
-        self, generators: list[ast.comprehension], body_visit, line_no: int
-    ):
+    def _visit_comprehension(self, generators: list[ast.comprehension], body_visit, line_no: int):
         """Visit a comprehension with a dedicated scope."""
         old_scope = self.current_scope
         comp_scope = Scope("comprehension", old_scope)
@@ -396,14 +392,10 @@ class UndefinedVariableChecker(ast.NodeVisitor):
             self._inside_comprehension -= 1
 
     def visit_ListComp(self, node: ast.ListComp):
-        self._visit_comprehension(
-            node.generators, lambda: self.visit(node.elt), node.lineno
-        )
+        self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_SetComp(self, node: ast.SetComp):
-        self._visit_comprehension(
-            node.generators, lambda: self.visit(node.elt), node.lineno
-        )
+        self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_DictComp(self, node: ast.DictComp):
         self._visit_comprehension(
@@ -413,9 +405,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         )
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp):
-        self._visit_comprehension(
-            node.generators, lambda: self.visit(node.elt), node.lineno
-        )
+        self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_NamedExpr(self, node: ast.NamedExpr):
         """Walrus operator: visit value, then bind target in current (possibly comp) scope."""
@@ -468,9 +458,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         self.visit(node.subject)
         for case in node.cases:
             bound = self._collect_pattern_binds(case.pattern)
-            with self._temporarily_defined(
-                bound, getattr(case.pattern, "lineno", node.lineno)
-            ):
+            with self._temporarily_defined(bound, getattr(case.pattern, "lineno", node.lineno)):
                 if case.guard:
                     self.visit(case.guard)
                 for stmt in case.body:

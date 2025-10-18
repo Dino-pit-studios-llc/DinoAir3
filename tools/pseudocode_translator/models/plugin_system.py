@@ -111,9 +111,7 @@ class PluginSystem:
                         plugin_dir.mkdir(parents=True, exist_ok=True)
                         accessible_dirs.append(plugin_dir)
                     except OSError as e:
-                        logger.warning(
-                            "Cannot create plugin directory %s: %s", plugin_dir, e
-                        )
+                        logger.warning("Cannot create plugin directory %s: %s", plugin_dir, e)
                         # Skip directories we can't create
                         continue
                 else:
@@ -185,9 +183,7 @@ class PluginSystem:
                 # Cache the plugin
                 self.loaded_plugins[plugin_key] = loaded_plugin
 
-                logger.info(
-                    "Successfully loaded plugin: %s", loaded_plugin.metadata.name
-                )
+                logger.info("Successfully loaded plugin: %s", loaded_plugin.metadata.name)
                 return loaded_plugin
 
             return None
@@ -408,9 +404,7 @@ class PluginSystem:
 
         # Load the module
         module_path = plugin_path / self.plugin_module
-        spec = importlib.util.spec_from_file_location(
-            f"plugin_{metadata.name}", module_path
-        )
+        spec = importlib.util.spec_from_file_location(f"plugin_{metadata.name}", module_path)
 
         if not spec or not spec.loader:
             logger.error("Failed to create module spec for %s", module_path)
@@ -508,9 +502,7 @@ class PluginSystem:
 
     def _clear_plugin_cache(self, plugin_name: str) -> None:
         """Clear any cached data for a plugin"""
-        keys_to_remove = [
-            key for key in self._plugin_cache if key.startswith(f"{plugin_name}:")
-        ]
+        keys_to_remove = [key for key in self._plugin_cache if key.startswith(f"{plugin_name}:")]
         for key in keys_to_remove:
             del self._plugin_cache[key]
 
@@ -552,9 +544,7 @@ def load_plugins(auto_discover: bool = True) -> int:
     return 0
 
 
-def create_plugin_template(
-    plugin_name: str, output_dir: Path, author: str = "Unknown"
-) -> bool:
+def create_plugin_template(plugin_name: str, output_dir: Path, author: str = "Unknown") -> bool:
     """
     Create a plugin template for developers
 

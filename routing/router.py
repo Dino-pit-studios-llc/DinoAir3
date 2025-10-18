@@ -67,16 +67,10 @@ def create_router(services_file: str | None = None) -> ServiceRouter:
     # Local imports to avoid cycles
     import os  # local to keep import-time surface minimal
 
-    from ._registry_shared import (  # noqa: WPS433
-        ServiceRegistry as RouterServiceRegistry,
-    )
-    from ._registry_shared import (
-        auto_register_from_config_and_env,
-    )
+    from ._registry_shared import ServiceRegistry as RouterServiceRegistry  # noqa: WPS433
+    from ._registry_shared import auto_register_from_config_and_env
 
-    file_path = services_file or os.getenv(
-        "DINO_SERVICES_FILE", "config/services.lmstudio.yaml"
-    )
+    file_path = services_file or os.getenv("DINO_SERVICES_FILE", "config/services.lmstudio.yaml")
     registry = RouterServiceRegistry()
     auto_register_from_config_and_env(registry, file_path)
     return ServiceRouter(registry=registry)
@@ -243,9 +237,7 @@ class ServiceRouter:
     ) -> NoReturn:
         result = int(round((time.monotonic() - started) * 1000))
         record_error(desc.name, result, str(exc))
-        self._registry.update_health(
-            desc.name, HealthState.DOWN, latency_ms=result, error=str(exc)
-        )
+        self._registry.update_health(desc.name, HealthState.DOWN, latency_ms=result, error=str(exc))
         self._log_event(
             service=desc.name,
             event="execute",
@@ -262,21 +254,17 @@ class ServiceRouter:
 
         Returns a dict snapshot of the latest health info for the service.
         """
-        from .health import (
-            ping_with_timing,
-        )
+        from .health import ping_with_timing
         from .health_types import (
-            HealthState as AdapterHealthState,  # Import from decoupled module to break cycles
-        )
+            HealthState as AdapterHealthState,
+        )  # Import from decoupled module to break cycles
 
         started = time.monotonic()
         # Lookup descriptor with dedicated ServiceNotFound handling
         try:
             desc = self._registry.get_by_name(service_name)
         except ServiceNotFound as exc:
-            self._extracted_from_check_health_19(
-                started, service_name, "check_health", exc
-            )
+            self._extracted_from_check_health_19(started, service_name, "check_health", exc)
         kind = ServiceRouter._resolve_adapter_kind(desc)
         if not kind:
             raise ValidationError(f"missing adapter kind for service '{desc.name}'")
@@ -540,9 +528,7 @@ class ServiceRouter:
 
 def health_get() -> Any:
     """GET /health — operationId: health_health_get"""
-    from fastapi.responses import (
-        JSONResponse,  # local import to avoid hard dep at import time
-    )
+    from fastapi.responses import JSONResponse  # local import to avoid hard dep at import time
 
     from .errors import error_response
 
@@ -599,23 +585,17 @@ def file_search_keyword_post(_body: Any) -> Any:
 
 def file_search_vector_post(_body: Any) -> Any:
     """POST /file-search/vector — operationId: vector_search_file_search_vector_post"""
-    return not_implemented(
-        "POST", "/file-search/vector", "vector_search_file_search_vector_post"
-    )
+    return not_implemented("POST", "/file-search/vector", "vector_search_file_search_vector_post")
 
 
 def file_search_hybrid_post(_body: Any) -> Any:
     """POST /file-search/hybrid — operationId: hybrid_search_file_search_hybrid_post"""
-    return not_implemented(
-        "POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post"
-    )
+    return not_implemented("POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post")
 
 
 def file_index_stats_get() -> Any:
     """GET /file-index/stats — operationId: file_index_stats_file_index_stats_get"""
-    return not_implemented(
-        "GET", "/file-index/stats", "file_index_stats_file_index_stats_get"
-    )
+    return not_implemented("GET", "/file-index/stats", "file_index_stats_file_index_stats_get")
 
 
 def config_dirs_get() -> Any:
@@ -651,20 +631,14 @@ def ai_chat_post(_body: Any) -> Any:
 
 def router_execute_post(_body: Any) -> Any:
     """POST /router/execute — operationId: router_execute_router_execute_post"""
-    return not_implemented(
-        "POST", "/router/execute", "router_execute_router_execute_post"
-    )
+    return not_implemented("POST", "/router/execute", "router_execute_router_execute_post")
 
 
 def router_execute_by_post(_body: Any) -> Any:
     """POST /router/executeBy — operationId: router_execute_by_router_executeBy_post"""
-    return not_implemented(
-        "POST", "/router/executeBy", "router_execute_by_router_executeBy_post"
-    )
+    return not_implemented("POST", "/router/executeBy", "router_execute_by_router_executeBy_post")
 
 
 def router_metrics_get() -> Any:
     """GET /router/metrics — operationId: router_metrics_router_metrics_get"""
-    return not_implemented(
-        "GET", "/router/metrics", "router_metrics_router_metrics_get"
-    )
+    return not_implemented("GET", "/router/metrics", "router_metrics_router_metrics_get")

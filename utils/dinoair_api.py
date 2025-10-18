@@ -173,9 +173,7 @@ class TelemetryManager:
 
         if _HAS_TELEMETRY:
             try:
-                self._manager = _telemetry.get_telemetry_manager(
-                    self._lock, self._manager
-                )
+                self._manager = _telemetry.get_telemetry_manager(self._lock, self._manager)
                 if config:
                     self._manager.update_config(**config.__dict__)
             except Exception as e:

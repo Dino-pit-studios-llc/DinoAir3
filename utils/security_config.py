@@ -163,16 +163,12 @@ def get_security_config() -> SecurityConfig:
     return SecurityConfig(
         # Encryption
         encryption_enabled=_get_bool_env("DINOAIR_ENCRYPTION_ENABLED", True),
-        encryption_algorithm=os.environ.get(
-            "DINOAIR_ENCRYPTION_ALGORITHM", "AES-256-GCM"
-        ),
+        encryption_algorithm=os.environ.get("DINOAIR_ENCRYPTION_ALGORITHM", "AES-256-GCM"),
         key_rotation_days=_get_int_env("DINOAIR_KEY_ROTATION_DAYS", 90),
         # Database
         database_encryption=_get_bool_env("DINOAIR_DB_ENCRYPTION", True),
         database_backup_encryption=_get_bool_env("DINOAIR_DB_BACKUP_ENCRYPTION", True),
-        database_connection_encryption=_get_bool_env(
-            "DINOAIR_DB_CONNECTION_ENCRYPTION", True
-        ),
+        database_connection_encryption=_get_bool_env("DINOAIR_DB_CONNECTION_ENCRYPTION", True),
         # Audit
         audit_logging_enabled=_get_bool_env("DINOAIR_AUDIT_LOGGING", True),
         audit_log_encryption=_get_bool_env("DINOAIR_AUDIT_ENCRYPTION", True),
@@ -241,9 +237,7 @@ def validate_security_config(config: SecurityConfig) -> list[str]:
         )
 
     if config.session_timeout_minutes > 30:
-        validation_warnings.append(
-            "⚠️  WARNING: Session timeout is longer than 30 minutes"
-        )
+        validation_warnings.append("⚠️  WARNING: Session timeout is longer than 30 minutes")
 
     if not config.require_tls:
         validation_warnings.append(
@@ -307,23 +301,17 @@ def print_security_status() -> None:
     print(
         f"HIPAA Compliance Mode: {'✅ Enabled' if config.hipaa_compliance_mode else '❌ Disabled'}"
     )
-    print(
-        f"SOC2 Compliance Mode: {'✅ Enabled' if config.soc2_compliance_mode else '❌ Disabled'}"
-    )
+    print(f"SOC2 Compliance Mode: {'✅ Enabled' if config.soc2_compliance_mode else '❌ Disabled'}")
     print()
 
     print("🔐 Encryption:")
-    print(
-        f"  Data at Rest: {'✅ Enabled' if config.database_encryption else '❌ Disabled'}"
-    )
+    print(f"  Data at Rest: {'✅ Enabled' if config.database_encryption else '❌ Disabled'}")
     print(f"  Data in Transit: {'✅ Enabled' if config.require_tls else '❌ Disabled'}")
     print(f"  Algorithm: {config.encryption_algorithm}")
     print()
 
     print("🔍 Audit & Monitoring:")
-    print(
-        f"  Audit Logging: {'✅ Enabled' if config.audit_logging_enabled else '❌ Disabled'}"
-    )
+    print(f"  Audit Logging: {'✅ Enabled' if config.audit_logging_enabled else '❌ Disabled'}")
     print(
         f"  Security Monitoring: {'✅ Enabled' if config.security_monitoring_enabled else '❌ Disabled'}"
     )
@@ -331,23 +319,15 @@ def print_security_status() -> None:
     print()
 
     print("🔑 Authentication:")
-    print(
-        f"  Multi-Factor Auth: {'✅ Required' if config.require_mfa else '❌ Optional'}"
-    )
+    print(f"  Multi-Factor Auth: {'✅ Required' if config.require_mfa else '❌ Optional'}")
     print(f"  Session Timeout: {config.session_timeout_minutes} minutes")
     print("  Password Policy: Enforced")
     print()
 
     print("🛡️  Privacy & Protection:")
-    print(
-        f"  PII Detection: {'✅ Enabled' if config.pii_detection_enabled else '❌ Disabled'}"
-    )
-    print(
-        f"  Data Masking: {'✅ Enabled' if config.data_masking_enabled else '❌ Disabled'}"
-    )
-    print(
-        f"  Secure Delete: {'✅ Enabled' if config.secure_delete_enabled else '❌ Disabled'}"
-    )
+    print(f"  PII Detection: {'✅ Enabled' if config.pii_detection_enabled else '❌ Disabled'}")
+    print(f"  Data Masking: {'✅ Enabled' if config.data_masking_enabled else '❌ Disabled'}")
+    print(f"  Secure Delete: {'✅ Enabled' if config.secure_delete_enabled else '❌ Disabled'}")
     print()
 
     if config_warnings:

@@ -41,11 +41,7 @@ class PerformanceChecker(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call):
         """Check function calls for performance issues."""
         # Check for repeated append in loops
-        if (
-            isinstance(node.func, ast.Attribute)
-            and node.func.attr == "append"
-            and self.in_loop
-        ):
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "append" and self.in_loop:
             # Track append calls in loops
             obj = node.func.value
             if isinstance(obj, ast.Name):
@@ -100,12 +96,8 @@ class PerformanceChecker(ast.NodeVisitor):
     def _involves_string_concatenation(node: ast.BinOp) -> bool:
         """Check if binary operation involves string concatenation."""
         # Simple heuristic: if either operand is a string constant
-        left_is_str = isinstance(node.left, ast.Constant) and isinstance(
-            node.left.value, str
-        )
-        right_is_str = isinstance(node.right, ast.Constant) and isinstance(
-            node.right.value, str
-        )
+        left_is_str = isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)
+        right_is_str = isinstance(node.right, ast.Constant) and isinstance(node.right.value, str)
         return left_is_str or right_is_str
 
 
@@ -144,9 +136,7 @@ class MemoryChecker(ast.NodeVisitor):
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp):
         """Generator expressions are memory efficient."""
-        self.suggestions.append(
-            f"Good use of generator expression at line {node.lineno}"
-        )
+        self.suggestions.append(f"Good use of generator expression at line {node.lineno}")
         self.generic_visit(node)
 
 
@@ -220,11 +210,7 @@ class DataStructureChecker(ast.NodeVisitor):
         """Check comparison patterns."""
         # Check for x in list (where list is large) - suggest set
         for op, right in zip(node.ops, node.comparators, strict=False):
-            if (
-                isinstance(op, ast.In)
-                and isinstance(right, ast.List)
-                and len(right.elts) > 10
-            ):
+            if isinstance(op, ast.In) and isinstance(right, ast.List) and len(right.elts) > 10:
                 self.suggestions.append(
                     f"'in' operation on large list at line {node.lineno} - consider using set for O(1) lookup"
                 )

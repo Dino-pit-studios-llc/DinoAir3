@@ -94,9 +94,7 @@ class LlmFirstController:
 
         # Validate and optionally fix (preserving telemetry labels and re-validation behavior)
         logger.debug("Translation #%s: Validating generated code", translation_id)
-        final_code, validation_result = self._validate_and_optionally_fix(
-            generated_code
-        )
+        final_code, validation_result = self._validate_and_optionally_fix(generated_code)
 
         # Logic validation and improvements (unchanged wording and list order)
         logic_result = self._validator.validate_logic(final_code)

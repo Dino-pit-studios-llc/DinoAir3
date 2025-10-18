@@ -60,9 +60,7 @@ class ValidationService:
             result = self.validator.validate_syntax(code)
 
             if not result.is_valid:
-                logger.warning(
-                    "Syntax validation failed with %d errors", len(result.errors)
-                )
+                logger.warning("Syntax validation failed with %d errors", len(result.errors))
 
             return result
 
@@ -346,8 +344,7 @@ class ValidationService:
             "validation_count": self._validation_count,
             "fix_attempts": self._fix_attempts,
             "successful_fixes": self._successful_fixes,
-            "fix_success_rate": (self._successful_fixes / max(self._fix_attempts, 1))
-            * 100,
+            "fix_success_rate": (self._successful_fixes / max(self._fix_attempts, 1)) * 100,
         }
 
     def reset_statistics(self) -> None:

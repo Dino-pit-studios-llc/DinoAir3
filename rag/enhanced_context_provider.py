@@ -53,9 +53,7 @@ class SearchHistory:
 
         # Popular terms matching partial (if we need more)
         if len(suggestions) < limit:
-            suggestions = self._add_popular_matching_terms(
-                partial_lower, suggestions, limit
-            )
+            suggestions = self._add_popular_matching_terms(partial_lower, suggestions, limit)
 
         return suggestions[:limit]
 
@@ -266,9 +264,7 @@ class EnhancedContextProvider:
                 }
 
             # Validate file types
-            is_valid, sanitized_types, error_msg = self.validator.validate_file_types(
-                file_types
-            )
+            is_valid, sanitized_types, error_msg = self.validator.validate_file_types(file_types)
             if not is_valid:
                 return {
                     "success": False,
@@ -373,9 +369,7 @@ class EnhancedContextProvider:
             "chunk_index": result.chunk_index,
             "score": result.score,
             "match_type": result.match_type,
-            "relevance_level": EnhancedContextProvider._get_relevance_level(
-                result.score
-            ),
+            "relevance_level": EnhancedContextProvider._get_relevance_level(result.score),
         }
 
         # Add file metadata
@@ -425,9 +419,7 @@ class EnhancedContextProvider:
 
         return preview
 
-    def _generate_suggestions(
-        self, query: str, results: list[dict[str, Any]]
-    ) -> list[str]:
+    def _generate_suggestions(self, query: str, results: list[dict[str, Any]]) -> list[str]:
         """Generate query suggestions based on results"""
         suggestions = []
 
@@ -441,9 +433,7 @@ class EnhancedContextProvider:
             for result in results[:3]:  # Top 3 results
                 # Extract nouns and important terms from content
                 words = result["content"].lower().split()
-                important_words = [
-                    w for w in words if len(w) > 4 and w not in query.lower()
-                ]
+                important_words = [w for w in words if len(w) > 4 and w not in query.lower()]
                 term_counter.update(important_words)
 
             # Add most common terms as suggestions
@@ -571,8 +561,7 @@ class EnhancedContextProvider:
                 "search_history_count": len(history_queries),
                 "popular_terms": self.search_history.term_frequency.most_common(10),
                 "average_results_per_search": (
-                    sum(q["result_count"] for q in history_queries)
-                    / len(history_queries)
+                    sum(q["result_count"] for q in history_queries) / len(history_queries)
                     if history_queries
                     else 0
                 ),
@@ -600,9 +589,7 @@ class EnhancedContextProvider:
 
             # Check embedding generator
             try:
-                test_embedding = (
-                    self.search_engine.embedding_generator.generate_embedding("test")
-                )
+                test_embedding = self.search_engine.embedding_generator.generate_embedding("test")
                 if test_embedding is None:
                     issues.append("Embedding generator not functioning")
             except Exception as e:

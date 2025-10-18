@@ -119,9 +119,7 @@ class DependencyMonitor:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -155,9 +153,7 @@ class DependencyMonitor:
         for file_path in python_files:
             try:
                 module_name = self._path_to_module(file_path)
-                metrics[module_name] = self._measure_module_import(
-                    file_path, module_name
-                )
+                metrics[module_name] = self._measure_module_import(file_path, module_name)
             except Exception as e:
                 self.logger.warning("Failed to measure %s: %s", file_path, e)
 
@@ -175,9 +171,7 @@ class DependencyMonitor:
 
         return ".".join(parts) if parts else "__main__"
 
-    def _measure_module_import(
-        self, file_path: Path, module_name: str
-    ) -> ImportMetrics:
+    def _measure_module_import(self, file_path: Path, module_name: str) -> ImportMetrics:
         """Measure import performance for a single module."""
         # Get file stats
         stat = file_path.stat()
@@ -224,9 +218,7 @@ class DependencyMonitor:
             if import_time is not None and 0 <= import_time <= 30:
                 return import_time
         except (OSError, ValueError, TypeError) as e:
-            self.logger.debug(
-                "Failed to measure import time for %s: %s", module_name, e
-            )
+            self.logger.debug("Failed to measure import time for %s: %s", module_name, e)
         finally:
             Path(temp_path).unlink(missing_ok=True)
         return self._fallback_time(file_path)
@@ -268,9 +260,7 @@ if __name__ == "__main__":
     def _write_temp_script(self, script: str) -> str:
         import tempfile
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False
-        ) as temp_file:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_file:
             temp_file.write(script)
             temp_file.flush()
             return temp_file.name
@@ -350,9 +340,7 @@ if __name__ == "__main__":
         Returns:
             Performance analysis report with timing statistics and recommendations
         """
-        self.logger.info(
-            "Starting import performance analysis with actual timing measurements"
-        )
+        self.logger.info("Starting import performance analysis with actual timing measurements")
 
         # Get all Python files
         python_files = list(self.root_path.rglob("*.py"))
@@ -398,19 +386,13 @@ if __name__ == "__main__":
         recommendations = []
 
         if performance_stats["max_import_time"] > 1.0:
-            recommendations.append(
-                "Consider lazy imports for modules taking >1s to import"
-            )
+            recommendations.append("Consider lazy imports for modules taking >1s to import")
 
         if len(slow_imports) > len(benchmark_results) * 0.1:  # >10% slow imports
-            recommendations.append(
-                "High number of slow imports detected - review import structure"
-            )
+            recommendations.append("High number of slow imports detected - review import structure")
 
         if performance_stats["mean_import_time"] > 0.1:
-            recommendations.append(
-                "Average import time is high - consider import optimization"
-            )
+            recommendations.append("Average import time is high - consider import optimization")
 
         return {
             "performance_statistics": performance_stats,
@@ -453,9 +435,7 @@ if __name__ == "__main__":
 
                 # Get size-based estimate
                 file_size = file_path.stat().st_size
-                estimated_time = self._estimate_import_time_from_size(
-                    file_size, file_path
-                )
+                estimated_time = self._estimate_import_time_from_size(file_size, file_path)
 
                 # Calculate accuracy metrics
                 error = abs(actual_time - estimated_time)
@@ -473,9 +453,7 @@ if __name__ == "__main__":
                 )
 
             except Exception as e:
-                self.logger.warning(
-                    "Failed to compare timing for %s: %s", module_name, e
-                )
+                self.logger.warning("Failed to compare timing for %s: %s", module_name, e)
 
         if not comparison_results:
             return {"error": "No comparison data available"}
@@ -500,14 +478,10 @@ if __name__ == "__main__":
                 "good": sum(
                     1
                     for r in comparison_results
-                    if excellent_threshold
-                    <= r["relative_error_percent"]
-                    < good_threshold
+                    if excellent_threshold <= r["relative_error_percent"] < good_threshold
                 ),
                 "poor": sum(
-                    1
-                    for r in comparison_results
-                    if r["relative_error_percent"] >= good_threshold
+                    1 for r in comparison_results if r["relative_error_percent"] >= good_threshold
                 ),
             },
         }
@@ -542,8 +516,7 @@ if __name__ == "__main__":
             if result.returncode == 0:
                 data = json.loads(result.stdout)
                 circular_deps = [
-                    " -> ".join(cycle["cycle"])
-                    for cycle in data.get("circular_dependencies", [])
+                    " -> ".join(cycle["cycle"]) for cycle in data.get("circular_dependencies", [])
                 ]
                 # Cache results for this directory
                 cache_result = (
@@ -559,9 +532,7 @@ if __name__ == "__main__":
             return cache_result
 
         except Exception as e:
-            self.logger.warning(
-                "Failed to analyze dependencies for %s: %s", file_path, e
-            )
+            self.logger.warning("Failed to analyze dependencies for %s: %s", file_path, e)
             # Cache empty result for failed analysis
             cache_result = (0, [])
             self._dependency_cache[directory] = cache_result
@@ -587,18 +558,13 @@ if __name__ == "__main__":
 
         return max(0.0, score)
 
-    def check_alert_conditions(
-        self, metrics: dict[str, ImportMetrics]
-    ) -> list[AlertCondition]:
+    def check_alert_conditions(self, metrics: dict[str, ImportMetrics]) -> list[AlertCondition]:
         """Check for alert conditions in current metrics."""
         alerts = []
 
         for module_name, metric in metrics.items():
             # Check import time threshold
-            if (
-                metric.import_time_estimate
-                > self.config["monitoring"]["import_time_threshold"]
-            ):
+            if metric.import_time_estimate > self.config["monitoring"]["import_time_threshold"]:
                 alerts.append(
                     AlertCondition(
                         severity="warning",
@@ -611,10 +577,7 @@ if __name__ == "__main__":
                 )
 
             # Check health score threshold
-            if (
-                metric.health_score
-                < self.config["monitoring"]["health_score_threshold"]
-            ):
+            if metric.health_score < self.config["monitoring"]["health_score_threshold"]:
                 alerts.append(
                     AlertCondition(
                         severity="critical" if metric.health_score < 0.5 else "warning",
@@ -688,21 +651,13 @@ if __name__ == "__main__":
             "timestamp": datetime.now().isoformat(),
             "cycle_duration": time.time() - cycle_start,
             "total_modules": len(metrics),
-            "healthy_modules": sum(
-                1 for m in metrics.values() if m.health_score >= 0.8
-            ),
-            "warning_modules": sum(
-                1 for m in metrics.values() if 0.5 <= m.health_score < 0.8
-            ),
-            "critical_modules": sum(
-                1 for m in metrics.values() if m.health_score < 0.5
-            ),
+            "healthy_modules": sum(1 for m in metrics.values() if m.health_score >= 0.8),
+            "warning_modules": sum(1 for m in metrics.values() if 0.5 <= m.health_score < 0.8),
+            "critical_modules": sum(1 for m in metrics.values() if m.health_score < 0.5),
             "total_alerts": len(alerts),
             "critical_alerts": sum(1 for a in alerts if a.severity == "critical"),
             "average_health_score": (
-                sum(m.health_score for m in metrics.values()) / len(metrics)
-                if metrics
-                else 0
+                sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0
             ),
             "total_circular_dependencies": sum(
                 len(m.circular_dependencies) for m in metrics.values()
@@ -719,8 +674,7 @@ if __name__ == "__main__":
             output_dir.mkdir(exist_ok=True)
 
             graph_path = (
-                output_dir
-                / f"dependency_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                output_dir / f"dependency_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             )
             self.generate_dependency_graph(metrics, graph_path)
 
@@ -807,9 +761,7 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
                 else 0
             ),
             "average_health_score": (
-                sum(m.health_score for m in metrics.values()) / len(metrics)
-                if metrics
-                else 0
+                sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0
             ),
             "modules_with_circular_deps": sum(
                 1 for m in metrics.values() if m.circular_dependencies

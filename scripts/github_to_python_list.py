@@ -105,9 +105,7 @@ class GitHubSecurityIssuesList:
                 "package_name": package.get("name", ""),
                 "package_ecosystem": package.get("ecosystem", ""),
                 "manifest_path": dependency.get("manifest_path", ""),
-                "vulnerable_version_range": vulnerability.get(
-                    "vulnerable_version_range", ""
-                ),
+                "vulnerable_version_range": vulnerability.get("vulnerable_version_range", ""),
                 "first_patched_version": vulnerability.get("first_patched_version", ""),
                 "cve_id": advisory.get("cve_id", ""),
                 "ghsa_id": advisory.get("ghsa_id", ""),
@@ -158,9 +156,7 @@ class GitHubSecurityIssuesList:
         """Get issues filtered by severity level."""
         all_issues = self.get_all_security_issues()
         return [
-            issue
-            for issue in all_issues
-            if issue.get("severity", "").lower() == severity.lower()
+            issue for issue in all_issues if issue.get("severity", "").lower() == severity.lower()
         ]
 
     def get_issues_by_type(self, issue_type: str) -> list[dict[str, Any]]:
@@ -171,9 +167,7 @@ class GitHubSecurityIssuesList:
     def get_issues_by_file(self, file_path: str) -> list[dict[str, Any]]:
         """Get issues filtered by file path."""
         all_issues = self.get_all_security_issues()
-        return [
-            issue for issue in all_issues if file_path in issue.get("file_path", "")
-        ]
+        return [issue for issue in all_issues if file_path in issue.get("file_path", "")]
 
     def print_issues_summary(self):
         """Print a summary of all security issues."""
@@ -262,6 +256,4 @@ if __name__ == "__main__":
         out_file.write(repr(security_issues_list))
 
     print(f"\n💾 Security issues saved to: {output_file}")
-    print(
-        "📝 You can now import with: from security_issues_list import security_issues"
-    )
+    print("📝 You can now import with: from security_issues_list import security_issues")

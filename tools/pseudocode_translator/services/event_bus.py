@@ -125,9 +125,7 @@ class EventBus:
         self._handler_count += 1
         handler_id = f"{event_type}_{id(handler)}"
 
-        logger.debug(
-            "Subscribed to %s events (priority: %s)", event_type, priority.name
-        )
+        logger.debug("Subscribed to %s events (priority: %s)", event_type, priority.name)
         return handler_id
 
     def subscribe_all(
@@ -173,9 +171,7 @@ class EventBus:
         if event_type in self._handlers:
             original_count = len(self._handlers[event_type])
             self._handlers[event_type] = [
-                h
-                for h in self._handlers[event_type]
-                if f"{event_type}_{id(h)}" != handler_id
+                h for h in self._handlers[event_type] if f"{event_type}_{id(h)}" != handler_id
             ]
             removed = len(self._handlers[event_type]) < original_count
             if removed:

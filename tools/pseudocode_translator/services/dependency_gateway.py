@@ -57,9 +57,7 @@ class DependencyAnalysisGateway:
     def _get_resolver() -> Any:
         """Attempt to import and return a DependencyResolver instance, or None if unavailable."""
         try:
-            from ..translator_support.dependency_resolver import (
-                DependencyResolver,  # type: ignore
-            )
+            from ..translator_support.dependency_resolver import DependencyResolver  # type: ignore
 
             return DependencyResolver(use_cache=True)
         except ImportError:
@@ -88,9 +86,7 @@ class DependencyAnalysisGateway:
         Processes each block for Python content, applies analysis results, and falls back to AST parsing if needed.
         """
         for i, block in enumerate(blocks):
-            self._apply_analysis_block(
-                block, analyses, i, defined_names, required_imports
-            )
+            self._apply_analysis_block(block, analyses, i, defined_names, required_imports)
 
         # Fallback: in-process AST walk with parse_cached
         self._fallback_ast_parse(blocks, defined_names, required_imports)
@@ -140,15 +136,11 @@ class DependencyAnalysisGateway:
                 try:
                     tree = self._parse_cached(block.content)
                 except SyntaxError:
-                    self._logger.warning(
-                        f"Could not parse block {i} for dependency analysis"
-                    )
+                    self._logger.warning(f"Could not parse block {i} for dependency analysis")
                     DependencyAnalysisGateway._reset_block_metadata(block)
                     continue
 
-                DependencyAnalysisGateway._walk_ast(
-                    tree, defined_names, required_imports
-                )
+                DependencyAnalysisGateway._walk_ast(tree, defined_names, required_imports)
                 block.metadata["defined_names"] = list(defined_names)
                 block.metadata["required_imports"] = list(required_imports)
 

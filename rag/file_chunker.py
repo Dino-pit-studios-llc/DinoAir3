@@ -80,9 +80,7 @@ class FileChunker:
                 r"class\s+\w+|interface\s+\w+|struct\s+\w+)",
                 re.MULTILINE,
             ),
-            "class": re.compile(
-                r"^\s*(class\s+\w+|interface\s+\w+|struct\s+\w+)", re.MULTILINE
-            ),
+            "class": re.compile(r"^\s*(class\s+\w+|interface\s+\w+|struct\s+\w+)", re.MULTILINE),
             "method": re.compile(
                 r"^\s*(def\s+\w+|function\s+\w+|"
                 r"public\s+\w+.*\(|private\s+\w+.*\(|"
@@ -141,9 +139,7 @@ class FileChunker:
             chunk_index += 1
             current_pos = self._get_next_position(chunk_end, chunks)
 
-        self.logger.info(
-            "Created %d chunks from %d characters", len(chunks), text_length
-        )
+        self.logger.info("Created %d chunks from %d characters", len(chunks), text_length)
         return chunks
 
     def _determine_chunk_end(
@@ -277,9 +273,7 @@ class FileChunker:
                 chunk_content = "".join(current_chunk)
 
                 # Add overlap from next sentences if available
-                overlap_content = FileChunker._get_sentence_overlap(
-                    sentences, i, self.overlap
-                )
+                overlap_content = FileChunker._get_sentence_overlap(sentences, i, self.overlap)
                 if overlap_content:
                     chunk_content += overlap_content
 
@@ -557,9 +551,7 @@ class FileChunker:
 
         return paragraphs
 
-    def _find_code_boundaries(
-        self, code: str, language: str
-    ) -> list[tuple[int, int, str]]:
+    def _find_code_boundaries(self, code: str, language: str) -> list[tuple[int, int, str]]:
         """
         Find natural boundaries in code (functions, classes, etc.).
 

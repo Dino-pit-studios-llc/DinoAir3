@@ -171,9 +171,7 @@ def main():
             print("\nNext steps:")
             print("1. Review the changes: git diff")
             print("2. Run full test suite: pytest")
-            print(
-                "3. Commit changes: git add . && git commit -m 'Apply automated fixes'"
-            )
+            print("3. Commit changes: git add . && git commit -m 'Apply automated fixes'")
             print("4. Proceed to Phase 1: Fix critical issues")
         else:
             print("\n⚠️  Some automation failed")

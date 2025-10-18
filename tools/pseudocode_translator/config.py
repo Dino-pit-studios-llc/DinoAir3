@@ -74,14 +74,10 @@ class ModelConfig:
             errors.append("Model name cannot be empty")
 
         if not 0.0 <= self.temperature <= 2.0:
-            errors.append(
-                f"Temperature must be between 0.0 and 2.0, got {self.temperature}"
-            )
+            errors.append(f"Temperature must be between 0.0 and 2.0, got {self.temperature}")
 
         if not 1 <= self.max_tokens <= 32768:
-            errors.append(
-                f"max_tokens must be between 1 and 32768, got {self.max_tokens}"
-            )
+            errors.append(f"max_tokens must be between 1 and 32768, got {self.max_tokens}")
 
         return errors
 
@@ -133,20 +129,14 @@ class LLMConfig:
                     cfg_d = cast("dict[str, Any]", cfg)
                     params_raw = cfg_d.get("parameters")
                     params = (
-                        cast("dict[str, Any]", params_raw)
-                        if isinstance(params_raw, dict)
-                        else {}
+                        cast("dict[str, Any]", params_raw) if isinstance(params_raw, dict) else {}
                     )
                     self.models[name] = ModelConfig(
                         name=name,
                         enabled=bool(cfg_d.get("enabled", True)),
                         model_path=cast("str | None", cfg_d.get("model_path")),
-                        temperature=cast(
-                            "float", params.get("temperature", self.temperature)
-                        ),
-                        max_tokens=cast(
-                            "int", params.get("max_tokens", self.max_tokens)
-                        ),
+                        temperature=cast("float", params.get("temperature", self.temperature)),
+                        max_tokens=cast("int", params.get("max_tokens", self.max_tokens)),
                         auto_download=bool(cfg_d.get("auto_download", False)),
                     )
 
@@ -174,14 +164,10 @@ class LLMConfig:
             errors.append(f"n_threads must be between 1 and 32, got {self.n_threads}")
 
         if not 0 <= self.n_gpu_layers <= 100:
-            errors.append(
-                f"n_gpu_layers must be between 0 and 100, got {self.n_gpu_layers}"
-            )
+            errors.append(f"n_gpu_layers must be between 0 and 100, got {self.n_gpu_layers}")
 
         if not 0.0 <= self.temperature <= 2.0:
-            errors.append(
-                f"temperature must be between 0.0 and 2.0, got {self.temperature}"
-            )
+            errors.append(f"temperature must be between 0.0 and 2.0, got {self.temperature}")
 
         if self.timeout_seconds < 0:
             errors.append(f"timeout_seconds must be >= 0, got {self.timeout_seconds}")
@@ -190,9 +176,7 @@ class LLMConfig:
 
         # Validate model configurations
         if self.model_type not in self.models:
-            errors.append(
-                f"Primary model '{self.model_type}' not found in models configuration"
-            )
+            errors.append(f"Primary model '{self.model_type}' not found in models configuration")
 
         for name, model in self.models.items():
             model_errors = model.validate()
@@ -347,9 +331,7 @@ class StreamingConfig:
         StreamingConfig._validate_min(
             "progress_callback_interval", self.progress_callback_interval, 0, errors
         )
-        StreamingConfig._validate_min(
-            "context_window_size", self.context_window_size, 0, errors
-        )
+        StreamingConfig._validate_min("context_window_size", self.context_window_size, 0, errors)
 
         allowed_evictions = {"lru", "fifo", "none"}
         if self.eviction_policy not in allowed_evictions:
@@ -373,9 +355,7 @@ class StreamingConfig:
             errors.append("adaptive_hysteresis_pct must be >= 0.0")
 
         if self.adaptive_hysteresis_pct > 0.5:
-            warnings.append(
-                "adaptive_hysteresis_pct is high (> 0.5); may reduce responsiveness"
-            )
+            warnings.append("adaptive_hysteresis_pct is high (> 0.5); may reduce responsiveness")
         if (
             self.adaptive_initial_chunk_size is not None
             and not self.adaptive_min_chunk_size
@@ -449,10 +429,7 @@ class ExecutionConfig:
             )
 
         # Max workers
-        if (
-            self.process_pool_max_workers is not None
-            and self.process_pool_max_workers < 1
-        ):
+        if self.process_pool_max_workers is not None and self.process_pool_max_workers < 1:
             errors.append(
                 f"process_pool_max_workers must be >= 1 when set, got "
                 f"{self.process_pool_max_workers}"
@@ -509,9 +486,7 @@ class CacheConfig:
         if self.max_size < 1:
             errors.append(f"cache.max_size must be >= 1, got {self.max_size}")
         if self.ttl_seconds is not None and self.ttl_seconds < 1:
-            errors.append(
-                f"cache.ttl_seconds must be None or >= 1, got {self.ttl_seconds}"
-            )
+            errors.append(f"cache.ttl_seconds must be None or >= 1, got {self.ttl_seconds}")
         if self.max_memory_mb <= 0:
             errors.append(f"cache.max_memory_mb must be > 0, got {self.max_memory_mb}")
 
@@ -713,15 +688,9 @@ class Config:
 
         coercers: dict[str, Callable[[str], tuple[bool, Any]]] = {
             "llm.model_type": lambda v: (True, v),
-            "llm.temperature": lambda v: _try_float(
-                v, f"Invalid temperature value from env: {v}"
-            ),
-            "llm.n_threads": lambda v: _try_int(
-                v, f"Invalid threads value from env: {v}"
-            ),
-            "llm.n_gpu_layers": lambda v: _try_int(
-                v, f"Invalid GPU layers value from env: {v}"
-            ),
+            "llm.temperature": lambda v: _try_float(v, f"Invalid temperature value from env: {v}"),
+            "llm.n_threads": lambda v: _try_int(v, f"Invalid threads value from env: {v}"),
+            "llm.n_gpu_layers": lambda v: _try_int(v, f"Invalid GPU layers value from env: {v}"),
             "streaming.enabled": lambda v: (True, v.lower() in truthy),
             "streaming.chunk_size": lambda v: _try_int(
                 v, f"Invalid chunk size value from env: {v}"
@@ -776,12 +745,8 @@ class Config:
             "execution.process_pool_start_method": lambda v: (True, v),
             # Cache coercers
             "cache.eviction_mode": lambda v: (True, v),
-            "cache.max_size": lambda v: _try_int(
-                v, f"Invalid cache max size from env: {v}"
-            ),
-            "cache.ttl_seconds": lambda v: _try_int(
-                v, f"Invalid cache ttl seconds from env: {v}"
-            ),
+            "cache.max_size": lambda v: _try_int(v, f"Invalid cache max size from env: {v}"),
+            "cache.ttl_seconds": lambda v: _try_int(v, f"Invalid cache ttl seconds from env: {v}"),
             "cache.max_memory_mb": lambda v: _try_float(
                 v, f"Invalid cache max memory MB from env: {v}"
             ),
@@ -848,9 +813,7 @@ class Config:
             llm_data = cast("dict[str, Any]", data["llm"])
             models_raw = llm_data.pop("models", {})
             models: dict[str, Any] = (
-                cast("dict[str, Any]", models_raw)
-                if isinstance(models_raw, dict)
-                else {}
+                cast("dict[str, Any]", models_raw) if isinstance(models_raw, dict) else {}
             )
             data["llm"] = LLMConfig(**llm_data)
             # Recreate model configs
@@ -940,9 +903,7 @@ class ConfigManager:
 
         # Top-level config constraints
         if cfg.indent_size not in [2, 4, 8]:
-            all_errors.append(
-                f"indent_size should be 2, 4, or 8, got {cfg.indent_size}"
-            )
+            all_errors.append(f"indent_size should be 2, 4, or 8, got {cfg.indent_size}")
 
         if not 50 <= cfg.max_line_length <= 120:
             all_errors.append(
@@ -1067,9 +1028,7 @@ class ConfigManager:
             raise Exception("Invalid file path")
         with open(config_path, "w") as f:
             if config_path.suffix in [".yaml", ".yml"]:
-                yaml.dump(
-                    config.to_dict(), f, default_flow_style=False, sort_keys=False
-                )
+                yaml.dump(config.to_dict(), f, default_flow_style=False, sort_keys=False)
             else:
                 json.dump(config.to_dict(), f, indent=2)
 
@@ -1190,9 +1149,7 @@ class ConfigManager:
             )
 
         config.use_type_hints = prompt_yes_no("Use type hints?", config.use_type_hints)
-        config.validate_imports = prompt_yes_no(
-            "Validate imports?", config.validate_imports
-        )
+        config.validate_imports = prompt_yes_no("Validate imports?", config.validate_imports)
 
         return config
 
@@ -1218,11 +1175,7 @@ class ConfigManager:
             if "../" in str(path) or "..\\" in str(path):
                 raise Exception("Invalid file path")
             with open(path) as f:
-                data = (
-                    yaml.safe_load(f)
-                    if path.suffix in [".yaml", ".yml"]
-                    else json.load(f)
-                )
+                data = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
 
             version = data.get("version", data.get("_version", "1.0"))
             info["version"] = version

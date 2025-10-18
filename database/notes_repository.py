@@ -18,9 +18,7 @@ from .initialize_db import DatabaseManager
 NOTE_TABLE = "note_list"
 INVALID_TABLE_ERROR = "Invalid table name"
 
-NOTE_SELECT_COLUMNS = (
-    "id, title, content, content_html, tags, created_at, updated_at, project_id"
-)
+NOTE_SELECT_COLUMNS = "id, title, content, content_html, tags, created_at, updated_at, project_id"
 
 UPDATE_NOTE_FIELD_QUERIES = {
     "title": "UPDATE note_list SET title = ?, updated_at = ? WHERE id = ? AND is_deleted = 0",
@@ -60,9 +58,7 @@ class NotesRepository:
         # This method is kept for backward compatibility but no longer performs schema changes
         self.logger.debug("Database schema managed by migration system")
 
-    def _execute_query_safe(
-        self, query: str, params: tuple[Any, ...] = ()
-    ) -> QueryResult:
+    def _execute_query_safe(self, query: str, params: tuple[Any, ...] = ()) -> QueryResult:
         """Execute a query with proper connection management and return results"""
         try:
             with self.db_manager.get_notes_connection() as conn:
@@ -154,9 +150,7 @@ class NotesRepository:
     def create_note(self, note: Note, content_html: str | None = None) -> QueryResult:
         """Insert a new note into the database"""
         # Normalize tags before storage
-        normalized_tags = (
-            NotesRepository._normalize_tags(note.tags) if note.tags else []
-        )
+        normalized_tags = NotesRepository._normalize_tags(note.tags) if note.tags else []
         tags_json = json.dumps(normalized_tags)
 
         query = """
@@ -257,16 +251,12 @@ class NotesRepository:
             if field in updates:
                 value = updates[field]
                 if field == "tags":
-                    normalized_tags = (
-                        NotesRepository._normalize_tags(value) if value else []
-                    )
+                    normalized_tags = NotesRepository._normalize_tags(value) if value else []
                     value = json.dumps(normalized_tags)
                 processed_updates.append((field, value))
         return processed_updates
 
-    def _apply_note_updates(
-        self, note_id: str, processed_updates: list[tuple[str, Any]]
-    ) -> int:
+    def _apply_note_updates(self, note_id: str, processed_updates: list[tuple[str, Any]]) -> int:
         """Apply processed updates to a note in the database.
 
         Args:
@@ -362,9 +352,7 @@ class NotesRepository:
         """Search notes with various filter options"""
         try:
             q_like = f"%{query}%"
-            search_sql, params = self._build_search_query(
-                q_like, filter_option, project_id
-            )
+            search_sql, params = self._build_search_query(q_like, filter_option, project_id)
 
             with self.db_manager.get_notes_connection() as conn:
                 cursor = conn.cursor()
@@ -398,19 +386,13 @@ class NotesRepository:
         """
 
         search_condition, params = self._get_search_condition(filter_option, q_like)
-        search_condition, params = self._apply_project_filter(
-            search_condition, params, project_id
-        )
+        search_condition, params = self._apply_project_filter(search_condition, params, project_id)
 
-        search_sql = (
-            base_select + "\n" + search_condition + "\nORDER BY updated_at DESC"
-        )
+        search_sql = base_select + "\n" + search_condition + "\nORDER BY updated_at DESC"
         return search_sql, params
 
     @staticmethod
-    def _get_search_condition(
-        filter_option: str, q_like: str
-    ) -> tuple[str, tuple[str, ...]]:
+    def _get_search_condition(filter_option: str, q_like: str) -> tuple[str, tuple[str, ...]]:
         """Get search condition based on filter option.
 
         Args:
@@ -477,9 +459,7 @@ class NotesRepository:
                         (normalized_tag,),
                     )
 
-                    notes = [
-                        NotesRepository._row_to_note(row) for row in cursor.fetchall()
-                    ]
+                    notes = [NotesRepository._row_to_note(row) for row in cursor.fetchall()]
             else:
                 # Fallback to LIKE query with post-filtering for systems without JSON1
                 tag_pattern = f'%"{normalized_tag}"%'
@@ -562,22 +542,16 @@ class NotesRepository:
             if self.table_name != NOTE_TABLE:
                 return QueryResult(False, None, INVALID_TABLE_ERROR)
 
-            affected_notes = self._process_tag_rename(
-                old_tag_normalized, new_tag_normalized
-            )
+            affected_notes = self._process_tag_rename(old_tag_normalized, new_tag_normalized)
 
-            self.logger.info(
-                f"Renamed tag '{old_tag}' to '{new_tag}' in {affected_notes} notes"
-            )
+            self.logger.info(f"Renamed tag '{old_tag}' to '{new_tag}' in {affected_notes} notes")
             return QueryResult(success=True, data={"affected_notes": affected_notes})
 
         except Exception as e:
             self.logger.error(f"Error renaming tag: {str(e)}")
             return QueryResult(success=False, error=str(e))
 
-    def _process_tag_rename(
-        self, old_tag_normalized: str, new_tag_normalized: str
-    ) -> int:
+    def _process_tag_rename(self, old_tag_normalized: str, new_tag_normalized: str) -> int:
         """Process tag renaming for all notes containing the old tag.
 
         Args:
@@ -729,15 +703,11 @@ class NotesRepository:
                 )
 
                 notes = [NotesRepository._row_to_note(row) for row in cursor.fetchall()]
-                self.logger.info(
-                    f"Retrieved {len(notes)} notes for project: {project_id}"
-                )
+                self.logger.info(f"Retrieved {len(notes)} notes for project: {project_id}")
                 return QueryResult(success=True, data=notes)
 
         except Exception as e:
-            self.logger.error(
-                f"Error retrieving notes for project {project_id}: {str(e)}"
-            )
+            self.logger.error(f"Error retrieving notes for project {project_id}: {str(e)}")
             return QueryResult(success=False, error=str(e))
 
     def get_notes_without_project(self) -> QueryResult:
@@ -755,18 +725,14 @@ class NotesRepository:
                 )
 
                 notes = [NotesRepository._row_to_note(row) for row in cursor.fetchall()]
-                self.logger.info(
-                    f"Retrieved {len(notes)} notes without project association"
-                )
+                self.logger.info(f"Retrieved {len(notes)} notes without project association")
                 return QueryResult(success=True, data=notes)
 
         except Exception as e:
             self.logger.error(f"Error retrieving notes without project: {str(e)}")
             return QueryResult(success=False, error=str(e))
 
-    def bulk_update_project(
-        self, note_ids: list[str], project_id: str | None
-    ) -> QueryResult:
+    def bulk_update_project(self, note_ids: list[str], project_id: str | None) -> QueryResult:
         """Assign multiple notes to a project or remove project association"""
         try:
             if not note_ids:
@@ -816,7 +782,5 @@ class NotesRepository:
                 return QueryResult(success=True, data=count)
 
         except Exception as e:
-            self.logger.error(
-                f"Error counting notes for project {project_id}: {str(e)}"
-            )
+            self.logger.error(f"Error counting notes for project {project_id}: {str(e)}")
             return QueryResult(success=False, error=str(e))

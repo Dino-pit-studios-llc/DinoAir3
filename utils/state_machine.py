@@ -371,9 +371,7 @@ class StateMachine:
         context: dict[str, Any],
     ) -> None:
         """Call transition callbacks."""
-        logger.debug(
-            f"DEBUG: Calling {len(self._transition_callbacks)} transition callbacks"
-        )
+        logger.debug(f"DEBUG: Calling {len(self._transition_callbacks)} transition callbacks")
         for callback in self._transition_callbacks:
             try:
                 callback(from_state, to_state, context)
@@ -446,9 +444,7 @@ class StateMachine:
         with self._lock:
             return self._current_state in states
 
-    def wait_for_state(
-        self, target_state: ApplicationState, timeout: float = 10.0
-    ) -> bool:
+    def wait_for_state(self, target_state: ApplicationState, timeout: float = 10.0) -> bool:
         """
         Wait for the state machine to reach a specific state.
 
@@ -488,9 +484,7 @@ class StateMachine:
 
             return {
                 "current_state": self._current_state.value,
-                "previous_state": (
-                    self._previous_state.value if self._previous_state else None
-                ),
+                "previous_state": (self._previous_state.value if self._previous_state else None),
                 "current_state_duration_ms": self.get_current_state_duration(),
                 "total_transitions": total_transitions,
                 "successful_transitions": successful_transitions,
@@ -513,9 +507,7 @@ class StateMachine:
                 ],
             }
 
-    def reset(
-        self, initial_state: ApplicationState = ApplicationState.initializing
-    ) -> None:
+    def reset(self, initial_state: ApplicationState = ApplicationState.initializing) -> None:
         """Reset the state machine to initial state."""
         with self._lock:
             logger.info("Resetting state machine")

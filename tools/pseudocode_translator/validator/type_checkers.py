@@ -17,24 +17,18 @@ class TypeConsistencyChecker(ast.NodeVisitor):
 
     def visit_BinOp(self, node: ast.BinOp):
         """Check binary operations for type consistency."""
-        if isinstance(
-            node.op, ast.Add
-        ) and TypeConsistencyChecker._is_string_number_addition(node):
+        if isinstance(node.op, ast.Add) and TypeConsistencyChecker._is_string_number_addition(node):
             self._add_string_number_error(node)
         self.generic_visit(node)
 
     @staticmethod
     def _is_string_number_addition(node: ast.BinOp) -> bool:
         """Check if this is a string + number operation."""
-        left_is_str = isinstance(node.left, ast.Constant) and isinstance(
-            node.left.value, str
-        )
+        left_is_str = isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)
         right_is_num = isinstance(node.right, ast.Constant) and isinstance(
             node.right.value, int | float
         )
-        right_is_str = isinstance(node.right, ast.Constant) and isinstance(
-            node.right.value, str
-        )
+        right_is_str = isinstance(node.right, ast.Constant) and isinstance(node.right.value, str)
         left_is_num = isinstance(node.left, ast.Constant) and isinstance(
             node.left.value, int | float
         )

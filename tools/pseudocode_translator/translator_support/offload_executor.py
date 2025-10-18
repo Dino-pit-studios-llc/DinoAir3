@@ -27,9 +27,7 @@ from ..integration.events import EventType  # noqa: E402
 
 # Best-effort BrokenProcessPool import; fall back to a local sentinel Exception subclass
 try:  # pragma: no cover - platform/env specific
-    from concurrent.futures.process import (
-        BrokenProcessPool as _CFBroken,  # type: ignore
-    )
+    from concurrent.futures.process import BrokenProcessPool as _CFBroken  # type: ignore
 except Exception:  # pragma: no cover
     _CFBroken = None  # type: ignore
 

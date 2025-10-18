@@ -74,9 +74,7 @@ class TranslateRequest(BaseModel):
     """Request model for translating pseudocode into target programming language."""
 
     pseudocode: str = Field(..., min_length=1, max_length=100_000)
-    target_language: TargetLanguageEnum | None = Field(
-        default=TargetLanguageEnum.python
-    )
+    target_language: TargetLanguageEnum | None = Field(default=TargetLanguageEnum.python)
 
     @field_validator("pseudocode")
     @classmethod
@@ -94,15 +92,11 @@ class TranslateResponse(BaseModel):
     code: str | None
     errors: list[str] = Field(
         default_factory=lambda: cast("list[str]", []),
-        description=(
-            "List of error messages (bounded to 50 elements; each up to 500 chars)"
-        ),
+        description=("List of error messages (bounded to 50 elements; each up to 500 chars)"),
     )
     warnings: list[str] = Field(
         default_factory=lambda: cast("list[str]", []),
-        description=(
-            "List of warning messages (bounded to 50 elements; each up to 500 chars)"
-        ),
+        description=("List of warning messages (bounded to 50 elements; each up to 500 chars)"),
     )
     metadata: dict[str, JSONValue] = Field(default_factory=dict)
 
@@ -170,9 +164,7 @@ class VectorSearchRequest(BaseModel):
 class VectorSearchResponse(BaseModel):
     """Response model containing hits from vector search."""
 
-    hits: list[VectorSearchHit] = Field(
-        default_factory=lambda: cast("list[VectorSearchHit]", [])
-    )
+    hits: list[VectorSearchHit] = Field(default_factory=lambda: cast("list[VectorSearchHit]", []))
 
 
 class KeywordSearchRequest(BaseModel):
@@ -193,9 +185,7 @@ class KeywordSearchRequest(BaseModel):
 class KeywordSearchResponse(BaseModel):
     """Response model containing hits from keyword search."""
 
-    hits: list[VectorSearchHit] = Field(
-        default_factory=lambda: cast("list[VectorSearchHit]", [])
-    )
+    hits: list[VectorSearchHit] = Field(default_factory=lambda: cast("list[VectorSearchHit]", []))
 
 
 class HybridSearchRequest(BaseModel):
@@ -226,9 +216,7 @@ class HybridSearchRequest(BaseModel):
 class HybridSearchResponse(BaseModel):
     """Response model containing hits from hybrid search."""
 
-    hits: list[VectorSearchHit] = Field(
-        default_factory=lambda: cast("list[VectorSearchHit]", [])
-    )
+    hits: list[VectorSearchHit] = Field(default_factory=lambda: cast("list[VectorSearchHit]", []))
 
 
 # -----------------------
@@ -296,9 +284,7 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(..., min_length=1)
     provider: str | None = Field(
         default="lmstudio",
-        description=(
-            "Provider alias; 'lmstudio' or 'local' will use router-first path."
-        ),
+        description=("Provider alias; 'lmstudio' or 'local' will use router-first path."),
     )
     model: str | None = Field(
         default=None,

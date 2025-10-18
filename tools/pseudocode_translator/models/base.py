@@ -173,9 +173,7 @@ class BaseModel(ABC, ShutdownMixin):
         """
 
     @abstractmethod
-    def translate_instruction(
-        self, instruction: str, context: dict[str, Any] | None = None
-    ) -> str:
+    def translate_instruction(self, instruction: str, context: dict[str, Any] | None = None) -> str:
         """
         Translate an English instruction to code
 
@@ -207,9 +205,7 @@ class BaseModel(ABC, ShutdownMixin):
             temperature=self.config.get("refinement_temperature", 0.2),
         )
 
-    def batch_translate(
-        self, instructions: list[str], show_progress: bool = True
-    ) -> list[str]:
+    def batch_translate(self, instructions: list[str], show_progress: bool = True) -> list[str]:
         """
         Translate multiple instructions
 
@@ -293,9 +289,7 @@ class BaseModel(ABC, ShutdownMixin):
         """Check if model supports streaming generation"""
         return self.capabilities.supports_streaming
 
-    def stream_generate(
-        self, prompt: str, callback: Callable[[str], None], **kwargs
-    ) -> None:
+    def stream_generate(self, prompt: str, callback: Callable[[str], None], **kwargs) -> None:
         """
         Stream generation token by token
 
@@ -308,9 +302,7 @@ class BaseModel(ABC, ShutdownMixin):
             NotImplementedError: If streaming not supported
         """
         if not self.supports_streaming():
-            raise NotImplementedError(
-                f"{self.metadata.name} does not support streaming"
-            )
+            raise NotImplementedError(f"{self.metadata.name} does not support streaming")
 
         # Override in subclasses that support streaming
         for char in self.generate(prompt, **kwargs):

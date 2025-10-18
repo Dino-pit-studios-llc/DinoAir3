@@ -32,9 +32,7 @@ class NotesValidator:
         self.logger = Logger()
 
     @staticmethod
-    def validate_note_creation(
-        title: str, content: str, tags: list[str]
-    ) -> ValidationResult:
+    def validate_note_creation(title: str, content: str, tags: list[str]) -> ValidationResult:
         """Validate data for note creation"""
         errors = []
         warnings = []
@@ -46,9 +44,7 @@ class NotesValidator:
             warnings.append("Note title is very short (less than 3 characters)")
 
         if len(content) > 50000:  # Business limit vs security limit
-            errors.append(
-                "Note content exceeds maximum allowed length (50,000 characters)"
-            )
+            errors.append("Note content exceeds maximum allowed length (50,000 characters)")
 
         if len(tags) > 20:  # Business limit for usability
             warnings.append("Many tags may make organization difficult")
@@ -57,9 +53,7 @@ class NotesValidator:
         if len(tags) != len({tag.lower() for tag in tags}):
             warnings.append("Duplicate tags detected (case-insensitive)")
 
-        return ValidationResult(
-            is_valid=len(errors) == 0, errors=errors, warnings=warnings
-        )
+        return ValidationResult(is_valid=len(errors) == 0, errors=errors, warnings=warnings)
 
     @staticmethod
     def _validate_title_field(title: Any, errors: list[str]) -> None:
@@ -119,9 +113,7 @@ class NotesValidator:
         if "project_id" in updates:
             NotesValidator._validate_project_id_field(updates["project_id"], errors)
 
-        return ValidationResult(
-            is_valid=len(errors) == 0, errors=errors, warnings=warnings
-        )
+        return ValidationResult(is_valid=len(errors) == 0, errors=errors, warnings=warnings)
 
     @staticmethod
     def validate_search_query(query: str, filter_option: str) -> ValidationResult:
@@ -134,21 +126,15 @@ class NotesValidator:
 
         valid_filters = {"All", "Title Only", "Content Only", "Tags Only"}
         if filter_option not in valid_filters:
-            errors.append(
-                f"Invalid filter option. Must be one of: {', '.join(valid_filters)}"
-            )
+            errors.append(f"Invalid filter option. Must be one of: {', '.join(valid_filters)}")
 
         if len(query) > 500:
             warnings.append("Search query is very long, results may be slow")
 
-        return ValidationResult(
-            is_valid=len(errors) == 0, errors=errors, warnings=warnings
-        )
+        return ValidationResult(is_valid=len(errors) == 0, errors=errors, warnings=warnings)
 
     @staticmethod
-    def validate_bulk_operation(
-        note_ids: list[str], operation: str
-    ) -> ValidationResult:
+    def validate_bulk_operation(note_ids: list[str], operation: str) -> ValidationResult:
         """Validate parameters for bulk operations"""
         errors = []
         warnings = []
@@ -157,9 +143,7 @@ class NotesValidator:
             errors.append("No note IDs provided for bulk operation")
 
         if len(note_ids) > 100:
-            warnings.append(
-                "Bulk operation affects many notes, consider smaller batches"
-            )
+            warnings.append("Bulk operation affects many notes, consider smaller batches")
 
         # Check for duplicates
         if len(note_ids) != len(set(note_ids)):
@@ -173,10 +157,6 @@ class NotesValidator:
             "restore",
         }
         if operation not in valid_operations:
-            errors.append(
-                f"Invalid operation. Must be one of: {', '.join(valid_operations)}"
-            )
+            errors.append(f"Invalid operation. Must be one of: {', '.join(valid_operations)}")
 
-        return ValidationResult(
-            is_valid=len(errors) == 0, errors=errors, warnings=warnings
-        )
+        return ValidationResult(is_valid=len(errors) == 0, errors=errors, warnings=warnings)

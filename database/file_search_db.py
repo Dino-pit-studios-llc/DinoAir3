@@ -563,9 +563,7 @@ class FileSearchDB:
                 params = []
 
                 for keyword in keywords:
-                    like_condition = (
-                        "CASE WHEN LOWER(c.content) LIKE ? THEN 1 ELSE 0 END"
-                    )
+                    like_condition = "CASE WHEN LOWER(c.content) LIKE ? THEN 1 ELSE 0 END"
                     like_conditions.append(like_condition)
                     params.append(f"%{keyword.lower()}%")
 
@@ -630,9 +628,7 @@ class FileSearchDB:
 
                     results.append(result_dict)
 
-                self.logger.info(
-                    f"Keyword search for {keywords} returned {len(results)} results"
-                )
+                self.logger.info(f"Keyword search for {keywords} returned {len(results)} results")
                 return results
         except Exception as e:
             self.logger.error(f"Error in keyword search: {str(e)}")
@@ -692,14 +688,10 @@ class FileSearchDB:
 
                 return results
         except Exception as e:
-            self.logger.error(
-                f"Error getting embeddings for file {file_path}: {str(e)}"
-            )
+            self.logger.error(f"Error getting embeddings for file {file_path}: {str(e)}")
             return []
 
-    def batch_add_embeddings(
-        self, embeddings_data: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def batch_add_embeddings(self, embeddings_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Add multiple embeddings in a single transaction.
 
@@ -747,9 +739,7 @@ class FileSearchDB:
 
                 conn.commit()
 
-                self.logger.info(
-                    f"Batch added {success_count} embeddings ({failed_count} failed)"
-                )
+                self.logger.info(f"Batch added {success_count} embeddings ({failed_count} failed)")
 
                 return {
                     "success": True,
@@ -811,9 +801,7 @@ class FileSearchDB:
             self.logger.error(f"Error clearing embeddings for {file_path}: {str(e)}")
             return {"success": False, "error": f"Failed to clear embeddings: {str(e)}"}
 
-    def update_search_settings(
-        self, setting_name: str, setting_value: Any
-    ) -> dict[str, Any]:
+    def update_search_settings(self, setting_name: str, setting_value: Any) -> dict[str, Any]:
         """
         Update or create a search setting.
 
@@ -970,9 +958,7 @@ class FileSearchDB:
                     GROUP BY file_type
                 """
                 )
-                stats["files_by_type"] = {
-                    row[0] or "unknown": row[1] for row in cursor.fetchall()
-                }
+                stats["files_by_type"] = {row[0] or "unknown": row[1] for row in cursor.fetchall()}
 
                 # Total size
                 cursor.execute(
@@ -1094,9 +1080,7 @@ class FileSearchDB:
             try:
                 self.logger.debug(f"Destructor cleanup suppressed exception: {e}")
             except Exception:
-                logging.getLogger(__name__).debug(
-                    "Destructor cleanup suppressed exception: %s", e
-                )
+                logging.getLogger(__name__).debug("Destructor cleanup suppressed exception: %s", e)
 
     def add_allowed_directory(self, directory: str) -> dict[str, Any]:
         """
@@ -1302,9 +1286,7 @@ class FileSearchDB:
                 for table_name, row_count in cursor.fetchall():
                     # Security: Only allow whitelisted table names
                     if table_name not in VALID_TABLES:
-                        self.logger.warning(
-                            f"Skipping non-whitelisted table: {table_name}"
-                        )
+                        self.logger.warning(f"Skipping non-whitelisted table: {table_name}")
                         continue
 
                     stats[table_name] = row_count

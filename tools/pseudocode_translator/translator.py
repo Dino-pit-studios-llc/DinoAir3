@@ -34,10 +34,7 @@ from .integration.events import EventDispatcher, EventType
 from .models import BlockType, CodeBlock
 
 # Import new model abstraction from models directory
-from .models.base_model import (
-    BaseTranslationModel,
-    OutputLanguage,
-)
+from .models.base_model import BaseTranslationModel, OutputLanguage
 from .models.base_model import TranslationConfig as ModelTranslationConfig
 from .models.model_factory import ModelFactory, create_model
 from .models.plugin_system import get_plugin_system
@@ -51,9 +48,7 @@ if TYPE_CHECKING:
     from .config import TranslatorConfig
 
 try:
-    from concurrent.futures.process import (
-        BrokenProcessPool as _BrokenProcessPool,  # type: ignore
-    )
+    from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
     class _FallbackBrokenProcessPool(Exception):
@@ -159,9 +154,7 @@ def _dispatch_event(
     cast("Any", dispatcher).dispatch_event(event_type, source=source, **data)
 
 
-def timed_section(
-    name: str, extra: dict[str, Any] | None = None
-) -> AbstractContextManager[None]:
+def timed_section(name: str, extra: dict[str, Any] | None = None) -> AbstractContextManager[None]:
     rec_any: Any = get_recorder()
     return cast("AbstractContextManager[None]", rec_any.timed_section(name, extra))
 
@@ -413,9 +406,7 @@ class TranslationManager(ShutdownMixin):
         # Use OffloadExecutor facade to centralize gating, submission, and fallbacks.
         # Local import to avoid potential import cycles (support must not import translator.py).
         try:
-            from .translator_support.offload_executor import (
-                OffloadExecutor,  # type: ignore
-            )
+            from .translator_support.offload_executor import OffloadExecutor  # type: ignore
         except Exception:
             # On facade import failure, preserve behavior by using in-process parse.
             return cast("Any", self.parser).get_parse_result(text)
@@ -451,9 +442,7 @@ class TranslationManager(ShutdownMixin):
 
         # Local import to avoid cycles; support module must not import translator.py.
         try:
-            from .translator_support.offload_executor import (
-                OffloadExecutor,  # type: ignore
-            )
+            from .translator_support.offload_executor import OffloadExecutor  # type: ignore
         except Exception:
             # Preserve behavior if facade isn't available.
             return self.validator.validate_syntax(
@@ -498,9 +487,7 @@ class TranslationManager(ShutdownMixin):
             "emit.TRANSLATION_STARTED",
         )
 
-    def _emit_translation_completed(
-        self, translation_id: int, approach: str, result: Any
-    ) -> None:
+    def _emit_translation_completed(self, translation_id: int, approach: str, result: Any) -> None:
         """Emit TRANSLATION_COMPLETED with identical payload semantics."""
         _run_safely(
             lambda: _dispatch_event(
@@ -536,9 +523,7 @@ class TranslationManager(ShutdownMixin):
         try:
             start_time = self._thread.start_time
             translation_id = self._thread.translation_id
-            result = self._translate_with_llm_first(
-                input_text, start_time, translation_id
-            )
+            result = self._translate_with_llm_first(input_text, start_time, translation_id)
             return True, result
         except Exception as llm_error:
             logger.warning("LLM-first translation failed: %s", llm_error)
@@ -632,9 +617,7 @@ class TranslationManager(ShutdownMixin):
     ) -> TranslationResult:
         """Finalize and emit events for structured parsing result."""
         if result and result.success:
-            meta_safe = _safe_meta(
-                result.metadata if hasattr(result, "metadata") else {}
-            )
+            meta_safe = _safe_meta(result.metadata if hasattr(result, "metadata") else {})
             approach = meta_safe.get("approach")
             self._emit_translation_completed(translation_id, approach, result)  # type: ignore[arg-type]
         else:
@@ -649,8 +632,8 @@ class TranslationManager(ShutdownMixin):
         self, input_text: str, target_language: OutputLanguage | None = None
     ) -> TranslationResult:
         """Main translation method that converts pseudocode to code"""
-        start_time, translation_id, errors, warnings = (
-            self._initialize_translation_context(target_language)
+        start_time, translation_id, errors, warnings = self._initialize_translation_context(
+            target_language
         )
 
         # Emit started (best-effort)
@@ -670,9 +653,7 @@ class TranslationManager(ShutdownMixin):
         self, input_text: str, start_time: float, translation_id: int
     ) -> TranslationResult:
         """Thin wrapper delegating to LlmFirstController (no behavior change)."""
-        return self._llm_first.run(
-            input_text, start_time, translation_id, self._target_language
-        )
+        return self._llm_first.run(input_text, start_time, translation_id, self._target_language)
 
     def _translate_with_structured_parsing(
         self,
@@ -682,9 +663,7 @@ class TranslationManager(ShutdownMixin):
         existing_warnings: list[str],
     ) -> TranslationResult:
         """Thin wrapper delegating to StructuredParsingController (no behavior change)."""
-        return self._structured.run(
-            input_text, start_time, translation_id, existing_warnings
-        )
+        return self._structured.run(input_text, start_time, translation_id, existing_warnings)
 
     def _assemble_or_error(
         self, processed_blocks: list[Any]
@@ -702,8 +681,7 @@ class TranslationManager(ShutdownMixin):
                 error = AssemblyError(
                     "Failed to assemble code from blocks",
                     blocks_info=[
-                        {"type": b.type.value, "lines": b.line_numbers}
-                        for b in processed_blocks
+                        {"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks
                     ],
                     assembly_stage="final",
                 )
@@ -717,8 +695,7 @@ class TranslationManager(ShutdownMixin):
             error = AssemblyError(
                 "Code assembly failed",
                 blocks_info=[
-                    {"type": b.type.value, "lines": b.line_numbers}
-                    for b in processed_blocks
+                    {"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks
                 ],
                 assembly_stage="assembly",
                 cause=e,
@@ -798,9 +775,7 @@ class TranslationManager(ShutdownMixin):
         validation_result: Any,
     ) -> dict[str, Any]:
         """Create metadata for structured translation result."""
-        blocks_translated = sum(
-            1 for b in processed_blocks if b.metadata.get("translated", False)
-        )
+        blocks_translated = sum(1 for b in processed_blocks if b.metadata.get("translated", False))
         cache_hits = 0
         metadata = self._create_metadata(
             start_time,
@@ -828,9 +803,7 @@ class TranslationManager(ShutdownMixin):
         # Assemble or return early with identically formatted error
         ok, assembled_code, assembly_error = self._assemble_or_error(processed_blocks)
         if not ok:
-            return self._handle_assembly_failure(
-                assembly_error, warnings, parse_result, start_time
-            )
+            return self._handle_assembly_failure(assembly_error, warnings, parse_result, start_time)
 
         # Validate the assembled code
         if not isinstance(assembled_code, str):
@@ -950,9 +923,7 @@ class TranslationManager(ShutdownMixin):
     def _log_translation_error(block: Any | None, error: Exception) -> None:
         """Log translation error with appropriate context."""
         try:
-            if block is not None and getattr(block, "metadata", {}).get(
-                "is_sub_block", False
-            ):
+            if block is not None and getattr(block, "metadata", {}).get("is_sub_block", False):
                 logger.error("Failed to translate sub-block: %s", error)
             else:
                 logger.error("Failed to translate block: %s", error)
@@ -965,9 +936,7 @@ class TranslationManager(ShutdownMixin):
     ) -> tuple[None, dict[str, Any]]:
         """Create formatted error response for top-level ENGLISH blocks."""
         try:
-            error_context = TranslationManager._create_error_context_for_block(
-                block, text
-            )
+            error_context = TranslationManager._create_error_context_for_block(block, text)
             terr = TranslatorError(
                 "Failed to translate English block",
                 context=error_context,
@@ -1070,9 +1039,7 @@ class TranslationManager(ShutdownMixin):
         Preserves metadata keys and error formatting behavior.
         """
         context = TranslationManager._build_context(blocks, index)
-        code, meta = self._translate_text_with_model(
-            block.content, context=context, block=block
-        )
+        code, meta = self._translate_text_with_model(block.content, context=context, block=block)
         if code is not None:
             return CodeBlock(
                 type=BlockType.PYTHON,
@@ -1153,9 +1120,7 @@ class TranslationManager(ShutdownMixin):
                 continue
 
             # Python and comment blocks pass through unchanged
-            processed_blocks.append(
-                TranslationManager._process_passthrough_block(block)
-            )
+            processed_blocks.append(TranslationManager._process_passthrough_block(block))
 
         return processed_blocks
 
@@ -1212,14 +1177,10 @@ class TranslationManager(ShutdownMixin):
         def flush(is_final: bool = False) -> None:
             if not buffer:
                 return
-            end_line = (
-                block.line_numbers[1] if is_final else (segment_start + len(buffer) - 1)
-            )
+            end_line = block.line_numbers[1] if is_final else (segment_start + len(buffer) - 1)
             sub_blocks.append(
                 CodeBlock(
-                    type=(
-                        current_type if current_type is not None else BlockType.ENGLISH
-                    ),
+                    type=(current_type if current_type is not None else BlockType.ENGLISH),
                     content="\n".join(buffer),
                     line_numbers=(segment_start, end_line),
                     metadata={"parent_block": block.metadata, "is_sub_block": True},
@@ -1261,9 +1222,7 @@ class TranslationManager(ShutdownMixin):
         # Build compact error summary (parity is enforced in support helper too)
         try:
             # Local import to avoid cycles; support module must not import translator.py
-            from .translator_support.fix_refiner import (
-                attempt_fixes as _support_attempt_fixes,  # type: ignore
-            )
+            from .translator_support.fix_refiner import attempt_fixes as _support_attempt_fixes  # type: ignore
         except Exception:
             # Preserve previous error/warning logging semantics on failure
             logger.error("Failed to fix code: import error in fix_refiner")
@@ -1511,15 +1470,11 @@ class TranslationManager(ShutdownMixin):
         all_results: list[TranslationResult] = []
         logger.info("Using streaming translation")
         self._emit_stream_started(emitter)
-        for result in self._process_streaming_chunks(
-            pipeline, input_text, progress_callback
-        ):
+        for result in self._process_streaming_chunks(pipeline, input_text, progress_callback):
             all_results.append(result)
             yield result
 
-        final_result = self._create_final_streaming_result(
-            pipeline, start_time, all_results
-        )
+        final_result = self._create_final_streaming_result(pipeline, start_time, all_results)
         self._emit_stream_completed(emitter, len(all_results))
         pipeline.cancel_streaming()
         yield final_result

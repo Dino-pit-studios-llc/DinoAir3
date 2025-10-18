@@ -110,9 +110,7 @@ class ArtifactsDatabase:
         f"VALUES ({', '.join(['?'] * len(_ARTIFACT_INSERT_COLUMNS))})"
     )
 
-    def __init__(
-        self, db_manager: DatabaseManager, encryption_password: str | None = None
-    ) -> None:
+    def __init__(self, db_manager: DatabaseManager, encryption_password: str | None = None) -> None:
         """Initialize with database manager reference
 
         Args:
@@ -124,9 +122,7 @@ class ArtifactsDatabase:
         self.username = db_manager.user_name
 
         # Initialize encryption if password provided
-        self.encryption = (
-            ArtifactEncryption(encryption_password) if encryption_password else None
-        )
+        self.encryption = ArtifactEncryption(encryption_password) if encryption_password else None
         self.encryption_at_rest = bool(encryption_password)
 
     def _get_connection(self) -> sqlite3.Connection:
@@ -143,9 +139,7 @@ class ArtifactsDatabase:
         """Compute SHA256 checksum of content"""
         return hashlib.sha256(content).hexdigest()
 
-    def _encrypt_file_content(
-        self, content: bytes
-    ) -> tuple[bytes, dict[str, str] | None]:
+    def _encrypt_file_content(self, content: bytes) -> tuple[bytes, dict[str, str] | None]:
         """Encrypt file content for storage
 
         Args:
@@ -172,9 +166,7 @@ class ArtifactsDatabase:
                 "iv": str(encrypted_data["iv"]),
             }
 
-            return encrypted_json, (
-                {k: str(v) for k, v in metadata.items()} if metadata else None
-            )
+            return encrypted_json, ({k: str(v) for k, v in metadata.items()} if metadata else None)
 
         except (ValueError, TypeError, OSError) as e:
             self.logger.error(f"Failed to encrypt file content: {e}")
@@ -210,9 +202,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Failed to decrypt file content: {e}")
             raise ValueError(f"Cannot decrypt file content: {e}") from e
 
-    def _handle_file_storage(
-        self, artifact: Artifact, content: bytes | None = None
-    ) -> Artifact:
+    def _handle_file_storage(self, artifact: Artifact, content: bytes | None = None) -> Artifact:
         """Handle file storage for large artifacts with optional encryption"""
         if content is None:
             return artifact
@@ -320,10 +310,7 @@ class ArtifactsDatabase:
 
                 # Insert artifact record
                 artifact_dict = artifact.to_dict()
-                values = [
-                    artifact_dict.get(column)
-                    for column in self._ARTIFACT_INSERT_COLUMNS
-                ]
+                values = [artifact_dict.get(column) for column in self._ARTIFACT_INSERT_COLUMNS]
                 cursor.execute(self._INSERT_ARTIFACT_SQL, values)
 
                 # Create initial version record
@@ -331,9 +318,7 @@ class ArtifactsDatabase:
 
                 # Update collection stats if artifact belongs to collection
                 if artifact.collection_id:
-                    ArtifactsDatabase._update_collection_stats(
-                        cursor, artifact.collection_id
-                    )
+                    ArtifactsDatabase._update_collection_stats(cursor, artifact.collection_id)
 
                 conn.commit()
 
@@ -418,9 +403,7 @@ class ArtifactsDatabase:
             )
         return updates
 
-    def _build_update_query(
-        self, updates: Mapping[str, object]
-    ) -> tuple[list[str], list[object]]:
+    def _build_update_query(self, updates: Mapping[str, object]) -> tuple[list[str], list[object]]:
         set_clauses: list[str] = []
         params: list[object] = []
         for key in self._ARTIFACT_UPDATE_FIELDS:
@@ -476,9 +459,7 @@ class ArtifactsDatabase:
             any_items = cast("list[Any]", value)
             for item in any_items:
                 if not isinstance(item, str):
-                    raise ValueError(
-                        "List values must be strings for SQL update formatting"
-                    )
+                    raise ValueError("List values must be strings for SQL update formatting")
             string_items = cast("list[str]", any_items)
             return json.dumps(string_items)
         return value
@@ -519,9 +500,7 @@ class ArtifactsDatabase:
     @staticmethod
     def _reset_latest_flag(cursor: sqlite3.Cursor, current: Artifact) -> None:
         if current.is_latest:
-            cursor.execute(
-                "UPDATE artifacts SET is_latest = false WHERE id = ?", (current.id,)
-            )
+            cursor.execute("UPDATE artifacts SET is_latest = false WHERE id = ?", (current.id,))
         else:
             cursor.execute(
                 "UPDATE artifacts SET is_latest = false WHERE parent_id = ?",
@@ -563,9 +542,7 @@ class ArtifactsDatabase:
 
                     # Clean up file storage if exists
                     if artifact.content_path:
-                        file_path = (
-                            Path(self.db_manager.base_dir) / artifact.content_path
-                        )
+                        file_path = Path(self.db_manager.base_dir) / artifact.content_path
                         if file_path.exists():
                             file_path.unlink()
                             # Try to remove empty directories
@@ -574,9 +551,7 @@ class ArtifactsDatabase:
 
                     # Update collection stats
                     if artifact.collection_id:
-                        ArtifactsDatabase._update_collection_stats(
-                            cursor, artifact.collection_id
-                        )
+                        ArtifactsDatabase._update_collection_stats(cursor, artifact.collection_id)
                 else:
                     # Soft delete
                     cursor.execute(
@@ -595,9 +570,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Failed to delete artifact: {str(e)}")
             return False
 
-    def get_artifact(
-        self, artifact_id: str, update_accessed: bool = True
-    ) -> Artifact | None:
+    def get_artifact(self, artifact_id: str, update_accessed: bool = True) -> Artifact | None:
         """Get a specific artifact"""
         try:
             with self._get_connection() as conn:
@@ -690,9 +663,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Failed to search artifacts: {str(e)}")
             return []
 
-    def get_artifacts_by_type(
-        self, content_type: str, limit: int = 100
-    ) -> list[Artifact]:
+    def get_artifacts_by_type(self, content_type: str, limit: int = 100) -> list[Artifact]:
         """Get artifacts by content type"""
         try:
             with self._get_connection() as conn:
@@ -849,9 +820,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Failed to get collections: {str(e)}")
             return []
 
-    def update_collection(
-        self, collection_id: str, updates: Mapping[str, object]
-    ) -> bool:
+    def update_collection(self, collection_id: str, updates: Mapping[str, object]) -> bool:
         """Update a collection"""
         try:
             with self._get_connection() as conn:
@@ -865,9 +834,7 @@ class ArtifactsDatabase:
                 # Always update the timestamp
                 set_clauses.append("updated_at = CURRENT_TIMESTAMP")
 
-                update_statement = ArtifactsDatabase._build_collection_update_statement(
-                    set_clauses
-                )
+                update_statement = ArtifactsDatabase._build_collection_update_statement(set_clauses)
                 cursor.execute(update_statement, (*params, collection_id))
 
                 conn.commit()
@@ -878,9 +845,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Failed to update collection: {str(e)}")
             return False
 
-    def create_version(
-        self, artifact_id: str, change_summary: str | None = None
-    ) -> bool:
+    def create_version(self, artifact_id: str, change_summary: str | None = None) -> bool:
         """Create a new version of an artifact"""
         try:
             artifact = self.get_artifact(artifact_id)
@@ -994,9 +959,7 @@ class ArtifactsDatabase:
                                  WHERE status != 'deleted' """
                 )
                 total_artifacts = cursor.fetchone()
-                stats["total_artifacts"] = (
-                    int(total_artifacts[0]) if total_artifacts else 0
-                )
+                stats["total_artifacts"] = int(total_artifacts[0]) if total_artifacts else 0
 
                 # Artifacts by type
                 cursor.execute(
@@ -1022,9 +985,7 @@ class ArtifactsDatabase:
                 """
                 )
                 size_row = cursor.fetchone()
-                total_size = (
-                    int(size_row[0]) if size_row and size_row[0] is not None else 0
-                )
+                total_size = int(size_row[0]) if size_row and size_row[0] is not None else 0
                 stats["total_size_bytes"] = total_size
                 stats["total_size_mb"] = round(total_size / (1024 * 1024), 2)
 
@@ -1036,16 +997,12 @@ class ArtifactsDatabase:
                 """
                 )
                 encrypted_row = cursor.fetchone()
-                stats["encrypted_artifacts"] = (
-                    int(encrypted_row[0]) if encrypted_row else 0
-                )
+                stats["encrypted_artifacts"] = int(encrypted_row[0]) if encrypted_row else 0
 
                 # Collections
                 cursor.execute("SELECT COUNT(*) FROM artifact_collections")
                 collections_row = cursor.fetchone()
-                stats["total_collections"] = (
-                    int(collections_row[0]) if collections_row else 0
-                )
+                stats["total_collections"] = int(collections_row[0]) if collections_row else 0
 
                 # Artifacts with versions
                 cursor.execute(
@@ -1055,9 +1012,7 @@ class ArtifactsDatabase:
                 """
                 )
                 versioned_row = cursor.fetchone()
-                stats["versioned_artifacts"] = (
-                    int(versioned_row[0]) if versioned_row else 0
-                )
+                stats["versioned_artifacts"] = int(versioned_row[0]) if versioned_row else 0
 
                 return stats
 
@@ -1087,9 +1042,7 @@ class ArtifactsDatabase:
         return version
 
     @staticmethod
-    def _create_version_record(
-        cursor: sqlite3.Cursor, version: ArtifactVersion
-    ) -> None:
+    def _create_version_record(cursor: sqlite3.Cursor, version: ArtifactVersion) -> None:
         """Insert version record into database"""
         version_dict = version.to_dict()
         cursor.execute(

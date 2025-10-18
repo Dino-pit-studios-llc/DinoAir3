@@ -281,14 +281,10 @@ class SafePDFProcessor:
 
             # Third pass: Fix '%' at end of lines without proper following content
             # Use regex to find % followed by only whitespace until end of line
-            content_str = re.sub(
-                r"%(\s*)$", r"% safe\1", content_str, flags=re.MULTILINE
-            )
+            content_str = re.sub(r"%(\s*)$", r"% safe\1", content_str, flags=re.MULTILINE)
 
             # Fourth pass: Fix '%' followed by non-printable characters
-            content_str = re.sub(
-                r"%(?=[\x00-\x08\x0B\x0C\x0E-\x1F\x7F])", r"% safe", content_str
-            )
+            content_str = re.sub(r"%(?=[\x00-\x08\x0B\x0C\x0E-\x1F\x7F])", r"% safe", content_str)
 
             # Convert back to bytes
             return content_str.encode("latin-1", errors="ignore")
@@ -316,9 +312,7 @@ class SafePDFProcessor:
             allowed_filenames = ALLOWED_FILENAMES
             fp = Path(file_path)
             if fp.name not in allowed_filenames:
-                raise PDFProcessingError(
-                    UNALLOWED_FILENAME_ERROR.format(filename=fp.name)
-                )
+                raise PDFProcessingError(UNALLOWED_FILENAME_ERROR.format(filename=fp.name))
             safe_path = Path(TRUSTED_PDFS_PATH) / fp.name
             with safe_path.open("rb") as file:
                 file_content = file.read()
@@ -410,9 +404,7 @@ class SafePDFProcessor:
             raise
         except RuntimeError as e:
             logger.warning("Error extracting text from page %d: %s", page_num, str(e))
-            return ERROR_EXTRACTING_PAGE_TEMPLATE.format(
-                page_num=page_num, error=str(e)
-            )
+            return ERROR_EXTRACTING_PAGE_TEMPLATE.format(page_num=page_num, error=str(e))
 
     def _process_reader(
         self, reader: Any, start_time: float, pages_limit: int
@@ -440,9 +432,7 @@ class SafePDFProcessor:
 
                 if page_text.strip():
                     extracted_texts.append(
-                        PAGE_HEADER_TEMPLATE.format(
-                            page_num=page_num + 1, page_text=page_text
-                        )
+                        PAGE_HEADER_TEMPLATE.format(page_num=page_num + 1, page_text=page_text)
                     )
 
                 pages_processed += 1
@@ -451,16 +441,12 @@ class SafePDFProcessor:
                 warnings.append(TIMEOUT_PAGE_MESSAGE.format(page_num=page_num + 1))
                 break
             except RuntimeError as e:
-                warnings.append(
-                    ERROR_PAGE_MESSAGE.format(page_num=page_num + 1, error=str(e))
-                )
+                warnings.append(ERROR_PAGE_MESSAGE.format(page_num=page_num + 1, error=str(e)))
                 continue
 
         return extracted_texts, pages_processed, warnings
 
-    def extract_text(
-        self, file_path: str | Path, max_pages: int | None = None
-    ) -> dict[str, Any]:
+    def extract_text(self, file_path: str | Path, max_pages: int | None = None) -> dict[str, Any]:
         """
         Extract text from PDF file safely with timeout and error handling.
 
@@ -522,9 +508,7 @@ class SafePDFProcessor:
             )
 
         except PDFProcessingTimeoutError:
-            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(
-                timeout=self.timeout
-            )
+            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)
             logger.error(TIMEOUT_PROCESSING_LOG, file_path, result["error"])
         except PDFProcessingError as e:
             result["error"] = str(e)
@@ -602,9 +586,7 @@ class SafePDFProcessor:
             )
 
         except PDFProcessingTimeoutError:
-            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(
-                timeout=self.timeout
-            )
+            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)
             logger.error(TIMEOUT_PROCESSING_LOG, file_path, result["error"])
         except PDFProcessingError as e:
             result["error"] = str(e)
@@ -693,9 +675,7 @@ class SafePDFProcessor:
             )
 
         except PDFProcessingTimeoutError:
-            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(
-                timeout=self.timeout
-            )
+            result["error"] = TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)
             logger.error(TIMEOUT_PROCESSING_LOG, filename, result["error"])
         except PDFProcessingError as e:
             result["error"] = str(e)
@@ -835,9 +815,7 @@ def create_safe_pdf_extractor(
     Returns:
         SafePDFProcessor instance
     """
-    return SafePDFProcessor(
-        timeout=timeout, max_pages=max_pages, max_file_size=max_file_size
-    )
+    return SafePDFProcessor(timeout=timeout, max_pages=max_pages, max_file_size=max_file_size)
 
 
 # Convenience function for simple text extraction

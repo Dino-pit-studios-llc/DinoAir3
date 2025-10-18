@@ -306,9 +306,7 @@ class UnicodeProtection:
             return True
 
         # Check for invisible characters
-        invisible_count = sum(
-            bool(unicodedata.category(c) in {"Cf", "Cc"}) for c in text
-        )
+        invisible_count = sum(bool(unicodedata.category(c) in {"Cf", "Cc"}) for c in text)
 
         return invisible_count > 0
 
@@ -364,9 +362,7 @@ class UnicodeProtection:
             return "".join(result)
 
     @staticmethod
-    def sanitize(
-        text: str, allow_unicode: bool = True, max_length: int | None = None
-    ) -> str:
+    def sanitize(text: str, allow_unicode: bool = True, max_length: int | None = None) -> str:
         """Main sanitization method."""
         if not text:
             return text

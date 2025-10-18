@@ -320,14 +320,10 @@ class UserManager:
 
         # Check account status
         if not auth_user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Account is disabled"
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is disabled")
 
         if auth_user.is_account_locked():
-            raise HTTPException(
-                status_code=status.HTTP_423_LOCKED, detail="Account is locked"
-            )
+            raise HTTPException(status_code=status.HTTP_423_LOCKED, detail="Account is locked")
 
         # Verify password
         if not UserManager._verify_password(password, auth_user.password_hash):
@@ -354,9 +350,7 @@ class UserManager:
             mfa_verified = False  # Will need separate MFA verification
 
         # Create session
-        auth_session = self._create_session(
-            auth_user, source_ip, user_agent, mfa_verified
-        )
+        auth_session = self._create_session(auth_user, source_ip, user_agent, mfa_verified)
 
         return auth_session
 
@@ -403,9 +397,7 @@ class UserManager:
 
         # Generate QR code
         totp = pyotp.TOTP(secret)
-        qr_url = totp.provisioning_uri(
-            name=target_user.email, issuer_name="DinoAir Healthcare"
-        )
+        qr_url = totp.provisioning_uri(name=target_user.email, issuer_name="DinoAir Healthcare")
 
         # Create QR code image
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
@@ -419,9 +411,7 @@ class UserManager:
             "manual_entry_key": secret,
         }
 
-    def change_password(
-        self, user_id: str, old_password: str, new_password: str
-    ) -> None:
+    def change_password(self, user_id: str, old_password: str, new_password: str) -> None:
         """Change user password with policy validation."""
 
         target_user = self.users.get(user_id)
@@ -511,9 +501,7 @@ class UserManager:
         self.sessions[session_id] = session_obj
         return session_obj
 
-    def _validate_password(
-        self, password: str, username: str, email: str, full_name: str
-    ) -> None:
+    def _validate_password(self, password: str, username: str, email: str, full_name: str) -> None:
         """Validate password against policy requirements."""
         self._validate_length(password)
         self._validate_character_requirements(password)
@@ -524,13 +512,9 @@ class UserManager:
         """Ensure password length meets the policy requirements."""
         policy = self.password_policy
         if len(password) < policy.min_length:
-            raise ValueError(
-                f"Password must be at least {policy.min_length} characters"
-            )
+            raise ValueError(f"Password must be at least {policy.min_length} characters")
         if len(password) > policy.max_length:
-            raise ValueError(
-                f"Password must be no more than {policy.max_length} characters"
-            )
+            raise ValueError(f"Password must be no more than {policy.max_length} characters")
 
     def _validate_character_requirements(self, password: str) -> None:
         """Ensure password contains required character types (uppercase, lowercase, digits)."""
@@ -612,9 +596,7 @@ class UserManager:
                     ]
                 )
             elif role == UserRole.nurse:
-                permissions.update(
-                    [Permission.patient_data_read, Permission.patient_data_write]
-                )
+                permissions.update([Permission.patient_data_read, Permission.patient_data_write])
             elif role == UserRole.read_only:
                 permissions.update([Permission.data_read, Permission.api_read])
             elif role == UserRole.guest:
@@ -639,9 +621,7 @@ class AuthenticationMiddleware:
         self.user_manager = user_mgr
         self.security = HTTPBearer(auto_error=False)
 
-    async def get_current_user(
-        self, credentials: HTTPAuthorizationCredentials = Depends()
-    ) -> User:
+    async def get_current_user(self, credentials: HTTPAuthorizationCredentials = Depends()) -> User:
         """Get current authenticated user."""
 
         if not credentials:
@@ -652,9 +632,7 @@ class AuthenticationMiddleware:
 
         user_session = self.user_manager.get_session(credentials.credentials)
         if not user_session:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session"
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
 
         current_user = self.user_manager.users.get(user_session.user_id)
         if not current_user or not current_user.is_active:

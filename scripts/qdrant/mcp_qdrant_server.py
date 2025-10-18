@@ -42,10 +42,7 @@ except ImportError:
 
 from mcp import McpServer
 from mcp.models import ServerCapabilities
-from mcp.types import (
-    Resource,
-    Tool,
-)
+from mcp.types import Resource, Tool
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

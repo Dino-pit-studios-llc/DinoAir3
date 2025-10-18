@@ -36,8 +36,8 @@ try:
 except ImportError:
     try:
         from .models import (
-            ModelManager as _ImportedModelManager,  # fallback if models/__init__.py exposes it
-        )
+            ModelManager as _ImportedModelManager,
+        )  # fallback if models/__init__.py exposes it
     except ImportError:
         _ImportedModelManager = None  # type: ignore[assignment]
 
@@ -229,26 +229,18 @@ class LLMInterface(ShutdownMixin):
         try:
             with self._model_lock:
                 # Unload current model if different
-                if (
-                    self._current_model
-                    and self._model_name
-                    and self._model_name != model_to_load
-                ):
+                if self._current_model and self._model_name and self._model_name != model_to_load:
                     self._manager.unload_model(self._model_name)
 
                 # Load new model
-                self._current_model = self._manager.load_model(
-                    model_to_load, model_path
-                )
+                self._current_model = self._manager.load_model(model_to_load, model_path)
                 self._model_name = model_to_load
 
                 logger.info("Model '%s' loaded successfully", model_to_load)
             return self._current_model
 
         except Exception as e:
-            raise RuntimeError(
-                f"Failed to load model '{model_to_load}': {str(e)}"
-            ) from e
+            raise RuntimeError(f"Failed to load model '{model_to_load}': {str(e)}") from e
 
     def translate(self, instruction: str, context: dict[str, Any] | None = None) -> str:
         """
@@ -317,9 +309,7 @@ class LLMInterface(ShutdownMixin):
                 code = self.translate(instruction)
                 results.append(code)
             except Exception as e:
-                logger.error(
-                    "Failed to translate: %s... - %s", instruction[:50], str(e)
-                )
+                logger.error("Failed to translate: %s... - %s", instruction[:50], str(e))
                 results.append(f"# Error: Failed to translate - {str(e)}")
 
         return results
@@ -416,9 +406,7 @@ class LLMInterface(ShutdownMixin):
         model_info = self._current_model.get_info()
         extra_info: dict[str, Any] = {
             "cache_enabled": self.config.cache_enabled,
-            "cache_size": (
-                self.cache.get_cache_size() if self.config.cache_enabled else 0
-            ),
+            "cache_size": (self.cache.get_cache_size() if self.config.cache_enabled else 0),
         }
         mgr = getattr(self, "_manager", None)
         if mgr and hasattr(mgr, "get_memory_usage"):
@@ -446,9 +434,7 @@ class LLMInterface(ShutdownMixin):
         except Exception as e:
             logger.warning("Warmup failed: %s", e)
 
-    def _create_cache_key(
-        self, instruction: str, context: dict[str, Any] | None
-    ) -> str:
+    def _create_cache_key(self, instruction: str, context: dict[str, Any] | None) -> str:
         """Create a unique cache key for instruction + context"""
         key_data = {
             "instruction": instruction,

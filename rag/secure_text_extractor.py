@@ -109,9 +109,7 @@ class SecureTextExtractor:
 
         return extension in self.supported_extensions
 
-    def extract_text(
-        self, file_path: str | Path, max_size: int | None = None
-    ) -> dict[str, Any]:
+    def extract_text(self, file_path: str | Path, max_size: int | None = None) -> dict[str, Any]:
         """
         Extract text from file with appropriate security measures.
 
@@ -191,9 +189,7 @@ class SecureTextExtractor:
         return result
 
     @staticmethod
-    def _extract_plain_text(
-        file_path: Path, max_size: int | None = None
-    ) -> dict[str, Any]:
+    def _extract_plain_text(file_path: Path, max_size: int | None = None) -> dict[str, Any]:
         """
         Extract text from plain text files with size limits.
 
@@ -210,9 +206,7 @@ class SecureTextExtractor:
             file_size = file_path.stat().st_size
             size_limit = max_size or (10 * 1024 * 1024)
 
-            SecureTextExtractor._read_text_with_size_limit(
-                file_path, file_size, size_limit, result
-            )
+            SecureTextExtractor._read_text_with_size_limit(file_path, file_size, size_limit, result)
 
             result["success"] = True
 
@@ -292,9 +286,7 @@ class SecureTextExtractor:
                 raise ValueError(SecureTextExtractor._PATH_TRAVERSAL_ERROR) from e
 
     @staticmethod
-    def _check_traversal_patterns(
-        file_path: Path, resolved_path: Path, cwd: Path
-    ) -> None:
+    def _check_traversal_patterns(file_path: Path, resolved_path: Path, cwd: Path) -> None:
         """Check for path traversal patterns in the path string.
 
         Args:
