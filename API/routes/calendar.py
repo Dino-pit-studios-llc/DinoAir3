@@ -5,12 +5,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
-
 from database.appointments_db import AppointmentsDatabase
 from database.initialize_db import DatabaseManager
+from fastapi import APIRouter, HTTPException, status
 from models.calendar_event import CalendarEvent
+from pydantic import BaseModel, Field
 
 log = logging.getLogger("api.routes.calendar")
 
@@ -130,7 +129,9 @@ def _event_to_response(event: CalendarEvent) -> CalendarEventResponse:
     )
 
 
-@router.post("", response_model=CalendarEventResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", response_model=CalendarEventResponse, status_code=status.HTTP_201_CREATED
+)
 def create_calendar_event(event_data: CalendarEventCreateRequest):
     """Create a new calendar event"""
     try:
@@ -159,7 +160,9 @@ def create_calendar_event(event_data: CalendarEventCreateRequest):
         raise
     except Exception as e:
         log.exception("Error creating calendar event")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
 
 
 @router.get("", response_model=list[CalendarEventResponse])
@@ -190,7 +193,9 @@ def list_calendar_events(
 
     except Exception as e:
         log.exception("Error listing calendar events")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
 
 
 @router.get("/{event_id}", response_model=CalendarEventResponse)
@@ -211,7 +216,9 @@ def get_calendar_event(event_id: str):
         raise
     except Exception as e:
         log.exception("Error fetching calendar event %s", event_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
 
 
 @router.put("/{event_id}", response_model=CalendarEventResponse)
@@ -257,7 +264,9 @@ def update_calendar_event(event_id: str, update_data: CalendarEventUpdateRequest
         raise
     except Exception as e:
         log.exception("Error updating calendar event %s", event_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
 
 
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -286,4 +295,6 @@ def delete_calendar_event(event_id: str):
         raise
     except Exception as e:
         log.exception("Error deleting calendar event %s", event_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e

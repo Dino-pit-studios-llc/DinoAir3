@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter
-
 from core_router import metrics as core_metrics
+from fastapi import APIRouter
 
 from ..services.router_client import get_router
 

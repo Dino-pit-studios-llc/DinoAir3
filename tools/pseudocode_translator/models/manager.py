@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any
 
 import psutil
-
 from utils.shutdown_protocols import ShutdownMixin
 
 from .base import BaseModel
@@ -62,7 +61,9 @@ class ModelManager(ShutdownMixin):
         self.config = config or {}
         self._instances: dict[str, ModelInstance] = {}
         self._lock = threading.Lock()
-        self._downloader = ModelDownloader(download_dir=self.config.get("model_dir", "./models"))
+        self._downloader = ModelDownloader(
+            download_dir=self.config.get("model_dir", "./models")
+        )
 
         # Configuration
         self.max_loaded_models = self.config.get("max_loaded_models", 3)
@@ -102,7 +103,9 @@ class ModelManager(ShutdownMixin):
             # Load model if requested
             if auto_load:
                 return self._load_model(model_name)
-            raise RuntimeError(f"Model '{model_name}' not loaded. Call load_model() first.")
+            raise RuntimeError(
+                f"Model '{model_name}' not loaded. Call load_model() first."
+            )
 
     def load_model(self, name: str, model_path: Path | None = None) -> BaseModel:
         """
@@ -223,7 +226,9 @@ class ModelManager(ShutdownMixin):
                     "loaded_at": instance.loaded_at.isoformat(),
                     "last_used": instance.last_used.isoformat(),
                     "usage_count": instance.usage_count,
-                    "model_path": (str(instance.model_path) if instance.model_path else None),
+                    "model_path": (
+                        str(instance.model_path) if instance.model_path else None
+                    ),
                 }
                 for name, instance in self._instances.items()
             ]
@@ -310,7 +315,9 @@ class ModelManager(ShutdownMixin):
             return
 
         # Find least recently used model
-        lru_name = min(self._instances.keys(), key=lambda k: self._instances[k].last_used)
+        lru_name = min(
+            self._instances.keys(), key=lambda k: self._instances[k].last_used
+        )
 
         logger.info("Evicting LRU model: %s", lru_name)
         self.unload_model(lru_name)

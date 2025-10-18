@@ -36,7 +36,6 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 import requests
-
 from utils.config_loader import save_json_config
 from utils.process import safe_run
 
@@ -388,9 +387,8 @@ DinoAir Import Organization Monitoring
 
             # Check if similar issue already exists
             search_url = "https://api.github.com/search/issues"
-            search_params = {
-                "q": f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
-            }
+            search_query = f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
+            search_params = {"q": search_query}
 
             response = requests.get(
                 search_url,
@@ -555,7 +553,9 @@ Please investigate and resolve the underlying import organization issues.
                                 id=f"health_score_{module_name}",
                                 severity="warning",
                                 title="Module Health Warning",
-                                message=f"Module {module_name} health score below recommended threshold",
+                                message=(
+                                    f"Module {module_name} health score below recommended threshold"
+                                ),
                                 module=module_name,
                                 metric_value=health_score,
                                 threshold=0.8,
@@ -572,7 +572,7 @@ Please investigate and resolve the underlying import organization issues.
         return alerts
 
 
-def main():
+def main():  # noqa: C901
     """Main entry point for alert system."""
     parser = argparse.ArgumentParser(
         description="Import organization alert system",

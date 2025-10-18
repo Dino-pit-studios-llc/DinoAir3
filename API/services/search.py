@@ -6,11 +6,10 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, cast
 
+from database.file_search_db import FileSearchDB
 from fastapi import HTTPException
 from pydantic import ValidationError
 from starlette import status
-
-from database.file_search_db import FileSearchDB
 
 from ..schemas import (
     DirectorySettingsResponse,
@@ -103,7 +102,11 @@ def _to_hit(result: Any) -> VectorSearchHit:
         metadata = dict(cast("Mapping[str, Any]", metadata))
     else:
         md_alt = _get(result, "chunk_metadata")
-        metadata = dict(cast("Mapping[str, Any]", md_alt)) if isinstance(md_alt, Mapping) else None
+        metadata = (
+            dict(cast("Mapping[str, Any]", md_alt))
+            if isinstance(md_alt, Mapping)
+            else None
+        )
 
     return VectorSearchHit(
         file_path=str(file_path),
@@ -166,7 +169,9 @@ class SearchService:
             hits: list[VectorSearchHit] = [_to_hit(m) for m in mapped]
             return KeywordSearchResponse(hits=hits)
         except ValidationError as ve:
-            log.warning("KeywordSearchResponse validation error", extra={"errors": ve.errors()})
+            log.warning(
+                "KeywordSearchResponse validation error", extra={"errors": ve.errors()}
+            )
             return KeywordSearchResponse(hits=[])
 
     # -------- Vector --------
@@ -216,7 +221,9 @@ class SearchService:
             # Re-raise HTTP errors (e.g., 501)
             raise
         except ValidationError as ve:
-            log.warning("VectorSearchResponse validation error", extra={"errors": ve.errors()})
+            log.warning(
+                "VectorSearchResponse validation error", extra={"errors": ve.errors()}
+            )
             return VectorSearchResponse(hits=[])
 
     # -------- Hybrid --------
@@ -252,7 +259,9 @@ class SearchService:
         except HTTPException:
             raise
         except ValidationError as ve:
-            log.warning("HybridSearchResponse validation error", extra={"errors": ve.errors()})
+            log.warning(
+                "HybridSearchResponse validation error", extra={"errors": ve.errors()}
+            )
             return HybridSearchResponse(hits=[])
 
     # -------- Index stats --------
@@ -272,8 +281,14 @@ class SearchService:
             # Be resilient to any construction/validation failure and return defaults
             try:
                 # If this is a pydantic ValidationError-like object, log structured details
-                errors = ve.errors() if hasattr(ve, "errors") and callable(ve.errors) else str(ve)
-                log.warning("FileIndexStatsResponse validation error", extra={"errors": errors})
+                errors = (
+                    ve.errors()
+                    if hasattr(ve, "errors") and callable(ve.errors)
+                    else str(ve)
+                )
+                log.warning(
+                    "FileIndexStatsResponse validation error", extra={"errors": errors}
+                )
             except Exception:
                 log.warning("FileIndexStatsResponse validation error")
             # Avoid constructing FileIndexStatsResponse again if its __init__ was patched to fail
@@ -385,7 +400,9 @@ def _handle_hybrid(payload: dict[str, Any]) -> dict[str, Any]:
 
 def _handle_vector(payload: dict[str, Any]) -> dict[str, Any]:
     req_kwargs: dict[str, Any] = {"query": payload["query"]}
-    req_kwargs |= _extract_kwargs(payload, ("top_k", "similarity_threshold", "file_types"))
+    req_kwargs |= _extract_kwargs(
+        payload, ("top_k", "similarity_threshold", "file_types")
+    )
     if "distance_metric" in payload:
         req_kwargs["distance_metric"] = payload["distance_metric"]
     req = VectorSearchRequest(**req_kwargs)

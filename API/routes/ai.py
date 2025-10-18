@@ -11,15 +11,14 @@ import logging
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any, cast
 
-from fastapi import APIRouter, HTTPException
-from starlette import status
-
 from core_router.errors import (
     AdapterError,
     NoHealthyService,
     ServiceNotFound,
 )
 from core_router.errors import ValidationError as CoreValidationError
+from fastapi import APIRouter, HTTPException
+from starlette import status
 
 from ..schemas import ChatRequest, ChatResponse
 from ..services import router_client
@@ -59,7 +58,9 @@ def _get_tool_schemas_from_params(extra_params: Mapping | None) -> list[dict[str
         logger.info("Function calling enabled with %d tools", len(tool_schemas))
         return tool_schemas
     except Exception as e:
-        logger.warning("Failed to load tools for function calling, continuing without tools: %s", e)
+        logger.warning(
+            "Failed to load tools for function calling, continuing without tools: %s", e
+        )
         return []
 
 
@@ -212,7 +213,9 @@ async def _maybe_continue_with_function_calls(
             result_dict, function_call_results
         )
         updated_payload = _build_payload(updated_messages, options, tool_schemas)
-        result_dict = _execute_chat_round(router_instance, svc_name, tag, policy, updated_payload)
+        result_dict = _execute_chat_round(
+            router_instance, svc_name, tag, policy, updated_payload
+        )
 
     return result_dict, function_call_results
 
@@ -310,7 +313,9 @@ def _parse_routing_params(
         return None, None, None
 
     svc_name = _pick_first_str(extra_params, "router_service", "serviceName")
-    tag = _normalize_tag(extra_params.get("router_tag") or extra_params.get("router_tags"))
+    tag = _normalize_tag(
+        extra_params.get("router_tag") or extra_params.get("router_tags")
+    )
     policy = _pick_first_str(extra_params, "router_policy")
 
     return svc_name, tag, policy
@@ -332,7 +337,9 @@ def _execute_router_call(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
     except AdapterError as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
+        ) from exc
 
 
 def _call_router(
@@ -467,7 +474,9 @@ def _extract_bool_param(
     return default
 
 
-def _extract_list_param(extra_params: dict[str, Any] | None, key: str) -> list[str] | None:
+def _extract_list_param(
+    extra_params: dict[str, Any] | None, key: str
+) -> list[str] | None:
     """Extract a list parameter from extra_params."""
     if not extra_params or key not in extra_params:
         return None
@@ -540,12 +549,16 @@ def _iter_tool_calls(result_dict: dict[str, Any]) -> Iterable[Mapping[str, Any]]
         logger.error("Error extracting tool calls: %s", exc)
 
 
-async def _process_tool_call(tool_call: Mapping[str, Any], registry: Any) -> dict[str, Any] | None:
+async def _process_tool_call(
+    tool_call: Mapping[str, Any], registry: Any
+) -> dict[str, Any] | None:
     try:
         tool_call_id, function_name, function_args = _parse_tool_call(tool_call)
     except ValueError as exc:
         function_block = tool_call.get("function")
-        function_name = function_block.get("name") if isinstance(function_block, Mapping) else None
+        function_name = (
+            function_block.get("name") if isinstance(function_block, Mapping) else None
+        )
         logger.error("Invalid tool call payload: %s", exc)
         return {
             "tool_call_id": tool_call.get("id"),

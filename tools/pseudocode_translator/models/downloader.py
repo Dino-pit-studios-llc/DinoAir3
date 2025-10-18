@@ -16,8 +16,9 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from pseudocode_translator.exceptions import ConfigurationError
 from tqdm import tqdm
+
+from pseudocode_translator.exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,9 @@ class ModelDownloader:
                 raise ConfigurationError(
                     f"Checksum required for downloads unless force=True; refusing unverified download: {url}"
                 )
-            logger.warning("Proceeding without checksum verification (force=True) for: %s", url)
+            logger.warning(
+                "Proceeding without checksum verification (force=True) for: %s", url
+            )
 
         # Determine file path
         model_dir = self.download_dir / model_name
@@ -200,7 +203,9 @@ class ModelDownloader:
         response = None
         for attempt in range(self.max_retries):
             try:
-                response = self.session.get(url, headers=headers, stream=True, timeout=self.timeout)
+                response = self.session.get(
+                    url, headers=headers, stream=True, timeout=self.timeout
+                )
 
                 # Check if server supports resume
                 if resume_pos > 0 and response.status_code != 206:
@@ -379,7 +384,9 @@ class ModelDownloader:
 
 
 # Convenience functions
-def download_model(url: str, model_name: str, download_dir: str = "./models", **kwargs) -> Path:
+def download_model(
+    url: str, model_name: str, download_dir: str = "./models", **kwargs
+) -> Path:
     """
     Quick function to download a model
 

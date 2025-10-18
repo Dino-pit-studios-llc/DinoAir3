@@ -9,11 +9,10 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field, field_validator
-
 from database.notes_service import NotesService
+from fastapi import APIRouter, HTTPException, Query, status
 from models.note import Note
+from pydantic import BaseModel, Field, field_validator
 
 log = logging.getLogger("api.routes.notes")
 
@@ -227,7 +226,9 @@ async def create_note(request: NoteCreateRequest) -> NoteCreatedResponse:
 )
 async def list_notes(
     query: str | None = Query(default=None, description="Search query to filter notes"),
-    tags: str | None = Query(default=None, description="Comma-separated list of tags to filter by"),
+    tags: str | None = Query(
+        default=None, description="Comma-separated list of tags to filter by"
+    ),
 ) -> NotesListResponse:
     """
     Retrieve all notes, optionally filtered by search query or tags.

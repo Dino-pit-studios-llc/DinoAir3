@@ -13,5 +13,9 @@
   },
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "sonarlint.connectedMode.project": {
+    "connectionId": "dino-pit-studios-llc",
+    "projectKey": "Dino-pit-studios-llc_DinoAir3"
+  }
 }

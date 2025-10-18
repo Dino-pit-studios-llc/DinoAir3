@@ -61,8 +61,6 @@ def validate_config(path: str, lenient: bool = False) -> tuple[int, dict]:
       (exit_code, result_dict) where result_dict includes:
       {"errors": [...], "warnings": [...], "path": path}
     """
-    from .config import Config  # import here to avoid cycles
-    from .exceptions import ConfigurationError
 
     p = Path(path)
     err = _ensure_file_readable(p)
@@ -207,7 +205,7 @@ def _apply_llm_models(cfg, llm_data: dict) -> None:
         }
         try:
             cfg.llm.models[name] = ModelConfig(**mc)
-        except Exception:
+        except Exception:  # noqa: S110
             # If construction fails, skip this model
             pass
 
@@ -300,7 +298,10 @@ class ConfigTool:
         validate_parser.add_argument(
             "--lenient",
             action="store_true",
-            help="Run non-strict validation (CLI flag takes precedence over PSEUDOCODE_LENIENT_CONFIG for this operation)",
+            help=(
+                "Run non-strict validation (CLI flag takes precedence over "
+                "PSEUDOCODE_LENIENT_CONFIG for this operation)"
+            ),
         )
 
         # Generate command
