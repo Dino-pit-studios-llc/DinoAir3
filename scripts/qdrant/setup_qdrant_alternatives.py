@@ -439,7 +439,7 @@ def main():
         return 1
 
     # Sanitize API key: must be alphanumeric and dash/underscore only
-    if not re.fullmatch(r'[A-Za-z0-9_\-]+', api_key):
+    if not re.fullmatch(r"[A-Za-z0-9_\-]+", api_key):
         print("Error: API key contains invalid characters. Allowed: letters, numbers, - and _")
         return 1
 
