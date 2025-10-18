@@ -25,6 +25,9 @@ from typing import TYPE_CHECKING, Any, cast
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+# Type aliases to avoid cast string literal duplication  
+DictStrAny = dict[str, Any]
+
 REDACT_KEYS = {
     "authorization",
     "x-dinoair-auth",
@@ -73,9 +76,9 @@ class RedactionFilter(logging.Filter):
             if lk in self.keys:
                 sanitized[k] = _REDACTED_VALUE
             elif isinstance(v, dict):
-                sanitized[k] = self._redact_mapping(cast("dict[str, Any]", v))
+                sanitized[k] = self._redact_mapping(cast(DictStrAny, v))
             elif isinstance(v, list | tuple):
-                sanitized[k] = [RedactionFilter._mask_value(x) for x in cast("Iterable[Any]", v)]
+                sanitized[k] = [RedactionFilter._mask_value(x) for x in v]
             else:
                 sanitized[k] = RedactionFilter._mask_value(v)
         return sanitized
@@ -97,20 +100,20 @@ class RedactionFilter(logging.Filter):
             for attr in ("msg",):
                 val = getattr(record, attr, None)
                 if isinstance(val, dict):
-                    setattr(record, attr, self._redact_mapping(cast("dict[str, Any]", val)))
+                    setattr(record, attr, self._redact_mapping(cast(DictStrAny, val)))
 
             # Also scan record.__dict__ extras for common names
-            for k in list(record.__dict__.keys()):
+            for k in record.__dict__.keys():
                 lk = str(k).lower()
                 if lk in self.keys:
                     record.__dict__[k] = _REDACTED_VALUE
                 else:
                     v = record.__dict__[k]
                     if isinstance(v, dict):
-                        record.__dict__[k] = self._redact_mapping(cast("dict[str, Any]", v))
+                        record.__dict__[k] = self._redact_mapping(cast(DictStrAny, v))
                     elif isinstance(v, list | tuple):
                         record.__dict__[k] = [
-                            RedactionFilter._mask_value(x) for x in cast("Iterable[Any]", v)
+                            RedactionFilter._mask_value(x) for x in v
                         ]
                     elif isinstance(v, str) and v in _ENV_SECRET_VALUES:
                         record.__dict__[k] = _REDACTED_VALUE

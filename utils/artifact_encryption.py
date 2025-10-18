@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 """
 Artifact Encryption Utilities
-Provides field-level encryption/decryption for sensitive artifact data.
-Uses AES-256 encryption with PBKDF2 key derivation.
+
+Provides field-level encryption/decryption for sensitive artifact data using
+AES-256-GCM authenticated encryption with PBKDF2 key derivation.
+
+Security Features:
+- AES-256-GCM for authenticated encryption (prevents tampering)
+- PBKDF2 with SHA-256 for secure key derivation
+- Cryptographically secure random nonces and salts
+- Backward compatibility with legacy CBC encrypted data
 """
 
 import base64
@@ -12,17 +19,22 @@ import secrets
 from typing import Any
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, padding
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 class ArtifactEncryption:
-    """Handles field-level encryption for artifacts"""
+    """
+    Handles field-level encryption for artifacts using AES-256-GCM
+    
+    Uses authenticated encryption (GCM mode) for security.
+    Maintains backward compatibility with legacy CBC encrypted data.
+    """
 
     # Encryption parameters
     key_length = 32  # 256 bits for AES-256
-    iv_length = 16  # 128 bits for AES block size
     salt_length = 32  # 256 bits for salt
     iterations = 100000  # PBKDF2 iterations
 
@@ -59,14 +71,14 @@ class ArtifactEncryption:
         """Generate a random salt"""
         return secrets.token_bytes(self.salt_length)
 
-    def generate_iv(self) -> bytes:
-        """Generate a random 16-byte IV using os.urandom for AES-CBC"""
-        # CBC requires unpredictable IVs; 16 bytes = 128-bit block size for AES
-        return os.urandom(self.iv_length)
+    def generate_nonce(self) -> bytes:
+        """Generate a random 12-byte nonce for AES-GCM"""
+        # GCM mode uses 12-byte nonces for optimal security
+        return secrets.token_bytes(12)
 
     def encrypt_data(self, data: str | bytes, key: bytes | None = None) -> dict[str, str]:
         """
-        Encrypt data using AES-256-CBC
+        Encrypt data using AES-256-GCM (authenticated encryption)
 
         Args:
             data: Data to encrypt (string or bytes)
@@ -74,7 +86,7 @@ class ArtifactEncryption:
                 provided)
 
         Returns:
-            Dictionary containing encrypted data, salt, and IV (all base64
+            Dictionary containing encrypted data, salt, nonce, and auth tag (all base64
             encoded)
         """
         # Ensure input is bytes; avoid implicit bytes() on arbitrary objects
@@ -92,23 +104,18 @@ class ArtifactEncryption:
                 raise ValueError("No password provided for key derivation")
             key = self.derive_key(self.password, salt)
 
-        # Generate IV and create cipher (AES-CBC)
-        iv = self.generate_iv()
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-        encryptor = cipher.encryptor()
-
-        # PKCS7 padding using cryptography padder (AES block size is 128 bits)
-        padder = padding.PKCS7(128).padder()
-        padded_data = padder.update(data_bytes) + padder.finalize()
-
-        # Encrypt
-        encrypted = encryptor.update(padded_data) + encryptor.finalize()
+        # Generate nonce and encrypt using AES-GCM
+        nonce = self.generate_nonce()
+        aesgcm = AESGCM(key)
+        
+        # GCM mode provides authentication and encryption in one step
+        encrypted = aesgcm.encrypt(nonce, data_bytes, None)
 
         # Return base64 encoded values
         return {
             "data": base64.b64encode(encrypted).decode("utf-8"),
             "salt": base64.b64encode(salt).decode("utf-8"),
-            "iv": base64.b64encode(iv).decode("utf-8"),
+            "nonce": base64.b64encode(nonce).decode("utf-8"),
         }
 
     def decrypt_data(self, encrypted_data: dict[str, str], key: bytes | None = None) -> bytes:
@@ -116,7 +123,7 @@ class ArtifactEncryption:
         Decrypt data encrypted with encrypt_data
 
         Args:
-            encrypted_data: Dictionary with encrypted data, salt, and IV
+            encrypted_data: Dictionary with encrypted data, salt, and nonce
             key: Optional encryption key (will derive from password if not
                 provided)
 
@@ -127,24 +134,41 @@ class ArtifactEncryption:
         if key is None and not self.password:
             raise ValueError("No password provided for key derivation")
 
-        # Decode base64 values
-        encrypted = base64.b64decode(encrypted_data["data"])
-        salt = base64.b64decode(encrypted_data["salt"])
-        iv = base64.b64decode(encrypted_data["iv"])
+        # Support both old (iv) and new (nonce) formats for backward compatibility
+        if "nonce" in encrypted_data:
+            # New GCM format
+            encrypted = base64.b64decode(encrypted_data["data"])
+            salt = base64.b64decode(encrypted_data["salt"])
+            nonce = base64.b64decode(encrypted_data["nonce"])
+            
+            # Derive key if not provided
+            if key is None:
+                key = self.derive_key(self.password, salt)
 
-        # Derive key if not provided
-        if key is None:
-            # type: ignore  # Already checked above
-            key = self.derive_key(self.password, salt)
+            # Decrypt using AES-GCM
+            aesgcm = AESGCM(key)
+            return aesgcm.decrypt(nonce, encrypted, None)
+        else:
+            # Legacy CBC format - maintain backward compatibility
+            from cryptography.hazmat.primitives import padding
+            
+            encrypted = base64.b64decode(encrypted_data["data"])
+            salt = base64.b64decode(encrypted_data["salt"])
+            iv = base64.b64decode(encrypted_data["iv"])
 
-        # Create cipher and decrypt
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-        decryptor = cipher.decryptor()
-        decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+            # Derive key if not provided
+            if key is None:
+                key = self.derive_key(self.password, salt)
 
-        # Remove PKCS7 padding using cryptography unpadder
-        unpadder = padding.PKCS7(128).unpadder()
-        return unpadder.update(decrypted_padded) + unpadder.finalize()
+            # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+            # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+            decryptor = cipher.decryptor()
+            decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+
+            # Remove PKCS7 padding using cryptography unpadder
+            unpadder = padding.PKCS7(128).unpadder()
+            return unpadder.update(decrypted_padded) + unpadder.finalize()
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """

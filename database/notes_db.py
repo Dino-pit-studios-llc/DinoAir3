@@ -14,8 +14,7 @@ from .factory import create_notes_service
 # Import OperationResult directly to avoid circular import
 from .notes_service import OperationResult
 
-# Type string constant for cast operations
-_NOTE_LIST_TYPE_STR = "list[Note]"
+# Type annotation for Note lists
 
 
 class NotesDatabase:
@@ -130,7 +129,7 @@ class NotesDatabase:
             List of Note objects
         """
         return cast(
-            "list[Note]",
+            list[Note],
             NotesDatabase._handle_data_result(self._service.get_all_notes(), []),
         )
 
@@ -179,7 +178,7 @@ class NotesDatabase:
             List of Note objects matching the search criteria
         """
         return cast(
-            _NOTE_LIST_TYPE_STR,
+            list[Note],
             NotesDatabase._handle_data_result(
                 self._service.search_notes(query, filter_option, project_id), []
             ),
@@ -196,7 +195,7 @@ class NotesDatabase:
             List of Note objects containing the specified tag
         """
         return cast(
-            "list[Note]",
+            list[Note],
             NotesDatabase._handle_data_result(self._service.get_notes_by_tag(tag), []),
         )
 
@@ -220,7 +219,7 @@ class NotesDatabase:
             List of deleted Note objects
         """
         return cast(
-            "list[Note]",
+            list[Note],
             NotesDatabase._handle_data_result(self._service.get_deleted_notes(), []),
         )
 
@@ -276,7 +275,7 @@ class NotesDatabase:
             List of Note objects belonging to the project
         """
         result = self._service.get_notes_by_project(project_id)
-        return cast("list[Note]", NotesDatabase._handle_data_result(result, []))
+        return cast(list[Note], NotesDatabase._handle_data_result(result, []))
 
     def get_notes_without_project(self) -> list[Note]:
         """
@@ -286,7 +285,7 @@ class NotesDatabase:
             List of Note objects without project association
         """
         result = self._service.get_notes_without_project()
-        return cast("list[Note]", NotesDatabase._handle_data_result(result, []))
+        return cast(list[Note], NotesDatabase._handle_data_result(result, []))
 
     def assign_notes_to_project(self, note_ids: list[str], project_id: str) -> bool:
         """
