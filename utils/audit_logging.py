@@ -194,7 +194,6 @@ class AuditLogger:
         **kwargs,
     ) -> str:
         """Create and log an audit event."""
-
         event_id = str(uuid.uuid4())
         timestamp = datetime.now(UTC).isoformat()
 
@@ -228,7 +227,6 @@ class AuditLogger:
 
     def _add_integrity_check(self, event: AuditEvent) -> AuditEvent:
         """Add checksum and signature for integrity verification."""
-
         # Create serializable dict (excluding checksum and signature)
         event_dict = asdict(event)
         event_dict.pop("checksum", None)
@@ -269,7 +267,6 @@ class AuditLogger:
 
     def _write_audit_log(self, event: AuditEvent) -> None:
         """Write audit event to log file."""
-
         # Convert to dict for JSON serialization
         log_data = asdict(event)
         log_data["event_type"] = event.event_type.value
@@ -491,7 +488,6 @@ def create_audit_logger(
     log_dir: str | Path = "logs/audit", secret_key: str | None = None
 ) -> AuditLogger:
     """Create and configure an audit logger."""
-
     if secret_key is None:
         import os
 

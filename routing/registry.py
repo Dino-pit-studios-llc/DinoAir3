@@ -207,7 +207,6 @@ def auto_register_from_config_and_env(
 
     Returns the provided registry for chaining.
     """
-
     services = _load_services_safely(services_file)
 
     for s in services:

@@ -95,7 +95,6 @@ class TagNormalizationMigration(BaseMigration):
     @staticmethod
     def _add_tag_indexes(cursor: sqlite3.Cursor) -> None:
         """Add expression indexes for efficient JSON tag queries"""
-
         # Note: Expression indexes on json_each() may not be supported in all SQLite builds
         # We'll create indexes that work with our query patterns instead
 
@@ -124,7 +123,6 @@ class TagNormalizationMigration(BaseMigration):
     @staticmethod
     def _add_tag_validation(cursor: sqlite3.Cursor) -> None:
         """Add validation for tag data integrity"""
-
         # Check constraint to ensure tags are valid JSON arrays
         # Note: SQLite CHECK constraints are limited, so this is mainly documentation
         # The application code should enforce this constraint

@@ -38,7 +38,6 @@ class LiveSecurityAssessment:
 
     def test_security_headers(self) -> None:
         """Test for proper security headers."""
-
         self.total_tests += 1
         print("\n🔒 Testing Security Headers...")
 
@@ -81,7 +80,6 @@ class LiveSecurityAssessment:
 
     def test_cors_policy(self) -> None:
         """Test CORS policy restrictions."""
-
         self.total_tests += 1
         print("\n🌐 Testing CORS Policy...")
 
@@ -112,7 +110,6 @@ class LiveSecurityAssessment:
 
     def test_sql_injection_basic(self) -> None:
         """Test basic SQL injection protection."""
-
         self.total_tests += 1
         print("\n💉 Testing SQL Injection Protection...")
 
@@ -167,7 +164,6 @@ class LiveSecurityAssessment:
 
     def test_xss_protection(self) -> None:
         """Test Cross-Site Scripting protection."""
-
         self.total_tests += 1
         print("\n🕷️ Testing XSS Protection...")
 
@@ -204,7 +200,6 @@ class LiveSecurityAssessment:
 
     def test_rate_limiting(self) -> None:
         """Test rate limiting functionality."""
-
         self.total_tests += 1
         print("\n⏱️ Testing Rate Limiting...")
 
@@ -237,7 +232,6 @@ class LiveSecurityAssessment:
 
     def test_authentication_security(self) -> None:
         """Test authentication security."""
-
         self.total_tests += 1
         print("\n🔐 Testing Authentication Security...")
 
@@ -273,7 +267,6 @@ class LiveSecurityAssessment:
 
     def test_information_disclosure(self) -> None:
         """Test for information disclosure vulnerabilities."""
-
         self.total_tests += 1
         print("\n🔍 Testing Information Disclosure...")
 
@@ -311,7 +304,6 @@ class LiveSecurityAssessment:
 
     def generate_report(self) -> dict[str, Any]:
         """Generate security assessment report."""
-
         pass_percentage = (
             (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
         )
@@ -344,7 +336,6 @@ class LiveSecurityAssessment:
     @staticmethod
     def _get_recommendations(pass_percentage: float) -> list[str]:
         """Get security recommendations based on test results."""
-
         recommendations = []
 
         if pass_percentage < 100:
@@ -379,7 +370,6 @@ class LiveSecurityAssessment:
 
 def run_live_security_assessment():
     """Run live security assessment against DinoAir API."""
-
     print("🛡️ DinoAir Live Security Assessment")
     print("=" * 50)
     print("Testing for ROCK SOLID security...")

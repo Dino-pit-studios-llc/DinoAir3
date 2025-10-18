@@ -18,7 +18,6 @@ except ImportError:
 
 def load_env_file(env_path: Path) -> dict[str, str]:
     """Load environment variables from .env file"""
-
     env_vars: dict[str, str] = {}
     if env_path.exists():
         try:

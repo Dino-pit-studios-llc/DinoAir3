@@ -41,7 +41,6 @@ class CallbackData:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the payload into a serialisable dictionary."""
-
         return {
             "type": self.type.value,
             "timestamp": self.timestamp.isoformat(),
@@ -90,12 +89,10 @@ class BaseCallback(ABC):
 
     def enable(self) -> None:
         """Enable callback processing."""
-
         self._enabled = True
 
     def disable(self) -> None:
         """Disable callback processing."""
-
         self._enabled = False
 
 
@@ -115,7 +112,6 @@ class CallbackManager:
         callback_type: CallbackType | None = None,
     ) -> None:
         """Register a callback for a specific type or globally."""
-
         with self._lock:
             if callback_type is not None:
                 bucket = self._callbacks[callback_type.value]
@@ -130,7 +126,6 @@ class CallbackManager:
         callback_type: CallbackType | None = None,
     ) -> None:
         """Remove a previously registered callback."""
-
         with self._lock:
             if callback_type is not None:
                 bucket = self._callbacks[callback_type.value]
@@ -146,7 +141,6 @@ class CallbackManager:
 
     def clear(self) -> None:
         """Remove all callbacks."""
-
         with self._lock:
             for bucket in self._callbacks.values():
                 bucket.clear()
@@ -154,7 +148,6 @@ class CallbackManager:
 
     def trigger(self, data: CallbackData) -> None:
         """Trigger callbacks for the given payload."""
-
         with self._lock:
             specific_callbacks = list(self._callbacks[data.type.value])
             global_callbacks = list(self._global_callbacks)
@@ -167,7 +160,6 @@ class CallbackManager:
 
     def trigger_progress(self, percentage: int, message: str) -> None:
         """Helper for emitting progress updates."""
-
         self.trigger(
             CallbackData(
                 type=CallbackType.progress,
@@ -178,7 +170,6 @@ class CallbackManager:
 
     def trigger_status(self, status: str, **details: Any) -> None:
         """Helper for emitting status updates."""
-
         self.trigger(
             CallbackData(
                 type=CallbackType.status,
@@ -189,7 +180,6 @@ class CallbackManager:
 
     def trigger_completion(self, **payload: Any) -> None:
         """Helper for signalling completion events."""
-
         self.trigger(
             CallbackData(
                 type=CallbackType.completion,
@@ -199,7 +189,6 @@ class CallbackManager:
 
     def trigger_error(self, message: str, **details: Any) -> None:
         """Helper for emitting error notifications."""
-
         self.trigger(
             CallbackData(
                 type=CallbackType.error,
@@ -210,7 +199,6 @@ class CallbackManager:
 
     def trigger_warning(self, message: str, **details: Any) -> None:
         """Helper for emitting warnings."""
-
         self.trigger(
             CallbackData(
                 type=CallbackType.warning,

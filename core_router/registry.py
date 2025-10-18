@@ -170,7 +170,6 @@ def auto_register_from_config_and_env(
 
     Returns the provided registry for chaining.
     """
-
     from .health import HealthState as _HealthState
 
     services = _load_services_safely(services_file)

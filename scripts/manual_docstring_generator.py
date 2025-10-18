@@ -286,7 +286,6 @@ def add_docstrings_to_file(file_path: str, file_info: dict[str, Any]) -> bool:
 
 def main():
     """Main function to orchestrate docstring generation."""
-
     # Directories to scan for missing docstrings
     target_directories = ["utils", "models", "database", "tools"]
 

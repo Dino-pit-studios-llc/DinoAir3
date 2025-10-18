@@ -181,7 +181,6 @@ def process_file(file_path: str) -> bool:
 
 def main():
     """Process models and database files for docstring generation."""
-
     # Key files to process
     target_files = [
         # Models
