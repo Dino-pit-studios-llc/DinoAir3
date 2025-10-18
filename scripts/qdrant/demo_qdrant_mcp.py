@@ -11,8 +11,9 @@ This script demonstrates how to use the Qdrant MCP server to:
 
 import json
 import os
-from typing import Any
 import urllib.parse
+from typing import Any
+
 import requests
 
 
