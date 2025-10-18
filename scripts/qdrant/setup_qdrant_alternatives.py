@@ -15,6 +15,9 @@ from pathlib import Path
 
 from utils.process import safe_run
 
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
+
 
 class QdrantSetupAlternatives:
     """Alternative setup methods for Qdrant."""
@@ -100,7 +103,7 @@ class QdrantSetupAlternatives:
                 )
 
             # Test connection
-            return self.test_qdrant_connection("http://localhost:6333")
+            return self.test_qdrant_connection(QDRANT_DEFAULT_URL)
 
         except Exception as e:
             print(f"Docker setup failed: {e}")
@@ -118,7 +121,7 @@ class QdrantSetupAlternatives:
 
         if not cloud_url:
             print("No cloud URL provided, using localhost for demo")
-            cloud_url = "http://localhost:6333"
+            cloud_url = QDRANT_DEFAULT_URL
 
         return self.test_qdrant_connection(cloud_url)
 
@@ -132,7 +135,7 @@ class QdrantSetupAlternatives:
         print("3. Or use the binary installer")
 
         # For demo, try to connect to localhost
-        return self.test_qdrant_connection("http://localhost:6333")
+        return self.test_qdrant_connection(QDRANT_DEFAULT_URL)
 
     def setup_memory_qdrant(self) -> bool:
         """Set up in-memory Qdrant for testing."""

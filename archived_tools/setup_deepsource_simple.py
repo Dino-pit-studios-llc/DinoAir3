@@ -78,7 +78,7 @@ def install_coverage_tools():
     try:
         safe_run(
             [sys.executable, "-m", "pip", "install", "coverage", "pytest-cov"],
-            allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+            allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
             timeout=600,
             check=True,
         )
@@ -212,7 +212,7 @@ def main():
 
         result = safe_run(
             cmd,
-            allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+            allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
             timeout=900,
             check=False,
         )
@@ -233,7 +233,7 @@ def main():
         print("❌ pytest not found. Installing...")
         safe_run(
             [sys.executable, '-m', 'pip', 'install', 'pytest', 'pytest-cov'],
-            allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+            allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
             timeout=300,
             check=False,
         )

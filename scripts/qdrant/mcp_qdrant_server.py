@@ -47,6 +47,9 @@ from mcp.types import (
     Tool,
 )
 
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("qdrant-mcp")
@@ -62,7 +65,7 @@ class QdrantMCPServer:
             qdrant_url: Qdrant server URL (defaults to QDRANT_URL env var)
             api_key: Qdrant API key (defaults to QDRANT_API_KEY env var)
         """
-        self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", QDRANT_DEFAULT_URL)
         self.api_key = api_key or os.getenv("QDRANT_API_KEY")
 
         if not QDRANT_AVAILABLE:

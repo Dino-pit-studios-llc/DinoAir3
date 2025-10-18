@@ -23,7 +23,7 @@ Examples:
     try:
         proc = safe_run(
             ["python", "--version"],
-            allowed_binaries={"python", "python.exe"},
+            allowed_binaries={"python", PYTHON_EXE},
             cwd=Path("."),
             timeout=10,
             check=True,        # raise SafeProcessError if non-zero exit
@@ -68,6 +68,7 @@ except ImportError:
 # Constants for process execution
 MAX_ENV_DISPLAY_SIZE = 20  # Maximum number of env vars to display in logs
 REDACTED_TEXT = "[REDACTED]"  # Constant for redacted sensitive information in logs
+PYTHON_EXE = "python.exe"  # Constant for python executable name on Windows
 
 
 class SafeProcessError(RuntimeError):
@@ -102,7 +103,7 @@ class SecurityConfig:
         self._config = config
         self._default_allowlist = {
             "python",
-            "python.exe",
+            PYTHON_EXE,
             "python3",
             "python3.exe",
             "git",
@@ -316,7 +317,7 @@ def _validate_allowed_binary(command: Sequence[str], allowed_binaries: set[str])
     # Merge allowlists based on policy
     effective_allowlist = _merge_allowlists(allowed_binaries, config_allowlist, merge_enabled)
 
-    # If effective allowlist is empty after merging (but allowed_binaries was not empty),
+    # If effective allow list is empty after merging (but allowed_binaries was not empty),
     # this means intersection resulted in empty set - this should be PermissionError
     if not effective_allowlist:
         binary = Path(command[0]).name.lower()

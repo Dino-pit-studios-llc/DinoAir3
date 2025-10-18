@@ -348,7 +348,7 @@ DinoAir Import Organization Monitoring
 
         return {
             "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
+            "@context": "https://schema.org/extensions",
             "themeColor": color,
             "summary": f"DinoAir Import Alert: {alert.title}",
             "sections": [
@@ -488,7 +488,7 @@ Please investigate and resolve the underlying import organization issues.
                     "--format",
                     "json",
                 ],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=60,
                 check=False,
                 text=True,
@@ -524,7 +524,7 @@ Please investigate and resolve the underlying import organization issues.
                     allowed_binaries={
                         Path(sys.executable).name,
                         "python",
-                        "python.exe",
+                        PYTHON_EXE,
                     },
                     timeout=60,
                     check=False,

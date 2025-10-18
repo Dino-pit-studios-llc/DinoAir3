@@ -18,6 +18,9 @@ import requests
 
 from utils.process import safe_run
 
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -120,7 +123,7 @@ def start_qdrant_docker(api_key: str):
     print("Waiting for Qdrant to be ready...")
     for i in range(30):  # 30 seconds timeout
         try:
-            response = requests.get("http://localhost:6333/health", timeout=5)
+            response = requests.get(f"{QDRANT_DEFAULT_URL}/health", timeout=5)
             if response.status_code == 200:
                 print("Qdrant is ready!")
                 return True
@@ -141,7 +144,7 @@ def test_qdrant_connection(api_key: str):
     try:
         from qdrant_client import QdrantClient
 
-        client = QdrantClient(url="http://localhost:6333", api_key=api_key, timeout=10)
+        client = QdrantClient(url=QDRANT_DEFAULT_URL, api_key=api_key, timeout=10)
 
         # Test health check
         health = client.health()
@@ -200,8 +203,8 @@ def main():
     # Start Qdrant with Docker
     if start_qdrant_docker(api_key):
         print("\nQdrant server is running!")
-        print("Dashboard: http://localhost:6333/dashboard")
-        print("API: http://localhost:6333")
+        print(f"Dashboard: {QDRANT_DEFAULT_URL}/dashboard")
+        print(f"API: {QDRANT_DEFAULT_URL}")
         print("gRPC: localhost:6334")
 
         # Test connection
