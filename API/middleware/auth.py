@@ -23,6 +23,12 @@ logger = logging.getLogger(__name__)
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
 
+"""
+Auth middleware module for DinoAir API.
+
+Provides AuthMiddleware to enforce the presence and correctness of the X-DinoAir-Auth header on protected paths, with configurable skips for health checks and OpenAPI documentation.
+"""
+
 class AuthMiddleware:
     """
     ASGI middleware enforcing presence and correctness of X-DinoAir-Auth header
@@ -32,10 +38,12 @@ class AuthMiddleware:
     """
 
     def __init__(self, app: ASGIApp, settings: Settings):
+        """Initialize AuthMiddleware with the ASGI application and configuration settings."""
         self.app = app
         self.settings = settings
 
     def _is_auth_skipped(self, scope: Scope) -> bool:
+        """Determine whether authentication should be skipped for the given ASGI scope based on request type, path, and middleware settings."""
         if scope.get("type") != "http":
             logger.debug("Auth skipped: non-HTTP request type")
             return True
@@ -79,6 +87,7 @@ class AuthMiddleware:
         return auth_skip_result
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Handle incoming ASGI requests, enforce authentication header on protected paths, and forward or deny the request accordingly."""
         if scope.get("type") != "http":
             return await self.app(scope, receive, send)
 

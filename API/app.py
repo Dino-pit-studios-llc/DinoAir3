@@ -24,6 +24,10 @@ ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 log = logging.getLogger("api.app")
 
 
+"""
+Provides middleware to enforce timeouts on ASGI requests, canceling requests that exceed a specified duration and returning a 504 Gateway Timeout response.
+"""
+
 class TimeoutMiddleware:
     """Enforces a timeout for ASGI requests.
 
@@ -32,10 +36,12 @@ class TimeoutMiddleware:
     """
 
     def __init__(self, asgi_app: ASGIApp, timeout: float = 10.0):
+        """Initialize the middleware with the given ASGI application and timeout duration."""
         self.app = asgi_app
         self.timeout = timeout
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        """Handle an incoming request, enforce the timeout, and send a timeout response if the request takes too long."""
         async with move_on_after(self.timeout) as cancel_scope:
             await self.app(scope, receive, send)
         if cancel_scope.cancel_called:
@@ -43,6 +49,7 @@ class TimeoutMiddleware:
 
     @staticmethod
     async def _send_timeout(scope: Scope, receive: Receive, send: Send):
+        """Send a 504 Gateway Timeout response indicating the request timed out."""
         from starlette import status
 
         from core_router.errors import error_response as core_error_response
@@ -204,4 +211,8 @@ app: FastAPI = create_app()
 #   uvicorn api.app:app_factory --factory
 #   uvicorn api.app:create_app --factory
 def app_factory() -> FastAPI:
+    """Factory function to create a new FastAPI application instance for ASGI servers.
+    Returns:
+        FastAPI: A new FastAPI application instance.
+    """
     return create_app()
