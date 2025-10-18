@@ -84,9 +84,7 @@ class ChunkResult:
 class StreamingPipeline:
     """Manages streaming translation pipeline with backpressure and context"""
 
-    def __init__(
-        self, config: TranslatorConfig, stream_config: StreamConfig | None = None
-    ):
+    def __init__(self, config: TranslatorConfig, stream_config: StreamConfig | None = None):
         """Initialize streaming pipeline"""
         self.translator = None
 
@@ -156,9 +154,7 @@ class StreamingPipeline:
             if prev_size is not None and desired != prev_size:
                 self._dispatch_decision(prev_size, desired)
 
-            chunk_result = self._process_adaptive_chunk(
-                text, pos, desired, chunk_idx, recorder
-            )
+            chunk_result = self._process_adaptive_chunk(text, pos, desired, chunk_idx, recorder)
             chunk_idx += 1
             prev_size = desired
             pos = min(pos + desired, n)
@@ -170,9 +166,7 @@ class StreamingPipeline:
     @staticmethod
     def _calculate_desired_chunk_size(sizer, stream_config, hard_cap_max: int) -> int:
         """Calculate the desired chunk size with constraints."""
-        desired = int(
-            sizer.get_next_chunk_size(default_chunk_size=stream_config.chunk_size)
-        )
+        desired = int(sizer.get_next_chunk_size(default_chunk_size=stream_config.chunk_size))
         return max(1, min(desired, hard_cap_max))
 
     def _process_adaptive_chunk(
@@ -198,9 +192,7 @@ class StreamingPipeline:
         self._dispatch_chunk_event(chunk_idx + 1, len(text_chunk), duration)
         return self._process_chunk(result, recorder)
 
-    def _finalize_adaptive_stream(
-        self, code: str, sizer, recorder
-    ) -> Iterator[ChunkResult]:
+    def _finalize_adaptive_stream(self, code: str, sizer, recorder) -> Iterator[ChunkResult]:
         """Finalize the adaptive stream processing."""
         total_start = time.perf_counter()
         try:
@@ -226,23 +218,17 @@ class StreamingPipeline:
         """Cleanup after stream processing."""
         # Record total stream time (best-effort)
         with suppress(Exception):
-            recorder.record_event(
-                "stream.total", (time.perf_counter() - start_time) * 1000.0
-            )
+            recorder.record_event("stream.total", (time.perf_counter() - start_time) * 1000.0)
 
         # Emit STREAM_COMPLETED with processed chunk count
-        self._dispatch(
-            EventType.STREAM_COMPLETED, chunks=self.progress.processed_chunks
-        )
+        self._dispatch(EventType.STREAM_COMPLETED, chunks=self.progress.processed_chunks)
 
         # Cleanup
         self._stop_progress_reporting()
         if self.translator:
             self.translator.shutdown()
 
-    def _process_chunks_sequential(
-        self, chunks: list[CodeChunk]
-    ) -> Iterator[ChunkResult]:
+    def _process_chunks_sequential(self, chunks: list[CodeChunk]) -> Iterator[ChunkResult]:
         """
         Process chunks sequentially
 
@@ -306,9 +292,7 @@ class StreamingPipeline:
                 )
                 yield fail
 
-    def _process_chunks_parallel(
-        self, chunks: list[CodeChunk]
-    ) -> Iterator[ChunkResult]:
+    def _process_chunks_parallel(self, chunks: list[CodeChunk]) -> Iterator[ChunkResult]:
         """
         Process chunks in parallel with backpressure
 
@@ -343,8 +327,7 @@ class StreamingPipeline:
             done, _ = wait(futures.keys(), return_when=FIRST_COMPLETED)
 
             # Process completed futures
-            for result in self._process_completed_futures(done, futures):
-                yield result
+            yield from self._process_completed_futures(done, futures)
 
     def _submit_initial_chunks(
         self,
@@ -365,10 +348,7 @@ class StreamingPipeline:
     def _calculate_combined_limit(self) -> int:
         """Calculate the combined window limit for outstanding work"""
         if self.stream_config.enable_backpressure:
-            return (
-                self.stream_config.max_concurrent_chunks
-                + self.stream_config.max_queue_size
-            )
+            return self.stream_config.max_concurrent_chunks + self.stream_config.max_queue_size
         return self.stream_config.max_concurrent_chunks
 
     def _submit_pending_chunks(
@@ -417,9 +397,7 @@ class StreamingPipeline:
                     index=chunk.chunk_index,
                     success=False,
                 )
-                yield ChunkResult(
-                    chunk_index=chunk.chunk_index, success=False, error=str(e)
-                )
+                yield ChunkResult(chunk_index=chunk.chunk_index, success=False, error=str(e))
 
     @staticmethod
     def _record_chunk_telemetry(result: ChunkResult, chunk: CodeChunk) -> None:
@@ -493,9 +471,7 @@ class StreamingPipeline:
         """Validate parse result and update result object on failure"""
         success_attr = getattr(parse_result, "success", None)
         parse_success = (
-            success_attr
-            if isinstance(success_attr, bool)
-            else (len(parse_result.errors) == 0)
+            success_attr if isinstance(success_attr, bool) else (len(parse_result.errors) == 0)
         )
         if not parse_success:
             result.success = False
@@ -510,9 +486,7 @@ class StreamingPipeline:
         translated_blocks = []
         for block in blocks:
             if block.type == BlockType.ENGLISH:
-                translated_block = self._translate_english_block(
-                    block, chunk_index, result
-                )
+                translated_block = self._translate_english_block(block, chunk_index, result)
                 translated_blocks.append(translated_block)
             else:
                 translated_blocks.append(block)
@@ -593,9 +567,7 @@ class StreamingPipeline:
 
         if context_lines:
             context = "\n".join(context_lines)
-            return (
-                f"{context}\n\n# --- Chunk {chunk.chunk_index} ---\n\n{chunk.content}"
-            )
+            return f"{context}\n\n# --- Chunk {chunk.chunk_index} ---\n\n{chunk.content}"
 
         return chunk.content
 
@@ -670,9 +642,7 @@ class StreamingPipeline:
     def _start_progress_reporting(self):
         """Start the progress reporting thread"""
         self._stop_event.clear()
-        self._progress_thread = threading.Thread(
-            target=self._progress_reporter, daemon=True
-        )
+        self._progress_thread = threading.Thread(target=self._progress_reporter, daemon=True)
         self._progress_thread.start()
 
     def _stop_progress_reporting(self):

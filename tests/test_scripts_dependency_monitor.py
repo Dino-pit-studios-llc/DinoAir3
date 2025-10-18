@@ -482,9 +482,9 @@ class TestFallbackTime:
         large_content = "# Comment\n" * 10000  # Large file
         large_file.write_text(large_content)
 
-        fallback_time = monitor._fallback_time(large_file)
-        file_size = large_file.stat().st_size
-        fallback_time = monitor._fallback_time(large_file)
+        monitor._fallback_time(large_file)
+        large_file.stat().st_size
+        monitor._fallback_time(large_file)
 
         # The formula is max(0.001, (file_size / 1000000) * 0.001)
         # For this test, file_size = {} bytes: (file_size / 1000000) * 0.001 = {:.6f}
@@ -680,9 +680,7 @@ class TestEdgeCases:
 
         monitor = DependencyMonitor(work_dir)
 
-        with patch.object(
-            monitor, "_measure_module_import", side_effect=Exception("Test error")
-        ):
+        with patch.object(monitor, "_measure_module_import", side_effect=Exception("Test error")):
             # Should not crash, just log warning
             metrics = monitor.measure_import_performance()
 

@@ -25,7 +25,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Pattern
+from re import Pattern
 
 
 class ValidationError(Exception):
@@ -256,9 +256,7 @@ class InputValidator:
 
         # Length validation
         if len(text) > self.max_length:
-            issues.append(
-                f"Input exceeds maximum length of {self.max_length} characters"
-            )
+            issues.append(f"Input exceeds maximum length of {self.max_length} characters")
             threat_level = ThreatLevel.medium
             text = text[: self.max_length]
 
@@ -282,9 +280,7 @@ class InputValidator:
             base_name = filename.upper().split(".")[0]
             if base_name in self.windows_reserved:
                 issues.append(f"Windows reserved filename detected: {filename}")
-                threat_level = max(
-                    threat_level, ThreatLevel.medium, key=lambda x: x.value
-                )
+                threat_level = max(threat_level, ThreatLevel.medium, key=lambda x: x.value)
 
         # Unicode normalization check
         normalized = unicodedata.normalize("NFKC", text)
@@ -293,9 +289,7 @@ class InputValidator:
             threat_level = max(threat_level, ThreatLevel.low, key=lambda x: x.value)
 
         # Clean the text if threats were detected
-        cleaned_text = (
-            InputValidator._clean_text(text, threat_level) if issues else text
-        )
+        cleaned_text = InputValidator._clean_text(text, threat_level) if issues else text
 
         # Determine validity
         is_valid = threat_level.value <= ThreatLevel.low.value

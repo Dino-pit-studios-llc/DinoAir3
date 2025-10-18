@@ -16,7 +16,6 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import List, Tuple
 
 
 class PowerShellFixer:
@@ -61,14 +60,14 @@ class PowerShellFixer:
             "errors": [],
         }
 
-    def find_powershell_files(self, root_dir: Path) -> List[Path]:
+    def find_powershell_files(self, root_dir: Path) -> list[Path]:
         """Find all PowerShell script files."""
         ps_files = []
         for pattern in ["*.ps1", "*.psm1", "*.psd1"]:
             ps_files.extend(root_dir.rglob(pattern))
         return sorted(ps_files)
 
-    def validate_powershell_syntax(self, file_path: Path) -> Tuple[bool, str]:
+    def validate_powershell_syntax(self, file_path: Path) -> tuple[bool, str]:
         """
         Validate PowerShell syntax using PowerShell's parser.
 
@@ -153,7 +152,7 @@ class PowerShellFixer:
         # Default to simple output
         return "simple"
 
-    def fix_write_host_in_line(self, line: str) -> Tuple[str, int]:
+    def fix_write_host_in_line(self, line: str) -> tuple[str, int]:
         """
         Fix Write-Host in a single line.
 

@@ -20,7 +20,6 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class NamingFixer:
@@ -60,14 +59,14 @@ class NamingFixer:
             "errors": [],
         }
 
-    def find_python_files(self, root_dir: Path) -> List[Path]:
+    def find_python_files(self, root_dir: Path) -> list[Path]:
         """Find all Python source files."""
         py_files = list(root_dir.rglob("*.py"))
         # Exclude common directories
         excluded = {"__pycache__", ".venv", "venv", "env", ".tox", "build", "dist"}
         return [f for f in py_files if not any(ex in f.parts for ex in excluded)]
 
-    def validate_python_syntax(self, file_path: Path) -> Tuple[bool, str]:
+    def validate_python_syntax(self, file_path: Path) -> tuple[bool, str]:
         """
         Validate Python syntax.
 
@@ -125,7 +124,7 @@ class NamingFixer:
         # Auto-convert using camel_to_snake
         return self.camel_to_snake(name)
 
-    def find_identifiers_to_rename(self, content: str) -> Dict[str, str]:
+    def find_identifiers_to_rename(self, content: str) -> dict[str, str]:
         """
         Find all identifiers that need renaming.
 
@@ -168,7 +167,7 @@ class NamingFixer:
 
         return renames
 
-    def apply_renames(self, content: str, renames: Dict[str, str]) -> Tuple[str, int]:
+    def apply_renames(self, content: str, renames: dict[str, str]) -> tuple[str, int]:
         """
         Apply renames to content using word boundaries.
 

@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from .performance_monitor import performance_monitor
 
@@ -1145,7 +1145,7 @@ class ResourceManager:
 
 
 # Global instance
-_resource_manager: Optional[ResourceManager] = None
+_resource_manager: ResourceManager | None = None
 _manager_lock = threading.Lock()
 
 _resource_manager: ResourceManager | None = None

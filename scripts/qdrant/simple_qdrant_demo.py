@@ -8,7 +8,6 @@ for testing and development without requiring Docker or external services.
 
 import time
 from datetime import datetime
-from typing import Dict, List
 
 import numpy as np
 
@@ -41,7 +40,7 @@ class SimpleInMemoryQdrant:
             f"Created collection '{collection_name}' with vector_size={vector_size}, distance={distance}"
         )
 
-    def upsert_points(self, collection_name: str, points: List[Dict]) -> Dict:
+    def upsert_points(self, collection_name: str, points: list[dict]) -> dict:
         """Upload points to a collection."""
         if collection_name not in self.collections:
             raise ValueError(f"Collection '{collection_name}' does not exist")
@@ -69,10 +68,10 @@ class SimpleInMemoryQdrant:
     def search(
         self,
         collection_name: str,
-        query_vector: List[float],
+        query_vector: list[float],
         limit: int = 10,
         score_threshold: float = 0.0,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Search for similar vectors."""
         if collection_name not in self.collections:
             raise ValueError(f"Collection '{collection_name}' does not exist")
@@ -113,7 +112,7 @@ class SimpleInMemoryQdrant:
         results.sort(key=lambda x: x["score"], reverse=True)
         return results[:limit]
 
-    def get_collection_info(self, collection_name: str) -> Dict:
+    def get_collection_info(self, collection_name: str) -> dict:
         """Get information about a collection."""
         if collection_name not in self.collections:
             raise ValueError(f"Collection '{collection_name}' does not exist")
@@ -135,7 +134,7 @@ class SimpleInMemoryQdrant:
             },
         }
 
-    def list_collections(self) -> Dict:
+    def list_collections(self) -> dict:
         """List all collections."""
         collections = []
 
@@ -147,7 +146,7 @@ class SimpleInMemoryQdrant:
         return {"collections": collections, "total": len(collections)}
 
 
-def generate_mock_embedding(text: str, dimensions: int = 384) -> List[float]:
+def generate_mock_embedding(text: str, dimensions: int = 384) -> list[float]:
     """Generate a mock embedding for text content."""
     # Create a deterministic embedding based on text hash
     import hashlib
@@ -169,7 +168,7 @@ def generate_mock_embedding(text: str, dimensions: int = 384) -> List[float]:
     return embedding
 
 
-def create_sample_dinoair_data() -> List[Dict]:
+def create_sample_dinoair_data() -> list[dict]:
     """Create sample DinoAir3 data for demonstration."""
     sample_files = [
         {
