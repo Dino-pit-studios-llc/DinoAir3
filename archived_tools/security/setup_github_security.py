@@ -18,7 +18,7 @@ def install_pygithub():
     try:
         safe_run(
             [sys.executable, "-m", "pip", "install", "PyGithub"],
-            allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+            allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
             timeout=600,
             check=True,
         )

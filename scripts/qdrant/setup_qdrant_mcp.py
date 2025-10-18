@@ -13,7 +13,6 @@ This script helps set up and configure Qdrant MCP server integration:
 # ... existing code ...
 import argparse
 import os
-
 # removed: import subprocess
 import sys
 from pathlib import Path
@@ -21,9 +20,10 @@ from pathlib import Path
 import yaml
 
 # Add safe subprocess wrapper
-from utils.process import SafeProcessError, safe_run
+from utils.process import PYTHON_EXE, SafeProcessError, safe_run
 
-# ... existing code ...
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
 
 
 def _secure_write_text(path: str, content: str) -> None:
@@ -78,7 +78,7 @@ class QdrantMCPSetup:
             # replaced subprocess.run with safe_run using allowlist and timeout
             safe_run(
                 [sys.executable, "-m", "pip", "--version"],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=60,
                 check=True,
                 text=True,
@@ -103,7 +103,7 @@ class QdrantMCPSetup:
             # Upgrade pip first
             safe_run(
                 [sys.executable, "-m", "pip", "install", "--upgrade", "pip"],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=300,
                 check=True,
             )
@@ -111,7 +111,7 @@ class QdrantMCPSetup:
             # Install requirements
             safe_run(
                 [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=600,
                 check=True,
             )
@@ -183,7 +183,7 @@ DEBUG=false
         try:
             from qdrant_client import QdrantClient
 
-            client = QdrantClient(url="http://localhost:6333", api_key=self.api_key, timeout=10)
+            client = QdrantClient(url=QDRANT_DEFAULT_URL, api_key=self.api_key, timeout=10)
 
             # Test health check
             health = client.health()
@@ -211,7 +211,7 @@ DEBUG=false
             from qdrant_client import QdrantClient
             from qdrant_client.models import Distance, VectorParams
 
-            client = QdrantClient(url="http://localhost:6333", api_key=self.api_key)
+            client = QdrantClient(url=QDRANT_DEFAULT_URL, api_key=self.api_key)
 
             collections_to_create = [
                 {
@@ -289,7 +289,7 @@ fi
 
 echo "Starting Qdrant MCP Server..."
 echo "Qdrant URL: $QDRANT_URL"
-echo "MCP Server: http://$MCP_SERVER_HOST:$MCP_SERVER_PORT"
+echo "MCP Server: https://$MCP_SERVER_HOST:$MCP_SERVER_PORT"
 
 # Start the server
 python mcp_qdrant_server.py --qdrant-url "$QDRANT_URL" --api-key "$QDRANT_API_KEY"
@@ -400,7 +400,7 @@ def main():
     """Main setup function."""
     parser = argparse.ArgumentParser(description="Setup Qdrant MCP Server for DinoAir3")
     parser.add_argument("--api-key", help="Qdrant API key")
-    parser.add_argument("--qdrant-url", default="http://localhost:6333", help="Qdrant server URL")
+    parser.add_argument("--qdrant-url", default=QDRANT_DEFAULT_URL, help="Qdrant server URL")
     parser.add_argument("--skip-deps", action="store_true", help="Skip dependency installation")
 
     args = parser.parse_args()

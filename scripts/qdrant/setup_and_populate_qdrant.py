@@ -20,7 +20,10 @@ from pathlib import Path
 
 import requests
 
-from utils.process import safe_popen, safe_run
+from utils.process import PYTHON_EXE, safe_popen, safe_run
+
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
 
 
 class QdrantSetupManager:
@@ -33,7 +36,7 @@ class QdrantSetupManager:
 
         # Set environment
         os.environ["QDRANT_API_KEY"] = api_key
-        os.environ["QDRANT_URL"] = "http://localhost:6333"
+        os.environ["QDRANT_URL"] = QDRANT_DEFAULT_URL
 
     def install_dependencies(self) -> bool:
         """Install all required dependencies."""
@@ -49,7 +52,7 @@ class QdrantSetupManager:
                     "-r",
                     str(self.project_root / "mcp_qdrant_requirements.txt"),
                 ],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=300,
                 check=True,
             )
@@ -136,7 +139,7 @@ class QdrantSetupManager:
         try:
             process = safe_popen(
                 [sys.executable, str(self.project_root / "mcp_qdrant_server.py")],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 cwd=self.project_root,
             )
 
@@ -166,7 +169,7 @@ class QdrantSetupManager:
             from qdrant_client import QdrantClient
             from qdrant_client.models import Distance, VectorParams
 
-            client = QdrantClient(url="http://localhost:6333", api_key=self.api_key)
+            client = QdrantClient(url=QDRANT_DEFAULT_URL, api_key=self.api_key)
 
             collections = [
                 {
@@ -221,7 +224,7 @@ class QdrantSetupManager:
                     str(self.project_root / "populate_qdrant_collections.py"),
                 ],
                 cwd=self.project_root,
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=180,
                 check=True,
             )
@@ -252,7 +255,7 @@ class QdrantSetupManager:
             # Test Qdrant connection
             from qdrant_client import QdrantClient
 
-            client = QdrantClient(url="http://localhost:6333", api_key=self.api_key)
+            client = QdrantClient(url=QDRANT_DEFAULT_URL, api_key=self.api_key)
             health = client.health()
 
             print(f"Integration test successful: {health.title} v{health.version}")

@@ -28,7 +28,6 @@ import argparse
 import importlib
 import json
 import logging
-
 # removed: import subprocess
 import sys
 import time
@@ -284,7 +283,7 @@ if __name__ == "__main__":
             allowed_binaries={
                 Path(sys.executable).name,
                 "python",
-                "python.exe",
+                PYTHON_EXE,
             },
             text=True,
             timeout=10,
@@ -533,7 +532,7 @@ if __name__ == "__main__":
                     "--format",
                     "json",
                 ],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 text=True,
                 timeout=30,
                 check=False,

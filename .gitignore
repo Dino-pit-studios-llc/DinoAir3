@@ -26,3 +26,12 @@ htmlcov/
 .vscode/*.log
 .vscode/ipch/
 .pre-commit-config.yaml
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/DinoAir3.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/sonarlint.xml
+/.idea/vcs.xml

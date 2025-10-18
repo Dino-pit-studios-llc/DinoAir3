@@ -20,7 +20,7 @@ def run_command(cmd):
 
         result = safe_run(
             cmd,
-            allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+            allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
             timeout=900,
             check=False,
             text=True,

@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 from utils.process import safe_run
-
 from .environment import change_to_project_dir, configure_environment
 from .quality import run_quality_checks
 from .test_args import add_quality_args
@@ -47,7 +46,7 @@ def build_pytest_cmd(args):
 
 def run_command(cmd, cwd=None, timeout: int = 900):
     """Run a command with hardened execution and return the exit code."""
-    allowed = {Path(sys.executable).name, "python", "python.exe"}
+    allowed = {Path(sys.executable).name, "python", PYTHON_EXE}
     try:
         proc = safe_run(
             cmd,

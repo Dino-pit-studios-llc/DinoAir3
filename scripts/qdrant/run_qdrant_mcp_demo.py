@@ -16,14 +16,16 @@ import sys
 import time
 from pathlib import Path
 from subprocess import TimeoutExpired
-
 # Remove the import of TimeoutExpired if not used
 from typing import Any
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
 
-from utils.process import safe_popen, safe_run
+from utils.process import PYTHON_EXE, safe_popen, safe_run
+
+# Constants
+QDRANT_DEFAULT_URL = "http://localhost:6333"
 
 
 class QdrantMCPDemoRunner:
@@ -36,10 +38,10 @@ class QdrantMCPDemoRunner:
 
         # Set environment variables
         os.environ["QDRANT_API_KEY"] = api_key
-        os.environ["QDRANT_URL"] = "http://localhost:6333"
+        os.environ["QDRANT_URL"] = QDRANT_DEFAULT_URL
 
         # Service URLs
-        self.qdrant_url = "http://localhost:6333"
+        self.qdrant_url = QDRANT_DEFAULT_URL
         self.mcp_server_url = "http://localhost:8080"
 
     def check_requirements(self) -> bool:
@@ -70,7 +72,7 @@ class QdrantMCPDemoRunner:
                     allowed_binaries={
                         Path(sys.executable).name,
                         "python",
-                        "python.exe",
+                        PYTHON_EXE,
                     },
                     timeout=300,
                     check=True,
@@ -175,7 +177,7 @@ class QdrantMCPDemoRunner:
             # Start MCP server
             process = safe_popen(
                 [sys.executable, str(self.project_root / "mcp_qdrant_server.py")],
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 cwd=self.project_root,
             )
 
@@ -245,7 +247,7 @@ class QdrantMCPDemoRunner:
                     str(self.project_root / "populate_qdrant_collections.py"),
                 ],
                 cwd=self.project_root,
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=180,
                 check=True,
             )
@@ -272,7 +274,7 @@ class QdrantMCPDemoRunner:
             result = safe_run(
                 [sys.executable, str(self.project_root / "demo_qdrant_mcp.py")],
                 cwd=self.project_root,
-                allowed_binaries={Path(sys.executable).name, "python", "python.exe"},
+                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
                 timeout=300,
                 check=True,
             )

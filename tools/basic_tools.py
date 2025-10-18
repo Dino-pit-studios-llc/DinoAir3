@@ -16,11 +16,9 @@ from subprocess import TimeoutExpired
 from typing import Any
 
 from utils.process import safe_run
-
 from .common.result import build_success
 from .common.validators import validate_path_exists
 from .file_search_tool import FILE_SEARCH_TOOLS
-
 # Import the new AI-accessible tool modules
 from .notes_tool import NOTES_TOOLS
 from .projects_tool import PROJECTS_TOOLS
@@ -64,7 +62,7 @@ except ImportError:
             "npm",
             "pip",
             "python",
-            "python.exe",
+            PYTHON_EXE,
             "node",
             "node.exe",
             "sqlite3",
