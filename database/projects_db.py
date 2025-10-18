@@ -98,9 +98,7 @@ class ProjectsDatabase:
             return 0
 
     @staticmethod
-    def _fetch_projects(
-        cursor: Cursor, sql: str, params: tuple[Any, ...] = ()
-    ) -> list[Project]:
+    def _fetch_projects(cursor: Cursor, sql: str, params: tuple[Any, ...] = ()) -> list[Project]:
         """Execute a query returning projects and map rows to Project."""
         cursor.execute(sql, params)
         return [ProjectsDatabase._row_to_project(row) for row in cursor.fetchall()]
@@ -200,9 +198,7 @@ class ProjectsDatabase:
                 return None
 
             max_date_str = row[1] if len(row) > 1 else None
-            candidate = (
-                ProjectsDatabase._iso_to_dt(max_date_str) if max_date_str else None
-            )
+            candidate = ProjectsDatabase._iso_to_dt(max_date_str) if max_date_str else None
 
             return count, candidate
 
@@ -238,9 +234,7 @@ class ProjectsDatabase:
         return ProjectsDatabase._fetch_projects(cursor, sql, params)
 
     @staticmethod
-    def _count_where(
-        cursor: Cursor, table: str, where: str, params: tuple[Any, ...]
-    ) -> int:
+    def _count_where(cursor: Cursor, table: str, where: str, params: tuple[Any, ...]) -> int:
         """
         Execute SELECT COUNT(*) FROM {table} WHERE {where} with params for allowed tables.
         Returns 0 for disallowed tables or on any exception.
@@ -403,9 +397,7 @@ class ProjectsDatabase:
 
         return summary
 
-    def _safe_max_updated_at(
-        self, cursor: Cursor, table: str, project_id: str
-    ) -> datetime | None:
+    def _safe_max_updated_at(self, cursor: Cursor, table: str, project_id: str) -> datetime | None:
         """Safe wrapper around _max_updated_at with table allowlist."""
         if table not in {"notes", "artifacts", "calendar_events"}:
             return None
@@ -427,9 +419,7 @@ class ProjectsDatabase:
 
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                project_dict = (
-                    project.to_db_dict()
-                )  # Use to_db_dict() for proper serialization
+                project_dict = project.to_db_dict()  # Use to_db_dict() for proper serialization
 
                 cursor.execute(
                     """
@@ -471,12 +461,8 @@ class ProjectsDatabase:
             # Validate hierarchy if parent being updated
             if "parent_project_id" in updates:
                 parent_id = updates["parent_project_id"]
-                if parent_id and not self._validate_project_hierarchy(
-                    project_id, parent_id
-                ):
-                    self.logger.error(
-                        f"Invalid parent project {parent_id} for {project_id}"
-                    )
+                if parent_id and not self._validate_project_hierarchy(project_id, parent_id):
+                    self.logger.error(f"Invalid parent project {parent_id} for {project_id}")
                     return False
 
             with self._get_connection() as conn:
@@ -488,9 +474,7 @@ class ProjectsDatabase:
                 set_clauses: list[str] = []
                 for field, value in updates.items():
                     if field not in permitted_fields:
-                        self.logger.warning(
-                            f"Ignoring update to unsupported field: {field}"
-                        )
+                        self.logger.warning(f"Ignoring update to unsupported field: {field}")
                         continue
                     set_clauses.append(f"{field} = ?")
                     params_list.append(value)
@@ -502,9 +486,7 @@ class ProjectsDatabase:
                     return False
 
                 set_clause_str = ", ".join(set_clauses)
-                query = "".join(
-                    ["UPDATE projects SET ", set_clause_str, " WHERE id = ?"]
-                )
+                query = "".join(["UPDATE projects SET ", set_clause_str, " WHERE id = ?"])
                 cursor.execute(query, tuple(params_list + [project_id]))
 
                 conn.commit()
@@ -587,9 +569,7 @@ class ProjectsDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                return self._fetch_projects_where(
-                    cursor, "", (), "name_then_created_desc"
-                )
+                return self._fetch_projects_where(cursor, "", (), "name_then_created_desc")
 
         except Exception as e:
             self.logger.error(f"Failed to get all projects: {str(e)}")
@@ -613,9 +593,7 @@ class ProjectsDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                return self._fetch_projects_where(
-                    cursor, "parent_project_id IS NULL", (), "name"
-                )
+                return self._fetch_projects_where(cursor, "parent_project_id IS NULL", (), "name")
 
         except Exception as e:
             self.logger.error(f"Failed to get root projects: {str(e)}")
@@ -682,9 +660,7 @@ class ProjectsDatabase:
                 last_activity = None
                 for table in ("notes", "artifacts", "calendar_events"):
                     candidate = self._safe_max_updated_at(cursor, table, project_id)
-                    if candidate and (
-                        last_activity is None or candidate > last_activity
-                    ):
+                    if candidate and (last_activity is None or candidate > last_activity):
                         last_activity = candidate
 
                 stats.last_activity_date = last_activity
@@ -777,9 +753,7 @@ class ProjectsDatabase:
                         summaries.append(summary)
 
                 # Sort by most recent activity
-                summaries.sort(
-                    key=lambda s: s.last_activity_date or datetime.min, reverse=True
-                )
+                summaries.sort(key=lambda s: s.last_activity_date or datetime.min, reverse=True)
 
                 return summaries
 
@@ -813,9 +787,7 @@ class ProjectsDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                return self._fetch_projects_where(
-                    cursor, "status = ?", (status,), "name"
-                )
+                return self._fetch_projects_where(cursor, "status = ?", (status,), "name")
 
         except Exception as e:
             self.logger.error(f"Failed to get projects by status: {str(e)}")
@@ -829,9 +801,7 @@ class ProjectsDatabase:
 
                 # Use LIKE prefilter to leverage indexes
                 tag_pattern = f"%{tag}%"
-                projects = self._fetch_projects_where(
-                    cursor, "tags LIKE ?", (tag_pattern,), "name"
-                )
+                projects = self._fetch_projects_where(cursor, "tags LIKE ?", (tag_pattern,), "name")
 
                 # Exact-match filter preserving existing semantics
                 return [p for p in projects if ProjectsDatabase._has_tag(p, tag)]

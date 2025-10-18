@@ -310,9 +310,7 @@ class QdrantSetupAlternatives:
                     vectors_config=VectorParams(size=384, distance=Distance.COSINE),
                 )
 
-            operation_info = client.upsert(
-                collection_name=collection_name, points=demo_points
-            )
+            operation_info = client.upsert(collection_name=collection_name, points=demo_points)
 
             print(f"Uploaded {len(demo_points)} demo points")
             print(f"Operation ID: {operation_info.operation_id}")
@@ -423,9 +421,7 @@ def main():
     """Main setup function."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Setup Qdrant for DinoAir3 (Alternative Methods)"
-    )
+    parser = argparse.ArgumentParser(description="Setup Qdrant for DinoAir3 (Alternative Methods)")
     parser.add_argument("--api-key", help="Qdrant API key")
     parser.add_argument("--qdrant-url", help="Qdrant server URL")
 

@@ -36,9 +36,7 @@ class StructuredParsingController:
         *,
         # Callbacks to preserve behavior without importing translator.py
         process_blocks_fn: Callable[[list[CodeBlock]], list[CodeBlock]],
-        assemble_or_error_fn: Callable[
-            [list[Any]], tuple[bool, str | None, str | None]
-        ],
+        assemble_or_error_fn: Callable[[list[Any]], tuple[bool, str | None, str | None]],
         suggest_improvements_fn: Callable[[str], list[str]],
         create_metadata_fn: Callable[[float, int, int, int, int, bool], dict[str, Any]],
         dependency_gateway: Any,
@@ -74,9 +72,7 @@ class StructuredParsingController:
         Execute structured parsing flow and return TranslationResult (manager's dataclass instance).
         """
         logger = self._logger
-        logger.debug(
-            f"Translation #{translation_id}: Using structured parsing approach"
-        )
+        logger.debug(f"Translation #{translation_id}: Using structured parsing approach")
         errors: list[str] = []
         local_warnings = warnings.copy()
 
@@ -223,9 +219,7 @@ class StructuredParsingController:
             warnings.append(f"Improvement suggestions: {'; '.join(suggestions)}")
 
         # Metadata unchanged
-        blocks_translated = sum(
-            1 for b in processed_blocks if b.metadata.get("translated", False)
-        )
+        blocks_translated = sum(1 for b in processed_blocks if b.metadata.get("translated", False))
         cache_hits = 0
         metadata = self._create_metadata(
             start_time,

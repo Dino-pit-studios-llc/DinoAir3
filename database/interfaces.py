@@ -6,12 +6,11 @@ Protocol-based interfaces for breaking circular dependencies using dependency in
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from models.note import Note
-
 # Import existing result types to maintain compatibility
 from database.notes_repository import QueryResult
 from database.notes_service import OperationResult
 from database.notes_validator import ValidationResult
+from models.note import Note
 
 
 @dataclass
@@ -151,9 +150,7 @@ class INotesRepository(Protocol):
 class INotesSecurity(Protocol):
     """Notes security interface for validation and sanitization."""
 
-    def validate_note_data(
-        self, title: str, content: str, tags: list[str]
-    ) -> dict[str, Any]:
+    def validate_note_data(self, title: str, content: str, tags: list[str]) -> dict[str, Any]:
         """Validate note data for security issues."""
         ...
 
@@ -169,9 +166,7 @@ class INotesSecurity(Protocol):
 class INotesValidator(Protocol):
     """Notes validator interface for business rule validation."""
 
-    def validate_note_creation(
-        self, title: str, content: str, tags: list[str]
-    ) -> ValidationResult:
+    def validate_note_creation(self, title: str, content: str, tags: list[str]) -> ValidationResult:
         """Validate data for note creation."""
         ...
 
@@ -183,9 +178,7 @@ class INotesValidator(Protocol):
         """Validate search parameters."""
         ...
 
-    def validate_bulk_operation(
-        self, note_ids: list[str], operation: str
-    ) -> ValidationResult:
+    def validate_bulk_operation(self, note_ids: list[str], operation: str) -> ValidationResult:
         """Validate parameters for bulk operations."""
         ...
 
@@ -249,9 +242,7 @@ class INotesService(Protocol):
         """Get all notes not associated with any project."""
         ...
 
-    def assign_notes_to_project(
-        self, note_ids: list[str], project_id: str
-    ) -> OperationResult:
+    def assign_notes_to_project(self, note_ids: list[str], project_id: str) -> OperationResult:
         """Assign multiple notes to a project."""
         ...
 
@@ -267,9 +258,7 @@ class INotesService(Protocol):
         """Get all soft-deleted notes."""
         ...
 
-    def update_note_project(
-        self, note_id: str, project_id: str | None = None
-    ) -> OperationResult:
+    def update_note_project(self, note_id: str, project_id: str | None = None) -> OperationResult:
         """Update a single note's project association."""
         ...
 
@@ -280,9 +269,7 @@ class INotesService(Protocol):
 class IDependencyContainer(Protocol):
     """Dependency injection container interface."""
 
-    def register(
-        self, interface: type, implementation: type, singleton: bool = False
-    ) -> None:
+    def register(self, interface: type, implementation: type, singleton: bool = False) -> None:
         """Register service implementation for interface."""
         ...
 

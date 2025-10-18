@@ -21,9 +21,7 @@ class RuntimeRiskChecker(ast.NodeVisitor):
         if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, int):
             # Flag large indices
             if abs(node.slice.value) > 1000:
-                self.risks.append(
-                    f"Large index {node.slice.value} at line {node.lineno}"
-                )
+                self.risks.append(f"Large index {node.slice.value} at line {node.lineno}")
         self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp):
@@ -34,9 +32,7 @@ class RuntimeRiskChecker(ast.NodeVisitor):
             and isinstance(node.right, ast.Constant)
             and node.right.value == 0
         ):
-            context = ErrorContext(
-                line_number=node.lineno, metadata={"operation": "division"}
-            )
+            context = ErrorContext(line_number=node.lineno, metadata={"operation": "division"})
 
             error = ValidationError(
                 "Division by zero detected",
@@ -54,9 +50,7 @@ class RuntimeRiskChecker(ast.NodeVisitor):
         # Check for risky built-in functions
         if isinstance(node.func, ast.Name):
             if node.func.id in ["eval", "exec", "compile"]:
-                self.risks.append(
-                    f"Risky function call '{node.func.id}' at line {node.lineno}"
-                )
+                self.risks.append(f"Risky function call '{node.func.id}' at line {node.lineno}")
             elif node.func.id == "open" and len(node.args) > 1:
                 # Check for file operations without error handling
                 if isinstance(node.args[1], ast.Constant) and "w" in node.args[1].value:
@@ -109,9 +103,7 @@ class NullPointerChecker(ast.NodeVisitor):
         if isinstance(node.value, ast.Name):
             # This is a simple heuristic - in practice would need flow analysis
             if node.value.id.endswith("_optional") or "maybe" in node.value.id:
-                self.risks.append(
-                    f"Potential None access at line {node.lineno} - add None check"
-                )
+                self.risks.append(f"Potential None access at line {node.lineno} - add None check")
 
         self.generic_visit(node)
 
@@ -155,16 +147,13 @@ class ResourceManagementChecker(ast.NodeVisitor):
         # Remove suggestions for properly managed resources
         for item in node.items:
             if isinstance(item.context_expr, ast.Call) and (
-                isinstance(item.context_expr.func, ast.Name)
-                and item.context_expr.func.id == "open"
+                isinstance(item.context_expr.func, ast.Name) and item.context_expr.func.id == "open"
             ):
                 # This open() is properly managed
                 if item.context_expr.lineno in self.open_calls:
                     # Remove the suggestion for this line
                     self.suggestions = [
-                        s
-                        for s in self.suggestions
-                        if f"line {item.context_expr.lineno}" not in s
+                        s for s in self.suggestions if f"line {item.context_expr.lineno}" not in s
                     ]
 
         self.generic_visit(node)

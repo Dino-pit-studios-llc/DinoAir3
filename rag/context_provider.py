@@ -65,9 +65,7 @@ class ContextProvider:
             )
 
             # Filter by score threshold
-            filtered_results = [
-                r for r in results if r.score >= self.min_score_threshold
-            ]
+            filtered_results = [r for r in results if r.score >= self.min_score_threshold]
 
             # Build context items
             context_items = []
@@ -190,9 +188,7 @@ class ContextProvider:
             self.logger.error("Failed to get file summary: %s", str(e))
             return None
 
-    def search_related_files(
-        self, file_path: str, top_k: int = 5
-    ) -> list[tuple[str, float]]:
+    def search_related_files(self, file_path: str, top_k: int = 5) -> list[tuple[str, float]]:
         """
         Find files related to a given file based on content similarity.
 
@@ -248,9 +244,7 @@ class ContextProvider:
             Dictionary with indexing statistics
         """
         try:
-            file_processor = FileProcessor(
-                user_name=self.user_name, generate_embeddings=False
-            )
+            file_processor = FileProcessor(user_name=self.user_name, generate_embeddings=False)
             stats = file_processor.get_processing_stats()
 
             # Add search engine stats

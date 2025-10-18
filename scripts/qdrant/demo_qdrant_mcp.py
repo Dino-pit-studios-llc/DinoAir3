@@ -32,7 +32,7 @@ class QdrantMCPDemo:
             "Authorization": f"Bearer {self.api_key}",
         }
 
-    def call_mcp_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    def call_mcp_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Call an MCP tool and return the result."""
         url = f"{self.mcp_server_url}/tools/call"
 

@@ -143,9 +143,7 @@ def compute_cosine_scores(
     return _cosine_scores_simple(query, docs)
 
 
-def _cosine_scores_simple(
-    query: Sequence[float], docs: Sequence[Sequence[float]]
-) -> list[float]:
+def _cosine_scores_simple(query: Sequence[float], docs: Sequence[Sequence[float]]) -> list[float]:
     """
     Exact port of current loop-based cosine similarity semantics:
     - If either vector norm is zero, score is 0.0

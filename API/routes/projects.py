@@ -9,11 +9,12 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field, field_validator
+
 from database.initialize_db import DatabaseManager
 from database.projects_db import ProjectsDatabase
-from fastapi import APIRouter, HTTPException, Query, status
 from models.project import Project, ProjectStatus
-from pydantic import BaseModel, Field, field_validator
 
 log = logging.getLogger("api.routes.projects")
 
@@ -278,9 +279,7 @@ async def list_projects(
     status_filter: str | None = Query(
         default=None, description="Filter by status (active, completed, archived)"
     ),
-    parent_id: str | None = Query(
-        default=None, description="Filter by parent project ID"
-    ),
+    parent_id: str | None = Query(default=None, description="Filter by parent project ID"),
 ) -> ProjectsListResponse:
     """
     Retrieve all projects, optionally filtered by status or parent project.
@@ -308,9 +307,7 @@ async def list_projects(
         if parent_id is not None:
             # Filter by parent_id (use empty string to get root projects)
             projects = [
-                p
-                for p in projects
-                if p.parent_project_id == (parent_id if parent_id else None)
+                p for p in projects if p.parent_project_id == (parent_id if parent_id else None)
             ]
 
         # Convert to response format
@@ -379,9 +376,7 @@ async def get_project(project_id: str) -> ProjectResponse:
         500: {"description": "Internal server error"},
     },
 )
-async def update_project(
-    project_id: str, request: ProjectUpdateRequest
-) -> ProjectUpdatedResponse:
+async def update_project(project_id: str, request: ProjectUpdateRequest) -> ProjectUpdatedResponse:
     """
     Update an existing project's fields.
 

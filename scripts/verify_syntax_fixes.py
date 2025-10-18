@@ -69,9 +69,7 @@ def verify_specific_fixes():
         print("✅ mock_backend.py: Removed from git tracking")
 
     # Check that local_transformer_model.py is valid
-    local_transformer_path = (
-        "tools/pseudocode_translator/models/local_transformer_model.py"
-    )
+    local_transformer_path = "tools/pseudocode_translator/models/local_transformer_model.py"
     if os.path.exists(local_transformer_path):
         try:
             with open(local_transformer_path, encoding="utf-8") as f:
@@ -84,9 +82,7 @@ def verify_specific_fixes():
                 "return TranslationResult(success=True, generated_code=generated_text, output_language=config.output_language, model_name=self.metadata.name, confidence=1.0, metadata="
                 in content
             ):
-                print(
-                    f"❌ {local_transformer_path}: Still contains malformed return statement"
-                )
+                print(f"❌ {local_transformer_path}: Still contains malformed return statement")
                 return 1
             else:
                 print(f"✅ {local_transformer_path}: Syntax is valid and fix applied")

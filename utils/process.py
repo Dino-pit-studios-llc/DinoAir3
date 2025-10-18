@@ -158,9 +158,7 @@ class SecurityConfig:
         if self._config:
             try:
                 return set(
-                    self._config.get(
-                        "security.process.allowlist.binaries", self._default_allowlist
-                    )
+                    self._config.get("security.process.allowlist.binaries", self._default_allowlist)
                 )
             except (KeyError, TypeError, AttributeError):
                 logger.warning(
@@ -173,38 +171,28 @@ class SecurityConfig:
         normalized_binary = binary.lower()
         if self._config:
             try:
-                patterns = self._config.get(
-                    "security.process.allowlist.arg_patterns", {}
-                )
+                patterns = self._config.get("security.process.allowlist.arg_patterns", {})
                 # Normalize keys for case-insensitive lookup
                 normalized_patterns = {k.lower(): v for k, v in patterns.items()}
                 return normalized_patterns.get(normalized_binary, [])
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load arg patterns for %s from config", REDACTED_TEXT
-                )
+                logger.warning("Failed to load arg patterns for %s from config", REDACTED_TEXT)
         return []
 
     def get_merge_enabled(self) -> bool:
         """Check if allowlist merging is enabled."""
         if self._config:
             try:
-                return self._config.get(
-                    "security.process.allowlist.enable_merge", False
-                )
+                return self._config.get("security.process.allowlist.enable_merge", False)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.allowlist.enable_merge from config"
-                )
+                logger.warning("Failed to load security.process.allowlist.enable_merge from config")
         return False
 
     def get_no_window_windows(self) -> bool:
         """Check if Windows no-window flag should be used."""
         if self._config:
             try:
-                return self._config.get(
-                    "security.process.flags.no_window_windows", True
-                )
+                return self._config.get("security.process.flags.no_window_windows", True)
             except (KeyError, TypeError, AttributeError):
                 logger.warning(
                     "Failed to load security.process.flags.no_window_windows from config"
@@ -217,9 +205,7 @@ class SecurityConfig:
             try:
                 return self._config.get("security.process.flags.close_fds_unix", True)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.flags.close_fds_unix from config"
-                )
+                logger.warning("Failed to load security.process.flags.close_fds_unix from config")
         return True
 
     def get_disallow_tty(self) -> bool:
@@ -228,18 +214,14 @@ class SecurityConfig:
             try:
                 return self._config.get("security.process.flags.disallow_tty", True)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.flags.disallow_tty from config"
-                )
+                logger.warning("Failed to load security.process.flags.disallow_tty from config")
         return True
 
     def get_stdin_default_devnull(self) -> bool:
         """Check if stdin should default to devnull."""
         if self._config:
             try:
-                return self._config.get(
-                    "security.process.flags.stdin_default_devnull", True
-                )
+                return self._config.get("security.process.flags.stdin_default_devnull", True)
             except (KeyError, TypeError, AttributeError):
                 logger.warning(
                     "Failed to load security.process.flags.stdin_default_devnull from config"
@@ -278,9 +260,7 @@ class SecurityConfig:
         """Check if command execution should be logged."""
         if self._config:
             try:
-                return self._config.get(
-                    "security.process.logging.log_command_execution", True
-                )
+                return self._config.get("security.process.logging.log_command_execution", True)
             except (KeyError, TypeError, AttributeError):
                 logger.warning(
                     "Failed to load security.process.logging.log_command_execution from config"
@@ -334,9 +314,7 @@ def _validate_allowed_binary(command: Sequence[str], allowed_binaries: set[str])
     merge_enabled = _security_config.get_merge_enabled()
 
     # Merge allowlists based on policy
-    effective_allowlist = _merge_allowlists(
-        allowed_binaries, config_allowlist, merge_enabled
-    )
+    effective_allowlist = _merge_allowlists(allowed_binaries, config_allowlist, merge_enabled)
 
     # If effective allowlist is empty after merging (but allowed_binaries was not empty),
     # this means intersection resulted in empty set - this should be PermissionError
@@ -391,9 +369,7 @@ def _redact_environment(env: dict[str, str] | None) -> dict[str, str]:
     redacted = {}
 
     for key, value in env.items():
-        should_redact = any(
-            redact_key.lower() in key.lower() for redact_key in redact_keys
-        )
+        should_redact = any(redact_key.lower() in key.lower() for redact_key in redact_keys)
         redacted[key] = REDACTED_TEXT if should_redact else value
 
     return redacted
@@ -648,9 +624,7 @@ def run_subprocess(
         binary = Path(command[0]).name.lower() if command else ""
         result = safe_run(
             command,
-            allowed_binaries=(
-                {binary} if binary else _security_config.get_allowed_binaries()
-            ),
+            allowed_binaries=({binary} if binary else _security_config.get_allowed_binaries()),
             cwd=cwd,
             timeout=timeout,
             check=False,
