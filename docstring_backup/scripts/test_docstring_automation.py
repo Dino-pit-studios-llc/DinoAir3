@@ -34,7 +34,6 @@ def validate_input(value):
 
 def test_docstring_automation():
     """Test the docstring automation script."""
-
     # Create temporary test file
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(test_code)

@@ -9,7 +9,6 @@ Usage:
 
 import argparse
 import ast
-import os
 import sys
 from pathlib import Path
 from typing import List, Optional, Union
@@ -97,49 +96,50 @@ class SimpleDocstringFixer:
             List of tuples: (type, lineno, name, indent_level)
         """
         missing = []
+        module_missing = self._find_module_docstring(tree)
+        if module_missing:
+            missing.append(module_missing)
+        missing.extend(self._find_top_level_functions_missing(tree))
+        missing.extend(self._find_classes_and_methods_missing(tree))
+        return missing
 
-        # Check module level
-        has_module_docstring = (
+    @staticmethod
+    def _find_module_docstring(tree) -> Optional[tuple]:
+        """Check if module has a docstring and return missing tuple."""
+        has_doc = (
             len(tree.body) > 0
             and isinstance(tree.body[0], ast.Expr)
             and isinstance(tree.body[0].value, ast.Constant)
             and isinstance(tree.body[0].value.value, str)
         )
+        if not has_doc:
+            return ("module", 0, "module", 0)
+        return None
 
-        if not has_module_docstring:
-            missing.append(("module", 0, "module", 0))
+    def _find_top_level_functions_missing(self, tree) -> List[tuple]:
+        """Find top-level functions missing docstrings."""
+        results = []
+        for node in tree.body:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not self._has_docstring(node) and not node.name.startswith("_") and not node.name.startswith("test_"):
+                name = node.name
+                results.append(("function", node.lineno, name, 8))
+        return results
 
-        # Walk the AST to find classes and functions
-        for node in ast.walk(tree):
+    def _find_classes_and_methods_missing(self, tree) -> List[tuple]:
+        """Find classes and their methods missing docstrings."""
+        results = []
+        for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 if not self._has_docstring(node):
-                    missing.append(
-                        ("class", node.lineno, node.name, 8)
-                    )  # 8 spaces for class docstring
-
-                # Check methods within the class
+                    results.append(("class", node.lineno, node.name, 8))
                 for child in node.body:
                     if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if not self._has_docstring(child) and not child.name.startswith("_"):
-                            missing.append(
-                                ("method", child.lineno, child.name, 12)
-                            )  # 12 spaces for method docstring
+                            results.append(("method", child.lineno, child.name, 12))
+        return results
 
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Only top-level functions (not nested or methods)
-                if (
-                    not self._has_docstring(node)
-                    and not node.name.startswith("_")
-                    and not node.name.startswith("test_")
-                    and self._is_top_level(node, tree)
-                ):
-                    missing.append(
-                        ("function", node.lineno, node.name, 8)
-                    )  # 8 spaces for function docstring
-
-        return missing
-
-    def _has_docstring(self, node) -> bool:
+    @staticmethod
+    def _has_docstring(node) -> bool:
         """Check if a node has a docstring.
 
         Args:
@@ -155,7 +155,8 @@ class SimpleDocstringFixer:
             and isinstance(node.body[0].value.value, str)
         )
 
-    def _is_top_level(self, func_node, tree) -> bool:
+    @staticmethod
+    def _is_top_level(func_node, tree) -> bool:
         """Check if function is at module level (not nested).
 
         Args:
@@ -182,16 +183,16 @@ class SimpleDocstringFixer:
 
         if item_type == "module":
             return f'"""{self._make_readable(name)} module."""'
-        elif item_type == "class":
+        if item_type == "class":
             return f'{indent_str}"""{self._make_readable(name)} class."""'
-        elif item_type == "function":
+        if item_type == "function":
             return f'{indent_str}"""{self._make_readable(name)} function."""'
-        elif item_type == "method":
+        if item_type == "method":
             return f'{indent_str}"""{self._make_readable(name)} method."""'
-        else:
-            return f'{indent_str}"""TODO: Add description."""'
+        return f'{indent_str}"""TODO: Add description."""'
 
-    def _make_readable(self, name: str) -> str:
+    @staticmethod
+    def _make_readable(name: str) -> str:
         """Convert name to readable format.
 
         Args:
@@ -206,23 +207,23 @@ class SimpleDocstringFixer:
         # Handle common patterns
         if name.endswith("_manager"):
             return name.replace("_", " ").replace(" manager", " manager").title()
-        elif name.endswith("_handler"):
+        if name.endswith("_handler"):
             return name.replace("_", " ").replace(" handler", " handler").title()
-        elif name.startswith("get_"):
+        if name.startswith("get_"):
             return f"Get {name[4:].replace('_', ' ')}"
-        elif name.startswith("set_"):
+        if name.startswith("set_"):
             return f"Set {name[4:].replace('_', ' ')}"
-        elif name.startswith("create_"):
+        if name.startswith("create_"):
             return f"Create {name[7:].replace('_', ' ')}"
-        elif name.startswith("init_"):
+        if name.startswith("init_"):
             return f"Initialize {name[5:].replace('_', ' ')}"
-        elif name.startswith("process_"):
+        if name.startswith("process_"):
             return f"Process {name[8:].replace('_', ' ')}"
-        elif name.startswith("validate_"):
+        if name.startswith("validate_"):
             return f"Validate {name[9:].replace('_', ' ')}"
-        else:
-            # Convert snake_case to Title Case
-            return name.replace("_", " ").title()
+
+        # Convert snake_case to Title Case
+        return name.replace("_", " ").title()
 
     def process_directory(self, directory: Path) -> None:
         """Process all Python files in a directory.
@@ -258,7 +259,7 @@ class SimpleDocstringFixer:
 
     def print_summary(self) -> None:
         """Print processing summary."""
-        print(f"\nSummary:")
+        print("\nSummary:")
         print(f"  Files processed: {self.files_processed}")
         print(f"  Docstrings added: {self.docstrings_added}")
 

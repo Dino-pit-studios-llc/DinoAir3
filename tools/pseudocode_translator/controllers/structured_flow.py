@@ -4,9 +4,6 @@ from typing import TYPE_CHECKING, Any
 
 from ..exceptions import ParsingError, TranslatorError  # type: ignore
 
-"""Module module."""
-"""Module module."""
-
 if TYPE_CHECKING:
     import logging
     from collections.abc import Callable
@@ -172,6 +169,12 @@ class StructuredParsingController:
         warnings: list[str],
         translation_id: int,
     ) -> Any:
+        """
+        Complete the structured translation process.
+
+        This function assembles the processed code blocks, validates and optionally fixes the generated code,
+        applies logic validation, suggests improvements, and constructs the final TranslationResult instance.
+        """
         logger = self._logger
         errors: list[str] = []
 

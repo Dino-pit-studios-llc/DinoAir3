@@ -144,10 +144,12 @@ class SafePDFProcessor:
             """Monitors processing time and raises PDFProcessingTimeoutError if the specified timeout is exceeded."""
 
             def __init__(self, timeout: int) -> None:
+                """Initializes the TimeoutThread with a timeout value and records the start time."""
                 self.timeout = timeout
                 self.start_time = time.time()
 
             def check_timeout(self) -> None:
+                """Checks if the processing time has exceeded the specified timeout and raises PDFProcessingTimeoutError if so."""
                 if time.time() - self.start_time > self.timeout:
                     raise PDFProcessingTimeoutError(
                         TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)

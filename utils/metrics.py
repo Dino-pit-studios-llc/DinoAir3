@@ -170,8 +170,10 @@ class DinoAirMetrics:
         """
 
         def decorator(func):
+            """Decorator that wraps the target function to measure execution time."""
             @wraps(func)
             def wrapper(*args, **kwargs):
+                """Wrapper function that times the execution of the target function and returns the result."""
                 with self.timer(metric_name, tags):
                     return func(*args, **kwargs)
 
@@ -195,10 +197,9 @@ _metrics_client: DinoAirMetrics = None
 
 def get_metrics_client() -> DinoAirMetrics:
     """Get the global metrics client instance."""
-    global _metrics_client
-    if _metrics_client is None:
-        _metrics_client = DinoAirMetrics()
-    return _metrics_client
+    if not hasattr(get_metrics_client, "_metrics_client"):
+        get_metrics_client._metrics_client = DinoAirMetrics()
+    return get_metrics_client._metrics_client
 
 
 # Convenience functions

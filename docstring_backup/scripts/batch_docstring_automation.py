@@ -10,10 +10,8 @@ This script:
 4. Allows rollback if needed
 """
 
-import os
 import shutil
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -49,13 +47,65 @@ def create_backup():
     return backup_dir
 
 
+def build_cmd(directory, dry_run):
+    cmd = ["python", "scripts/simple_docstring_fixer.py"]
+    if dry_run:
+        cmd.append("--dry-run")
+    cmd.append(directory)
+    return cmd
+
+
+def parse_stats(output_lines):
+    files = 0
+    docstrings = 0
+    for line in output_lines:
+        if "Files processed:" in line:
+            files = int(line.split(":", 1)[1].strip())
+        elif "Docstrings added:" in line:
+            docstrings = int(line.split(":", 1)[1].strip())
+    return files, docstrings
+
+
+def print_relevant(output_lines):
+    relevant_lines = [
+        line for line in output_lines
+        if "Would add" in line or "Added" in line or "✓" in line
+    ]
+    if relevant_lines:
+        for line in relevant_lines[:10]:
+            print(f"  {line}")
+        if len(relevant_lines) > 10:
+            print(f"  ... and {len(relevant_lines) - 10} more files")
+
+
+def handle_error(e, directory):
+    print(f"  Error processing {directory}: {e}")
+    if e.stdout:
+        print(f"  Stdout: {e.stdout}")
+    if e.stderr:
+        print(f"  Stderr: {e.stderr}")
+
+
+def process_directory(directory, dry_run):
+    print(f"\nProcessing {directory}/...")
+    cmd = build_cmd(directory, dry_run)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    except subprocess.CalledProcessError as e:
+        handle_error(e, directory)
+        return 0, 0
+    output_lines = result.stdout.split("\n")
+    files, docstrings = parse_stats(output_lines)
+    print_relevant(output_lines)
+    return files, docstrings
+
+
 def run_docstring_fixer(dry_run=False):
     """Run the docstring fixer on the entire codebase."""
     print("\n" + "=" * 60)
     print("RUNNING DOCSTRING AUTOMATION")
     print("=" * 60)
 
-    # Run on major directories
     directories = [
         "utils",
         "tools",
@@ -72,44 +122,9 @@ def run_docstring_fixer(dry_run=False):
     for directory in directories:
         if not Path(directory).exists():
             continue
-
-        print(f"\nProcessing {directory}/...")
-        cmd = ["python", "scripts/simple_docstring_fixer.py"]
-        if dry_run:
-            cmd.append("--dry-run")
-        cmd.append(directory)
-
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-
-            # Parse output for statistics
-            output_lines = result.stdout.split("\n")
-            for line in output_lines:
-                if "Files processed:" in line:
-                    files = int(line.split(":")[1].strip())
-                    total_files += files
-                elif "Docstrings added:" in line:
-                    docstrings = int(line.split(":")[1].strip())
-                    total_docstrings += docstrings
-
-            # Show non-empty results
-            if "Would add" in result.stdout or "Added" in result.stdout:
-                relevant_lines = [
-                    line
-                    for line in output_lines
-                    if "Would add" in line or "Added" in line or "✓" in line
-                ]
-                for line in relevant_lines[:10]:  # Limit output
-                    print(f"  {line}")
-                if len(relevant_lines) > 10:
-                    print(f"  ... and {len(relevant_lines) - 10} more files")
-
-        except subprocess.CalledProcessError as e:
-            print(f"  Error processing {directory}: {e}")
-            if e.stdout:
-                print(f"  Stdout: {e.stdout}")
-            if e.stderr:
-                print(f"  Stderr: {e.stderr}")
+        files, docstrings = process_directory(directory, dry_run)
+        total_files += files
+        total_docstrings += docstrings
 
     print("\n" + "=" * 60)
     print("SUMMARY")
@@ -120,7 +135,7 @@ def run_docstring_fixer(dry_run=False):
     if dry_run:
         print("\n[DRY RUN] No files were modified")
     else:
-        print(f"\n✓ Docstring automation completed successfully!")
+        print("\n✓ Docstring automation completed successfully!")
 
     return total_files, total_docstrings
 
@@ -150,10 +165,10 @@ def main():
             run_docstring_fixer(dry_run=True)
             break
 
-        elif choice == "2":
+        if choice == "2":
             print("\n--- FULL RUN WITH BACKUP ---")
             backup_dir = create_backup()
-            files, docstrings = run_docstring_fixer(dry_run=False)
+            _, docstrings = run_docstring_fixer(dry_run=False)
 
             if docstrings > 0:
                 print(f"\nChanges made! Backup is available at: {backup_dir}")
@@ -162,17 +177,16 @@ def main():
                 print("No changes made, backup can be deleted if desired.")
             break
 
-        elif choice == "3":
+        if choice == "3":
             confirm = input("Are you sure you want to run without backup? (yes/no): ")
             if confirm.lower() == "yes":
                 print("\n--- FULL RUN WITHOUT BACKUP ---")
                 run_docstring_fixer(dry_run=False)
                 break
-            else:
-                print("Cancelled.")
-                continue
+            print("Cancelled.")
+            continue
 
-        elif choice == "4":
+        if choice == "4":
             print("Exiting.")
             return 0
 

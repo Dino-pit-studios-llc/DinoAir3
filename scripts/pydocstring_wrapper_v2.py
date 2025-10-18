@@ -25,7 +25,8 @@ class PydocstringWrapper:
             "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
         )
 
-    def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> List[Tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
 
         Args:
@@ -71,69 +72,17 @@ class PydocstringWrapper:
             Generated docstring content
         """
         try:
-            result = subprocess.run(
-                [
-                    str(self.pydocstring_path),
-                    "--formatter",
-                    self.formatter,
-                    str(file_path),
-                    f"({line_number}, 0)",
-                ],
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
+            result = self._run_pydocstring(file_path, line_number)
 
-            if result.returncode == 0:
-                # Extract and clean the docstring content
-                output = result.stdout.strip()
-                lines = output.split("\\n")
-
-                # Find and extract the content between triple quotes
-                docstring_content = []
-                in_docstring = False
-
-                for line in lines:
-                    stripped = line.strip()
-
-                    # Skip the position line like "(10, 0)"
-                    if stripped.startswith("(") and stripped.endswith(")") and "," in stripped:
-                        continue
-
-                    # Handle docstring start
-                    if stripped.startswith('"""') and not in_docstring:
-                        in_docstring = True
-                        # If there's content after the opening quotes, include it
-                        content_after_quotes = stripped[3:].strip()
-                        if content_after_quotes:
-                            docstring_content.append(content_after_quotes)
-                        continue
-
-                    # Handle docstring end
-                    elif stripped.endswith('"""') and in_docstring:
-                        # If there's content before the closing quotes, include it
-                        content_before_quotes = stripped[:-3].strip()
-                        if content_before_quotes:
-                            docstring_content.append(content_before_quotes)
-                        break
-
-                    # Handle content inside docstring
-                    elif in_docstring:
-                        # Only add non-empty lines or preserve structure
-                        if stripped or (docstring_content and docstring_content[-1].strip()):
-                            docstring_content.append(stripped)
-
-                # Clean up the content and return
-                final_content = "\\n".join(docstring_content).strip()
-                # If we have no good content, generate a simple docstring
-                if not final_content or final_content == "":
-                    return "TODO: Add docstring."
-
-                return final_content
-            else:
+            if result.returncode != 0:
                 print(f"Error generating docstring: {result.stderr}")
                 return ""
 
+            content = self._extract_docstring_content(result.stdout)
+            if not content:
+                return "TODO: Add docstring."
+
+            return content
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
             return ""
@@ -141,7 +90,56 @@ class PydocstringWrapper:
             print(f"Error running pydocstring: {e}")
             return ""
 
-    def insert_docstring(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    def _run_pydocstring(self, file_path: Path, line_number: int) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [
+                str(self.pydocstring_path),
+                "--formatter",
+                self.formatter,
+                str(file_path),
+                f"({line_number}, 0)",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+    def _extract_docstring_content(self, output: str) -> str:
+        lines = output.strip().split("\n")
+        docstring_content = []
+        in_docstring = False
+
+        for line in lines:
+            stripped = line.strip()
+
+            # Skip the position line like "(10, 0)"
+            if stripped.startswith("(") and stripped.endswith(")") and "," in stripped:
+                continue
+
+            # Handle docstring start
+            if stripped.startswith('"""') and not in_docstring:
+                in_docstring = True
+                content_after_quotes = stripped[3:].strip()
+                if content_after_quotes:
+                    docstring_content.append(content_after_quotes)
+                continue
+
+            # Handle docstring end
+            if stripped.endswith('"""') and in_docstring:
+                content_before_quotes = stripped[:-3].strip()
+                if content_before_quotes:
+                    docstring_content.append(content_before_quotes)
+                break
+
+            # Handle content inside docstring
+            if in_docstring:
+                if stripped or (docstring_content and docstring_content[-1].strip()):
+                    docstring_content.append(stripped)
+
+        return "\n".join(docstring_content).strip()
+
+    @staticmethod
+    def insert_docstring(file_path: Path, line_number: int, docstring: str) -> bool:
         """Insert a docstring into a file at the specified location.
 
         Args:
@@ -168,19 +166,19 @@ class PydocstringWrapper:
             docstring_indent = " " * (func_indent + 4)  # Add 4 spaces for docstring indentation
 
             # Create the docstring with proper formatting
-            if "\\n" in docstring:
+            if "\n" in docstring:
                 # Multi-line docstring
-                docstring_lines = docstring.split("\\n")
-                formatted_lines = [f'{docstring_indent}"""\\n']
+                docstring_lines = docstring.split("\n")
+                formatted_lines = [f'{docstring_indent}"""\n']
                 for line in docstring_lines:
                     if line.strip():
-                        formatted_lines.append(f"{docstring_indent}{line}\\n")
+                        formatted_lines.append(f"{docstring_indent}{line}\n")
                     else:
-                        formatted_lines.append("\\n")
-                formatted_lines.append(f'{docstring_indent}"""\\n')
+                        formatted_lines.append("\n")
+                formatted_lines.append(f'{docstring_indent}"""\n')
             else:
                 # Single-line docstring
-                formatted_lines = [f'{docstring_indent}"""{docstring}"""\\n']
+                formatted_lines = [f'{docstring_indent}"""{docstring}"""\n']
 
             # Insert the formatted docstring
             for i, docstring_line in enumerate(formatted_lines):
@@ -206,7 +204,7 @@ class PydocstringWrapper:
         Returns:
             Dictionary with processing results
         """
-        print(f"\\nProcessing {file_path}...")
+        print(f"\nProcessing {file_path}...")
 
         functions_without_docstrings = self.find_functions_without_docstrings(file_path)
 

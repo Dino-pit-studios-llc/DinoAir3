@@ -25,7 +25,8 @@ class PydocstringWrapper:
             "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
         )
 
-    def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> List[Tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
 
         Args:
@@ -82,24 +83,24 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:
                 # Extract just the docstring content, removing the position info
                 output = result.stdout.strip()
                 # Remove the first line which contains position info like "(16, 0)"
-                lines = output.split("\\n")
+                lines = output.split("\n")
                 if lines and lines[0].strip().startswith("(") and lines[0].strip().endswith(")"):
                     # Remove position line and any empty lines at the start
                     content_lines = []
                     for line in lines[1:]:
                         if line.strip().startswith('"""') or content_lines:
                             content_lines.append(line)
-                    return "\\n".join(content_lines).strip()
+                    return "\n".join(content_lines).strip()
                 return output
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
@@ -135,16 +136,16 @@ class PydocstringWrapper:
             docstring_indent = " " * (func_indent + 4)  # Add 4 spaces for docstring indentation
 
             # Format the docstring with proper indentation
-            docstring_lines = docstring.split("\\n")
+            docstring_lines = docstring.split("\n")
             formatted_docstring = []
 
             for i, line in enumerate(docstring_lines):
                 if i == 0:
-                    formatted_docstring.append(f'{docstring_indent}"""{line}\\n')
+                    formatted_docstring.append(f'{docstring_indent}"""{line}\n')
                 elif i == len(docstring_lines) - 1:
-                    formatted_docstring.append(f'{docstring_indent}"""\\n')
+                    formatted_docstring.append(f'{docstring_indent}"""\n')
                 else:
-                    formatted_docstring.append(f"{docstring_indent}{line}\\n")
+                    formatted_docstring.append(f"{docstring_indent}{line}\n")
 
             # Insert the formatted docstring
             for i, docstring_line in enumerate(formatted_docstring):
@@ -159,15 +160,6 @@ class PydocstringWrapper:
         except Exception as e:
             print(f"Error inserting docstring into {file_path}:{line_number}: {e}")
             return False
-        """Generate a docstring for a function at the specified line.
-        
-        Args:
-            file_path: Path to the Python file
-            line_number: Line number where the function is defined
-            
-        Returns:
-            Generated docstring content
-        """
         try:
             result = subprocess.run(
                 [
@@ -180,13 +172,13 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:
                 return result.stdout.strip()
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")

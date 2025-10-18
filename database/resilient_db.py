@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 
+"""Module for resilient SQLite database connections with safe initialization and automatic recovery from corrupted files."""
 class ResilientDB:
     """A wrapper that makes SQLite initialization and recovery safer and more user-friendly."""
 
@@ -66,6 +67,7 @@ class ResilientDB:
             raise RuntimeError("Database setup failed due to an unexpected error.") from e
 
     def _attempt_connection(self) -> sqlite3.Connection:
+        """Attempt a SQLite database connection with cross-thread support, schema initialization, and URI handling."""
         # Allow cross-thread usage/closing to support multi-threaded tests on Windows.
         # Also support SQLite URI filenames (e.g., file:...?... for memory/shared-cache).
         db_path_str = str(self.db_path)
@@ -77,6 +79,11 @@ class ResilientDB:
         return conn
 
     def _backup_corrupted_db(self) -> None:
+        """Backup or remove a corrupted database file.
+
+        Moves the damaged database file to a backups directory with a timestamp.
+        If moving fails, deletes the corrupted file.
+        """
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         # Create backups directory if it doesn't exist
         backup_dir = self.db_path.parent / "backups"

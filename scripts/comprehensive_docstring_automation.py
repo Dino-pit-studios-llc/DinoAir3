@@ -55,7 +55,8 @@ class ComprehensiveDocstringAutomation:
             print(f"✗ Failed to create backup: {e}")
             return False
 
-    def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> List[Tuple[int, str]]:
         """Find functions that need docstrings."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -97,12 +98,13 @@ class ComprehensiveDocstringAutomation:
                 capture_output=True,
                 text=True,
                 timeout=10,
+                check=True,
             )
 
             if result.returncode == 0:
                 # Clean the output
                 output = result.stdout.strip()
-                lines = output.split("\\n")
+                lines = output.split("\n")
 
                 # Extract content between triple quotes
                 content = []
@@ -117,33 +119,34 @@ class ComprehensiveDocstringAutomation:
                     if stripped.startswith('"""') and not in_docstring:
                         in_docstring = True
                         continue
-                    elif stripped.endswith('"""') and in_docstring:
+                    if stripped.endswith('"""') and in_docstring:
                         break
-                    elif in_docstring and stripped:
+                    if in_docstring and stripped:
                         content.append(stripped)
 
                 if content:
-                    return "\\n".join(content).strip()
+                    return "\n".join(content).strip()
 
             return ""
 
         except Exception:
             return ""
 
-    def generate_simple_docstring(self, func_name: str) -> str:
+    @staticmethod
+    def generate_simple_docstring(func_name: str) -> str:
         """Generate a simple fallback docstring."""
         if func_name == "__init__":
             return "Initialize the instance."
-        elif func_name.startswith("get_"):
+        if func_name.startswith("get_"):
             return f"Get {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("set_"):
+        if func_name.startswith("set_"):
             return f"Set {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("is_") or func_name.startswith("has_"):
+        if func_name.startswith("is_") or func_name.startswith("has_"):
             return f"Check if {func_name[3:].replace('_', ' ')}."
-        else:
-            return f"TODO: Add docstring for {func_name}."
+        return f"TODO: Add docstring for {func_name}."
 
-    def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def add_docstring_to_file(file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -220,7 +223,7 @@ class ComprehensiveDocstringAutomation:
                 continue
 
             python_files = list(dir_path.rglob("*.py"))
-            print(f"\\n📁 Processing {len(python_files)} files in {dir_name}/")
+            print(f"\n📁 Processing {len(python_files)} files in {dir_name}/")
 
             for file_path in python_files:
                 try:
@@ -235,7 +238,7 @@ class ComprehensiveDocstringAutomation:
 
     def print_summary(self):
         """Print automation summary."""
-        print("\\n" + "=" * 50)
+        print("\n" + "=" * 50)
         print("📊 AUTOMATION SUMMARY")
         print("=" * 50)
         print(f"Files processed: {len(self.results['processed_files'])}")
