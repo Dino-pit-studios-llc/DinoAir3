@@ -13,6 +13,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import Mock, patch
 
 import pytest
+from fastapi import HTTPException
+from starlette import status
+
 from API.services.search import (
     DirectorySettingsResponse,
     FileIndexStatsResponse,
@@ -33,8 +36,6 @@ from API.services.search import (
     router_search,
     vector,
 )
-from fastapi import HTTPException
-from starlette import status
 
 
 class TestSearchService:
@@ -84,9 +85,7 @@ class TestSearchService:
     def test_search_keyword_success(search_service, mock_db):
         """Test successful keyword search."""
         # Arrange
-        request = KeywordSearchRequest(
-            query="test query", top_k=10, file_types=["txt", "md"]
-        )
+        request = KeywordSearchRequest(query="test query", top_k=10, file_types=["txt", "md"])
 
         # Act
         response = search_service.search_keyword(request)
@@ -255,9 +254,7 @@ class TestSearchService:
         mock_engine.hybrid_search.return_value = []
 
         with patch("API.services.search._require_engine", return_value=mock_engine):
-            request = HybridSearchRequest(
-                query="test query", vector_weight=0.0, keyword_weight=0.0
-            )
+            request = HybridSearchRequest(query="test query", vector_weight=0.0, keyword_weight=0.0)
 
             # Act
             response = search_service.search_hybrid(request)

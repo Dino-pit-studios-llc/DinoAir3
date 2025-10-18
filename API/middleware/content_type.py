@@ -5,6 +5,7 @@ from contextlib import suppress
 
 from starlette import status
 from starlette.types import Receive, Scope, Send
+
 from utils.asgi import get_header
 
 try:
@@ -72,11 +73,7 @@ class ContentTypeJSONMiddleware:
                     details=None,
                     endpoint=endpoint,
                     operationId=None,
-                    requestId=(
-                        str(trace_id)
-                        if isinstance(trace_id, str) and trace_id
-                        else None
-                    ),
+                    requestId=(str(trace_id) if isinstance(trace_id, str) and trace_id else None),
                 )
                 if trace_id:
                     with suppress(Exception):

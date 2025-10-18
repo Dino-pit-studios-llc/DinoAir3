@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 import numpy as np
+
 from database.file_search_db import FileSearchDB
 
 # Import DinoAir components
@@ -150,13 +151,9 @@ class VectorSearchEngine:
             chunk_index=int(emb["chunk_index"]),
             start_pos=int(emb["start_pos"]),
             end_pos=int(emb["end_pos"]),
-            file_type=(
-                str(emb.get("file_type")) if emb.get("file_type") is not None else None
-            ),
+            file_type=(str(emb.get("file_type")) if emb.get("file_type") is not None else None),
             metadata=(
-                emb.get("chunk_metadata")
-                if isinstance(emb.get("chunk_metadata"), dict)
-                else None
+                emb.get("chunk_metadata") if isinstance(emb.get("chunk_metadata"), dict) else None
             ),
             match_type="vector",
         )
@@ -218,9 +215,7 @@ class VectorSearchEngine:
         q_vec: np.ndarray = np.asarray(query_embedding, dtype=np.float64)
         results: list[SearchResult] = []
         for emb in all_embeddings:
-            d_vec_list = VectorSearchEngine._parse_embedding_vector(
-                emb["embedding_vector"]
-            )
+            d_vec_list = VectorSearchEngine._parse_embedding_vector(emb["embedding_vector"])
             if d_vec_list is None:
                 self.logger.warning(
                     f"search(): skipping invalid embedding for chunk_id={emb.get('chunk_id')}"
@@ -273,9 +268,7 @@ class VectorSearchEngine:
             return []
 
         # Normalize/validate similarity threshold
-        similarity_threshold = self._normalize_similarity_threshold(
-            similarity_threshold
-        )
+        similarity_threshold = self._normalize_similarity_threshold(similarity_threshold)
 
         # Validate distance metric
         metric = self._normalize_distance_metric(distance_metric)
@@ -284,9 +277,7 @@ class VectorSearchEngine:
             # Generate query embedding
             preview = query[:50].replace("\n", " ")
             self.logger.info("Generating embedding for query: %s...", preview)
-            query_embedding = self.embedding_generator.generate_embedding(
-                query, normalize=True
-            )
+            query_embedding = self.embedding_generator.generate_embedding(query, normalize=True)
 
             # Retrieve all embeddings from database
             all_embeddings = self._retrieve_all_embeddings(file_types)
@@ -313,9 +304,7 @@ class VectorSearchEngine:
                 self.logger.info("search(): no results above threshold")
                 return []
 
-            top_results: list[SearchResult] = VectorSearchEngine._top_k_sorted(
-                results, top_k
-            )
+            top_results: list[SearchResult] = VectorSearchEngine._top_k_sorted(results, top_k)
 
             self.logger.info(
                 f"Vector search found {len(top_results)} results (from {len(results)} above threshold)"
@@ -424,9 +413,7 @@ class VectorSearchEngine:
             )
 
             # Perform keyword search
-            keyword_results = self.keyword_search(
-                query, top_k=top_k * 2, file_types=file_types
-            )
+            keyword_results = self.keyword_search(query, top_k=top_k * 2, file_types=file_types)
 
             # Merge results
             merged_results = self._merge_search_results(
@@ -453,9 +440,7 @@ class VectorSearchEngine:
         query: str,
         results: list[SearchResult],
         top_k: int | None = None,
-        rerank_func: (
-            Callable[[str, list[SearchResult]], list[SearchResult]] | None
-        ) = None,
+        rerank_func: (Callable[[str, list[SearchResult]], list[SearchResult]] | None) = None,
     ) -> list[SearchResult]:
         """
         Rerank search results for better relevance.
@@ -505,9 +490,7 @@ class VectorSearchEngine:
                     file_type_bonus = 0.05
 
                 # Combine with original score
-                boost = (
-                    exact_match_bonus + term_bonus + position_bonus + file_type_bonus
-                )
+                boost = exact_match_bonus + term_bonus + position_bonus + file_type_bonus
                 result.score = min(1.0, result.score + boost)
 
             # Sort by new scores
@@ -519,9 +502,7 @@ class VectorSearchEngine:
             self.logger.error("Error reranking results: %s", str(e))
             return results
 
-    def _retrieve_all_embeddings(
-        self, file_types: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    def _retrieve_all_embeddings(self, file_types: list[str] | None = None) -> list[dict[str, Any]]:
         """
         Retrieve all embeddings from the database.
 
@@ -636,9 +617,7 @@ class VectorSearchEngine:
                 params: list[Any] = []
 
                 for keyword in keywords:
-                    like_condition = (
-                        "CASE WHEN LOWER(c.content) LIKE ? THEN 1 ELSE 0 END"
-                    )
+                    like_condition = "CASE WHEN LOWER(c.content) LIKE ? THEN 1 ELSE 0 END"
                     like_conditions.append(like_condition)
                     params.append(f"%{keyword}%")
 

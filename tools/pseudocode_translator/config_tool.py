@@ -35,11 +35,7 @@ def _ensure_file_readable(path: Path) -> str | None:
 def _load_raw_config(path: Path) -> tuple[dict, None] | tuple[None, str]:
     try:
         with open(path) as f:
-            raw = (
-                yaml.safe_load(f)
-                if path.suffix.lower() in (".yaml", ".yml")
-                else json.load(f)
-            )
+            raw = yaml.safe_load(f) if path.suffix.lower() in (".yaml", ".yml") else json.load(f)
         return raw, None
     except Exception as e:
         msg = f"Failed to read/parse configuration: {e}".strip()
@@ -79,9 +75,7 @@ def validate_config(path: str, lenient: bool = False) -> tuple[int, dict]:
 
         if not isinstance(raw, dict):
             return 1, {
-                "errors": [
-                    "Configuration file must contain a mapping/object at the top level"
-                ],
+                "errors": ["Configuration file must contain a mapping/object at the top level"],
                 "warnings": [],
                 "path": str(p),
             }
@@ -281,20 +275,14 @@ class ConfigTool:
         )
 
         # Add verbosity flag
-        parser.add_argument(
-            "-v", "--verbose", action="store_true", help="Enable verbose output"
-        )
+        parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
         # Create subcommands
         subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
         # Validate command
-        validate_parser = subparsers.add_parser(
-            "validate", help="Validate a configuration file"
-        )
-        validate_parser.add_argument(
-            "--path", required=True, help="Path to configuration file"
-        )
+        validate_parser = subparsers.add_parser("validate", help="Validate a configuration file")
+        validate_parser.add_argument("--path", required=True, help="Path to configuration file")
         validate_parser.add_argument(
             "--lenient",
             action="store_true",
@@ -328,20 +316,14 @@ class ConfigTool:
         )
 
         # Check command
-        check_parser = subparsers.add_parser(
-            "check", help="Check configuration and environment"
-        )
+        check_parser = subparsers.add_parser("check", help="Check configuration and environment")
         check_parser.add_argument(
             "config_file", nargs="?", help="Path to configuration file (optional)"
         )
-        check_parser.add_argument(
-            "--env", action="store_true", help="Check environment variables"
-        )
+        check_parser.add_argument("--env", action="store_true", help="Check environment variables")
 
         # Wizard command
-        wizard_parser = subparsers.add_parser(
-            "wizard", help="Interactive configuration wizard"
-        )
+        wizard_parser = subparsers.add_parser("wizard", help="Interactive configuration wizard")
         wizard_parser.add_argument(
             "-o",
             "--output",
@@ -350,18 +332,14 @@ class ConfigTool:
         )
 
         # Info command
-        info_parser = subparsers.add_parser(
-            "info", help="Show configuration information"
-        )
+        info_parser = subparsers.add_parser("info", help="Show configuration information")
         info_parser.add_argument("config_file", help="Path to configuration file")
 
         # Upgrade command (for old configs)
         upgrade_parser = subparsers.add_parser(
             "upgrade", help="Upgrade old configuration to new format"
         )
-        upgrade_parser.add_argument(
-            "config_file", help="Path to old configuration file"
-        )
+        upgrade_parser.add_argument("config_file", help="Path to old configuration file")
         upgrade_parser.add_argument(
             "-o", "--output", help="Output file path (default: overwrite input)"
         )

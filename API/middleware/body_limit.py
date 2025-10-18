@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from fastapi.responses import JSONResponse
 from starlette import status
 from starlette.types import Message, Receive, Scope, Send
+
 from utils.asgi import get_header
 
 if TYPE_CHECKING:
@@ -96,9 +97,7 @@ class BodySizeLimitMiddleware:
             details=None,
             endpoint=endpoint,
             operationId=None,
-            requestId=(
-                str(trace_id) if isinstance(trace_id, str) and trace_id else None
-            ),
+            requestId=(str(trace_id) if isinstance(trace_id, str) and trace_id else None),
         )
         if trace_id:
             with suppress(Exception):
@@ -116,9 +115,7 @@ class BodySizeLimitMiddleware:
         parts.append(chunk)
         return new_total, False
 
-    async def _drain_body(
-        self, receive: Receive
-    ) -> tuple[list[bytes], Message | None, int]:
+    async def _drain_body(self, receive: Receive) -> tuple[list[bytes], Message | None, int]:
         """Drain request body into memory up to limit."""
         max_bytes = self._max_bytes()
         total = 0
@@ -178,9 +175,7 @@ class BodySizeLimitMiddleware:
 
         return replay_queue
 
-    async def _drain_and_forward(
-        self, scope: Scope, receive: Receive, send: Send
-    ) -> None:
+    async def _drain_and_forward(self, scope: Scope, receive: Receive, send: Send) -> None:
         body_parts, extra_message, total = await self._drain_body(receive)
         if total > self._max_bytes():
             response = self._too_large_response(scope)
@@ -188,9 +183,7 @@ class BodySizeLimitMiddleware:
             return None
 
         # Prepare a small queue to replay the drained body to downstream app
-        replay_queue = BodySizeLimitMiddleware._create_replay_queue(
-            body_parts, extra_message
-        )
+        replay_queue = BodySizeLimitMiddleware._create_replay_queue(body_parts, extra_message)
 
         async def replay_receive() -> Message:
             return replay_queue.pop(0) if replay_queue else await receive()
@@ -219,9 +212,7 @@ class BodySizeLimitMiddleware:
             return
 
         if content_length_str := get_header(scope, "content-length"):
-            await self._handle_request_with_content_length(
-                scope, receive, send, content_length_str
-            )
+            await self._handle_request_with_content_length(scope, receive, send, content_length_str)
             return
 
         # No Content-Length header: drain and enforce limit before passing downstream

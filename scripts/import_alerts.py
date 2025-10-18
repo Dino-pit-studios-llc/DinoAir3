@@ -36,6 +36,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 import requests
+
 from utils.config_loader import save_json_config
 from utils.process import safe_run
 
@@ -112,9 +113,7 @@ class AlertManager:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -151,9 +150,7 @@ class AlertManager:
 
         if dedup_key in self.sent_alerts_cache:
             last_sent = self.sent_alerts_cache[dedup_key]
-            if (datetime.now() - last_sent).total_seconds() < (
-                self.config.rate_limit_minutes * 60
-            ):
+            if (datetime.now() - last_sent).total_seconds() < (self.config.rate_limit_minutes * 60):
                 return False
 
         return True
@@ -198,9 +195,7 @@ class AlertManager:
         msg = MIMEMultipart()
         msg["From"] = username
         msg["To"] = ", ".join(self.config.email_recipients)
-        msg["Subject"] = (
-            f"🚨 DinoAir Import Alert - {alert.severity.upper()}: {alert.title}"
-        )
+        msg["Subject"] = f"🚨 DinoAir Import Alert - {alert.severity.upper()}: {alert.title}"
 
         # Email body
         body = self._format_email_body(alert)
@@ -211,13 +206,9 @@ class AlertManager:
     def _format_email_body(alert: Alert) -> str:
         """Format email body for alert."""
         metric_line = (
-            f"Metric Value: {alert.metric_value}"
-            if alert.metric_value is not None
-            else ""
+            f"Metric Value: {alert.metric_value}" if alert.metric_value is not None else ""
         )
-        threshold_line = (
-            f"Threshold: {alert.threshold}" if alert.threshold is not None else ""
-        )
+        threshold_line = f"Threshold: {alert.threshold}" if alert.threshold is not None else ""
 
         body = f"""
 DinoAir Import Organization Alert
@@ -240,13 +231,9 @@ DinoAir Import Organization Monitoring
         """.strip()
         return body
 
-    def _send_email_via_smtp(
-        self, msg: MIMEMultipart, username: str, password: str
-    ) -> None:
+    def _send_email_via_smtp(self, msg: MIMEMultipart, username: str, password: str) -> None:
         """Send email via SMTP server."""
-        with smtplib.SMTP(
-            self.config.email_smtp_host, self.config.email_smtp_port
-        ) as server:
+        with smtplib.SMTP(self.config.email_smtp_host, self.config.email_smtp_port) as server:
             server.starttls()
             server.login(username, password)
             server.send_message(msg)
@@ -387,7 +374,9 @@ DinoAir Import Organization Monitoring
 
             # Check if similar issue already exists
             search_url = "https://api.github.com/search/issues"
-            search_query = f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
+            search_query = (
+                f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
+            )
             search_params = {"q": search_query}
 
             response = requests.get(
@@ -438,9 +427,7 @@ Please investigate and resolve the underlying import organization issues.
             response.raise_for_status()
 
             issue_number = response.json().get("number")
-            self.logger.info(
-                "GitHub issue #%s created for: %s", issue_number, alert.title
-            )
+            self.logger.info("GitHub issue #%s created for: %s", issue_number, alert.title)
             return True
 
         except (ValueError, OSError) as e:
@@ -604,9 +591,7 @@ def main():  # noqa: C901
         # Filter by severity
         severity_order = {"info": 0, "warning": 1, "critical": 2}
         min_severity = severity_order.get(args.severity, 1)
-        filtered_alerts = [
-            a for a in alerts if severity_order.get(a.severity, 0) >= min_severity
-        ]
+        filtered_alerts = [a for a in alerts if severity_order.get(a.severity, 0) >= min_severity]
 
         if not filtered_alerts:
             print("✅ No alerts to send")

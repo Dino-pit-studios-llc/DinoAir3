@@ -5,11 +5,12 @@ from collections.abc import Iterable
 from contextlib import suppress
 from typing import TYPE_CHECKING, cast
 
-from core_router.errors import error_response as core_error_response
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from starlette import status
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from core_router.errors import error_response as core_error_response
 
 from .metrics_state import inc_counter
 
@@ -36,9 +37,7 @@ def _trace_id_from_request(request: Request) -> str:
     if isinstance(trace_id, str) and trace_id:
         return trace_id
     # Fallback to standard request id headers if present
-    header_rid = request.headers.get("X-Request-ID") or request.headers.get(
-        "X-Trace-Id"
-    )
+    header_rid = request.headers.get("X-Request-ID") or request.headers.get("X-Trace-Id")
     return header_rid if isinstance(header_rid, str) else ""
 
 
@@ -80,9 +79,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     centralizing metrics and response formatting.
     """
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
-    app.add_exception_handler(
-        RequestValidationError, request_validation_exception_handler
-    )
+    app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
     app.add_exception_handler(ValidationError, validation_exception_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)
 
@@ -122,9 +119,7 @@ def _json_error_response(
     try:
         route = request.scope.get("route")
         # FastAPI APIRoute provides operation_id; fallback to name
-        operation_id = getattr(route, "operation_id", None) or getattr(
-            route, "name", None
-        )
+        operation_id = getattr(route, "operation_id", None) or getattr(route, "name", None)
     except Exception:
         operation_id = None
 
@@ -185,9 +180,7 @@ def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-def request_validation_exception_handler(
-    request: Request, exc: Exception
-) -> JSONResponse:
+def request_validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     exc_obj = cast("RequestValidationError", exc)
     status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     errors = _flatten_validation_errors(exc_obj)
