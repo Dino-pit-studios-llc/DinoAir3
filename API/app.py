@@ -28,6 +28,7 @@ log = logging.getLogger("api.app")
 Provides middleware to enforce timeouts on ASGI requests, canceling requests that exceed a specified duration and returning a 504 Gateway Timeout response.
 """
 
+
 class TimeoutMiddleware:
     """Enforces a timeout for ASGI requests.
 

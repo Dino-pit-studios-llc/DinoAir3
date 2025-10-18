@@ -29,6 +29,7 @@ Auth middleware module for DinoAir API.
 Provides AuthMiddleware to enforce the presence and correctness of the X-DinoAir-Auth header on protected paths, with configurable skips for health checks and OpenAPI documentation.
 """
 
+
 class AuthMiddleware:
     """
     ASGI middleware enforcing presence and correctness of X-DinoAir-Auth header

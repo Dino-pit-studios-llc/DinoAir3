@@ -4,6 +4,7 @@ Utilities for API error handling.
 Provides functions to extract trace identifiers, normalize and flatten validation errors, record metrics,
 and generate standardized JSON error responses for various exception types in FastAPI applications.
 """
+
 from __future__ import annotations
 
 import logging
@@ -36,6 +37,7 @@ log = logging.getLogger("api.errors")
 VALIDATION_ERROR = "Validation Error"
 VALIDATION_MESSAGE = "One or more validation errors occurred."
 
+
 def _trace_id_from_request(request: Request) -> str:
     """Retrieve a trace identifier from the request scope or headers for request correlation."""
     # Prefer the middleware-assigned trace_id in scope
@@ -46,6 +48,7 @@ def _trace_id_from_request(request: Request) -> str:
     header_rid = request.headers.get("X-Request-ID") or request.headers.get("X-Trace-Id")
     return header_rid if isinstance(header_rid, str) else ""
 
+
 def _normalize_loc(v: JSONValue) -> list[str]:
     """Normalize the location field in validation errors to a list of strings."""
     # Treat strings as a single location element instead of an iterable of chars
@@ -54,6 +57,7 @@ def _normalize_loc(v: JSONValue) -> list[str]:
     if isinstance(v, Iterable):
         return [str(x) for x in cast("Iterable[JSONValue]", v)]
     return []
+
 
 def _flatten_validation_errors(
     exc: ValidationError | RequestValidationError,
@@ -76,6 +80,7 @@ def _flatten_validation_errors(
         for e in cast("Iterable[Mapping[str, JSONValue]]", raw)
     ]
 
+
 def register_exception_handlers(app: FastAPI) -> None:
     """
     Register API exception handlers.
@@ -87,6 +92,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
     app.add_exception_handler(ValidationError, validation_exception_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)
+
 
 def _record_metrics(status_code: int) -> None:
     """Increment metrics counters based on the HTTP status code (total, 4xx, 5xx, and specific known codes)."""
@@ -105,6 +111,7 @@ def _record_metrics(status_code: int) -> None:
             extra={"status": status_code, "error": str(e)},
             exc_info=False,
         )
+
 
 def _json_error_response(
     *,
@@ -138,6 +145,7 @@ def _json_error_response(
         operationId=operation_id,
         requestId=rid or None,
     )
+
 
 def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle HTTP exceptions by mapping status codes to error codes, recording metrics, logging, and returning a JSON error response."""
@@ -184,6 +192,7 @@ def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
         details=None,
     )
 
+
 def request_validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle FastAPI request validation errors by flattening error details, recording metrics, logging, and returning a JSON response."""
     exc_obj = cast("RequestValidationError", exc)
@@ -213,6 +222,7 @@ def request_validation_exception_handler(request: Request, exc: Exception) -> JS
         details=errors,
     )
 
+
 def validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle Pydantic validation exceptions by flattening error details, recording metrics, logging, and returning a JSON response."""
     exc_obj = cast("ValidationError", exc)
@@ -241,6 +251,7 @@ def validation_exception_handler(request: Request, exc: Exception) -> JSONRespon
         message=VALIDATION_MESSAGE,
         details=errors,
     )
+
 
 def unhandled_exception_handler(request: Request, _exc: Exception) -> JSONResponse:
     """Handle uncaught exceptions by recording metrics, logging the exception, and returning a generic JSON error response."""
