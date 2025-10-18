@@ -15,8 +15,18 @@ The Qdrant MCP Server provides a standardized interface for AI models to interac
 
 - Python 3.8+
 - Qdrant server running (Docker or standalone)
-- Qdrant API key (provided)
+- Qdrant API key (see Security Note below)
 - DinoAir3 project with existing vector search functionality
+
+## Security Note
+
+**⚠️ IMPORTANT: API Key Security**
+
+- Never commit your actual API key to version control
+- Store API keys in environment variables or secure credential management systems
+- Replace `YOUR_QDRANT_API_KEY_HERE` placeholder with your actual API key when running commands
+- Keep your API keys confidential and rotate them regularly
+- Use different API keys for development, staging, and production environments
 
 ## Quick Start
 
@@ -24,14 +34,15 @@ The Qdrant MCP Server provides a standardized interface for AI models to interac
 
 ```bash
 # Complete setup with sample data
-python setup_and_populate_qdrant.py --api-key "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.BZDYpo9lzSU--zQt9gKFMOlD1x7gaGh2lyCHtAwUt0Q"
+# Replace YOUR_QDRANT_API_KEY_HERE with your actual API key
+python setup_and_populate_qdrant.py --api-key "YOUR_QDRANT_API_KEY_HERE"
 ```
 
 ### 2. Manual Setup (Step by Step)
 
 ```bash
-# Set your API key
-export QDRANT_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.BZDYpo9lzSU--zQt9gKFMOlD1x7gaGh2lyCHtAwUt0Q"
+# Set your API key (replace YOUR_QDRANT_API_KEY_HERE with your actual API key)
+export QDRANT_API_KEY="YOUR_QDRANT_API_KEY_HERE"
 
 # Install dependencies
 pip install -r mcp_qdrant_requirements.txt
@@ -77,10 +88,10 @@ The server will be available at `http://localhost:8080`
 
 ### Environment Variables
 
-Create a `.env.qdrant` file:
+Create a `.env.qdrant` file (replace YOUR_QDRANT_API_KEY_HERE with your actual API key):
 
 ```bash
-QDRANT_API_KEY=your_api_key_here
+QDRANT_API_KEY=YOUR_QDRANT_API_KEY_HERE
 QDRANT_URL=http://localhost:6333
 MCP_SERVER_HOST=localhost
 MCP_SERVER_PORT=8080
@@ -196,10 +207,11 @@ Use the automated setup script for complete integration:
 
 ```bash
 # One-command setup with sample data
-python setup_and_populate_qdrant.py --api-key "your_api_key"
+# Replace YOUR_QDRANT_API_KEY_HERE with your actual API key
+python setup_and_populate_qdrant.py --api-key "YOUR_QDRANT_API_KEY_HERE"
 
 # Or run individual steps
-python start_qdrant_server.py --api-key "your_api_key"
+python start_qdrant_server.py --api-key "YOUR_QDRANT_API_KEY_HERE"
 python mcp_qdrant_server.py
 python populate_qdrant_collections.py
 ```
@@ -314,10 +326,16 @@ curl http://localhost:8080/health
 
 ## Security Considerations
 
-- **API Key Protection**: Store API keys in environment variables or secure files
-- **Network Security**: Use HTTPS in production
-- **Access Control**: Configure Qdrant with appropriate authentication
-- **Data Privacy**: Be aware of data stored in vector collections
+**⚠️ CRITICAL: Protect Your API Keys**
+
+- **API Key Protection**: 
+  - Never commit API keys to version control (use `.gitignore` for `.env.*` files)
+  - Store API keys in environment variables or secure credential management systems
+  - Use different API keys for development, staging, and production environments
+  - Rotate API keys regularly
+- **Network Security**: Use HTTPS in production environments to encrypt data in transit
+- **Access Control**: Configure Qdrant with appropriate authentication and authorization
+- **Data Privacy**: Be aware of sensitive data stored in vector collections and implement appropriate access controls
 
 ## Performance Tuning
 
