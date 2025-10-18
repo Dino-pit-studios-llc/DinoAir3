@@ -423,6 +423,7 @@ class QdrantSetupAlternatives:
 def main():
     """Main setup function."""
     import argparse
+    import re
 
     parser = argparse.ArgumentParser(description="Setup Qdrant for DinoAir3 (Alternative Methods)")
     parser.add_argument("--api-key", help="Qdrant API key")
@@ -435,6 +436,11 @@ def main():
     if not api_key:
         print("Error: Qdrant API key required!")
         print("Provide with --api-key or set QDRANT_API_KEY environment variable")
+        return 1
+
+    # Sanitize API key: must be alphanumeric and dash/underscore only
+    if not re.fullmatch(r"[A-Za-z0-9_\-]+", api_key):
+        print("Error: API key contains invalid characters. Allowed: letters, numbers, - and _")
         return 1
 
     print("Setting up Qdrant...")
