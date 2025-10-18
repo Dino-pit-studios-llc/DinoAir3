@@ -21,7 +21,9 @@ class PydocstringWrapper:
             formatter: The docstring formatter to use (google, numpy, reST)
         """
         self.formatter = formatter
-        self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
+        self.pydocstring_path = Path(
+            "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
+        )
 
     def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
@@ -33,7 +35,7 @@ class PydocstringWrapper:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -43,10 +45,10 @@ class PydocstringWrapper:
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     # Check if function has a docstring
                     has_docstring = (
-                        node.body and
-                        isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, ast.Constant) and
-                        isinstance(node.body[0].value.value, str)
+                        node.body
+                        and isinstance(node.body[0], ast.Expr)
+                        and isinstance(node.body[0].value, ast.Constant)
+                        and isinstance(node.body[0].value.value, str)
                     )
 
                     if not has_docstring:
@@ -69,17 +71,23 @@ class PydocstringWrapper:
             Generated docstring content
         """
         try:
-            result = subprocess.run([
-                str(self.pydocstring_path),
-                "--formatter", self.formatter,
-                str(file_path),
-                f"({line_number}, 0)"
-            ], capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                [
+                    str(self.pydocstring_path),
+                    "--formatter",
+                    self.formatter,
+                    str(file_path),
+                    f"({line_number}, 0)",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
 
             if result.returncode == 0:
                 # Extract and clean the docstring content
                 output = result.stdout.strip()
-                lines = output.split('\n')
+                lines = output.split("\n")
 
                 # Find and extract the content between triple quotes
                 docstring_content = []
@@ -89,7 +97,7 @@ class PydocstringWrapper:
                     stripped = line.strip()
 
                     # Skip the position line like "(10, 0)"
-                    if stripped.startswith('(') and stripped.endswith(')') and ',' in stripped:
+                    if stripped.startswith("(") and stripped.endswith(")") and "," in stripped:
                         continue
 
                     # Handle docstring start
@@ -116,9 +124,9 @@ class PydocstringWrapper:
                             docstring_content.append(stripped)
 
                 # Clean up the content and return
-                final_content = '\n'.join(docstring_content).strip()
+                final_content = "\n".join(docstring_content).strip()
                 # If we have no good content, generate a simple docstring
-                if not final_content or final_content == '':
+                if not final_content or final_content == "":
                     return "TODO: Add docstring."
 
                 return final_content
@@ -145,7 +153,7 @@ class PydocstringWrapper:
             True if successful, False otherwise
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
             # Find the function definition line and the next line to insert docstring
@@ -160,30 +168,26 @@ class PydocstringWrapper:
             docstring_indent = " " * (func_indent + 4)  # Add 4 spaces for docstring indentation
 
             # Create the docstring with proper formatting
-            if '\n' in docstring:
+            if "\n" in docstring:
                 # Multi-line docstring
-                docstring_lines = docstring.split('\n')
-                formatted_lines = [
-                    f'{docstring_indent}"""\n'
-                ]
+                docstring_lines = docstring.split("\n")
+                formatted_lines = [f'{docstring_indent}"""\n']
                 for line in docstring_lines:
                     if line.strip():
-                        formatted_lines.append(f'{docstring_indent}{line}\n')
+                        formatted_lines.append(f"{docstring_indent}{line}\n")
                     else:
-                        formatted_lines.append('\n')
+                        formatted_lines.append("\n")
                 formatted_lines.append(f'{docstring_indent}"""\n')
             else:
                 # Single-line docstring
-                formatted_lines = [
-                    f'{docstring_indent}"""{docstring}"""\n'
-                ]
+                formatted_lines = [f'{docstring_indent}"""{docstring}"""\n']
 
             # Insert the formatted docstring
             for i, docstring_line in enumerate(formatted_lines):
                 lines.insert(insert_line_idx + i, docstring_line)
 
             # Write the modified content back to the file
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
 
             return True
@@ -230,11 +234,15 @@ class PydocstringWrapper:
 
         return {
             "file": str(file_path),
-            "functions_processed": processed_count if not dry_run else len(functions_without_docstrings),
-            "status": "processed" if not dry_run else "dry_run"
+            "functions_processed": processed_count
+            if not dry_run
+            else len(functions_without_docstrings),
+            "status": "processed" if not dry_run else "dry_run",
         }
 
-    def process_directory(self, directory: Path, pattern: str = "*.py", dry_run: bool = True) -> dict:
+    def process_directory(
+        self, directory: Path, pattern: str = "*.py", dry_run: bool = True
+    ) -> dict:
         """Process all Python files in a directory.
 
         Args:
@@ -259,18 +267,16 @@ class PydocstringWrapper:
                 total_functions += result["functions_processed"]
             except Exception as e:
                 print(f"Error processing {file_path}: {e}")
-                results.append({
-                    "file": str(file_path),
-                    "functions_processed": 0,
-                    "status": "error",
-                    "error": str(e)
-                })
+                results.append(
+                    {
+                        "file": str(file_path),
+                        "functions_processed": 0,
+                        "status": "error",
+                        "error": str(e),
+                    }
+                )
 
-        return {
-            "total_files": total_files,
-            "total_functions": total_functions,
-            "results": results
-        }
+        return {"total_files": total_files, "total_functions": total_functions, "results": results}
 
 
 def main():

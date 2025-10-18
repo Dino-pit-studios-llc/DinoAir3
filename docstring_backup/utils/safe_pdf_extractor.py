@@ -300,7 +300,9 @@ class SafePDFProcessor:
                     chunk = content_str[start:end]
 
                     # Apply sanitization to chunk
-                    sanitized_chunk = re.sub(NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk)
+                    sanitized_chunk = re.sub(
+                        NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk
+                    )
 
                     # For non-first chunks, skip the overlap portion to avoid duplicates
                     if start > 0:

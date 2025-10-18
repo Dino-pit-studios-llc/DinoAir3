@@ -21,13 +21,15 @@ class ComprehensiveDocstringAutomation:
 
     def __init__(self):
         """Initialize the automation system."""
-        self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
+        self.pydocstring_path = Path(
+            "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
+        )
         self.backup_dir = Path("docstring_backup")
         self.results = {
             "processed_files": [],
             "failed_files": [],
             "total_docstrings_added": 0,
-            "backup_created": False
+            "backup_created": False,
         }
 
     def create_backup(self) -> bool:
@@ -56,7 +58,7 @@ class ComprehensiveDocstringAutomation:
     def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
         """Find functions that need docstrings."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -66,10 +68,10 @@ class ComprehensiveDocstringAutomation:
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     # Check if function has a docstring
                     has_docstring = (
-                        node.body and
-                        isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, ast.Constant) and
-                        isinstance(node.body[0].value.value, str)
+                        node.body
+                        and isinstance(node.body[0], ast.Expr)
+                        and isinstance(node.body[0].value, ast.Constant)
+                        and isinstance(node.body[0].value.value, str)
                     )
 
                     if not has_docstring:
@@ -84,17 +86,23 @@ class ComprehensiveDocstringAutomation:
     def try_pydocstring(self, file_path: Path, line_number: int) -> str:
         """Try to generate docstring using pydocstring."""
         try:
-            result = subprocess.run([
-                str(self.pydocstring_path),
-                "--formatter", "google",
-                str(file_path),
-                f"({line_number}, 0)"
-            ], capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                [
+                    str(self.pydocstring_path),
+                    "--formatter",
+                    "google",
+                    str(file_path),
+                    f"({line_number}, 0)",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
 
             if result.returncode == 0:
                 # Clean the output
                 output = result.stdout.strip()
-                lines = output.split('\n')
+                lines = output.split("\n")
 
                 # Extract content between triple quotes
                 content = []
@@ -103,7 +111,7 @@ class ComprehensiveDocstringAutomation:
                 for line in lines:
                     stripped = line.strip()
 
-                    if stripped.startswith('(') and stripped.endswith(')') and ',' in stripped:
+                    if stripped.startswith("(") and stripped.endswith(")") and "," in stripped:
                         continue
 
                     if stripped.startswith('"""') and not in_docstring:
@@ -115,7 +123,7 @@ class ComprehensiveDocstringAutomation:
                         content.append(stripped)
 
                 if content:
-                    return '\n'.join(content).strip()
+                    return "\n".join(content).strip()
 
             return ""
 
@@ -138,7 +146,7 @@ class ComprehensiveDocstringAutomation:
     def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
             func_line_idx = line_number - 1
@@ -154,7 +162,7 @@ class ComprehensiveDocstringAutomation:
             lines.insert(insert_line_idx, docstring_line)
 
             # Write back
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
 
             return True
@@ -192,11 +200,7 @@ class ComprehensiveDocstringAutomation:
             else:
                 print("    ✗ Failed to add docstring")
 
-        return {
-            "file": str(file_path),
-            "functions": added_count,
-            "status": "processed"
-        }
+        return {"file": str(file_path), "functions": added_count, "status": "processed"}
 
     def run_automation(self, target_dirs: List[str]) -> dict:
         """Run the complete automation process."""
@@ -253,13 +257,7 @@ class ComprehensiveDocstringAutomation:
 def main():
     """Main automation function."""
     # Target directories with many missing docstrings
-    target_dirs = [
-        "utils",
-        "tools", 
-        "core_router",
-        "database",
-        "scripts"
-    ]
+    target_dirs = ["utils", "tools", "core_router", "database", "scripts"]
 
     automation = ComprehensiveDocstringAutomation()
 
@@ -271,7 +269,7 @@ def main():
 
     if not auto_confirm:
         response = input("\nProceed? (y/N): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Automation cancelled.")
             return
     else:

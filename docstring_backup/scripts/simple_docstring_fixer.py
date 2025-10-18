@@ -7,12 +7,13 @@ Usage:
     python scripts/simple_docstring_fixer.py [directory_or_file]
 """
 
+import argparse
 import ast
 import os
 import sys
 from pathlib import Path
 from typing import List, Optional, Union
-import argparse
+
 
 class SimpleDocstringFixer:
     """Simple docstring fixer for Python files."""
@@ -37,7 +38,7 @@ class SimpleDocstringFixer:
             True if changes were made, False otherwise
         """
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -57,7 +58,7 @@ class SimpleDocstringFixer:
 
                 # Look for the function definition line and find the colon
                 for i in range(definition_line_idx, min(definition_line_idx + 10, len(lines))):
-                    if ':' in lines[i]:
+                    if ":" in lines[i]:
                         insert_pos = i + 1
                         break
                 else:
@@ -74,8 +75,8 @@ class SimpleDocstringFixer:
                 if self.dry_run:
                     print(f"[DRY RUN] {filepath}: Would add {len(items_to_fix)} docstrings")
                 else:
-                    new_content = '\n'.join(lines)
-                    with open(filepath, 'w', encoding='utf-8') as f:
+                    new_content = "\n".join(lines)
+                    with open(filepath, "w", encoding="utf-8") as f:
                         f.write(new_content)
                     print(f"✓ {filepath}: Added {len(items_to_fix)} docstrings")
 
@@ -99,34 +100,42 @@ class SimpleDocstringFixer:
 
         # Check module level
         has_module_docstring = (
-            len(tree.body) > 0 and
-            isinstance(tree.body[0], ast.Expr) and
-            isinstance(tree.body[0].value, ast.Constant) and
-            isinstance(tree.body[0].value.value, str)
+            len(tree.body) > 0
+            and isinstance(tree.body[0], ast.Expr)
+            and isinstance(tree.body[0].value, ast.Constant)
+            and isinstance(tree.body[0].value.value, str)
         )
 
         if not has_module_docstring:
-            missing.append(('module', 0, 'module', 0))
+            missing.append(("module", 0, "module", 0))
 
         # Walk the AST to find classes and functions
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not self._has_docstring(node):
-                    missing.append(('class', node.lineno, node.name, 8))  # 8 spaces for class docstring
+                    missing.append(
+                        ("class", node.lineno, node.name, 8)
+                    )  # 8 spaces for class docstring
 
                 # Check methods within the class
                 for child in node.body:
                     if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if not self._has_docstring(child) and not child.name.startswith('_'):
-                            missing.append(('method', child.lineno, child.name, 12))  # 12 spaces for method docstring
+                        if not self._has_docstring(child) and not child.name.startswith("_"):
+                            missing.append(
+                                ("method", child.lineno, child.name, 12)
+                            )  # 12 spaces for method docstring
 
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Only top-level functions (not nested or methods)
-                if (not self._has_docstring(node) and
-                    not node.name.startswith('_') and
-                    not node.name.startswith('test_') and
-                    self._is_top_level(node, tree)):
-                    missing.append(('function', node.lineno, node.name, 8))  # 8 spaces for function docstring
+                if (
+                    not self._has_docstring(node)
+                    and not node.name.startswith("_")
+                    and not node.name.startswith("test_")
+                    and self._is_top_level(node, tree)
+                ):
+                    missing.append(
+                        ("function", node.lineno, node.name, 8)
+                    )  # 8 spaces for function docstring
 
         return missing
 
@@ -139,10 +148,12 @@ class SimpleDocstringFixer:
         Returns:
             True if node has a docstring
         """
-        return (len(node.body) > 0 and
-                isinstance(node.body[0], ast.Expr) and
-                isinstance(node.body[0].value, ast.Constant) and
-                isinstance(node.body[0].value.value, str))
+        return (
+            len(node.body) > 0
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        )
 
     def _is_top_level(self, func_node, tree) -> bool:
         """Check if function is at module level (not nested).
@@ -167,15 +178,15 @@ class SimpleDocstringFixer:
         Returns:
             Formatted docstring
         """
-        indent_str = ' ' * indent
+        indent_str = " " * indent
 
-        if item_type == 'module':
+        if item_type == "module":
             return f'"""{self._make_readable(name)} module."""'
-        elif item_type == 'class':
+        elif item_type == "class":
             return f'{indent_str}"""{self._make_readable(name)} class."""'
-        elif item_type == 'function':
+        elif item_type == "function":
             return f'{indent_str}"""{self._make_readable(name)} function."""'
-        elif item_type == 'method':
+        elif item_type == "method":
             return f'{indent_str}"""{self._make_readable(name)} method."""'
         else:
             return f'{indent_str}"""TODO: Add description."""'
@@ -189,29 +200,29 @@ class SimpleDocstringFixer:
         Returns:
             Human readable version
         """
-        if name == 'module':
-            return 'Module'
+        if name == "module":
+            return "Module"
 
         # Handle common patterns
-        if name.endswith('_manager'):
-            return name.replace('_', ' ').replace(' manager', ' manager').title()
-        elif name.endswith('_handler'):
-            return name.replace('_', ' ').replace(' handler', ' handler').title()
-        elif name.startswith('get_'):
+        if name.endswith("_manager"):
+            return name.replace("_", " ").replace(" manager", " manager").title()
+        elif name.endswith("_handler"):
+            return name.replace("_", " ").replace(" handler", " handler").title()
+        elif name.startswith("get_"):
             return f"Get {name[4:].replace('_', ' ')}"
-        elif name.startswith('set_'):
+        elif name.startswith("set_"):
             return f"Set {name[4:].replace('_', ' ')}"
-        elif name.startswith('create_'):
+        elif name.startswith("create_"):
             return f"Create {name[7:].replace('_', ' ')}"
-        elif name.startswith('init_'):
+        elif name.startswith("init_"):
             return f"Initialize {name[5:].replace('_', ' ')}"
-        elif name.startswith('process_'):
+        elif name.startswith("process_"):
             return f"Process {name[8:].replace('_', ' ')}"
-        elif name.startswith('validate_'):
+        elif name.startswith("validate_"):
             return f"Validate {name[9:].replace('_', ' ')}"
         else:
             # Convert snake_case to Title Case
-            return name.replace('_', ' ').title()
+            return name.replace("_", " ").title()
 
     def process_directory(self, directory: Path) -> None:
         """Process all Python files in a directory.
@@ -219,13 +230,26 @@ class SimpleDocstringFixer:
         Args:
             directory: Directory to process recursively
         """
-        python_files = list(directory.rglob('*.py'))
+        python_files = list(directory.rglob("*.py"))
 
         # Filter out common non-source directories
-        python_files = [f for f in python_files if not any(
-            part in str(f) for part in ['.git', '__pycache__', '.pytest_cache',
-                                       'node_modules', '.venv', 'venv', 'build', 'dist']
-        )]
+        python_files = [
+            f
+            for f in python_files
+            if not any(
+                part in str(f)
+                for part in [
+                    ".git",
+                    "__pycache__",
+                    ".pytest_cache",
+                    "node_modules",
+                    ".venv",
+                    "venv",
+                    "build",
+                    "dist",
+                ]
+            )
+        ]
 
         print(f"Found {len(python_files)} Python files to process")
 
@@ -241,13 +265,19 @@ class SimpleDocstringFixer:
         if self.dry_run:
             print("  [DRY RUN] No files were modified")
 
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Add missing docstrings to Python files")
-    parser.add_argument('path', nargs='?', default='.',
-                       help='Directory or file to process (default: current directory)')
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Show what would be changed without making changes')
+    parser.add_argument(
+        "path",
+        nargs="?",
+        default=".",
+        help="Directory or file to process (default: current directory)",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be changed without making changes"
+    )
 
     args = parser.parse_args()
 
@@ -260,7 +290,7 @@ def main():
     fixer = SimpleDocstringFixer(dry_run=args.dry_run)
 
     if target_path.is_file():
-        if target_path.suffix == '.py':
+        if target_path.suffix == ".py":
             fixer.fix_file(target_path)
         else:
             print(f"Error: {target_path} is not a Python file")
@@ -271,5 +301,6 @@ def main():
     fixer.print_summary()
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())
