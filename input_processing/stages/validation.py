@@ -112,11 +112,11 @@ class InputValidator:
                     ThreatLevel.high,
                     "Multiple slashes detected",
                 ),
-                # Mixed slashes with dots - Fixed ReDoS: limit repetitions
+                # Mixed slashes with dots - Two-part detection: relaxed pattern + excessive char check
                 (
-                    re.compile(r"\.{2,5}[\\/]{1,3}\.{2,5}"),
+                    re.compile(r"\.{2,}[\\/]+\.{2,}"),
                     ThreatLevel.high,
-                    "Complex path traversal pattern",
+                    "Path traversal pattern detected",
                 ),
                 # URL encoded path traversal
                 (
@@ -272,6 +272,14 @@ class InputValidator:
                 if pattern.search(text):
                     issues.append(f"{category}: {description}")
                     threat_level = max(threat_level, level, key=lambda x: x.value)
+
+        # Additional check for excessive consecutive characters (ReDoS mitigation)
+        if re.search(r"\.{6,}", text):  # More than 5 consecutive dots
+            issues.append("path_traversal: Excessive consecutive dots detected")
+            threat_level = max(threat_level, ThreatLevel.high, key=lambda x: x.value)
+        if re.search(r"[\\/]{4,}", text):  # More than 3 consecutive slashes
+            issues.append("path_traversal: Excessive consecutive slashes detected")
+            threat_level = max(threat_level, ThreatLevel.high, key=lambda x: x.value)
 
         # Windows reserved filename check
         # Check both the full text and any potential filename components

@@ -19,6 +19,10 @@ from utils.logger import Logger
 
 from .vector_search import VectorSearchEngine
 
+# Security constants for DoS protection
+MAX_INPUT_CHARS = 4096  # Maximum input length for processing (4KB)
+MAX_CONTENT_CHARS = 8192  # Maximum content length for processing (8KB)
+
 
 class SearchHistory:
     """Manages search history and suggestions"""
@@ -36,8 +40,9 @@ class SearchHistory:
         }
         self.history.append(entry)
 
-        # Update term frequency for suggestions
-        terms: list[str] = query.lower().split(None, 50)[:50]  # Fixed DoS: limit terms
+        # Update term frequency for suggestions - truncate before split to prevent DoS
+        truncated_query = query[:MAX_INPUT_CHARS]
+        terms: list[str] = truncated_query.lower().split(None, 50)[:50]
         self.term_frequency.update(terms)
 
     def get_suggestions(self, partial_query: str, limit: int = 5) -> list[str]:
@@ -119,8 +124,9 @@ class InputValidator:
         if not query:
             return False, "", "Query cannot be empty"
 
-        # Remove excessive whitespace - Fixed DoS: limit split operations
-        sanitized = " ".join(query.split(None, 100)[:100])
+        # Remove excessive whitespace - truncate first then split to prevent DoS
+        truncated_query = query[:MAX_INPUT_CHARS]
+        sanitized = " ".join(truncated_query.split(None, 100)[:100])
 
         # Check length
         if len(sanitized) < 2:
@@ -431,8 +437,9 @@ class EnhancedContextProvider:
         if results:
             term_counter = Counter()
             for result in results[:3]:  # Top 3 results
-                # Extract nouns and important terms from content
-                words = result["content"].lower().split(None, 200)[:200]  # Fixed DoS: limit words
+                # Extract nouns and important terms from content - truncate before processing
+                truncated_content = result["content"][:MAX_CONTENT_CHARS]
+                words = truncated_content.lower().split(None, 200)[:200]
                 important_words = [w for w in words if len(w) > 4 and w not in query.lower()]
                 term_counter.update(important_words)
 
