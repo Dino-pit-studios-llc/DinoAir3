@@ -126,6 +126,7 @@ class TelemetryRecorder:
     @staticmethod
     @contextmanager
     def timed_section(name: str, extra: dict | None = None):
+            """Timed Section method."""
         start = time.perf_counter()
         try:
             yield
@@ -232,6 +233,7 @@ class TelemetryRecorder:
             pass
 
     def snapshot(self) -> dict:
+            """Snapshot method."""
         # Return safe copy to avoid concurrent mutation issues
         with self._lock:
             events_copy: dict[str, dict[str, Any]] = {}
@@ -316,11 +318,13 @@ class NoOpTelemetryRecorder:
     @staticmethod
     @contextmanager
     def timed_section(name: str, extra: dict | None = None):
+            """Timed Section method."""
         yield
 
     @staticmethod
     def record_event(
         name: str,
+            """Record Event method."""
         duration_ms: float | None = None,
         extra: dict | None = None,
         counters: dict[str, int] | None = None,
@@ -329,6 +333,7 @@ class NoOpTelemetryRecorder:
 
     @staticmethod
     def snapshot() -> dict:
+            """Snapshot method."""
         # Explicitly empty dictionary to satisfy "empty when disabled" requirement
         return {}
 

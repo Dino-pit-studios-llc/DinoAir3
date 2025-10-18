@@ -26,6 +26,7 @@ def _is_safe_expr(val: str | None) -> bool:
 
 
 def build_pytest_cmd(args):
+        """Build Pytest Cmd function."""
     cmd = [sys.executable, "-m", "pytest"]
     verbosity_map = {
         "very_verbose": "-vv",
@@ -142,6 +143,7 @@ def add_general_args(parser):
 
 
 def run_post_quality_format_check(args):
+        """Run Post Quality Format Check function."""
     if args.all_checks or args.format:
         return run_command(
             [
@@ -157,6 +159,7 @@ def run_post_quality_format_check(args):
 
 
 def run_pytest_based_on_args(args):
+        """Run Pytest Based On Args function."""
     cmd = build_pytest_cmd(args)
     if args.mark and _is_safe_expr(args.mark):
         cmd.extend(["-m", args.mark])

@@ -21,21 +21,27 @@ except Exception:  # pragma: no cover - fallback for test environments without d
             raise NotImplementedError()
 
         def increment(self, *args, **kwargs):
+            """Increment method."""
             raise NotImplementedError()
 
         def decrement(self, *args, **kwargs):
+            """Decrement method."""
             raise NotImplementedError()
 
         def gauge(self, *args, **kwargs):
+            """Gauge method."""
             raise NotImplementedError()
 
         def histogram(self, *args, **kwargs):
+            """Histogram method."""
             raise NotImplementedError()
 
         def timing(self, *args, **kwargs):
+            """Timing method."""
             raise NotImplementedError()
 
         def close(self):
+            """Close method."""
             raise NotImplementedError()
 
 

@@ -25,12 +25,14 @@ class DatabaseManager(Protocol):
     """Protocol for database manager interface"""
 
     def get_artifacts_connection(self) -> sqlite3.Connection: ...
+            """Get artifacts connection method."""
 
     base_dir: Path
     user_name: str
 
 
 class ArtifactCreateResult(TypedDict):
+        """Artifactcreateresult class."""
     id: str
     storage_uri: str | None
     checksum: str | None
@@ -41,6 +43,7 @@ class ArtifactCreateResult(TypedDict):
 
 
 class ArtifactStats(TypedDict):
+        """Artifactstats class."""
     total_artifacts: int
     artifacts_by_type: dict[str, int]
     total_size_bytes: int

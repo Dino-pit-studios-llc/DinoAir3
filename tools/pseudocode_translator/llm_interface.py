@@ -55,14 +55,17 @@ if _ImportedModelManager is None:
 
         @staticmethod
         def get_model(*args, **kwargs):
+            """Get model method."""
             return None
 
         @staticmethod
         def load_model(*args, **kwargs):
+            """Load Model method."""
             return None
 
         @staticmethod
         def unload_model(*args, **kwargs):
+            """Unload Model method."""
             return None
 
         @staticmethod
@@ -75,6 +78,7 @@ if _ImportedModelManager is None:
 
         @staticmethod
         def get_memory_usage(*args, **kwargs):
+            """Get memory usage method."""
             return {}
 
     ModelManagerRef = _FallbackModelManager

@@ -11,6 +11,7 @@ class SupportsPing(Protocol):
     """Protocol for objects supporting a ping method to check availability and connectivity."""
 
     def ping(self) -> bool: ...
+            """Ping method."""
 
 
 class HealthState(str, Enum):

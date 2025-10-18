@@ -258,6 +258,7 @@ class LogicValidator:
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
+            """Visit Functiondef method."""
                 found_return = False
                 for stmt in node.body:
                     if found_return and not isinstance(stmt, ast.Pass):
@@ -284,12 +285,14 @@ class LogicValidator:
                 self.issues = []
 
             def visit_Assign(self, node: ast.Assign):
+            """Visit Assign method."""
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         self.assigned.add(target.id)
                 self.generic_visit(node)
 
             def visit_Name(self, node: ast.Name):
+            """Visit Name method."""
                 if isinstance(node.ctx, ast.Load):
                     self.used.add(node.id)
 
@@ -310,6 +313,7 @@ class LogicValidator:
                 self.issues = []
 
             def visit_While(self, node: ast.While):
+            """Visit While method."""
                 # Check for simple infinite loops
                 if isinstance(node.test, ast.Constant) and node.test.value is True:
                     # Check if there's a break statement
@@ -332,6 +336,7 @@ class LogicValidator:
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
+            """Visit Functiondef method."""
                 if not node.body:
                     return
 

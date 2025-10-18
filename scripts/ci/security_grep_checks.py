@@ -7,6 +7,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 NOSEC_MARKERS = ("# nosec", "# noqa", "# security: allow")
+"""Module module."""
 # Compile-time regex patterns (Python re supports lookaheads, \s, etc.)
 PATTERNS = {
     "shell_true_subprocess": re.compile(
@@ -33,6 +34,7 @@ PATTERNS = {
 
 
 def read_text(p: Path) -> str:
+        """Read Text function."""
     try:
         return p.read_text(encoding="utf-8", errors="replace")
     except Exception:
@@ -40,15 +42,18 @@ def read_text(p: Path) -> str:
 
 
 def is_python_file(p: Path) -> bool:
+        """Is Python File function."""
     return p.suffix == ".py"
 
 
 def is_in_tests(p: Path) -> bool:
+        """Is In Tests function."""
     parts = p.parts
     return "tests" in parts
 
 
 def is_utils_process(p: Path) -> bool:
+        """Is Utils Process function."""
     # Only the wrapper module is allowed to use subprocess directly or with shell=True.
     try:
         rel = p.relative_to(REPO_ROOT).as_posix()
@@ -58,10 +63,12 @@ def is_utils_process(p: Path) -> bool:
 
 
 def is_in_database(p: Path) -> bool:
+        """Is In Database function."""
     return "database" in p.parts
 
 
 def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
+        """Line And Col For function."""
     # Compute line (1-based) and column (0-based)
     line = text.count("\n", 0, idx) + 1
     last_nl = text.rfind("\n", 0, idx)
@@ -70,6 +77,7 @@ def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
 
 
 def has_nosec_on_line(text: str, line_no: int) -> bool:
+        """Has Nosec On Line function."""
     lines = text.splitlines()
     if 1 <= line_no <= len(lines):
         line = lines[line_no - 1]
@@ -90,6 +98,7 @@ def is_safe_import_wrapper(p: Path) -> bool:
 
 
 def report(file: Path, line: int, col: int, rule: str, message: str):
+        """Report function."""
     # Standard "path:line:col: message" format for pre-commit CI consumption
     print(f"{file.as_posix()}:{line}:{col}: {rule}: {message}")
 
@@ -226,6 +235,7 @@ def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
 
 
 def main() -> int:
+        """Main function."""
     args = _parse_args()
     warn_sql = bool(getattr(args, "warn_sql", False))
     all_findings = []

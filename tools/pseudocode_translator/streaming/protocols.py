@@ -93,6 +93,7 @@ class ControlMessage(StreamMessage):
     parameters: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+            """To Dict method."""
         data = super().to_dict()
         data.update({"command": self.command, "parameters": self.parameters})
         return data
@@ -109,6 +110,7 @@ class DataMessage(StreamMessage):
     compressed: bool = False
 
     def to_dict(self) -> dict[str, Any]:
+            """To Dict method."""
         data = super().to_dict()
         data.update(
             {
@@ -138,6 +140,7 @@ class TranslationUpdateMessage(StreamMessage):
         super().__init__(MessageType.translation_update)
 
     def to_dict(self) -> dict[str, Any]:
+            """To Dict method."""
         data = super().to_dict()
         data.update(
             {
@@ -170,6 +173,7 @@ class ProgressMessage(StreamMessage):
             self.percentage = (self.completed_items / self.total_items) * 100
 
     def to_dict(self) -> dict[str, Any]:
+            """To Dict method."""
         data = super().to_dict()
         data.update(
             {
@@ -199,6 +203,7 @@ class ErrorMessage(StreamMessage):
         super().__init__(MessageType.error)
 
     def to_dict(self) -> dict[str, Any]:
+            """To Dict method."""
         data = super().to_dict()
         data.update(
             {

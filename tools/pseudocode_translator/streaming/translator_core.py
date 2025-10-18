@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_success(parse_result) -> bool:
+        """Parse Success function."""
     success_attr = getattr(parse_result, "success", None)
     if isinstance(success_attr, bool):
         return success_attr
@@ -24,6 +25,7 @@ def parse_success(parse_result) -> bool:
 
 def parse_and_translate_blocks(
     translator: StreamingTranslator,
+        """Parse And Translate Blocks function."""
     text: str,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None = None,
@@ -62,6 +64,7 @@ def parse_and_translate_blocks(
 
 def translate_chunk_blocks(
     translator: StreamingTranslator,
+        """Translate Chunk Blocks function."""
     parse_result,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None,
@@ -86,6 +89,7 @@ def translate_chunk_blocks(
 
 def translate_block(
     translator: StreamingTranslator,
+        """Translate Block function."""
     block: CodeBlock,
     chunk_index: int,
     _block_index: int,
@@ -126,6 +130,7 @@ def translate_block(
 
 
 def is_complete_statement(text: str) -> bool:
+        """Is Complete Statement function."""
     t = text.strip()
     if not t:
         return False
@@ -142,6 +147,7 @@ def is_complete_statement(text: str) -> bool:
 
 def process_statement(
     translator: StreamingTranslator,
+        """Process statement function."""
     statement: str,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None,
@@ -153,6 +159,7 @@ def process_statement(
 def process_accumulated_blocks(
     translator,
     accumulated_input: list[str],
+        """Process accumulated blocks function."""
     on_update: Callable[[TranslationUpdate], None] | None,
 ):
     current_input = "".join(accumulated_input)

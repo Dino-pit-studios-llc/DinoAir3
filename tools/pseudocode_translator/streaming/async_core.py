@@ -40,6 +40,7 @@ class StreamingTranslatorProto(Protocol):
 
 async def async_translate_line_by_line(
     translator: StreamingTranslatorProto,
+        """Async Translate Line By Line function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:
@@ -64,6 +65,7 @@ async def async_translate_line_by_line(
 
 async def async_translate_block_by_block(
     translator: StreamingTranslatorProto,
+        """Async Translate Block By Block function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:

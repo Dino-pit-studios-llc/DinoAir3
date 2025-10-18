@@ -152,6 +152,7 @@ def _translate_english_block(translator: StreamingTranslator, block, context: di
 
 def interactive_translate(
     translator: StreamingTranslator,
+        """Interactive Translate function."""
     input_stream: Iterator[str],
     on_update=None,
 ):
@@ -173,6 +174,7 @@ def interactive_translate(
 
 async def interactive_translate_async(
     translator: StreamingTranslator,
+        """Interactive Translate Async function."""
     input_stream: AsyncIterator[str],
     on_update=None,
 ):

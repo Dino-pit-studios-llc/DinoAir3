@@ -117,6 +117,7 @@ def _now_rfc3339() -> str:
 
 def error_response(
     status: int,
+        """Error Response function."""
     code: str,
     message: str,
     *,

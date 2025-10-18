@@ -1,3 +1,4 @@
+"""Module module."""
 # DinoAir2.0dev - ResilientDB.py
 # This file provides a resilient database wrapper for SQLite, ensuring safe initialization and recovery.
 

@@ -788,20 +788,25 @@ def create_stream_handler(
                 self.file_obj = file_obj
 
             def read(self, size=-1):
+            """Read method."""
                 return self.file_obj.read(size)
 
             def write(self, data):
+            """Write method."""
                 return self.file_obj.write(data)
 
             def close(self):
+            """Close method."""
                 if hasattr(self.file_obj, "close"):
                     self.file_obj.close()
                 self.is_closed = True
 
             def is_readable(self):
+            """Is Readable method."""
                 return _has_method_and_open(self, "read")
 
             def is_writable(self):
+            """Is Writable method."""
                 return _has_method_and_open(self, "write")
 
         return WrapperStreamHandler(source, config)

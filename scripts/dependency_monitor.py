@@ -683,6 +683,7 @@ if __name__ == "__main__":
 
 
 def handle_monitor(monitor: DependencyMonitor, continuous: bool, interval: int) -> None:
+        """Handle Monitor function."""
     if continuous:
         print(f"Starting continuous monitoring (interval: {interval}s)")
         try:
@@ -699,6 +700,7 @@ def handle_monitor(monitor: DependencyMonitor, continuous: bool, interval: int) 
 
 
 def parse_args() -> argparse.Namespace:
+        """Parse Args function."""
     parser = argparse.ArgumentParser(
         description="Dependency monitoring for DinoAir",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -735,11 +737,13 @@ def parse_args() -> argparse.Namespace:
 
 
 def validate_path(path: Path) -> None:
+        """Validate path function."""
     if not path.exists():
         raise FileNotFoundError(f"Path not found: {path}")
 
 
 def execute_monitor(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
+        """Execute Monitor function."""
     if args.continuous:
         handle_monitor(monitor, args.continuous, args.interval)
     else:
@@ -777,6 +781,7 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
 
 
 def execute_alert(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
+        """Execute Alert function."""
     # Placeholder for alert implementation
     pass
 
@@ -798,11 +803,13 @@ def execute_visualize(monitor: DependencyMonitor, args: argparse.Namespace) -> N
 
 
 def execute_performance(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
+        """Execute Performance function."""
     # Placeholder for performance implementation
     pass
 
 
 def execute_command(args: argparse.Namespace) -> None:
+        """Execute Command function."""
     monitor = DependencyMonitor(args.path)
     commands = {
         "monitor": execute_monitor,
@@ -819,6 +826,7 @@ def execute_command(args: argparse.Namespace) -> None:
 
 
 def format_output(report: Any, fmt: str) -> str:
+        """Format Output function."""
     if fmt == "json":
         return json.dumps(report, indent=2)
     if fmt == "html":

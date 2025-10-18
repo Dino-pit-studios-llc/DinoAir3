@@ -105,6 +105,7 @@ except ImportError as e:
         @staticmethod
         async def dispatch(
             request: Any, call_next: Callable[[Any], Awaitable[Response]]
+            """Dispatch method."""
         ) -> Response:
             return await call_next(request)
 
@@ -125,6 +126,7 @@ except ImportError as e:
             self.path = path
 
         def replace(self, scheme: str):
+            """Replace method."""
             return _MockURL(scheme=scheme, path=self.path)
 
     class Request:  # noqa: D401

@@ -1,3 +1,4 @@
+"""Module module."""
 from __future__ import annotations
 
 import contextlib
@@ -65,6 +66,7 @@ class _ImmediateFallback:
         self.reason = reason
 
     def result(self, timeout: float | None = None):
+            """Result method."""
         raise RuntimeError(f"exec_pool_fallback:{self.reason}")
 
 
@@ -164,6 +166,7 @@ class ParseValidateExecutor:
         self._ensure_pool()
 
     def shutdown(self, wait: bool = True) -> None:
+            """Shutdown method."""
         if self._pool:
             with contextlib.suppress(Exception):
                 self._pool.shutdown(wait=wait, cancel_futures=True)
@@ -172,6 +175,7 @@ class ParseValidateExecutor:
     # ----- submission -----
 
     def submit_parse(self, text: str):
+            """Submit Parse method."""
         # job size guardrail
         cap = int(self._config.process_pool_job_max_chars)
         if cap > 0 and len(text) > cap:
@@ -193,6 +197,7 @@ class ParseValidateExecutor:
         return self._TaskHandle(self, spec, fut)
 
     def submit_validate(self, ast_obj):
+            """Submit Validate method."""
         # respect target
         if self._config.process_pool_target not in {"parse_validate", "validate_only"}:
             return _ImmediateFallback("target_disabled")
@@ -226,6 +231,7 @@ class ParseValidateExecutor:
             return ms / 1000.0
 
         def result(self, timeout: float | None = None):
+            """Result method."""
             timeout_sec = timeout if timeout is not None else self._timeout_seconds()
             max_attempts = 5  # Fixed DoS: limit retry attempts
             attempt = 0
