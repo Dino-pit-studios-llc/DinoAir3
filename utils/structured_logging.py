@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, cast
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-# Type aliases to avoid cast string literal duplication  
+# Type aliases to avoid cast string literal duplication
 DictStrAny = dict[str, Any]
 
 REDACT_KEYS = {
@@ -112,9 +112,7 @@ class RedactionFilter(logging.Filter):
                     if isinstance(v, dict):
                         record.__dict__[k] = self._redact_mapping(cast(DictStrAny, v))
                     elif isinstance(v, list | tuple):
-                        record.__dict__[k] = [
-                            RedactionFilter._mask_value(x) for x in v
-                        ]
+                        record.__dict__[k] = [RedactionFilter._mask_value(x) for x in v]
                     elif isinstance(v, str) and v in _ENV_SECRET_VALUES:
                         record.__dict__[k] = _REDACTED_VALUE
         except RuntimeError:

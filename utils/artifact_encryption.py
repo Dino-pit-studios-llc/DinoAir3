@@ -28,7 +28,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class ArtifactEncryption:
     """
     Handles field-level encryption for artifacts using AES-256-GCM
-    
+
     Uses authenticated encryption (GCM mode) for security.
     Maintains backward compatibility with legacy CBC encrypted data.
     """
@@ -107,7 +107,7 @@ class ArtifactEncryption:
         # Generate nonce and encrypt using AES-GCM
         nonce = self.generate_nonce()
         aesgcm = AESGCM(key)
-        
+
         # GCM mode provides authentication and encryption in one step
         encrypted = aesgcm.encrypt(nonce, data_bytes, None)
 
@@ -140,7 +140,7 @@ class ArtifactEncryption:
             encrypted = base64.b64decode(encrypted_data["data"])
             salt = base64.b64decode(encrypted_data["salt"])
             nonce = base64.b64decode(encrypted_data["nonce"])
-            
+
             # Derive key if not provided
             if key is None:
                 key = self.derive_key(self.password, salt)
@@ -151,7 +151,7 @@ class ArtifactEncryption:
         else:
             # Legacy CBC format - maintain backward compatibility
             from cryptography.hazmat.primitives import padding
-            
+
             encrypted = base64.b64decode(encrypted_data["data"])
             salt = base64.b64decode(encrypted_data["salt"])
             iv = base64.b64decode(encrypted_data["iv"])
