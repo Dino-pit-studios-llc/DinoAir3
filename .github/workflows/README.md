@@ -59,18 +59,20 @@ This directory contains CI/CD pipeline workflows for DinoAir3.
 
 See [SECRETS_SETUP.md](./SECRETS_SETUP.md) for detailed instructions.
 
-Quick commands:
-```bash
-# Using GitHub CLI
-gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "57bf25909dcf40a7b25b5177de1436e9"
-gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "dsp_bbee27baf1dfad854b491f14005cdb58939e"
+⚠️ **IMPORTANT:** You must obtain your actual secrets from Codacy and DeepSource dashboards. See [SECRETS_SETUP.md](../SECRETS_SETUP.md) for instructions.
 
-# Using the automated script
+Quick commands (replace placeholders with your actual secrets):
+```bash
+# Using GitHub CLI - REPLACE PLACEHOLDER VALUES WITH YOUR ACTUAL SECRETS
+gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_CODACY_TOKEN"
+gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_DEEPSOURCE_DSN"
+
+# Using the automated script - EDIT THE SCRIPT FIRST TO ADD YOUR ACTUAL SECRETS
 chmod +x configure-secrets.sh
 ./configure-secrets.sh
 ```
 
-Or manually through GitHub UI:
+Or manually through GitHub UI (recommended):
 - Settings > Secrets and variables > Actions > New repository secret
 
 ### 2. Push Workflow File

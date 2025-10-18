@@ -13,21 +13,33 @@ This guide provides step-by-step instructions for configuring GitHub secrets for
 
 1. Click **New repository secret** button
 2. Enter the secret name: `CODACY_PROJECT_TOKEN`
-3. Enter the secret value:
+3. **Get your actual token from Codacy:**
+   - Log in to [Codacy](https://app.codacy.com)
+   - Navigate to your DinoAir3 project
+   - Go to **Settings → Coverage → Project API token**
+   - Copy your project token
+4. Enter the secret value with your actual token (NOT the placeholder):
    ```
-   57bf25909dcf40a7b25b5177de1436e9
+   YOUR_ACTUAL_CODACY_TOKEN_HERE
    ```
-4. Click **Add secret**
+   ⚠️ **Note:** The value `57bf25909dcf40a7b25b5177de1436e9` is a PLACEHOLDER example. You must use your actual Codacy token.
+5. Click **Add secret**
 
 ### Step 3: Add DEEPSOURCE_DSN
 
 1. Click **New repository secret** button
 2. Enter the secret name: `DEEPSOURCE_DSN`
-3. Enter the secret value:
+3. **Get your actual DSN from DeepSource:**
+   - Log in to [DeepSource](https://deepsource.io)
+   - Navigate to your DinoAir3 repository
+   - Go to **Settings → Code Coverage**
+   - Copy your repository DSN (starts with `dsp_`)
+4. Enter the secret value with your actual DSN (NOT the placeholder):
    ```
-   dsp_bbee27baf1dfad854b491f14005cdb58939e
+   YOUR_ACTUAL_DEEPSOURCE_DSN_HERE
    ```
-4. Click **Add secret**
+   ⚠️ **Note:** The value `dsp_bbee27baf1dfad854b491f14005cdb58939e` is a PLACEHOLDER example. You must use your actual DeepSource DSN.
+5. Click **Add secret**
 
 ### Verification
 
@@ -62,14 +74,16 @@ If you prefer to run commands manually:
 gh auth login
 
 # Set CODACY_PROJECT_TOKEN
+# ⚠️ Replace YOUR_ACTUAL_CODACY_TOKEN_HERE with your real token from Codacy dashboard
 gh secret set CODACY_PROJECT_TOKEN \
   --repo Dino-pit-studios-llc/DinoAir3 \
-  --body "57bf25909dcf40a7b25b5177de1436e9"
+  --body "YOUR_ACTUAL_CODACY_TOKEN_HERE"
 
 # Set DEEPSOURCE_DSN
+# ⚠️ Replace YOUR_ACTUAL_DEEPSOURCE_DSN_HERE with your real DSN from DeepSource dashboard
 gh secret set DEEPSOURCE_DSN \
   --repo Dino-pit-studios-llc/DinoAir3 \
-  --body "dsp_bbee27baf1dfad854b491f14005cdb58939e"
+  --body "YOUR_ACTUAL_DEEPSOURCE_DSN_HERE"
 
 # Verify secrets were added
 gh secret list --repo Dino-pit-studios-llc/DinoAir3

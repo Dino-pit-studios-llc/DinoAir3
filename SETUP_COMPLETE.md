@@ -116,22 +116,25 @@ Workflows run automatically on:
 
 The CI/CD pipeline is configured but requires **two secrets** to be added to GitHub before it will work fully.
 
-**Required secrets:**
-1. `CODACY_PROJECT_TOKEN` = `57bf25909dcf40a7b25b5177de1436e9`
-2. `DEEPSOURCE_DSN` = `dsp_bbee27baf1dfad854b491f14005cdb58939e`
+⚠️ **CRITICAL:** The values previously shown were PLACEHOLDER examples. You **MUST** obtain your actual secrets:
+
+**How to get your actual secrets:**
+1. **Codacy Token:** Log in to [Codacy](https://app.codacy.com) → Your Project → Settings → Coverage → Project API token
+2. **DeepSource DSN:** Log in to [DeepSource](https://deepsource.io) → Your Repository → Settings → Code Coverage → DSN (starts with `dsp_`)
 
 **Add them at:**
 https://github.com/Dino-pit-studios-llc/DinoAir3/settings/secrets/actions
 
 **Quick setup:**
 ```bash
-# Option 1: Use automated script
+# Option 1: Use automated script (edit the script first to add your actual secrets)
 chmod +x .github/configure-secrets.sh
+# Edit .github/configure-secrets.sh to replace placeholder values with your actual secrets
 .github/configure-secrets.sh
 
-# Option 2: GitHub CLI
-gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "57bf25909dcf40a7b25b5177de1436e9"
-gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "dsp_bbee27baf1dfad854b491f14005cdb58939e"
+# Option 2: GitHub CLI (replace placeholders with your actual secrets)
+gh secret set CODACY_PROJECT_TOKEN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_CODACY_TOKEN"
+gh secret set DEEPSOURCE_DSN --repo Dino-pit-studios-llc/DinoAir3 -b "YOUR_ACTUAL_DEEPSOURCE_DSN"
 
 # Option 3: Manual in GitHub Settings UI
 # See .github/SECRETS_SETUP.md for detailed instructions
