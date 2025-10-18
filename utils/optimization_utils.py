@@ -129,9 +129,9 @@ class OptimizedPatterns:
     url_pattern = re.compile(r"^https?://[^\s/$.?#].[^\s]*$")
     phone_pattern = re.compile(r"^\+?[\d\s\-\(\)]{10,}$")
 
-    # Code patterns
+    # Code patterns - Fixed ReDoS: limit repetitions and avoid nested quantifiers
     import_pattern = re.compile(
-        r"^(?:from\s+\w+(?:\.\w+)*\s+import\s+[\w\s,]+|import\s+\w+(?:\.\w+)*)"
+        r"^(?:from\s+\w+(?:\.\w+){0,10}\s+import\s+[\w\s,]{1,200}|import\s+\w+(?:\.\w+){0,10})"
     )
     comment_pattern = re.compile(r"#.*$", re.MULTILINE)
     string_pattern = re.compile(r'["\'](?:[^"\\]|\\.)*["\']')
@@ -140,9 +140,9 @@ class OptimizedPatterns:
     file_extension_pattern = re.compile(r"\.([a-zA-Z0-9]+)$")
     path_pattern = re.compile(r"^[a-zA-Z]:\\|^/|^[a-zA-Z0-9._-]+/")
 
-    # JSON patterns
+    # JSON patterns - Fixed ReDoS: avoid nested quantifiers
     json_key_pattern = re.compile(r'"([^\"]+)":\s*')
-    json_string_pattern = re.compile(r'"([^"\\]|\\.)*"')
+    json_string_pattern = re.compile(r'"[^"\\]*(?:\\.[^"\\]*)*"')
 
     @classmethod
     def match_function(cls, code: str) -> re.Match[str] | None:

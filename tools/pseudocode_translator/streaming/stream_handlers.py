@@ -106,11 +106,14 @@ class StreamHandler(ABC):
     def readline(self, size: int = -1) -> str:
         """Read a single line from stream"""
         line = []
-        while True:
+        max_chars = 10000 if size < 0 else min(size, 10000)  # Fixed DoS: limit line length
+        chars_read = 0
+        while chars_read < max_chars:
             char = self.read(1)
             if not char or char == "\n":
                 break
             line.append(char)
+            chars_read += 1
             if size > 0 and len(line) >= size:
                 break
         return "".join(line) + (char if char == "\n" else "")

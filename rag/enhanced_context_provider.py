@@ -37,7 +37,7 @@ class SearchHistory:
         self.history.append(entry)
 
         # Update term frequency for suggestions
-        terms: list[str] = query.lower().split()
+        terms: list[str] = query.lower().split(None, 50)[:50]  # Fixed DoS: limit terms
         self.term_frequency.update(terms)
 
     def get_suggestions(self, partial_query: str, limit: int = 5) -> list[str]:
@@ -119,8 +119,8 @@ class InputValidator:
         if not query:
             return False, "", "Query cannot be empty"
 
-        # Remove excessive whitespace
-        sanitized = " ".join(query.split())
+        # Remove excessive whitespace - Fixed DoS: limit split operations
+        sanitized = " ".join(query.split(None, 100)[:100])
 
         # Check length
         if len(sanitized) < 2:
@@ -432,7 +432,7 @@ class EnhancedContextProvider:
             term_counter = Counter()
             for result in results[:3]:  # Top 3 results
                 # Extract nouns and important terms from content
-                words = result["content"].lower().split()
+                words = result["content"].lower().split(None, 200)[:200]  # Fixed DoS: limit words
                 important_words = [w for w in words if len(w) > 4 and w not in query.lower()]
                 term_counter.update(important_words)
 

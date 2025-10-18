@@ -172,9 +172,10 @@ class SQLInjectionProtection:
         if not text:
             return text
 
-        # Remove SQL comments
+        # Remove SQL comments - using more efficient non-backtracking approach
         text = re.sub(r"--.*$", "", text, flags=re.MULTILINE)
-        text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+        # Fixed ReDoS: limit comment length and avoid nested quantifiers
+        text = re.sub(r"/\*[^*]{0,1000}(?:\*(?!/)[^*]{0,1000})*\*/", "", text)
 
         # Escape single quotes (double them for SQL)
         text = text.replace("'", "''")

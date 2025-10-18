@@ -227,11 +227,14 @@ class ParseValidateExecutor:
 
         def result(self, timeout: float | None = None):
             timeout_sec = timeout if timeout is not None else self._timeout_seconds()
-            while True:
+            max_attempts = 5  # Fixed DoS: limit retry attempts
+            attempt = 0
+            while attempt < max_attempts:
+                attempt += 1
                 try:
                     return self._get_result_with_telemetry(timeout_sec)
                 except (TimeoutError, BrokenProcessPool) as e:
-                    if self._try_retry_on_timeout(timeout_sec):
+                    if attempt < max_attempts and self._try_retry_on_timeout(timeout_sec):
                         continue
                     self._emit_fallback_and_raise(e)
                 except Exception:

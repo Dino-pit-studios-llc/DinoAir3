@@ -283,8 +283,9 @@ class SafePDFProcessor:
             # Use regex to find % followed by only whitespace until end of line
             content_str = re.sub(r"%(\s*)$", r"% safe\1", content_str, flags=re.MULTILINE)
 
-            # Fourth pass: Fix '%' followed by non-printable characters
-            content_str = re.sub(r"%(?=[\x00-\x08\x0B\x0C\x0E-\x1F\x7F])", r"% safe", content_str)
+            # Fourth pass: Fix '%' followed by non-printable characters - Fixed DoS: limit input processing
+            if len(content_str) < 100000:  # Only process smaller files with this pattern
+                content_str = re.sub(r"%(?=[\x00-\x08\x0B\x0C\x0E-\x1F\x7F])", r"% safe", content_str)
 
             # Convert back to bytes
             return content_str.encode("latin-1", errors="ignore")

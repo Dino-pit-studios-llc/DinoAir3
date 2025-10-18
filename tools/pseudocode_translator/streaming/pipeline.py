@@ -314,8 +314,11 @@ class StreamingPipeline:
         # Calculate combined window limit
         combined_limit = self._calculate_combined_limit()
 
-        # Submission/collection loop
-        while True:
+        # Submission/collection loop - Fixed DoS: add iteration limit
+        max_iterations = 10000  # Prevent infinite loops
+        iteration = 0
+        while iteration < max_iterations:
+            iteration += 1
             # Submit additional chunks up to limit
             self._submit_pending_chunks(futures, chunk_iter, combined_limit)
 

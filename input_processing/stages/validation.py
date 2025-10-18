@@ -112,9 +112,9 @@ class InputValidator:
                     ThreatLevel.high,
                     "Multiple slashes detected",
                 ),
-                # Mixed slashes with dots
+                # Mixed slashes with dots - Fixed ReDoS: limit repetitions
                 (
-                    re.compile(r"\.{2,}[\\/]+\.{2,}"),
+                    re.compile(r"\.{2,5}[\\/]{1,3}\.{2,5}"),
                     ThreatLevel.high,
                     "Complex path traversal pattern",
                 ),
@@ -130,9 +130,9 @@ class InputValidator:
                     "URL encoded path traversal: ..%5C",
                 ),
                 (re.compile(r"%2[Ee]%2[Ee]"), ThreatLevel.high, "URL encoded dots"),
-                # Double encoded
+                # Double encoded - Fixed ReDoS: use literal matching
                 (
-                    re.compile(r"%252[Ee]%252[Ee]%252[Ff]"),
+                    re.compile(r"%252e%252e%252f", re.IGNORECASE),
                     ThreatLevel.high,
                     "Double encoded path traversal",
                 ),
