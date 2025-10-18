@@ -534,15 +534,6 @@ def create_security_audit_manager(
 _audit_manager: SecurityAuditManager | None = None
 
 
-_audit_manager = None
-
-
-_audit_manager: SecurityAuditManager = None
-
-
-_audit_manager: SecurityAuditManager = None
-
-
 def get_audit_manager() -> SecurityAuditManager:
     """Get the global audit manager instance."""
     if getattr(get_audit_manager, "audit_manager", None) is None:
