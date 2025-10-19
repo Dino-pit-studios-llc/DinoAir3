@@ -129,9 +129,8 @@ class PydocstringWrapper:
                     return "TODO: Add docstring."
 
                 return final_content
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
             return ""

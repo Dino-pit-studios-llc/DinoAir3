@@ -134,14 +134,13 @@ class ComprehensiveDocstringAutomation:
         """Generate a simple fallback docstring."""
         if func_name == "__init__":
             return "Initialize the instance."
-        elif func_name.startswith("get_"):
+        if func_name.startswith("get_"):
             return f"Get {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("set_"):
+        if func_name.startswith("set_"):
             return f"Set {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("is_") or func_name.startswith("has_"):
+        if func_name.startswith("is_") or func_name.startswith("has_"):
             return f"Check if {func_name[3:].replace('_', ' ')}."
-        else:
-            return f"TODO: Add docstring for {func_name}."
+        return f"TODO: Add docstring for {func_name}."
 
     def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
