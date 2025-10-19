@@ -45,7 +45,7 @@ All 15 High and Critical security issues detected by Codacy have been resolved. 
 
 ---
 
-### 6. Encryption Mode Without Message Authentication (HIGH)
+### 7. Encryption Mode Without Message Authentication (HIGH)
 
 **Issue**: Legacy CBC encryption mode in `utils/artifact_encryption.py` line 164 did not include message authentication, allowing potential tampering.
 
