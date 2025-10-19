@@ -9,9 +9,10 @@ Usage:
 
 import argparse
 import ast
+import os
 import sys
 from pathlib import Path
-import os
+
 
 class SimpleDocstringFixer:
     """Simple docstring fixer for Python files."""
@@ -29,6 +30,7 @@ class SimpleDocstringFixer:
         # Use root_dir for path validation. Default to cwd if not given.
         # Always use resolved absolute path
         self.root_dir = Path(root_dir or Path.cwd()).resolve()
+
     def fix_file(self, filepath: Path) -> bool:
         """Fix missing docstrings in a Python file.
 
