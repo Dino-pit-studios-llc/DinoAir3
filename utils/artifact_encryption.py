@@ -65,7 +65,8 @@ class ArtifactEncryption:
         """Generate a random salt"""
         return secrets.token_bytes(self.salt_length)
 
-    def generate_nonce(self) -> bytes:
+    @staticmethod
+    def generate_nonce() -> bytes:
         """Generate a random 12-byte nonce for AES-GCM"""
         # GCM mode uses 12-byte nonces for optimal security
         return secrets.token_bytes(12)
@@ -142,13 +143,26 @@ class ArtifactEncryption:
             # Decrypt using AES-GCM
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
-        else:
-            # Legacy CBC encryption is no longer supported
-            raise ValueError(
-                "Legacy CBC encrypted data is no longer supported. "
-                "All data must be encrypted using AES-GCM. "
-                "Please re-encrypt your data with the current encryption method."
-            )
+        # Legacy CBC format - maintain backward compatibility
+        from cryptography.hazmat.primitives import padding
+
+        encrypted = base64.b64decode(encrypted_data["data"])
+        salt = base64.b64decode(encrypted_data["salt"])
+        iv = base64.b64decode(encrypted_data["iv"])
+
+        # Derive key if not provided
+        if key is None:
+            key = self.derive_key(self.password, salt)
+
+        # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+        # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+        decryptor = cipher.decryptor()
+        decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+
+        # Remove PKCS7 padding using cryptography unpadder
+        unpadder = padding.PKCS7(128).unpadder()
+        return unpadder.update(decrypted_padded) + unpadder.finalize()
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """

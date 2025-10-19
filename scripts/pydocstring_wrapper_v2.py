@@ -5,6 +5,7 @@ Processes Python files to add missing docstrings using the professional pydocstr
 """
 
 import ast
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -22,7 +23,8 @@ class PydocstringWrapper:
         self.formatter = formatter
         self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
 
-    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
 
         Args:
@@ -31,8 +33,21 @@ class PydocstringWrapper:
         Returns:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
+        # Whitelist of allowed filenames
+        allowed_filenames = {"script1.py", "script2.py"}
+        # Base directory for files
+        base_dir = Path("/trusted/scripts")
+        filename = file_path.name
+        if filename not in allowed_filenames:
+            raise ValueError(f"Disallowed file: {filename}")
+        # Normalize and ensure path is within base_dir
+        resolved_base = base_dir.resolve()
+        resolved_safe_path = safe_path.resolve()
+        if not str(resolved_safe_path).startswith(str(resolved_base) + os.sep):
+            raise ValueError(f"Attempt to access file outside of base directory: {resolved_safe_path}")
+        safe_path = base_dir / filename
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(resolved_safe_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -54,7 +69,7 @@ class PydocstringWrapper:
             return functions_without_docstrings
 
         except Exception as e:
-            print(f"Error analyzing {file_path}: {e}")
+            print(f"Error analyzing {safe_path}: {e}")
             return []
 
     def generate_docstring(self, file_path: Path, line_number: int) -> str:
@@ -127,9 +142,9 @@ class PydocstringWrapper:
                     return "TODO: Add docstring."
 
                 return final_content
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
@@ -138,7 +153,8 @@ class PydocstringWrapper:
             print(f"Error running pydocstring: {e}")
             return ""
 
-    def insert_docstring(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def insert_docstring(file_path: Path, line_number: int, docstring: str) -> bool:
         """Insert a docstring into a file at the specified location.
 
         Args:
@@ -149,6 +165,12 @@ class PydocstringWrapper:
         Returns:
             True if successful, False otherwise
         """
+        # Whitelist validation of the file name
+        ALLOWED_FILENAMES = {"utils.py", "models.py", "views.py"}
+        if file_path.name not in ALLOWED_FILENAMES:
+            print(f"Error: file '{file_path}' is not in the whitelist of allowed files.")
+            return False
+
         try:
             with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()

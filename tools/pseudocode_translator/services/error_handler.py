@@ -70,8 +70,8 @@ class ErrorHandler:
         self._logger = logging.getLogger(logger_name or __name__)
         self._error_counts: dict[str, int] = {}
 
+    @staticmethod
     def create_error(
-        self,
         message: str,
         category: ErrorCategory,
         severity: ErrorSeverity = ErrorSeverity.medium,
@@ -142,7 +142,8 @@ class ErrorHandler:
 
         return error_info
 
-    def create_translator_error(self, error_info: ErrorInfo, add_context: bool = True) -> TranslatorError:
+    @staticmethod
+    def create_translator_error(error_info: ErrorInfo, add_context: bool = True) -> TranslatorError:
         """Convert ErrorInfo to a TranslatorError with proper formatting."""
         translator_error = TranslatorError(
             error_info.message,

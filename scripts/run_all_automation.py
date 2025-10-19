@@ -54,9 +54,8 @@ def run_tests() -> bool:
         if result.returncode == 0:
             print("\n✅ All tests passed")
             return True
-        else:
-            print("\n⚠️  Some tests failed")
-            return False
+        print("\n⚠️  Some tests failed")
+        return False
     except FileNotFoundError:
         print("\n⚠️  pytest not found, skipping tests")
         return True

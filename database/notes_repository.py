@@ -236,7 +236,8 @@ class NotesRepository:
 
         return QueryResult(success=False, error="Note not found or no changes applied")
 
-    def _process_note_updates(self, updates: dict[str, Any]) -> list[tuple[str, Any]]:
+    @staticmethod
+    def _process_note_updates(updates: dict[str, Any]) -> list[tuple[str, Any]]:
         """Process and validate note field updates.
 
         Args:
@@ -573,7 +574,8 @@ class NotesRepository:
 
         return affected_notes
 
-    def _replace_tag_in_list(self, tags: list[str], old_tag: str, new_tag: str) -> tuple[list[str], bool]:
+    @staticmethod
+    def _replace_tag_in_list(tags: list[str], old_tag: str, new_tag: str) -> tuple[list[str], bool]:
         """Replace occurrences of old tag with new tag in a tag list.
 
         Args:
