@@ -94,9 +94,7 @@ class ContextProvider:
             self.logger.error("Failed to get context: %s", str(e))
             return []
 
-    def format_context_for_chat(
-        self, context_items: list[dict[str, Any]], include_metadata: bool = True
-    ) -> str:
+    def format_context_for_chat(self, context_items: list[dict[str, Any]], include_metadata: bool = True) -> str:
         """
         Format context items into a string suitable for chat prompts.
 

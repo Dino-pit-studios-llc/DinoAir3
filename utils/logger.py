@@ -132,7 +132,7 @@ class Logger:
         use utils.structured_logging which has proper redaction filters.
         """
         # First, prevent log injection by removing/replacing newlines and carriage returns
-        sanitized = message.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+        sanitized = message.replace("\n", " ").replace("\r", " ").replace("\t", " ")
 
         # Basic pattern matching for common secret patterns
         patterns = [

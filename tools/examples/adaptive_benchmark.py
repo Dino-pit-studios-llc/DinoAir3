@@ -98,11 +98,7 @@ def simulate(flag: bool = True, seed: int = 1337) -> dict:
     # Simulate 100 chunks
     prev_size = None
     for _ in range(100):
-        desired = (
-            sizer.get_next_chunk_size(default_chunk_size=default_chunk_size)
-            if flag
-            else default_chunk_size
-        )
+        desired = sizer.get_next_chunk_size(default_chunk_size=default_chunk_size) if flag else default_chunk_size
         sizes.append(desired)
 
         # Decision accounting

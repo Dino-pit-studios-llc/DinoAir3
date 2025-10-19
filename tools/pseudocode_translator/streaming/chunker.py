@@ -155,9 +155,7 @@ class CodeChunker:
                 and current_size >= self.config.min_chunk_size
             ):
                 # Create chunk from current nodes
-                chunk = CodeChunker._create_chunk_from_boundaries(
-                    current_chunk_nodes, lines, len(chunks)
-                )
+                chunk = CodeChunker._create_chunk_from_boundaries(current_chunk_nodes, lines, len(chunks))
                 chunks.append(chunk)
 
                 # Start new chunk
@@ -170,9 +168,7 @@ class CodeChunker:
 
         # Don't forget the last chunk
         if current_chunk_nodes:
-            chunk = CodeChunker._create_chunk_from_boundaries(
-                current_chunk_nodes, lines, len(chunks)
-            )
+            chunk = CodeChunker._create_chunk_from_boundaries(current_chunk_nodes, lines, len(chunks))
             chunks.append(chunk)
 
         # Add overlap between chunks if configured
@@ -407,9 +403,7 @@ class CodeChunker:
                         chunk_start_line += split_point + 1
                         chunk_start_byte += len(chunk_content.encode("utf-8"))
                         current_chunk_lines = remaining_lines + [line]
-                        current_size = sum(
-                            len(line.encode("utf-8")) for line in current_chunk_lines
-                        )
+                        current_size = sum(len(line.encode("utf-8")) for line in current_chunk_lines)
                         continue
 
                 # No good split point found, create chunk as is
@@ -475,11 +469,7 @@ class CodeChunker:
             # - Function/class definitions
             if (
                 not line
-                or (
-                    i > 0
-                    and CodeChunker._get_indent_level(lines[i])
-                    < CodeChunker._get_indent_level(lines[i - 1])
-                )
+                or (i > 0 and CodeChunker._get_indent_level(lines[i]) < CodeChunker._get_indent_level(lines[i - 1]))
                 or line.startswith(("import ", "from ", "def ", "class "))
             ):
                 return i
@@ -516,9 +506,7 @@ class CodeChunker:
             # Add overlap from previous chunk
             if i > 0:
                 prev_chunk = chunks[i - 1]
-                overlap_lines = prev_chunk.content.splitlines(keepends=True)[
-                    -self.config.overlap_size :
-                ]
+                overlap_lines = prev_chunk.content.splitlines(keepends=True)[-self.config.overlap_size :]
                 if overlap_lines:
                     new_content = "".join(overlap_lines) + new_content
                     new_start_line = max(1, chunk.start_line - len(overlap_lines))

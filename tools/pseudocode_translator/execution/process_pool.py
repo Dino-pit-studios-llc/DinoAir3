@@ -112,11 +112,7 @@ class ParseValidateExecutor:
 
     def _resolve_start_method(self) -> str | None:
         """Determine multiprocessing start method from configuration or platform defaults."""
-        method = (
-            self._start_method
-            if self._start_method is not None
-            else self._config.process_pool_start_method
-        )
+        method = self._start_method if self._start_method is not None else self._config.process_pool_start_method
         if method:
             return method
         # Prefer spawn on Windows by default

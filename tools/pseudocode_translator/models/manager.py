@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any
 
 import psutil
-
 from utils.shutdown_protocols import ShutdownMixin
 
 from .base import BaseModel

@@ -137,9 +137,7 @@ class ImprovementAnalyzer:
 
         # Analyze append calls in loops
         if checker.append_calls_in_loops:
-            append_suggestions = ImprovementAnalyzer._analyze_append_calls_in_loops(
-                checker.append_calls_in_loops
-            )
+            append_suggestions = ImprovementAnalyzer._analyze_append_calls_in_loops(checker.append_calls_in_loops)
             suggestions.extend(append_suggestions)
 
         return suggestions
@@ -209,9 +207,7 @@ class ImprovementAnalyzer:
         """Check readability for a single class."""
         method_count = sum(1 for n in node.body if isinstance(n, ast.FunctionDef))
         if method_count > 15:
-            return [
-                f"Class '{node.name}' has many methods ({method_count}). Consider splitting into smaller classes."
-            ]
+            return [f"Class '{node.name}' has many methods ({method_count}). Consider splitting into smaller classes."]
         return []
 
     def _readability_misc_suggestions(self, tree: ast.AST, code: str) -> list[str]:
@@ -231,9 +227,7 @@ class ImprovementAnalyzer:
         lines = code.split("\n")
         for i, line in enumerate(lines, 1):
             if len(line) > 100 and ("(" in line or "[" in line or "{" in line):
-                suggestions.append(
-                    f"Line {i} is complex and long. Consider breaking into multiple lines or variables."
-                )
+                suggestions.append(f"Line {i} is complex and long. Consider breaking into multiple lines or variables.")
 
         return suggestions
 
@@ -242,8 +236,7 @@ class ImprovementAnalyzer:
         depth = 0
         for child in ast.walk(node):
             if (
-                isinstance(child, ast.If | ast.For | ast.While | ast.With | ast.Try)
-                and child != node
+                isinstance(child, ast.If | ast.For | ast.While | ast.With | ast.Try) and child != node
             ):  # Don't count the node itself
                 depth = max(depth, 1 + self._calculate_nesting_depth(child))
         return depth
@@ -264,9 +257,7 @@ class ImprovementAnalyzer:
 
         # Check for missing docstrings
         if not ast.get_docstring(node) and not node.name.startswith("_") and len(node.body) > 5:
-            suggestions.append(
-                f"Function '{node.name}' at line {node.lineno} should have a docstring"
-            )
+            suggestions.append(f"Function '{node.name}' at line {node.lineno} should have a docstring")
 
         # Check for too many arguments
         arg_count = ImprovementAnalyzer._count_function_arguments(node)
@@ -310,8 +301,6 @@ class ImprovementAnalyzer:
 
         # Check for shell command construction
         if re.search(r"os\.system\s*\(['\"][^'\"]*['\"].+\+", code):
-            suggestions.append(
-                "Potential command injection risk - validate inputs and use subprocess with shell=False"
-            )
+            suggestions.append("Potential command injection risk - validate inputs and use subprocess with shell=False")
 
         return suggestions

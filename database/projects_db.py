@@ -126,9 +126,7 @@ class ProjectsDatabase:
         return None
 
     @staticmethod
-    def _recent_activity(
-        cursor: Cursor, project_id: str, cutoff_iso: str
-    ) -> tuple[int, datetime | None, str | None]:
+    def _recent_activity(cursor: Cursor, project_id: str, cutoff_iso: str) -> tuple[int, datetime | None, str | None]:
         """
         Compute recent activity across related tables since cutoff_iso.
         Returns: (recent_count, last_activity_dt, last_activity_type)
@@ -150,9 +148,7 @@ class ProjectsDatabase:
             if table not in allowed_tables:
                 continue
 
-            table_result = ProjectsDatabase._get_table_activity(
-                cursor, table, project_id, cutoff_iso
-            )
+            table_result = ProjectsDatabase._get_table_activity(cursor, table, project_id, cutoff_iso)
             if table_result is None:
                 continue
 
@@ -283,9 +279,7 @@ class ProjectsDatabase:
         return set_clauses, params
 
     @staticmethod
-    def _process_field_updates(
-        updates: dict[str, Any], set_clauses: list[str], params: list[Any]
-    ) -> None:
+    def _process_field_updates(updates: dict[str, Any], set_clauses: list[str], params: list[Any]) -> None:
         """Process regular field updates and add to clauses/params.
 
         Args:
@@ -319,9 +313,7 @@ class ProjectsDatabase:
         return value
 
     @staticmethod
-    def _apply_status_timestamps(
-        updates: dict[str, Any], set_clauses: list[str], params: list[Any]
-    ) -> None:
+    def _apply_status_timestamps(updates: dict[str, Any], set_clauses: list[str], params: list[Any]) -> None:
         """Apply status-driven timestamp changes.
 
         Args:
@@ -359,18 +351,14 @@ class ProjectsDatabase:
             return tag in parts
         return False
 
-    def _build_project_summary(
-        self, cursor: Cursor, project: Project, cutoff_iso: str
-    ) -> ProjectSummary | None:
+    def _build_project_summary(self, cursor: Cursor, project: Project, cutoff_iso: str) -> ProjectSummary | None:
         """
         Build a ProjectSummary for a project if it has recent activity,
         otherwise return None.
         """
         summary = ProjectSummary.from_project(project)
 
-        recent_count, last_activity, last_type = self._recent_activity(
-            cursor, project.id, cutoff_iso
-        )
+        recent_count, last_activity, last_type = self._recent_activity(cursor, project.id, cutoff_iso)
         if recent_count <= 0:
             return None
 
@@ -580,9 +568,7 @@ class ProjectsDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                return self._fetch_projects_where(
-                    cursor, "parent_project_id = ?", (parent_id,), "name"
-                )
+                return self._fetch_projects_where(cursor, "parent_project_id = ?", (parent_id,), "name")
 
         except Exception as e:
             self.logger.error(f"Failed to get child projects: {str(e)}")
@@ -728,9 +714,7 @@ class ProjectsDatabase:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                return ProjectsDatabase._count_where(
-                    cursor, "calendar_events", "project_id = ?", (project_id,)
-                )
+                return ProjectsDatabase._count_where(cursor, "calendar_events", "project_id = ?", (project_id,))
         except Exception:
             # Table might not exist or have project_id column yet
             return 0

@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Request
-from starlette import status
-
 from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
 from core_router.errors import ValidationError as CoreValidationError
+from fastapi import APIRouter, HTTPException, Request
+from starlette import status
 
 from ..schemas import (
     ContextRequest,
@@ -35,13 +34,9 @@ def _exec(service_name: str, payload: dict[str, Any]) -> Any:
     except ServiceNotFound as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except NoHealthyService as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
     except CoreValidationError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
     except AdapterError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
@@ -59,9 +54,7 @@ async def ingest_files(_request: Request, body: IngestFilesRequest) -> Any:
 
 
 @router.post("/embeddings/generate-missing", status_code=status.HTTP_200_OK)
-async def generate_missing_embeddings(
-    _request: Request, body: GenerateMissingEmbeddingsRequest
-) -> Any:
+async def generate_missing_embeddings(_request: Request, body: GenerateMissingEmbeddingsRequest) -> Any:
     payload = body.model_dump(mode="json", by_alias=False, exclude_none=True)
     return _exec(SVC_GENERATE_EMB, payload)
 

@@ -163,9 +163,7 @@ def interactive_translate(
             break
         translator.wait_if_paused()
         session_context.append(f"# User input {interaction_count}:\n{user_input}")
-        response = process_interactive_input(
-            translator, user_input, session_context, interaction_count, on_update
-        )
+        response = process_interactive_input(translator, user_input, session_context, interaction_count, on_update)
         if response:
             yield f"# Translation {interaction_count}:\n{response}\n\n"
             session_context.append(f"# Translation {interaction_count}:\n{response}")

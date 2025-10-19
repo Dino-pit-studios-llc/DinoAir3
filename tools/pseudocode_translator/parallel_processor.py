@@ -260,9 +260,7 @@ class ParallelProcessor:
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             # Submit all tasks
-            future_to_task = {
-                executor.submit(self._process_single_file, task): task for task in tasks
-            }
+            future_to_task = {executor.submit(self._process_single_file, task): task for task in tasks}
 
             # Process completed tasks
             for future in as_completed(future_to_task):
@@ -284,9 +282,7 @@ class ParallelProcessor:
                     logger.error("Error processing %s: %s", task.file_path, e)
 
                     # Create error result
-                    result = ProcessingResult(
-                        file_path=task.file_path, success=False, errors=[str(e)]
-                    )
+                    result = ProcessingResult(file_path=task.file_path, success=False, errors=[str(e)])
                     results.append(result)
 
                     if error_callback:
@@ -316,10 +312,7 @@ class ParallelProcessor:
         # Each process will create its own resources
         with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
             # Submit all tasks
-            future_to_task = {
-                executor.submit(_process_file_in_subprocess, task, self.config): task
-                for task in tasks
-            }
+            future_to_task = {executor.submit(_process_file_in_subprocess, task, self.config): task for task in tasks}
 
             # Process completed tasks
             for future in as_completed(future_to_task):
@@ -341,9 +334,7 @@ class ParallelProcessor:
                     logger.error("Error processing %s: %s", task.file_path, e)
 
                     # Create error result
-                    result = ProcessingResult(
-                        file_path=task.file_path, success=False, errors=[str(e)]
-                    )
+                    result = ProcessingResult(file_path=task.file_path, success=False, errors=[str(e)])
                     results.append(result)
 
                     if error_callback:
@@ -444,9 +435,7 @@ class ParallelProcessor:
             )
 
     @staticmethod
-    def _do_processing(
-        task: FileTask, parser: ParserModule, translator: TranslationManager
-    ) -> ProcessingResult:
+    def _do_processing(task: FileTask, parser: ParserModule, translator: TranslationManager) -> ProcessingResult:
         """Perform actual processing with given resources"""
         errors = []
         warnings = []
@@ -649,9 +638,7 @@ class BatchProcessor:
         self.keep_structure = keep_structure
 
         # Create parallel processor
-        self.processor = ParallelProcessor(
-            config, mode=ProcessingMode.hybrid, use_resource_pool=True
-        )
+        self.processor = ParallelProcessor(config, mode=ProcessingMode.hybrid, use_resource_pool=True)
 
         if self.output_dir:
             self.output_dir.mkdir(parents=True, exist_ok=True)

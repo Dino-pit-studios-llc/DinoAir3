@@ -16,9 +16,7 @@ from .registry import register_model
 try:
     from llama_cpp import Llama
 except ImportError:
-    raise ImportError(
-        "llama-cpp-python is required for Qwen model support. Install with: pip install llama-cpp-python"
-    )
+    raise ImportError("llama-cpp-python is required for Qwen model support. Install with: pip install llama-cpp-python")
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +75,7 @@ class QwenModel(BaseModel):
             examples=[
                 {
                     "instruction": "create a function to calculate factorial",
-                    "output": (
-                        "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)"
-                    ),
+                    "output": ("def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)"),
                 },
                 {
                     "instruction": "sort a list of numbers in ascending order",
@@ -227,9 +223,7 @@ class QwenModel(BaseModel):
         prompt_style = self.prompt_engineer.select_best_style(instruction, code_context)
 
         # Create prompt
-        prompt = self.prompt_engineer.create_prompt(
-            instruction=instruction, style=prompt_style, context=code_context
-        )
+        prompt = self.prompt_engineer.create_prompt(instruction=instruction, style=prompt_style, context=code_context)
 
         # Add system prompt
         full_prompt = f"{PromptLibrary.SYSTEM_PROMPT}\n\n{prompt}"

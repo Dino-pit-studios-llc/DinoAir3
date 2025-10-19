@@ -22,9 +22,7 @@ def log_exception(logger: logging.Logger, msg: str, exc: Exception) -> None:
     logger.error(f"{msg}: {exc}")
 
 
-def logged_operation(
-    logger: logging.Logger, op_name: str
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
+def logged_operation(logger: logging.Logger, op_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator that logs start and completion; logs and re-raises on exception.
 
     Usage:

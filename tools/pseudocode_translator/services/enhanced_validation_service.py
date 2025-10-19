@@ -176,9 +176,7 @@ class ValidationService:
             logger.debug("Attempting fix #%d for validation errors", attempt)
 
             try:
-                fixed_code = ValidationService._attempt_fix(
-                    current_code, validation_result, use_llm_fixes
-                )
+                fixed_code = ValidationService._attempt_fix(current_code, validation_result, use_llm_fixes)
 
                 if fixed_code and fixed_code != current_code:
                     current_code = fixed_code
@@ -221,9 +219,7 @@ class ValidationService:
             return []
 
     @staticmethod
-    def _attempt_fix(
-        code: str, validation_result: ValidationResult, use_llm_fixes: bool
-    ) -> str | None:
+    def _attempt_fix(code: str, validation_result: ValidationResult, use_llm_fixes: bool) -> str | None:
         """
         Attempt to fix validation errors in the code.
 

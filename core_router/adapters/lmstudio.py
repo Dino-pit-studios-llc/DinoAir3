@@ -58,9 +58,7 @@ class LMStudioAdapter(ServiceAdapter):
         cfg = dict(adapter_config or {})
 
         # Resolve configuration with environment fallbacks
-        raw = str(
-            cfg.get("base_url") or os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234")
-        ).strip()
+        raw = str(cfg.get("base_url") or os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234")).strip()
         model = str(cfg.get("model") or os.getenv("LMSTUDIO_DEFAULT_MODEL", "")).strip()
         headers = cfg.get("headers", {})
         # Timeouts (seconds)
@@ -90,9 +88,7 @@ class LMStudioAdapter(ServiceAdapter):
         # Headers + env auth
         self._headers: dict[str, str] = {}
         if isinstance(headers, Mapping):
-            self._headers.update(
-                {str(k): str(v) for k, v in cast("Mapping[str, Any]", headers).items()}
-            )
+            self._headers.update({str(k): str(v) for k, v in cast("Mapping[str, Any]", headers).items()})
         api_key = os.getenv("LMSTUDIO_API_KEY")
         if api_key and "Authorization" not in self._headers:
             self._headers["Authorization"] = f"Bearer {api_key}"
@@ -172,11 +168,7 @@ class LMStudioAdapter(ServiceAdapter):
             role_val = msg.get("role")
             content_val = msg.get("content")
 
-            if (
-                not isinstance(role_val, str)
-                or not isinstance(content_val, str)
-                or not content_val.strip()
-            ):
+            if not isinstance(role_val, str) or not isinstance(content_val, str) or not content_val.strip():
                 raise AdapterError(
                     adapter="lmstudio",
                     reason=f"messages[{i}] requires string 'role' and non-empty string 'content'",
@@ -227,9 +219,7 @@ class LMStudioAdapter(ServiceAdapter):
 
         return body
 
-    def _make_request_with_retries(
-        self, url: str, body: dict[str, Any], headers: dict[str, str]
-    ) -> dict[str, Any]:
+    def _make_request_with_retries(self, url: str, body: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
         """Make HTTP request with retry logic.
 
         Args:
@@ -365,9 +355,7 @@ class LMStudioAdapter(ServiceAdapter):
 
         return {str(k): v for k, v in cast("Mapping[str, Any]", raw).items()}
 
-    def _handle_error_response(
-        self, resp: httpx.Response, attempt: int, attempts: int
-    ) -> dict[str, Any]:
+    def _handle_error_response(self, resp: httpx.Response, attempt: int, attempts: int) -> dict[str, Any]:
         """Handle error response.
 
         Args:

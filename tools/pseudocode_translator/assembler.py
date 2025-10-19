@@ -161,9 +161,7 @@ class CodeAssembler:
         Returns:
             List of Python code blocks, excluding other block types.
         """
-        python_blocks = [
-            block for block in blocks if block.type in (BlockType.PYTHON, BlockType.MIXED)
-        ]
+        python_blocks = [block for block in blocks if block.type in (BlockType.PYTHON, BlockType.MIXED)]
 
         if not python_blocks:
             logger.warning("No Python blocks found in input")
@@ -224,9 +222,7 @@ class CodeAssembler:
         try:
             return self._organize_code_sections(python_blocks)
         except Exception as e:
-            error = AssemblyError(
-                "Failed to organize code sections", assembly_stage="sections", cause=e
-            )
+            error = AssemblyError("Failed to organize code sections", assembly_stage="sections", cause=e)
             error.add_suggestion("Check code block structure")
             error.add_suggestion("Ensure valid Python syntax in all blocks")
             raise error from e
@@ -247,9 +243,7 @@ class CodeAssembler:
         """
         try:
             # Merge functions and classes
-            merged_functions, merged_classes = self._merge_definitions(
-                sections["functions"], sections["classes"]
-            )
+            merged_functions, merged_classes = self._merge_definitions(sections["functions"], sections["classes"])
 
             # Organize global variables and constants
             globals_section = CodeAssembler._organize_globals(sections["globals"])
@@ -270,9 +264,7 @@ class CodeAssembler:
             return CodeAssembler._join_sections(sections_list)
 
         except Exception as e:
-            error = AssemblyError(
-                "Failed to stitch code sections", assembly_stage="stitching", cause=e
-            )
+            error = AssemblyError("Failed to stitch code sections", assembly_stage="stitching", cause=e)
             error.add_suggestion("Check for naming conflicts")
             error.add_suggestion("Ensure function/class definitions are valid")
             raise error from e
@@ -417,9 +409,7 @@ class CodeAssembler:
             imports[category].add(f"import {alias.name}")
 
     @staticmethod
-    def _add_from_imports(
-        node: ast.ImportFrom, from_imports: dict[str, dict[str, set[str]]]
-    ) -> None:
+    def _add_from_imports(node: ast.ImportFrom, from_imports: dict[str, dict[str, set[str]]]) -> None:
         """Add from-import statements to from_imports collection"""
         module = node.module or ""
         category = CodeAssembler._categorize_import(module)

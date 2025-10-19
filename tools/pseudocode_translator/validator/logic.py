@@ -114,9 +114,7 @@ class LogicValidator:
             return ["Star import prevents reliable undefined-name checking"]
 
         # Process undefined names
-        return LogicValidator._process_undefined_names(
-            checker.undefined_names, checker.defined_names
-        )
+        return LogicValidator._process_undefined_names(checker.undefined_names, checker.defined_names)
 
     @staticmethod
     def _get_module_scope(current_scope: "Scope") -> "Scope":
@@ -175,9 +173,7 @@ class LogicValidator:
         return name not in builtin_names
 
     @staticmethod
-    def _generate_undefined_issues(
-        sorted_items: list[tuple[str, int, int | None]], defined_names: set
-    ) -> list[str]:
+    def _generate_undefined_issues(sorted_items: list[tuple[str, int, int | None]], defined_names: set) -> list[str]:
         """Generate issue messages for undefined variables."""
         issues = []
         for name, line, col in sorted_items:
@@ -345,12 +341,8 @@ class LogicValidator:
                 has_return = any(isinstance(stmt, ast.Return) for stmt in ast.walk(node))
 
                 # Skip if function name suggests it doesn't return anything
-                if not has_return and not node.name.startswith(
-                    ("print", "show", "display", "save", "write")
-                ):
-                    self.issues.append(
-                        f"Function '{node.name}' at line {node.lineno} may be missing return statement"
-                    )
+                if not has_return and not node.name.startswith(("print", "show", "display", "save", "write")):
+                    self.issues.append(f"Function '{node.name}' at line {node.lineno} may be missing return statement")
 
                 self.generic_visit(node)
 

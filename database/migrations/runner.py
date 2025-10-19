@@ -138,10 +138,7 @@ class MigrationRunner:
                 )
 
             except Exception as e:
-                error_msg = (
-                    f"Failed to execute migration {migration.full_name} "
-                    f"for database '{self.db_key}': {str(e)}"
-                )
+                error_msg = f"Failed to execute migration {migration.full_name} for database '{self.db_key}': {str(e)}"
                 LOGGER.error(error_msg)
                 raise MigrationError(error_msg) from e
 
@@ -231,9 +228,6 @@ class MigrationRunner:
             )
 
         except Exception as e:
-            error_msg = (
-                f"Failed to rollback migration {migration.full_name} "
-                f"for database '{self.db_key}': {str(e)}"
-            )
+            error_msg = f"Failed to rollback migration {migration.full_name} for database '{self.db_key}': {str(e)}"
             LOGGER.error(error_msg)
             raise MigrationError(error_msg) from e

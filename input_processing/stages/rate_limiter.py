@@ -234,9 +234,7 @@ class RateLimiter:
         else:
             reset_time = now + timedelta(seconds=self.config.window_seconds)
 
-        return RateLimitStatus(
-            allowed=True, remaining_requests=limit - len(window), reset_time=reset_time
-        )
+        return RateLimitStatus(allowed=True, remaining_requests=limit - len(window), reset_time=reset_time)
 
     def _check_token_bucket(self, key: str, limit: int) -> RateLimitStatus:
         """Check rate limit using token bucket strategy.
@@ -349,9 +347,7 @@ class RateLimiter:
             "total_requests": self.stats["total_requests"],
             "blocked_requests": self.stats["blocked_requests"],
             "block_rate": (
-                self.stats["blocked_requests"] / self.stats["total_requests"]
-                if self.stats["total_requests"] > 0
-                else 0
+                self.stats["blocked_requests"] / self.stats["total_requests"] if self.stats["total_requests"] > 0 else 0
             ),
             "unique_users": len(self.stats["unique_users"]),
             "violations_issued": self.stats["violations_issued"],

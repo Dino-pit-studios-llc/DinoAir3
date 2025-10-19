@@ -85,9 +85,7 @@ class TranslationPipeline(ShutdownMixin):
 
         logger.info("Translation Pipeline initialized")
 
-    def translate(
-        self, input_text: str, target_language: OutputLanguage | None = None
-    ) -> TranslationResult:
+    def translate(self, input_text: str, target_language: OutputLanguage | None = None) -> TranslationResult:
         """
         Translate pseudocode to the target language.
 
@@ -147,9 +145,7 @@ class TranslationPipeline(ShutdownMixin):
                     },
                 )
 
-            return structured_result or self._create_failure_result(
-                context, "All translation approaches failed"
-            )
+            return structured_result or self._create_failure_result(context, "All translation approaches failed")
 
         except Exception as e:
             error_info = self.error_handler.handle_exception(
@@ -200,9 +196,7 @@ class TranslationPipeline(ShutdownMixin):
             return result
 
         except Exception as e:
-            self.error_handler.handle_exception(
-                e, ErrorCategory.TRANSLATION, additional_context="LLM-first approach"
-            )
+            self.error_handler.handle_exception(e, ErrorCategory.TRANSLATION, additional_context="LLM-first approach")
             logger.warning("LLM-first translation failed: %s", str(e))
             return None
 
@@ -210,9 +204,7 @@ class TranslationPipeline(ShutdownMixin):
         """Attempt structured parsing translation approach."""
         try:
             # Resolve structured parsing service from container
-            structured_service = self.container.try_resolve(
-                TranslationPipeline._get_structured_service_type()
-            )
+            structured_service = self.container.try_resolve(TranslationPipeline._get_structured_service_type())
             if not structured_service:
                 logger.debug("Structured parsing service not available, creating fallback")
                 structured_service = self._create_fallback_structured_service()
@@ -237,9 +229,7 @@ class TranslationPipeline(ShutdownMixin):
             return TranslationPipeline._create_failure_result(context, str(e))
 
     @staticmethod
-    def _create_failure_result(
-        context: TranslationContext, error_message: str
-    ) -> TranslationResult:
+    def _create_failure_result(context: TranslationContext, error_message: str) -> TranslationResult:
         """Create a failure translation result."""
         return TranslationResult(
             success=False,
@@ -293,17 +283,13 @@ class TranslationPipeline(ShutdownMixin):
             # Initialize model service if not already registered
             if not self.container.is_registered(TranslationPipeline._get_model_service_type()):
                 model_service = self._create_model_service()
-                self.container.register_singleton(
-                    TranslationPipeline._get_model_service_type(), model_service
-                )
+                self.container.register_singleton(TranslationPipeline._get_model_service_type(), model_service)
                 logger.debug("Model service registered")
 
             # Initialize LLM translation service if not already registered
             if not self.container.is_registered(TranslationPipeline._get_llm_service_type()):
                 llm_service = self._create_llm_service()
-                self.container.register_singleton(
-                    TranslationPipeline._get_llm_service_type(), llm_service
-                )
+                self.container.register_singleton(TranslationPipeline._get_llm_service_type(), llm_service)
                 logger.debug("LLM translation service registered")
 
             # Initialize structured parsing service if not already registered
@@ -320,9 +306,7 @@ class TranslationPipeline(ShutdownMixin):
                 from .event_bus import EventBus
 
                 event_bus = EventBus()
-                self.container.register_singleton(
-                    TranslationPipeline._get_event_bus_type(), event_bus
-                )
+                self.container.register_singleton(TranslationPipeline._get_event_bus_type(), event_bus)
                 logger.debug("Event bus registered")
 
         except Exception as e:
@@ -391,9 +375,7 @@ class TranslationPipeline(ShutdownMixin):
         model_service = self.container.try_resolve(TranslationPipeline._get_model_service_type())
         if not model_service:
             model_service = self._create_model_service()
-            self.container.register_singleton(
-                TranslationPipeline._get_model_service_type(), model_service
-            )
+            self.container.register_singleton(TranslationPipeline._get_model_service_type(), model_service)
 
         return LLMTranslationService(model_service=model_service, error_handler=self.error_handler)
 

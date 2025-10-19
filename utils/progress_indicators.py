@@ -35,10 +35,7 @@ class ProgressBar:
         else:
             eta_str = ""
 
-        output = (
-            f"\r{self.prefix}: |{bar_str}| {percent:.1f}% "
-            f"({self.current}/{self.total}){eta_str} {suffix}"
-        )
+        output = f"\r{self.prefix}: |{bar_str}| {percent:.1f}% ({self.current}/{self.total}){eta_str} {suffix}"
         sys.stdout.write(output)
         sys.stdout.flush()
 

@@ -65,9 +65,7 @@ class SyntaxValidator:
         self._apply_syntax_checks(tree, code, result)
         return result
 
-    def _parse_tree_with_syntax_handling(
-        self, code: str, result: ValidationResult
-    ) -> ast.AST | None:
+    def _parse_tree_with_syntax_handling(self, code: str, result: ValidationResult) -> ast.AST | None:
         """Parse code into AST with error handling."""
         try:
             return parse_cached(code)
@@ -79,9 +77,7 @@ class SyntaxValidator:
                 column_number=e.offset,
                 code_snippet=(lines[e.lineno - 1] if e.lineno and e.lineno <= len(lines) else None),
                 surrounding_lines=(
-                    SyntaxValidator(self.config)._get_surrounding_lines(lines, e.lineno)
-                    if e.lineno
-                    else []
+                    SyntaxValidator(self.config)._get_surrounding_lines(lines, e.lineno) if e.lineno else []
                 ),
             )
 
@@ -186,9 +182,7 @@ class SyntaxValidator:
 
         return errors
 
-    def _check_mixed_tabs_spaces(
-        self, line: str, indent: int, lines: list[str], line_num: int
-    ) -> str | None:
+    def _check_mixed_tabs_spaces(self, line: str, indent: int, lines: list[str], line_num: int) -> str | None:
         """Check for mixed tabs and spaces."""
         if "\t" in line[:indent]:
             params = ErrorFormatContext(
@@ -368,9 +362,7 @@ class SyntaxValidator:
         return None
 
     @staticmethod
-    def _process_quote_char(
-        char: str, in_string: bool, quote_char: str | None
-    ) -> tuple[bool, str | None]:
+    def _process_quote_char(char: str, in_string: bool, quote_char: str | None) -> tuple[bool, str | None]:
         """Process a quote character to track string state."""
         if not in_string:
             return True, char
@@ -392,9 +384,7 @@ class SyntaxValidator:
 
         for i, char in enumerate(line):
             if SyntaxValidator._is_quote_character(char, i, line):
-                in_string, quote_char = SyntaxValidator._process_quote_char(
-                    char, in_string, quote_char
-                )
+                in_string, quote_char = SyntaxValidator._process_quote_char(char, in_string, quote_char)
 
         return SyntaxValidator._handle_unclosed_string(line, in_string, quote_char)
 

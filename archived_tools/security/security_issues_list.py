@@ -13,9 +13,7 @@ FILE_INPUT_SANITIZER = "input_processing/sanitizer.py"
 
 # Duplicate string literals converted to constants
 MSG_LOCAL_VAR_UNUSED = "A local variable is defined (by an assignment) but never used.\n"
-MSG_GLOBAL_VAR_UNUSED = (
-    "A global (module-level) variable is defined (by an assignment) but never used and "
-)
+MSG_GLOBAL_VAR_UNUSED = "A global (module-level) variable is defined (by an assignment) but never used and "
 
 # Security issues list
 security_issues = [

@@ -128,9 +128,7 @@ class LiveSecurityAssessment:
                 for payload in sql_payloads:
                     try:
                         # Test as query parameter
-                        response = self.session.get(
-                            f"{self.base_url}{endpoint}?search={payload}", timeout=5
-                        )
+                        response = self.session.get(f"{self.base_url}{endpoint}?search={payload}", timeout=5)
 
                         # Check if SQL errors are exposed
                         response_text = response.text.lower()
@@ -304,9 +302,7 @@ class LiveSecurityAssessment:
 
     def generate_report(self) -> dict[str, Any]:
         """Generate security assessment report."""
-        pass_percentage = (
-            (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
-        )
+        pass_percentage = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
 
         if pass_percentage >= 90:
             grade = "A (Excellent)"

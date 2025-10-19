@@ -10,7 +10,6 @@ This script:
 4. Allows rollback if needed
 """
 
-import os
 import shutil
 import subprocess
 import sys
@@ -95,9 +94,7 @@ def run_docstring_fixer(dry_run=False):
             # Show non-empty results
             if "Would add" in result.stdout or "Added" in result.stdout:
                 relevant_lines = [
-                    line
-                    for line in output_lines
-                    if "Would add" in line or "Added" in line or "✓" in line
+                    line for line in output_lines if "Would add" in line or "Added" in line or "✓" in line
                 ]
                 for line in relevant_lines[:10]:  # Limit output
                     print(f"  {line}")
@@ -120,7 +117,7 @@ def run_docstring_fixer(dry_run=False):
     if dry_run:
         print("\n[DRY RUN] No files were modified")
     else:
-        print(f"\n✓ Docstring automation completed successfully!")
+        print("\n✓ Docstring automation completed successfully!")
 
     return total_files, total_docstrings
 

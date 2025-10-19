@@ -53,9 +53,7 @@ class ModelCapabilities:
     tokens_per_second_cpu: float | None = None
     tokens_per_second_gpu: float | None = None
 
-    def meets_requirements(
-        self, available_memory_gb: float, has_gpu: bool = False
-    ) -> tuple[bool, str]:
+    def meets_requirements(self, available_memory_gb: float, has_gpu: bool = False) -> tuple[bool, str]:
         """
         Check if system meets model requirements
 

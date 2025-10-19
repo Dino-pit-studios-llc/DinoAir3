@@ -61,9 +61,7 @@ class Validator:
             raise ValueError(f"Path is not a directory: {raw_value}")
 
     @staticmethod
-    def validate_path_exists(
-        path: str, must_be_file: bool | None = None, must_be_dir: bool | None = None
-    ) -> Path:
+    def validate_path_exists(path: str, must_be_file: bool | None = None, must_be_dir: bool | None = None) -> Path:
         """Validate path exists method."""
         p = Validator.normalize_to_path(path)
         Validator.check_exists(p, path)
@@ -127,9 +125,7 @@ def _validate_all_arguments(
             _validate_argument(arg_name, arguments[arg_name], validators)
 
 
-def _validate_argument(
-    arg_name: str, value: Any, validators: tuple["Callable[..., None]", ...]
-) -> None:
+def _validate_argument(arg_name: str, value: Any, validators: tuple["Callable[..., None]", ...]) -> None:
     """Validate a single argument with all its validators"""
     for validator in validators:
         _call_validator(validator, arg_name, value)

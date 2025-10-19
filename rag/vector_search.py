@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 import numpy as np
-
 from database.file_search_db import FileSearchDB
 
 # Import DinoAir components
@@ -17,8 +16,10 @@ from utils.logger import Logger
 
 # Import RAG components
 from .embedding_generator import EmbeddingGenerator, get_embedding_generator
-from .search_common import compute_cosine_scores  # shared utilities
-from .search_common import extract_keywords
+from .search_common import (
+    compute_cosine_scores,  # shared utilities
+    extract_keywords,
+)
 
 
 @dataclass
@@ -134,9 +135,7 @@ class VectorSearchEngine:
         """Normalize distance metric and fallback to 'cosine' with a warning if unsupported."""
         normalized = (metric or "cosine").lower()
         if normalized not in {"cosine", "euclidean"}:
-            self.logger.warning(
-                f"search(): unsupported distance_metric='{metric}', defaulting to 'cosine'"
-            )
+            self.logger.warning(f"search(): unsupported distance_metric='{metric}', defaulting to 'cosine'")
             return "cosine"
         return normalized
 
@@ -153,9 +152,7 @@ class VectorSearchEngine:
             start_pos=int(emb["start_pos"]),
             end_pos=int(emb["end_pos"]),
             file_type=(str(emb.get("file_type")) if emb.get("file_type") is not None else None),
-            metadata=(
-                emb.get("chunk_metadata") if isinstance(emb.get("chunk_metadata"), dict) else None
-            ),
+            metadata=(emb.get("chunk_metadata") if isinstance(emb.get("chunk_metadata"), dict) else None),
             match_type="vector",
         )
 
@@ -184,9 +181,7 @@ class VectorSearchEngine:
         for emb in all_embeddings:
             vec = VectorSearchEngine._parse_embedding_vector(emb["embedding_vector"])
             if vec is None:
-                self.logger.warning(
-                    f"search(): skipping invalid embedding for chunk_id={emb.get('chunk_id')}"
-                )
+                self.logger.warning(f"search(): skipping invalid embedding for chunk_id={emb.get('chunk_id')}")
                 continue
             doc_vectors.append(vec)
             valid_embeddings.append(emb)
@@ -194,9 +189,7 @@ class VectorSearchEngine:
         if not valid_embeddings:
             return []
 
-        query_vec: list[float] = [
-            float(x) for x in np.asarray(query_embedding, dtype=np.float64).tolist()
-        ]
+        query_vec: list[float] = [float(x) for x in np.asarray(query_embedding, dtype=np.float64).tolist()]
         scores = compute_cosine_scores(query_vec, doc_vectors, mode="auto")
 
         results: list[SearchResult] = [
@@ -218,9 +211,7 @@ class VectorSearchEngine:
         for emb in all_embeddings:
             d_vec_list = VectorSearchEngine._parse_embedding_vector(emb["embedding_vector"])
             if d_vec_list is None:
-                self.logger.warning(
-                    f"search(): skipping invalid embedding for chunk_id={emb.get('chunk_id')}"
-                )
+                self.logger.warning(f"search(): skipping invalid embedding for chunk_id={emb.get('chunk_id')}")
                 continue
             d_vec = np.asarray(d_vec_list, dtype=np.float64)
             score = VectorSearchEngine.euclidean_similarity(q_vec, d_vec)
@@ -293,13 +284,9 @@ class VectorSearchEngine:
             # Construct results in metric-specific helpers
 
             if metric == "cosine":
-                results = self._cosine_results(
-                    query_embedding, all_embeddings, similarity_threshold
-                )
+                results = self._cosine_results(query_embedding, all_embeddings, similarity_threshold)
             else:
-                results = self._euclidean_results(
-                    query_embedding, all_embeddings, similarity_threshold
-                )
+                results = self._euclidean_results(query_embedding, all_embeddings, similarity_threshold)
 
             if not results:
                 self.logger.info("search(): no results above threshold")
@@ -307,9 +294,7 @@ class VectorSearchEngine:
 
             top_results: list[SearchResult] = VectorSearchEngine._top_k_sorted(results, top_k)
 
-            self.logger.info(
-                f"Vector search found {len(top_results)} results (from {len(results)} above threshold)"
-            )
+            self.logger.info(f"Vector search found {len(top_results)} results (from {len(results)} above threshold)")
             return top_results
 
         except Exception as exc:
@@ -417,9 +402,7 @@ class VectorSearchEngine:
             keyword_results = self.keyword_search(query, top_k=top_k * 2, file_types=file_types)
 
             # Merge results
-            merged_results = self._merge_search_results(
-                vector_results, keyword_results, vector_weight, keyword_weight
-            )
+            merged_results = self._merge_search_results(vector_results, keyword_results, vector_weight, keyword_weight)
 
             # Rerank if requested
             if rerank and merged_results:
@@ -557,9 +540,7 @@ class VectorSearchEngine:
                     # Parse JSON metadata if present
                     if result_dict.get("chunk_metadata"):
                         try:
-                            result_dict["chunk_metadata"] = json.loads(
-                                result_dict["chunk_metadata"]
-                            )
+                            result_dict["chunk_metadata"] = json.loads(result_dict["chunk_metadata"])
                         except json.JSONDecodeError:
                             result_dict["chunk_metadata"] = None
 
@@ -580,9 +561,7 @@ class VectorSearchEngine:
         # Delegate to shared utility to avoid duplication
         return extract_keywords(query)
 
-    def _search_by_keywords(
-        self, keywords: list[str], file_types: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    def _search_by_keywords(self, keywords: list[str], file_types: list[str] | None = None) -> list[dict[str, Any]]:
         """
         Search chunks by keywords using SQL LIKE.
 
@@ -666,9 +645,7 @@ class VectorSearchEngine:
                     # Parse JSON metadata if present
                     if result_dict.get("chunk_metadata"):
                         try:
-                            result_dict["chunk_metadata"] = json.loads(
-                                result_dict["chunk_metadata"]
-                            )
+                            result_dict["chunk_metadata"] = json.loads(result_dict["chunk_metadata"])
                         except json.JSONDecodeError:
                             result_dict["chunk_metadata"] = None
 

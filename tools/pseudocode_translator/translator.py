@@ -29,8 +29,10 @@ from .controllers.structured_flow import StructuredParsingController
 from .exceptions import AssemblyError, ErrorContext, TranslatorError
 from .execution.process_pool import ParseValidateExecutor
 from .integration.events import EventDispatcher, EventType
+
 # Import from models.py file (not the models directory)
 from .models import BlockType, CodeBlock
+
 # Import new model abstraction from models directory
 from .models.base_model import BaseTranslationModel, OutputLanguage
 from .models.base_model import TranslationConfig as ModelTranslationConfig
@@ -48,8 +50,7 @@ if TYPE_CHECKING:
 """Module providing utilities for pseudocode translation, including event dispatching, timing wrappers, and translation result handling."""
 
 try:
-    from concurrent.futures.process import \
-        BrokenProcessPool as _BrokenProcessPool  # type: ignore
+    from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
     class _FallbackBrokenProcessPool(Exception):
@@ -164,6 +165,7 @@ def _dispatch_event(
     """
     cast("Any", dispatcher).dispatch_event(event_type, source=source, **data)
 
+
 def timed_section(name: str, extra: dict[str, Any] | None = None) -> AbstractContextManager[None]:
     """Timed Section function."""
     rec_any: Any = get_recorder()
@@ -255,7 +257,7 @@ class TranslationManager(ShutdownMixin):
     """Main controller that coordinates the translation pipeline"""
 
     def __init__(self, config: TranslatorConfig):
-        
+        """
         Initialize the Translation Manager
 
         Args:
@@ -458,9 +460,7 @@ class TranslationManager(ShutdownMixin):
             from .translator_support.offload_executor import OffloadExecutor  # type: ignore
         except Exception:
             # Preserve behavior if facade isn't available.
-            return self.validator.validate_syntax(
-                ast_obj if isinstance(ast_obj, str) else str(ast_obj)
-            )
+            return self.validator.validate_syntax(ast_obj if isinstance(ast_obj, str) else str(ast_obj))
 
         recorder = get_recorder()
         offload = OffloadExecutor(
@@ -474,15 +474,11 @@ class TranslationManager(ShutdownMixin):
 
         # Not offloaded -> local validation with identical stringification semantics.
         if not ok:
-            return self.validator.validate_syntax(
-                ast_obj if isinstance(ast_obj, str) else str(ast_obj)
-            )
+            return self.validator.validate_syntax(ast_obj if isinstance(ast_obj, str) else str(ast_obj))
 
         # Immediate/local fallback path; do not emit fallback here (avoid duplicates).
         if isinstance(result, str) and result.startswith("exec_pool_fallback:"):
-            return self.validator.validate_syntax(
-                ast_obj if isinstance(ast_obj, str) else str(ast_obj)
-            )
+            return self.validator.validate_syntax(ast_obj if isinstance(ast_obj, str) else str(ast_obj))
 
         # Successful offload result.
         return result
@@ -547,9 +543,7 @@ class TranslationManager(ShutdownMixin):
         start_time = self._thread.start_time
         translation_id = self._thread.translation_id
         warnings_ref = getattr(self._thread, "warnings", [])
-        return self._translate_with_structured_parsing(
-            input_text, start_time, translation_id, warnings_ref
-        )
+        return self._translate_with_structured_parsing(input_text, start_time, translation_id, warnings_ref)
 
     def _initialize_translation_context(
         self, target_language: OutputLanguage | None = None
@@ -580,9 +574,7 @@ class TranslationManager(ShutdownMixin):
 
         return start_time, translation_id, errors, warnings
 
-    def _handle_llm_first_success(
-        self, result: TranslationResult, translation_id: int
-    ) -> TranslationResult:
+    def _handle_llm_first_success(self, result: TranslationResult, translation_id: int) -> TranslationResult:
         """Handle successful LLM-first translation."""
         meta_safe = _safe_meta(result.metadata)
         approach = meta_safe.get("approach")
@@ -625,9 +617,7 @@ class TranslationManager(ShutdownMixin):
         # Emit completion/failure events for structured path (best-effort)
         return self._finalize_structured_result(result, translation_id)
 
-    def _finalize_structured_result(
-        self, result: TranslationResult, translation_id: int
-    ) -> TranslationResult:
+    def _finalize_structured_result(self, result: TranslationResult, translation_id: int) -> TranslationResult:
         """Finalize and emit events for structured parsing result."""
         if result and result.success:
             meta_safe = _safe_meta(result.metadata if hasattr(result, "metadata") else {})
@@ -641,13 +631,9 @@ class TranslationManager(ShutdownMixin):
 
         return result
 
-    def translate_pseudocode(
-        self, input_text: str, target_language: OutputLanguage | None = None
-    ) -> TranslationResult:
+    def translate_pseudocode(self, input_text: str, target_language: OutputLanguage | None = None) -> TranslationResult:
         """Main translation method that converts pseudocode to code"""
-        start_time, translation_id, errors, warnings = self._initialize_translation_context(
-            target_language
-        )
+        start_time, translation_id, errors, warnings = self._initialize_translation_context(target_language)
 
         # Emit started (best-effort)
         self._emit_translation_started(translation_id, "llm_first")
@@ -658,13 +644,9 @@ class TranslationManager(ShutdownMixin):
             return self._handle_llm_first_success(payload, translation_id)
 
         # Fallback to structured flow
-        return self._handle_structured_fallback(
-            input_text, payload, warnings, errors, start_time, translation_id
-        )
+        return self._handle_structured_fallback(input_text, payload, warnings, errors, start_time, translation_id)
 
-    def _translate_with_llm_first(
-        self, input_text: str, start_time: float, translation_id: int
-    ) -> TranslationResult:
+    def _translate_with_llm_first(self, input_text: str, start_time: float, translation_id: int) -> TranslationResult:
         """Thin wrapper delegating to LlmFirstController (no behavior change)."""
         return self._llm_first.run(input_text, start_time, translation_id, self._target_language)
 
@@ -678,9 +660,7 @@ class TranslationManager(ShutdownMixin):
         """Thin wrapper delegating to StructuredParsingController (no behavior change)."""
         return self._structured.run(input_text, start_time, translation_id, existing_warnings)
 
-    def _assemble_or_error(
-        self, processed_blocks: list[Any]
-    ) -> tuple[bool, str | None, str | None]:
+    def _assemble_or_error(self, processed_blocks: list[Any]) -> tuple[bool, str | None, str | None]:
         """
         Perform assembly within the same telemetry section and error formatting used today.
         Returns (True, code, None) on success, else (False, None, error_string).
@@ -693,9 +673,7 @@ class TranslationManager(ShutdownMixin):
             if not assembled_code:
                 error = AssemblyError(
                     "Failed to assemble code from blocks",
-                    blocks_info=[
-                        {"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks
-                    ],
+                    blocks_info=[{"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks],
                     assembly_stage="final",
                 )
                 error.add_suggestion("Check block compatibility")
@@ -707,9 +685,7 @@ class TranslationManager(ShutdownMixin):
         except Exception as e:
             error = AssemblyError(
                 "Code assembly failed",
-                blocks_info=[
-                    {"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks
-                ],
+                blocks_info=[{"type": b.type.value, "lines": b.line_numbers} for b in processed_blocks],
                 assembly_stage="assembly",
                 cause=e,
             )
@@ -749,9 +725,7 @@ class TranslationManager(ShutdownMixin):
             vr = self._maybe_offload_validate(assembled_code)
         return _as_validation_result(vr)
 
-    def _attempt_code_fixes(
-        self, assembled_code: str, validation_result: Any, warnings: list[str]
-    ) -> tuple[str, Any]:
+    def _attempt_code_fixes(self, assembled_code: str, validation_result: Any, warnings: list[str]) -> tuple[str, Any]:
         """Attempt to fix validation errors and re-validate."""
         logger.debug("Attempting to fix validation errors")
         fixed_code = self._attempt_fixes(assembled_code, validation_result)
@@ -766,9 +740,7 @@ class TranslationManager(ShutdownMixin):
 
         return assembled_code, new_validation_result
 
-    def _perform_logic_validation_and_suggestions(
-        self, assembled_code: str, warnings: list[str]
-    ) -> None:
+    def _perform_logic_validation_and_suggestions(self, assembled_code: str, warnings: list[str]) -> None:
         """Perform logic validation and add improvement suggestions."""
         # Logic validation unchanged
         logic_result = self.validator.validate_logic(assembled_code)
@@ -829,9 +801,7 @@ class TranslationManager(ShutdownMixin):
 
         # Attempt fixes if validation failed
         if not validation_result.is_valid:
-            assembled_str, validation_result = self._attempt_code_fixes(
-                assembled_str, validation_result, warnings
-            )
+            assembled_str, validation_result = self._attempt_code_fixes(assembled_str, validation_result, warnings)
 
             if not validation_result.is_valid:
                 errors.extend(validation_result.errors)
@@ -966,9 +936,7 @@ class TranslationManager(ShutdownMixin):
             # Fallback to simple error
             return None, {"translation_failed": True, "error": error_msg}
 
-    def _perform_translation_with_model(
-        self, model: Any, text: str, context: dict[str, Any] | None
-    ) -> str:
+    def _perform_translation_with_model(self, model: Any, text: str, context: dict[str, Any] | None) -> str:
         """Perform the actual translation with the model."""
         translation_config = self._build_model_config_for_block()
 
@@ -1044,9 +1012,7 @@ class TranslationManager(ShutdownMixin):
             # Mixed and other cases: simpler error semantics
             return None, {"translation_failed": True, "error": str(e)}
 
-    def _process_english_block(
-        self, block: CodeBlock, index: int, blocks: list[CodeBlock]
-    ) -> CodeBlock:
+    def _process_english_block(self, block: CodeBlock, index: int, blocks: list[CodeBlock]) -> CodeBlock:
         """
         Process a top-level ENGLISH block into a PYTHON block or mark failure.
         Preserves metadata keys and error formatting behavior.
@@ -1071,9 +1037,7 @@ class TranslationManager(ShutdownMixin):
             block.metadata.update(meta)
         return block
 
-    def _process_mixed_block(
-        self, block: CodeBlock, index: int, blocks: list[CodeBlock]
-    ) -> list[CodeBlock]:
+    def _process_mixed_block(self, block: CodeBlock, index: int, blocks: list[CodeBlock]) -> list[CodeBlock]:
         """
         Process a MIXED block by translating ENGLISH sub-blocks and passing through others.
         Preserves previous behavior for metadata and merging.
@@ -1083,9 +1047,7 @@ class TranslationManager(ShutdownMixin):
         for sub_block in separated_blocks:
             if sub_block.type == BlockType.ENGLISH:
                 context = TranslationManager._build_context(blocks, index)
-                code, meta = self._translate_text_with_model(
-                    sub_block.content, context=context, block=sub_block
-                )
+                code, meta = self._translate_text_with_model(sub_block.content, context=context, block=sub_block)
                 if code is not None:
                     sub_block.content = code
                     sub_block.type = BlockType.PYTHON
@@ -1244,21 +1206,19 @@ class TranslationManager(ShutdownMixin):
         # Build compact error summary (parity is enforced in support helper too)
         try:
             # Local import to avoid cycles; support module must not import translator.py
-            from .translator_support.fix_refiner import attempt_fixes as _support_attempt_fixes  # type: ignore
+            from .translator_support.fix_refiner import (
+                attempt_fixes as _support_attempt_fixes,  # type: ignore
+            )
         except Exception:
             # Preserve previous error/warning logging semantics on failure
             logger.error("Failed to fix code: import error in fix_refiner")
-            recovery_error = TranslatorError(
-                "Automatic error recovery failed", cause=ImportError("fix_refiner")
-            )
+            recovery_error = TranslatorError("Automatic error recovery failed", cause=ImportError("fix_refiner"))
             recovery_error.add_suggestion("Manual fixes may be required")
             logger.warning(recovery_error.format_error())
             return code
 
         try:
-            refined_code, _warnings_delta = _support_attempt_fixes(
-                self._current_model, code, validation_result
-            )
+            refined_code, _warnings_delta = _support_attempt_fixes(self._current_model, code, validation_result)
             return refined_code
         except Exception as e:
             # Preserve previous error/warning logging semantics on failure
@@ -1404,9 +1364,7 @@ class TranslationManager(ShutdownMixin):
         """Delegate translation to the active model."""
         if self._current_model is None:
             raise RuntimeError("Translation model is not initialized")
-        return self._current_model.translate(
-            instruction=text, config=translation_config, context=context
-        )
+        return self._current_model.translate(instruction=text, config=translation_config, context=context)
 
     def translate_text_block(
         self,
@@ -1459,9 +1417,7 @@ class TranslationManager(ShutdownMixin):
         emitter = self._setup_stream_emitter()
         start_time = time.time()
         try:
-            yield from self._execute_streaming_pipeline(
-                input_text, start_time, progress_callback, emitter
-            )
+            yield from self._execute_streaming_pipeline(input_text, start_time, progress_callback, emitter)
         except ImportError:
             logger.warning("Streaming module not available, using regular translation")
             yield self.translate_pseudocode(input_text)
@@ -1520,9 +1476,7 @@ class TranslationManager(ShutdownMixin):
         self, pipeline: Any, input_text: str, progress_callback: Any
     ) -> Iterator[TranslationResult]:
         """Process streaming chunks and yield results."""
-        for chunk_result in pipeline.stream_translate(
-            input_text, progress_callback=progress_callback
-        ):
+        for chunk_result in pipeline.stream_translate(input_text, progress_callback=progress_callback):
             if chunk_result.success and chunk_result.translated_blocks:
                 chunk_code = self.assembler.assemble(chunk_result.translated_blocks)
                 result = TranslationResult(

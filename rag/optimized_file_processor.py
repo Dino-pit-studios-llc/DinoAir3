@@ -258,9 +258,7 @@ class OptimizedFileProcessor(FileProcessor):
             return error
 
         size, modified_dt, file_type = OptimizedFileProcessor._gather_file_stats(file_path)
-        file_hash = self._calculate_file_hash(
-            file_path, chunk_size=getattr(self, "chunk_size", 65536)
-        )
+        file_hash = self._calculate_file_hash(file_path, chunk_size=getattr(self, "chunk_size", 65536))
         existing = self.db.get_file_by_path(os.path.normpath(file_path))
         skip_resp = OptimizedFileProcessor._should_skip(existing, size, file_hash, force_reprocess)
         if skip_resp:
@@ -322,9 +320,7 @@ class OptimizedFileProcessor(FileProcessor):
                 if isinstance(cid, str):
                     chunk_ids.append(cid)
                 else:
-                    self.logger.error(
-                        f"Chunk ID missing or invalid for file {file_path}, index {c['chunk_index']}"
-                    )
+                    self.logger.error(f"Chunk ID missing or invalid for file {file_path}, index {c['chunk_index']}")
             else:
                 self.logger.error(
                     f"Failed to add chunk {c['chunk_index']} for {file_path}: {add_chunk_resp.get('error')}"
@@ -454,9 +450,7 @@ class OptimizedFileProcessor(FileProcessor):
                         # Update progress
                         if progress_callback:
                             processed = (
-                                results["stats"]["processed"]
-                                + results["stats"]["failed"]
-                                + results["stats"]["skipped"]
+                                results["stats"]["processed"] + results["stats"]["failed"] + results["stats"]["skipped"]
                             )
                             elapsed = time.time() - start_time
                             if processed > 0:
@@ -479,9 +473,7 @@ class OptimizedFileProcessor(FileProcessor):
             end_time = time.time()
             results["stats"]["processing_time"] = end_time - start_time
             if results["stats"]["processing_time"] > 0:
-                results["stats"]["files_per_second"] = (
-                    len(files_to_process) / results["stats"]["processing_time"]
-                )
+                results["stats"]["files_per_second"] = len(files_to_process) / results["stats"]["processing_time"]
 
             # Update success status
             if results["stats"]["failed"] > 0:
@@ -504,9 +496,7 @@ class OptimizedFileProcessor(FileProcessor):
             self.logger.error("Error processing directory %s: %s", directory, str(e))
             return {"success": False, "error": f"Unexpected error: {str(e)}"}
 
-    def _process_file_wrapper(
-        self, file_path: str, force_reprocess: bool, index: int, total: int
-    ) -> dict[str, Any]:
+    def _process_file_wrapper(self, file_path: str, force_reprocess: bool, index: int, total: int) -> dict[str, Any]:
         """Wrapper for process_file to handle progress tracking"""
         try:
             start_time = time.time()
@@ -599,9 +589,7 @@ class OptimizedFileProcessor(FileProcessor):
 
         return file_hash
 
-    def _update_results(
-        self, results: dict[str, Any], file_path: str, file_result: dict[str, Any]
-    ) -> None:
+    def _update_results(self, results: dict[str, Any], file_path: str, file_result: dict[str, Any]) -> None:
         """Update results dictionary with file processing result"""
         with self._lock:
             if file_result["success"]:
@@ -621,9 +609,7 @@ class OptimizedFileProcessor(FileProcessor):
                     )
                     results["stats"]["processed"] += 1
                     results["stats"]["total_chunks"] += len(file_result.get("chunks", []))
-                    results["stats"]["total_embeddings"] += file_result.get("stats", {}).get(
-                        "embeddings_generated", 0
-                    )
+                    results["stats"]["total_embeddings"] += file_result.get("stats", {}).get("embeddings_generated", 0)
             else:
                 results["failed_files"].append(
                     {
@@ -644,9 +630,7 @@ class OptimizedFileProcessor(FileProcessor):
             return 0
 
         total_chunks = len(chunk_ids)
-        embeddings_to_generate, cached_embeddings = self._partition_embeddings(
-            chunk_ids, chunk_texts
-        )
+        embeddings_to_generate, cached_embeddings = self._partition_embeddings(chunk_ids, chunk_texts)
 
         new_embeddings = self._generate_batches(
             embeddings_to_generate, cached_embeddings, total_chunks, progress_callback
@@ -668,9 +652,7 @@ class OptimizedFileProcessor(FileProcessor):
         else:
             embeddings_to_generate = [
                 (i, chunk_id, chunk_text)
-                for i, (chunk_id, chunk_text) in enumerate(
-                    zip(chunk_ids, chunk_texts, strict=False)
-                )
+                for i, (chunk_id, chunk_text) in enumerate(zip(chunk_ids, chunk_texts, strict=False))
             ]
         return embeddings_to_generate, cached_embeddings
 

@@ -139,9 +139,7 @@ def error_response(
         operation_id=operation_id,
         timestamp=_now_rfc3339(),
     )
-    return JSONResponse(
-        content=body.model_dump(by_alias=True, exclude_none=True), status_code=status
-    )
+    return JSONResponse(content=body.model_dump(by_alias=True, exclude_none=True), status_code=status)
 
 
 def not_implemented(method: str, path: str, operation_id: str | None = None) -> JSONResponse:

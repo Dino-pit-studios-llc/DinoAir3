@@ -114,9 +114,7 @@ class SQLInjectionProtection:
     def _excessive_sql_keywords(text: str) -> bool:
         """Return True if the text contains two or more SQL keywords indicating potential injection."""
         text_upper = text.upper()
-        count = sum(
-            1 for kw in SQLInjectionProtection.sql_keywords if f" {kw} " in f" {text_upper} "
-        )
+        count = sum(1 for kw in SQLInjectionProtection.sql_keywords if f" {kw} " in f" {text_upper} ")
         return count >= 2
 
     @staticmethod
@@ -132,10 +130,7 @@ class SQLInjectionProtection:
         """Return True if the text matches any common SQL injection regex pattern
         or contains hex-encoded SQL patterns (e.g., starting with 0x).
         """
-        if any(
-            re.search(pattern, text, re.IGNORECASE)
-            for pattern in SQLInjectionProtection.sql_patterns
-        ):
+        if any(re.search(pattern, text, re.IGNORECASE) for pattern in SQLInjectionProtection.sql_patterns):
             return True
         return bool(re.search(r"0x[0-9a-fA-F]+", text))
 
@@ -229,9 +224,7 @@ class SQLInjectionProtection:
         return text.replace("[", "\\[")
 
     @staticmethod
-    def generate_parameterized_query(
-        query_template: str, params: dict[str, Any]
-    ) -> tuple[str, tuple[Any, ...]]:
+    def generate_parameterized_query(query_template: str, params: dict[str, Any]) -> tuple[str, tuple[Any, ...]]:
         """Generate a parameterized query with placeholders."""
         # Example: Convert "SELECT * FROM users WHERE name = {name}"
         # to ("SELECT * FROM users WHERE name = ?", ['value'])
@@ -290,9 +283,7 @@ class SafeSQL:
             cursor.close()
 
     @staticmethod
-    def build_where_clause(
-        conditions: dict[str, Any], operator: str = "AND"
-    ) -> tuple[str, tuple[Any, ...]]:
+    def build_where_clause(conditions: dict[str, Any], operator: str = "AND") -> tuple[str, tuple[Any, ...]]:
         """Build a safe WHERE clause from conditions."""
         if not conditions:
             return "", ()

@@ -9,10 +9,8 @@ Usage:
 
 import argparse
 import ast
-import os
 import sys
 from pathlib import Path
-from typing import List, Optional, Union
 
 
 class SimpleDocstringFixer:
@@ -38,7 +36,7 @@ class SimpleDocstringFixer:
             True if changes were made, False otherwise
         """
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -87,7 +85,7 @@ class SimpleDocstringFixer:
             print(f"Error processing {filepath}: {e}")
             return False
 
-    def _find_missing_docstrings(self, tree) -> List[tuple]:
+    def _find_missing_docstrings(self, tree) -> list[tuple]:
         """Find functions and classes missing docstrings.
 
         Args:
@@ -113,17 +111,13 @@ class SimpleDocstringFixer:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not self._has_docstring(node):
-                    missing.append(
-                        ("class", node.lineno, node.name, 8)
-                    )  # 8 spaces for class docstring
+                    missing.append(("class", node.lineno, node.name, 8))  # 8 spaces for class docstring
 
                 # Check methods within the class
                 for child in node.body:
                     if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if not self._has_docstring(child) and not child.name.startswith("_"):
-                            missing.append(
-                                ("method", child.lineno, child.name, 12)
-                            )  # 12 spaces for method docstring
+                            missing.append(("method", child.lineno, child.name, 12))  # 12 spaces for method docstring
 
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Only top-level functions (not nested or methods)
@@ -133,9 +127,7 @@ class SimpleDocstringFixer:
                     and not node.name.startswith("test_")
                     and self._is_top_level(node, tree)
                 ):
-                    missing.append(
-                        ("function", node.lineno, node.name, 8)
-                    )  # 8 spaces for function docstring
+                    missing.append(("function", node.lineno, node.name, 8))  # 8 spaces for function docstring
 
         return missing
 
@@ -258,7 +250,7 @@ class SimpleDocstringFixer:
 
     def print_summary(self) -> None:
         """Print processing summary."""
-        print(f"\nSummary:")
+        print("\nSummary:")
         print(f"  Files processed: {self.files_processed}")
         print(f"  Docstrings added: {self.docstrings_added}")
 
@@ -275,9 +267,7 @@ def main():
         default=".",
         help="Directory or file to process (default: current directory)",
     )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be changed without making changes"
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without making changes")
 
     args = parser.parse_args()
 

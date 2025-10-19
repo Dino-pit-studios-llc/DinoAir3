@@ -39,14 +39,10 @@ def _get_missing_doc_nodes(
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             if ast.get_docstring(node) is None:
-                classes_without_docs.append(
-                    {"name": node.name, "lineno": node.lineno, "type": "class"}
-                )
+                classes_without_docs.append({"name": node.name, "lineno": node.lineno, "type": "class"})
         elif isinstance(node, ast.FunctionDef):
             if ast.get_docstring(node) is None:
-                functions_without_docs.append(
-                    {"name": node.name, "lineno": node.lineno, "type": "function"}
-                )
+                functions_without_docs.append({"name": node.name, "lineno": node.lineno, "type": "function"})
     return classes_without_docs, functions_without_docs
 
 

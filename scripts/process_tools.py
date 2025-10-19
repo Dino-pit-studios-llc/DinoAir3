@@ -168,9 +168,7 @@ def process_file(file_path: str) -> bool:
                 continue
 
             # Generate docstring
-            docstring = generate_function_docstring(
-                func["name"], func["args"], func["has_return"], indent + 4
-            )
+            docstring = generate_function_docstring(func["name"], func["args"], func["has_return"], indent + 4)
 
             # Insert docstring
             docstring_lines = docstring.split("\n")

@@ -98,15 +98,11 @@ class StreamingTranslator:
 
         # Helper bindings (extracted to reduce LOC & complexity)
         self._parse_success = parse_success
-        self._parse_and_translate_blocks = (
-            lambda text, chunk_index, on_update=None: parse_and_translate_blocks(
-                self, text, chunk_index, on_update
-            )
+        self._parse_and_translate_blocks = lambda text, chunk_index, on_update=None: parse_and_translate_blocks(
+            self, text, chunk_index, on_update
         )
-        self._translate_chunk_blocks = (
-            lambda parse_result, chunk_index, on_update=None: translate_chunk_blocks(
-                self, parse_result, chunk_index, on_update
-            )
+        self._translate_chunk_blocks = lambda parse_result, chunk_index, on_update=None: translate_chunk_blocks(
+            self, parse_result, chunk_index, on_update
         )
         self._translate_block = lambda block, chunk_index, block_index: translate_block(
             self, block, chunk_index, block_index
@@ -115,16 +111,11 @@ class StreamingTranslator:
         self._process_statement = lambda statement, chunk_index, on_update=None: process_statement(
             self, statement, chunk_index, on_update
         )
-        self._process_accumulated_blocks = (
-            lambda accumulated_input, on_update=None: process_accumulated_blocks(
-                self, accumulated_input, on_update
-            )
+        self._process_accumulated_blocks = lambda accumulated_input, on_update=None: process_accumulated_blocks(
+            self, accumulated_input, on_update
         )
         self._process_interactive_input = (
-            lambda user_input,
-            session_context,
-            interaction_count,
-            on_update=None: process_interactive_input(
+            lambda user_input, session_context, interaction_count, on_update=None: process_interactive_input(
                 self, user_input, session_context, interaction_count, on_update
             )
         )
@@ -171,9 +162,7 @@ class StreamingTranslator:
             # Get strategy and translate
             strategy = self._get_async_strategy(mode)
             if strategy:
-                async for translated in self._execute_async_strategy(
-                    strategy, mode, input_stream, on_update
-                ):
+                async for translated in self._execute_async_strategy(strategy, mode, input_stream, on_update):
                     yield translated
 
         except Exception as e:
@@ -318,9 +307,7 @@ class StreamingTranslator:
                 # Ensure full-document outputs are chunk-like and end with double newline
                 yield f"{t}\n\n"
         finally:
-            self._emit_event(
-                StreamingEventData(event=StreamingEvent.CHUNK_COMPLETED, chunk_index=0)
-            )
+            self._emit_event(StreamingEventData(event=StreamingEvent.CHUNK_COMPLETED, chunk_index=0))
 
     def cancel(self):
         """Cancel the streaming translation"""
@@ -375,9 +362,7 @@ class StreamingTranslator:
 
         cancelled = self._rt.check_cancelled() or self.is_cancelled
         if not cancelled:
-            self._emit_event(
-                StreamingEventData(event=StreamingEvent.COMPLETED, progress=self.current_progress)
-            )
+            self._emit_event(StreamingEventData(event=StreamingEvent.COMPLETED, progress=self.current_progress))
 
         # Delegate shutdown to runtime
         self._rt.stop(self.current_progress, cancelled)
@@ -392,9 +377,7 @@ class StreamingTranslator:
         # The runtime owns the worker loop; this method remains for backward references.
         return
 
-    def _translate_single_block(
-        self, block: CodeBlock, chunk_index: int, block_index: int
-    ) -> str | None:
+    def _translate_single_block(self, block: CodeBlock, chunk_index: int, block_index: int) -> str | None:
         """Translate a single block (delegated to core helper)."""
         return translate_block(self, block, chunk_index, block_index)
 
@@ -456,9 +439,7 @@ class StreamingTranslator:
 
             # Process in thread pool
             loop = asyncio.get_event_loop()
-            result = await loop.run_in_executor(
-                None, self._process_accumulated_blocks, accumulated_input, on_update
-            )
+            result = await loop.run_in_executor(None, self._process_accumulated_blocks, accumulated_input, on_update)
 
             if result:
                 translated, remaining = result

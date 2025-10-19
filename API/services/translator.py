@@ -31,9 +31,7 @@ except ImportError:
 class TranslatorAPIProtocol(Protocol):
     """Protocol for translator API to provide type hints."""
 
-    def translate(
-        self, pseudocode: str, *, language: str, use_streaming: bool = False
-    ) -> dict[str, Any]:
+    def translate(self, pseudocode: str, *, language: str, use_streaming: bool = False) -> dict[str, Any]:
         """Translate pseudocode to target language."""
         return {}
 
@@ -54,10 +52,7 @@ class TranslatorService:
     def __init__(self) -> None:
         # Initialize the high-level API and ensure streaming is disabled
         if TranslatorAPI is None:
-            raise ImportError(
-                "pseudocode_translator package not available. "
-                "Install it to use translation features."
-            )
+            raise ImportError("pseudocode_translator package not available. Install it to use translation features.")
         self._api: Any = TranslatorAPI()  # type: ignore[misc]
         # Prevent auto streaming by setting a huge threshold
         # TranslatorAPI auto-enables streaming when input length exceeds _streaming_threshold.
@@ -99,9 +94,7 @@ class TranslatorService:
         return {}
 
     @staticmethod
-    def _create_validation_error_response(
-        language: str, validation_error: ValidationError
-    ) -> TranslateResponse:
+    def _create_validation_error_response(language: str, validation_error: ValidationError) -> TranslateResponse:
         """Create a response for validation errors."""
         log.warning(
             "TranslateResponse validation failed; coercing to error",

@@ -27,9 +27,7 @@ def build_success(payload: dict[str, Any], extra: dict[str, Any] | None = None) 
     return result
 
 
-def build_error(
-    message: str, error: str | None = None, extra: dict[str, Any] | None = None
-) -> dict[str, Any]:
+def build_error(message: str, error: str | None = None, extra: dict[str, Any] | None = None) -> dict[str, Any]:
     """Build a standardized error result.
 
     Returns:

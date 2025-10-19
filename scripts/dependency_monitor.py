@@ -13,7 +13,6 @@ Features:
 - Health metrics and alerting
 - Historical trend analysis
 
-"""
 Usage:
     python scripts/dependency_monitor.py [command] [options]
 
@@ -186,9 +185,7 @@ class DependencyMonitor:
         actual_import_time = self._measure_actual_import_time(file_path, module_name)
 
         # Calculate health score using actual import time
-        health_score = self._calculate_health_score(
-            actual_import_time, dependency_count, len(circular_deps)
-        )
+        health_score = self._calculate_health_score(actual_import_time, dependency_count, len(circular_deps))
 
         return ImportMetrics(
             module_name=module_name,
@@ -263,6 +260,7 @@ if __name__ == "__main__":
     def _write_temp_script(self, script: str) -> str:
         """Write the provided script string to a temporary Python file and return its file path."""
         import tempfile
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_file:
             temp_file.write(script)
             temp_file.flush()
@@ -313,9 +311,7 @@ if __name__ == "__main__":
         except OSError:
             return 0.001
 
-    def _benchmark_import_performance(
-        self, sample_modules: list[tuple[Path, str]] | None = None
-    ) -> dict[str, float]:
+    def _benchmark_import_performance(self, sample_modules: list[tuple[Path, str]] | None = None) -> dict[str, float]:
         """
         Benchmark import performance for a sample of modules to improve estimation accuracy.
 
@@ -387,11 +383,7 @@ if __name__ == "__main__":
 
         # Identify slow imports
         slow_threshold = performance_stats["mean_import_time"] * 3  # 3x mean
-        slow_imports = {
-            module: time_val
-            for module, time_val in benchmark_results.items()
-            if time_val > slow_threshold
-        }
+        slow_imports = {module: time_val for module, time_val in benchmark_results.items() if time_val > slow_threshold}
 
         # Performance recommendations
         recommendations = []
@@ -471,9 +463,9 @@ if __name__ == "__main__":
 
         # Calculate overall accuracy metrics - now with proper typing
         total_error = sum(result["absolute_error"] for result in comparison_results)
-        mean_relative_error = sum(
-            result["relative_error_percent"] for result in comparison_results
-        ) / len(comparison_results)
+        mean_relative_error = sum(result["relative_error_percent"] for result in comparison_results) / len(
+            comparison_results
+        )
 
         accuracy_report = {
             "sample_size": len(comparison_results),
@@ -481,19 +473,11 @@ if __name__ == "__main__":
             "mean_relative_error_percent": mean_relative_error,
             "detailed_results": comparison_results,
             "accuracy_distribution": {
-                "excellent": sum(
-                    1
-                    for r in comparison_results
-                    if r["relative_error_percent"] < excellent_threshold
-                ),
+                "excellent": sum(1 for r in comparison_results if r["relative_error_percent"] < excellent_threshold),
                 "good": sum(
-                    1
-                    for r in comparison_results
-                    if excellent_threshold <= r["relative_error_percent"] < good_threshold
+                    1 for r in comparison_results if excellent_threshold <= r["relative_error_percent"] < good_threshold
                 ),
-                "poor": sum(
-                    1 for r in comparison_results if r["relative_error_percent"] >= good_threshold
-                ),
+                "poor": sum(1 for r in comparison_results if r["relative_error_percent"] >= good_threshold),
             },
         }
 
@@ -526,9 +510,7 @@ if __name__ == "__main__":
 
             if result.returncode == 0:
                 data = json.loads(result.stdout)
-                circular_deps = [
-                    " -> ".join(cycle["cycle"]) for cycle in data.get("circular_dependencies", [])
-                ]
+                circular_deps = [" -> ".join(cycle["cycle"]) for cycle in data.get("circular_dependencies", [])]
                 # Cache results for this directory
                 cache_result = (
                     len(data.get("circular_dependencies", [])),
@@ -549,9 +531,7 @@ if __name__ == "__main__":
             self._dependency_cache[directory] = cache_result
             return cache_result
 
-    def _calculate_health_score(
-        self, import_time_estimate: float, dependency_count: int, circular_count: int
-    ) -> float:
+    def _calculate_health_score(self, import_time_estimate: float, dependency_count: int, circular_count: int) -> float:
         """Calculate health score for a module."""
         score = 1.0
 
@@ -615,9 +595,7 @@ if __name__ == "__main__":
 
         return alerts
 
-    def generate_dependency_graph(
-        self, metrics: dict[str, ImportMetrics], output_path: Path
-    ) -> bool:
+    def generate_dependency_graph(self, metrics: dict[str, ImportMetrics], output_path: Path) -> bool:
         """Generate dependency graph visualization."""
         if not HAS_VISUALIZATION:
             self.logger.warning("Visualization libraries not available")
@@ -667,12 +645,8 @@ if __name__ == "__main__":
             "critical_modules": sum(1 for m in metrics.values() if m.health_score < 0.5),
             "total_alerts": len(alerts),
             "critical_alerts": sum(1 for a in alerts if a.severity == "critical"),
-            "average_health_score": (
-                sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0
-            ),
-            "total_circular_dependencies": sum(
-                len(m.circular_dependencies) for m in metrics.values()
-            ),
+            "average_health_score": (sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0),
+            "total_circular_dependencies": sum(len(m.circular_dependencies) for m in metrics.values()),
         }
 
         # Store metrics and alerts
@@ -684,9 +658,7 @@ if __name__ == "__main__":
             output_dir = Path(self.config["visualization"]["output_dir"])
             output_dir.mkdir(exist_ok=True)
 
-            graph_path = (
-                output_dir / f"dependency_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-            )
+            graph_path = output_dir / f"dependency_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             self.generate_dependency_graph(metrics, graph_path)
 
         self.logger.info("Monitoring cycle completed: %s", report)
@@ -735,9 +707,7 @@ def parse_args() -> argparse.Namespace:
         default="text",
         help="Output format",
     )
-    parser.add_argument(
-        "--continuous", action="store_true", help="Run in continuous monitoring mode"
-    )
+    parser.add_argument("--continuous", action="store_true", help="Run in continuous monitoring mode")
     parser.add_argument(
         "--interval",
         type=int,
@@ -771,16 +741,10 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
         "modules": {name: asdict(metric) for name, metric in metrics.items()},
         "summary": {
             "average_import_time_estimate": (
-                sum(m.import_time_estimate for m in metrics.values()) / len(metrics)
-                if metrics
-                else 0
+                sum(m.import_time_estimate for m in metrics.values()) / len(metrics) if metrics else 0
             ),
-            "average_health_score": (
-                sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0
-            ),
-            "modules_with_circular_deps": sum(
-                1 for m in metrics.values() if m.circular_dependencies
-            ),
+            "average_health_score": (sum(m.health_score for m in metrics.values()) / len(metrics) if metrics else 0),
+            "modules_with_circular_deps": sum(1 for m in metrics.values() if m.circular_dependencies),
         },
     }
 
@@ -849,6 +813,7 @@ def main() -> None:
     args = parse_args()
     validate_path(args.path)
     execute_command(args)
+
 
 if __name__ == "__main__":
     main()

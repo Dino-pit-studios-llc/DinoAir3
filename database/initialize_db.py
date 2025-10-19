@@ -478,9 +478,7 @@ def _get_windows_data_directory() -> Path:
         Path: Validated Windows data directory
     """
     local_root_dir = (
-        Path(os.environ.get("LOCALAPPDATA", Path(DEFAULT_WINDOWS_APPDATA).expanduser()))
-        .expanduser()
-        .resolve()
+        Path(os.environ.get("LOCALAPPDATA", Path(DEFAULT_WINDOWS_APPDATA).expanduser())).expanduser().resolve()
     )
 
     # Validate that the local_root_dir is safe, else use fallback
@@ -524,14 +522,10 @@ def _validate_xdg_data_home(xdg_path: str, user_home_path: Path) -> Path | None:
         if _is_path_within_user_home(local_abs_env_path, local_user_home_str):
             return local_abs_env_path
 
-        logging.warning(
-            "Rejected XDG_DATA_HOME environment var as unsafe (outside user home). Using default location."
-        )
+        logging.warning("Rejected XDG_DATA_HOME environment var as unsafe (outside user home). Using default location.")
         return None
     except Exception:
-        logging.warning(
-            "Exception processing XDG_DATA_HOME environment var. Using default location."
-        )
+        logging.warning("Exception processing XDG_DATA_HOME environment var. Using default location.")
         return None
 
 
@@ -675,11 +669,7 @@ def is_safe_user_root(path: Path) -> bool:
 if os.name == "nt":
     # Use AppData/Local
 
-    root_dir = (
-        Path(os.environ.get("LOCALAPPDATA", Path("~/AppData/Local").expanduser()))
-        .expanduser()
-        .resolve()
-    )
+    root_dir = Path(os.environ.get("LOCALAPPDATA", Path("~/AppData/Local").expanduser())).expanduser().resolve()
     # Validate that the root_dir is safe, else use fallback
     if not is_safe_user_root(root_dir):
         logging.warning("Rejected LOCALAPPDATA environment var as unsafe. Using default location.")
@@ -717,9 +707,7 @@ else:
                 )
                 root_dir = default_xdg
         except Exception:
-            logging.warning(
-                "Exception processing XDG_DATA_HOME environment var. Using default location."
-            )
+            logging.warning("Exception processing XDG_DATA_HOME environment var. Using default location.")
             root_dir = default_xdg
     else:
         root_dir = default_xdg
@@ -760,9 +748,7 @@ class DatabaseManager:
         self.appointments_db_path = self.user_db_dir / DB_FILES["appointments"]
         self.artifacts_db_path = self.user_db_dir / DB_FILES["artifacts"]
         self.file_search_db_path = (
-            self._single_db_path
-            if self._single_db_path
-            else self.user_db_dir / DB_FILES.get("file_search", "")
+            self._single_db_path if self._single_db_path else self.user_db_dir / DB_FILES.get("file_search", "")
         )
         self.projects_db_path = self.user_db_dir / DB_FILES["projects"]
         self.timers_db_path = self.user_db_dir / DB_FILES["timers"]
@@ -803,16 +789,10 @@ class DatabaseManager:
         except OSError as e:
             # For tests or when permissions fail, fall back to temp directory
             if os.environ.get("PYTEST_CURRENT_TEST") or "test" in str(self.base_dir).lower():
-                temp_fallback = (
-                    Path(tempfile.gettempdir()) / "DinoAir_fallback" / f"user_{os.getpid()}"
-                )
-                self.user_feedback(
-                    f"Permission issue with {self.base_dir}, using temp fallback: {temp_fallback}"
-                )
+                temp_fallback = Path(tempfile.gettempdir()) / "DinoAir_fallback" / f"user_{os.getpid()}"
+                self.user_feedback(f"Permission issue with {self.base_dir}, using temp fallback: {temp_fallback}")
                 self.base_dir = temp_fallback
-                DatabaseManager._validate_user_data_permissions(
-                    self.base_dir
-                )  # This should work for temp
+                DatabaseManager._validate_user_data_permissions(self.base_dir)  # This should work for temp
             else:
                 raise e
 
@@ -841,14 +821,10 @@ class DatabaseManager:
             month_dir = year_dir / f"{now.month:0{MONTH_FORMAT_DIGITS}d}"
             _ensure_dir(month_dir)
         except PermissionError:
-            self.user_feedback(
-                "Cannot create user folders. Please check permissions or run as administrator."
-            )
+            self.user_feedback("Cannot create user folders. Please check permissions or run as administrator.")
             raise
         except OSError as e:
-            self.user_feedback(
-                f"OS error creating folders: {str(e)}. Check disk space and permissions."
-            )
+            self.user_feedback(f"OS error creating folders: {str(e)}. Check disk space and permissions.")
             raise
         except Exception as e:
             self.user_feedback(f"Unexpected error creating folders: {str(e)}")
@@ -883,8 +859,7 @@ class DatabaseManager:
 
             if executed:
                 self.user_feedback(
-                    f"[OK] Applied {len(executed)} database migrations: "
-                    f"{', '.join(m.full_name for m in executed)}"
+                    f"[OK] Applied {len(executed)} database migrations: {', '.join(m.full_name for m in executed)}"
                 )
             else:
                 LOGGER.debug("All migrations already applied for notes database")
@@ -1084,14 +1059,10 @@ class DatabaseManager:
 
             self.user_feedback(f"[OK] All databases ready for {self.user_name}")
         except sqlite3.Error as e:
-            self.user_feedback(
-                f"[ERROR] Database error: {str(e)}. Please check database file permissions."
-            )
+            self.user_feedback(f"[ERROR] Database error: {str(e)}. Please check database file permissions.")
             raise
         except PermissionError:
-            self.user_feedback(
-                "[ERROR] Permission denied. Please run as administrator or check file permissions."
-            )
+            self.user_feedback("[ERROR] Permission denied. Please run as administrator or check file permissions.")
             raise
         except Exception:
             self.user_feedback(
@@ -1150,9 +1121,7 @@ class DatabaseManager:
             self.user_feedback(f"[ERROR] Backup failed - unexpected error: {str(e)}")
             raise
 
-    def clean_memory_database(
-        self, watchdog_retention_days: int = DEFAULT_WATCHDOG_RETENTION_DAYS
-    ) -> None:
+    def clean_memory_database(self, watchdog_retention_days: int = DEFAULT_WATCHDOG_RETENTION_DAYS) -> None:
         """Clean expired entries from memory database and close all connections"""
         try:
             # First cleanup all tracked connections
@@ -1194,9 +1163,7 @@ class DatabaseManager:
                 # Vacuum to reclaim space
                 cursor.execute("VACUUM")
 
-                self.user_feedback(
-                    f"[OK] Memory database cleaned (removed {deleted_metrics} old metrics)"
-                )
+                self.user_feedback(f"[OK] Memory database cleaned (removed {deleted_metrics} old metrics)")
         except sqlite3.Error as e:
             self.user_feedback(f"Warning: Database error during cleanup: {str(e)}")
         except Exception as e:

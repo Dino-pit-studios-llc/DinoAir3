@@ -9,12 +9,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field, field_validator
-
 from database.initialize_db import DatabaseManager
 from database.projects_db import ProjectsDatabase
+from fastapi import APIRouter, HTTPException, Query, status
 from models.project import Project, ProjectStatus
+from pydantic import BaseModel, Field, field_validator
 
 log = logging.getLogger("api.routes.projects")
 
@@ -142,11 +141,7 @@ class ProjectResponse(BaseModel):
             id=project.id,
             name=project.name,
             description=project.description,
-            status=(
-                project.status.value
-                if isinstance(project.status, ProjectStatus)
-                else project.status
-            ),
+            status=(project.status.value if isinstance(project.status, ProjectStatus) else project.status),
             color=project.color,
             icon=project.icon,
             parent_project_id=project.parent_project_id,
@@ -276,9 +271,7 @@ async def create_project(request: ProjectCreateRequest) -> ProjectCreatedRespons
     },
 )
 async def list_projects(
-    status_filter: str | None = Query(
-        default=None, description="Filter by status (active, completed, archived)"
-    ),
+    status_filter: str | None = Query(default=None, description="Filter by status (active, completed, archived)"),
     parent_id: str | None = Query(default=None, description="Filter by parent project ID"),
 ) -> ProjectsListResponse:
     """
@@ -300,15 +293,12 @@ async def list_projects(
             projects = [
                 p
                 for p in projects
-                if (p.status.value if isinstance(p.status, ProjectStatus) else p.status)
-                == status_filter_lower
+                if (p.status.value if isinstance(p.status, ProjectStatus) else p.status) == status_filter_lower
             ]
 
         if parent_id is not None:
             # Filter by parent_id (use empty string to get root projects)
-            projects = [
-                p for p in projects if p.parent_project_id == (parent_id if parent_id else None)
-            ]
+            projects = [p for p in projects if p.parent_project_id == (parent_id if parent_id else None)]
 
         # Convert to response format
         projects_response = [_convert_project_to_response(p) for p in projects]

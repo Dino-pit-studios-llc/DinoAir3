@@ -139,9 +139,7 @@ def _map_rate_limit_fields(
         return {"rate_limit_per_minute": rlpm}
     if "rate_limits" in model_fields:
         base_rl: dict[str, Any] = (
-            dict(cast("Mapping[str, Any]", existing_rate_limits))
-            if isinstance(existing_rate_limits, Mapping)
-            else {}
+            dict(cast("Mapping[str, Any]", existing_rate_limits)) if isinstance(existing_rate_limits, Mapping) else {}
         )
         val: Any = rlpm
         with suppress(Exception):

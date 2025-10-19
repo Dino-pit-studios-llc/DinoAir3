@@ -223,11 +223,7 @@ class FileSearchDB:
                         file_id = self._generate_id(file_path)
 
                         # Normalize optional params
-                        norm_size = (
-                            size
-                            if size is not None
-                            else (file_size if file_size is not None else 0)
-                        )
+                        norm_size = size if size is not None else (file_size if file_size is not None else 0)
                         norm_modified = modified_date or datetime.now()
 
                         # Convert metadata to JSON if provided
@@ -386,9 +382,7 @@ class FileSearchDB:
             self.logger.error(f"Error adding chunk for file {file_id}: {str(e)}")
             return {"success": False, "error": f"Failed to add chunk: {str(e)}"}
 
-    def add_embedding(
-        self, chunk_id: str, embedding_vector: list[float], model_name: str
-    ) -> dict[str, Any]:
+    def add_embedding(self, chunk_id: str, embedding_vector: list[float], model_name: str) -> dict[str, Any]:
         """
         Store vector embedding for a chunk.
 
@@ -503,9 +497,7 @@ class FileSearchDB:
                     # Parse JSON fields
                     if result_dict.get("chunk_metadata"):
                         try:
-                            result_dict["chunk_metadata"] = json.loads(
-                                result_dict["chunk_metadata"]
-                            )
+                            result_dict["chunk_metadata"] = json.loads(result_dict["chunk_metadata"])
                         except json.JSONDecodeError:
                             result_dict["chunk_metadata"] = None
 
@@ -613,16 +605,12 @@ class FileSearchDB:
 
                     # Calculate relevance score
                     match_count = result_dict.pop("match_count", 0)
-                    result_dict["relevance_score"] = (
-                        match_count / max_match_count if max_match_count > 0 else 0.0
-                    )
+                    result_dict["relevance_score"] = match_count / max_match_count if max_match_count > 0 else 0.0
 
                     # Parse JSON metadata
                     if result_dict.get("chunk_metadata"):
                         try:
-                            result_dict["chunk_metadata"] = json.loads(
-                                result_dict["chunk_metadata"]
-                            )
+                            result_dict["chunk_metadata"] = json.loads(result_dict["chunk_metadata"])
                         except json.JSONDecodeError:
                             result_dict["chunk_metadata"] = None
 
@@ -678,9 +666,7 @@ class FileSearchDB:
                     # Parse JSON metadata
                     if result_dict.get("chunk_metadata"):
                         try:
-                            result_dict["chunk_metadata"] = json.loads(
-                                result_dict["chunk_metadata"]
-                            )
+                            result_dict["chunk_metadata"] = json.loads(result_dict["chunk_metadata"])
                         except json.JSONDecodeError:
                             result_dict["chunk_metadata"] = None
 
@@ -732,9 +718,7 @@ class FileSearchDB:
 
                         success_count += 1
                     except Exception as e:
-                        self.logger.error(
-                            f"Error adding embedding for chunk {data.get('chunk_id')}: {str(e)}"
-                        )
+                        self.logger.error(f"Error adding embedding for chunk {data.get('chunk_id')}: {str(e)}")
                         failed_count += 1
 
                 conn.commit()

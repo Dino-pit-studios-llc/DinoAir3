@@ -320,9 +320,7 @@ class PluginSystem:
 
             # Check version compatibility
             if not PluginSystem._check_compatibility(metadata):
-                errors.append(
-                    f"Plugin requires incompatible version: {metadata.compatible_versions}"
-                )
+                errors.append(f"Plugin requires incompatible version: {metadata.compatible_versions}")
 
             return len(errors) == 0, errors
 

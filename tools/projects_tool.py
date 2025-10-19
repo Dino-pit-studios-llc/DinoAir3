@@ -314,9 +314,7 @@ def update_project(
         }
 
 
-def delete_project(
-    project_id: str, cascade: bool = False, user_name: str = "default_user"
-) -> dict[str, Any]:
+def delete_project(project_id: str, cascade: bool = False, user_name: str = "default_user") -> dict[str, Any]:
     """
     Delete a project from the database.
 
@@ -359,11 +357,7 @@ def delete_project(
         success = projects_db.delete_project(project_id, cascade=cascade)
 
         if success:
-            message = (
-                "Project deleted successfully"
-                if not cascade
-                else "Project and children deleted successfully"
-            )
+            message = "Project deleted successfully" if not cascade else "Project and children deleted successfully"
             return {"success": True, "message": message, "cascade": cascade}
         return {
             "success": False,
@@ -657,9 +651,7 @@ def get_project_statistics(project_id: str, user_name: str = "default_user") -> 
             "total_items": stats.total_items,
             "completion_percentage": stats.completion_percentage,
             "days_since_last_activity": stats.days_since_last_activity,
-            "last_activity_date": (
-                stats.last_activity_date.isoformat() if stats.last_activity_date else None
-            ),
+            "last_activity_date": (stats.last_activity_date.isoformat() if stats.last_activity_date else None),
         }
 
         return {

@@ -369,9 +369,7 @@ class StreamingPipeline:
             fut = self.executor.submit(self._process_single_chunk, next_chunk)
             futures[fut] = next_chunk
 
-    def _process_completed_futures(
-        self, done: set[Any], futures: dict[Any, CodeChunk]
-    ) -> Iterator[ChunkResult]:
+    def _process_completed_futures(self, done: set[Any], futures: dict[Any, CodeChunk]) -> Iterator[ChunkResult]:
         """Process completed futures and yield results"""
         for fut in list(done):
             chunk = futures.pop(fut)
@@ -452,9 +450,7 @@ class StreamingPipeline:
             result.warnings.extend(parse_result.warnings)
 
             # Translate blocks
-            translated_blocks = self._translate_blocks(
-                parse_result.blocks, chunk.chunk_index, result
-            )
+            translated_blocks = self._translate_blocks(parse_result.blocks, chunk.chunk_index, result)
             result.translated_blocks = translated_blocks
 
             # Update context and buffer
@@ -473,18 +469,14 @@ class StreamingPipeline:
     def _validate_parse_result(parse_result: Any, result: ChunkResult) -> bool:
         """Validate parse result and update result object on failure"""
         success_attr = getattr(parse_result, "success", None)
-        parse_success = (
-            success_attr if isinstance(success_attr, bool) else (len(parse_result.errors) == 0)
-        )
+        parse_success = success_attr if isinstance(success_attr, bool) else (len(parse_result.errors) == 0)
         if not parse_success:
             result.success = False
             result.error = f"Parse error: {parse_result.errors}"
             return False
         return True
 
-    def _translate_blocks(
-        self, blocks: list[CodeBlock], chunk_index: int, result: ChunkResult
-    ) -> list[CodeBlock]:
+    def _translate_blocks(self, blocks: list[CodeBlock], chunk_index: int, result: ChunkResult) -> list[CodeBlock]:
         """Translate English blocks to Python code"""
         translated_blocks = []
         for block in blocks:
@@ -495,9 +487,7 @@ class StreamingPipeline:
                 translated_blocks.append(block)
         return translated_blocks
 
-    def _translate_english_block(
-        self, block: CodeBlock, chunk_index: int, result: ChunkResult
-    ) -> CodeBlock:
+    def _translate_english_block(self, block: CodeBlock, chunk_index: int, result: ChunkResult) -> CodeBlock:
         """Translate a single English block to Python"""
         context = self._build_translation_context(chunk_index)
 
@@ -519,9 +509,7 @@ class StreamingPipeline:
             result.warnings.append(f"Translation error: {str(e)}")
             return block  # Keep original on error
 
-    def _get_translation_result(
-        self, block: CodeBlock, context: dict[str, Any]
-    ) -> ModelTranslationResult:
+    def _get_translation_result(self, block: CodeBlock, context: dict[str, Any]) -> ModelTranslationResult:
         """Get and validate translation result from translator"""
         translator = self.translator
         if translator is None:
@@ -535,11 +523,7 @@ class StreamingPipeline:
             or not getattr(res, "success", False)
             or getattr(res, "code", None) is None
         ):
-            error_msg = (
-                ", ".join(getattr(res, "errors", []))
-                if getattr(res, "errors", [])
-                else "No code returned"
-            )
+            error_msg = ", ".join(getattr(res, "errors", [])) if getattr(res, "errors", []) else "No code returned"
             raise RuntimeError(f"Translation failed: {error_msg}")
 
         return res
@@ -591,9 +575,7 @@ class StreamingPipeline:
             prev_result = self.buffer.get_chunk(chunk_index - 1)
             if prev_result and prev_result.translated_blocks:
                 prev_code = "\n".join(
-                    block.content
-                    for block in prev_result.translated_blocks
-                    if block.type == BlockType.PYTHON
+                    block.content for block in prev_result.translated_blocks if block.type == BlockType.PYTHON
                 )
                 context["before"] = prev_code[-self.stream_config.context_window_size :]
                 context["code"] = context["before"]
@@ -682,9 +664,7 @@ class StreamingPipeline:
         """
         return {
             "buffer_size": self.buffer.get_size(),
-            "context_window_size": sum(
-                len(item["content"].encode("utf-8")) for item in self.context_window
-            ),
+            "context_window_size": sum(len(item["content"].encode("utf-8")) for item in self.context_window),
             # No internal chunk_queue; queued work is bounded via submission window.
             # Expose 0 to preserve key without referencing removed attribute.
             "queue_size": 0,

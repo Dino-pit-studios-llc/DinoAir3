@@ -10,7 +10,6 @@ import sqlite3
 import tempfile
 
 import pytest
-
 from database.file_search_db import FileSearchDB
 from database.initialize_db import DatabaseManager
 
@@ -62,9 +61,7 @@ class TestFileSearchDB:
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='file_chunks'")
         assert cursor.fetchone() is not None
 
-        cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='file_embeddings'"
-        )
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='file_embeddings'")
         assert cursor.fetchone() is not None
 
     @staticmethod

@@ -67,9 +67,7 @@ class TranslationInvoker:
             RuntimeError: When translation result indicates failure or missing code
         """
         # Resolve event types at call-time to avoid circular import at module import
-        mod = safe_import_module(
-            "pseudocode_translator.streaming.stream_translator"
-        )  # Injection-safe dynamic import
+        mod = safe_import_module("pseudocode_translator.streaming.stream_translator")  # Injection-safe dynamic import
         StreamingEvent = mod.StreamingEvent
         StreamingEventData = mod.StreamingEventData
 
@@ -97,11 +95,7 @@ class TranslationInvoker:
             # Match existing error message formatting from StreamingTranslator._translate_block
             raise RuntimeError(
                 "Translation failed: "
-                + (
-                    ", ".join(getattr(res, "errors", []))
-                    if getattr(res, "errors", [])
-                    else "No code returned"
-                )
+                + (", ".join(getattr(res, "errors", [])) if getattr(res, "errors", []) else "No code returned")
             )
 
         translated = str(res.code)

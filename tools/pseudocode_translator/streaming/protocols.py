@@ -334,9 +334,7 @@ class StreamingProtocolAdapter:
             sequence_number=self._sequence_number,
         )
 
-    def create_control_message(
-        self, command: str, parameters: dict[str, Any] | None = None
-    ) -> ControlMessage:
+    def create_control_message(self, command: str, parameters: dict[str, Any] | None = None) -> ControlMessage:
         """Create a control message"""
         self._sequence_number += 1
 
@@ -355,9 +353,7 @@ class StreamingProtocolAdapter:
             sequence_number=self._sequence_number,
         )
 
-    def create_progress_message(
-        self, total: int, completed: int, current: int | None = None
-    ) -> ProgressMessage:
+    def create_progress_message(self, total: int, completed: int, current: int | None = None) -> ProgressMessage:
         """Create a progress message"""
         self._sequence_number += 1
 
@@ -404,13 +400,13 @@ class StreamMessageFormatter:
             return f"[{timestamp}] Translation {status} (chunk {message.chunk_index}, block {message.block_index}): {message.translated_content or 'pending'}"
 
         if isinstance(message, ProgressMessage):
-            return f"[{timestamp}] Progress: {message.completed_items}/{message.total_items} ({message.percentage:.1f}%)"
+            return (
+                f"[{timestamp}] Progress: {message.completed_items}/{message.total_items} ({message.percentage:.1f}%)"
+            )
 
         if isinstance(message, ErrorMessage):
             severity = "recoverable" if message.recoverable else "fatal"
-            return (
-                f"[{timestamp}] Error ({severity}): {message.error_type} - {message.error_message}"
-            )
+            return f"[{timestamp}] Error ({severity}): {message.error_type} - {message.error_message}"
 
         if isinstance(message, ControlMessage):
             return f"[{timestamp}] Control: {message.command}"
@@ -567,9 +563,7 @@ def create_stream_protocol(
     raise ValueError(f"Unsupported streaming mode: {mode}")
 
 
-def negotiate_protocol(
-    client_capabilities: dict[str, Any], server_capabilities: dict[str, Any]
-) -> dict[str, Any]:
+def negotiate_protocol(client_capabilities: dict[str, Any], server_capabilities: dict[str, Any]) -> dict[str, Any]:
     """Negotiate protocol parameters between client and server"""
     negotiated = {}
 

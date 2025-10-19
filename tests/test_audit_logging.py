@@ -6,7 +6,6 @@ Tests for audit logging module, focusing on integrity verification and HMAC sign
 from dataclasses import asdict
 
 import pytest
-
 from utils.audit_logging import AuditEvent, AuditEventType, AuditLogger, SeverityLevel
 
 

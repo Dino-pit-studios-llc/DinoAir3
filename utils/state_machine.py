@@ -232,9 +232,7 @@ class StateMachine:
 
             # Validate transition unless forced
             if not force:
-                can_transition, error_msg = self._validator.can_transition(
-                    current, new_state, context
-                )
+                can_transition, error_msg = self._validator.can_transition(current, new_state, context)
                 if not can_transition:
                     logger.warning(f"Transition blocked: {error_msg}")
                     self._record_transition(
@@ -394,9 +392,7 @@ class StateMachine:
         # Update state info for current state
         if current in self._state_info:
             state_info = self._state_info[current]
-            state_info.duration_ms = int(
-                (start_time - self._state_entry_time).total_seconds() * 1000
-            )
+            state_info.duration_ms = int((start_time - self._state_entry_time).total_seconds() * 1000)
 
         # Transition to new state
         self._previous_state = current
@@ -405,9 +401,7 @@ class StateMachine:
 
         # Update state info for new state
         if new_state not in self._state_info:
-            self._state_info[new_state] = StateInfo(
-                state=new_state, entry_time=start_time, entry_count=1
-            )
+            self._state_info[new_state] = StateInfo(state=new_state, entry_time=start_time, entry_count=1)
         else:
             info = self._state_info[new_state]
             info.entry_time = start_time
@@ -478,9 +472,7 @@ class StateMachine:
             }
 
             total_transitions = len(self._state_history)
-            successful_transitions = len(
-                [t for t in self._state_history if t.result == TransitionResult.success]
-            )
+            successful_transitions = len([t for t in self._state_history if t.result == TransitionResult.success])
 
             return {
                 "current_state": self._current_state.value,
@@ -488,11 +480,7 @@ class StateMachine:
                 "current_state_duration_ms": self.get_current_state_duration(),
                 "total_transitions": total_transitions,
                 "successful_transitions": successful_transitions,
-                "success_rate": (
-                    (successful_transitions / total_transitions * 100)
-                    if total_transitions > 0
-                    else 100
-                ),
+                "success_rate": ((successful_transitions / total_transitions * 100) if total_transitions > 0 else 100),
                 "state_statistics": state_stats,
                 "recent_transitions": [
                     {

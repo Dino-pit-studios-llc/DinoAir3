@@ -54,9 +54,7 @@ class RuntimeRiskChecker(ast.NodeVisitor):
             elif node.func.id == "open" and len(node.args) > 1:
                 # Check for file operations without error handling
                 if isinstance(node.args[1], ast.Constant) and "w" in node.args[1].value:
-                    self.risks.append(
-                        f"File write operation at line {node.lineno} - ensure proper error handling"
-                    )
+                    self.risks.append(f"File write operation at line {node.lineno} - ensure proper error handling")
 
         self.generic_visit(node)
 
@@ -72,16 +70,12 @@ class ExceptionHandlingChecker(ast.NodeVisitor):
         # Check for bare except clauses
         for handler in node.handlers:
             if handler.type is None:
-                self.suggestions.append(
-                    f"Bare except clause at line {handler.lineno} - specify exception types"
-                )
+                self.suggestions.append(f"Bare except clause at line {handler.lineno} - specify exception types")
 
         # Check for empty except blocks
         for handler in node.handlers:
             if len(handler.body) == 1 and isinstance(handler.body[0], ast.Pass):
-                self.suggestions.append(
-                    f"Empty except block at line {handler.lineno} - add proper error handling"
-                )
+                self.suggestions.append(f"Empty except block at line {handler.lineno} - add proper error handling")
 
         self.generic_visit(node)
 
@@ -116,9 +110,7 @@ class NullPointerChecker(ast.NodeVisitor):
             and node.func.value.func.attr in ["get", "find", "search"]
         ):
             # Check for common patterns that might return None
-            self.risks.append(
-                f"Chained call at line {node.lineno} - intermediate result might be None"
-            )
+            self.risks.append(f"Chained call at line {node.lineno} - intermediate result might be None")
 
         self.generic_visit(node)
 
@@ -152,9 +144,7 @@ class ResourceManagementChecker(ast.NodeVisitor):
                 # This open() is properly managed
                 if item.context_expr.lineno in self.open_calls:
                     # Remove the suggestion for this line
-                    self.suggestions = [
-                        s for s in self.suggestions if f"line {item.context_expr.lineno}" not in s
-                    ]
+                    self.suggestions = [s for s in self.suggestions if f"line {item.context_expr.lineno}" not in s]
 
         self.generic_visit(node)
 
@@ -167,9 +157,7 @@ class ConcurrencyRiskChecker(ast.NodeVisitor):
 
     def visit_Global(self, node: ast.Global):
         """Check global variable usage."""
-        self.risks.append(
-            f"Global variable usage at line {node.lineno} - potential thread safety issue"
-        )
+        self.risks.append(f"Global variable usage at line {node.lineno} - potential thread safety issue")
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call):

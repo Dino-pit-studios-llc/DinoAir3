@@ -370,9 +370,7 @@ class ProfanityFilter:
             # (accounting for case differences)
             original_word = text[start:end]
             if original_word.lower() == match.word:
-                filtered_text = (
-                    filtered_text[:start] + self._mask_word(original_word) + filtered_text[end:]
-                )
+                filtered_text = filtered_text[:start] + self._mask_word(original_word) + filtered_text[end:]
 
         # Calculate severity score
         max_severity = max((m.severity for m in filtered_matches), default=None)
@@ -456,9 +454,7 @@ class ProfanityFilter:
         return {
             "total_filtered": self.stats["total_filtered"],
             "by_severity": {s.name: count for s, count in self.stats["by_severity"].items()},
-            "most_common": sorted(
-                self.stats["most_common"].items(), key=lambda x: x[1], reverse=True
-            )[:10],  # Top 10
+            "most_common": sorted(self.stats["most_common"].items(), key=lambda x: x[1], reverse=True)[:10],  # Top 10
             "timestamp": datetime.now().isoformat(),
         }
 

@@ -273,9 +273,7 @@ class QdrantMCPDemo:
 
         # Try to get info for non-existent collection
         print("\n2. Getting info for non-existent collection...")
-        result = self.call_mcp_tool(
-            "get_collection_info", {"collection_name": "non_existent_collection"}
-        )
+        result = self.call_mcp_tool("get_collection_info", {"collection_name": "non_existent_collection"})
         print(json.dumps(result, indent=2))
 
     def run_full_demo(self):

@@ -155,9 +155,7 @@ class GitHubSecurityIssuesList:
     def get_issues_by_severity(self, severity: str) -> list[dict[str, Any]]:
         """Get issues filtered by severity level."""
         all_issues = self.get_all_security_issues()
-        return [
-            issue for issue in all_issues if issue.get("severity", "").lower() == severity.lower()
-        ]
+        return [issue for issue in all_issues if issue.get("severity", "").lower() == severity.lower()]
 
     def get_issues_by_type(self, issue_type: str) -> list[dict[str, Any]]:
         """Get issues filtered by type (code_scanning, secret_scanning, dependabot)."""

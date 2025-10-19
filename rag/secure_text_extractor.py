@@ -304,9 +304,7 @@ class SecureTextExtractor:
                 raise ValueError(SecureTextExtractor._INVALID_PATH_ERROR)
 
     @staticmethod
-    def _read_text_with_size_limit(
-        file_path: Path, file_size: int, size_limit: int, result: dict[str, Any]
-    ) -> None:
+    def _read_text_with_size_limit(file_path: Path, file_size: int, size_limit: int, result: dict[str, Any]) -> None:
         """Read text file with size limit handling.
 
         Args:
@@ -319,9 +317,7 @@ class SecureTextExtractor:
         SecureTextExtractor._validate_file_path(file_path)
 
         if file_size > size_limit:
-            result["warnings"].append(
-                f"File size ({file_size} bytes) exceeds limit ({size_limit} bytes)"
-            )
+            result["warnings"].append(f"File size ({file_size} bytes) exceeds limit ({size_limit} bytes)")
             # Read only up to the limit
             with open(file_path, encoding="utf-8", errors="replace") as f:
                 result["text"] = f.read(size_limit)
@@ -471,9 +467,7 @@ def create_secure_text_extractor(
     )
 
 
-def extract_text_secure(
-    file_path: str | Path, pdf_timeout: int = 30, max_size: int | None = None
-) -> str:
+def extract_text_secure(file_path: str | Path, pdf_timeout: int = 30, max_size: int | None = None) -> str:
     """
     Extract text from file using secure methods.
 

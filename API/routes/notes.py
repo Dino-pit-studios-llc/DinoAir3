@@ -9,11 +9,10 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field, field_validator
-
 from database.notes_service import NotesService
+from fastapi import APIRouter, HTTPException, Query, status
 from models.note import Note
+from pydantic import BaseModel, Field, field_validator
 
 log = logging.getLogger("api.routes.notes")
 
@@ -398,9 +397,7 @@ async def update_note(note_id: str, request: NoteUpdateRequest) -> NoteUpdatedRe
 )
 async def delete_note(
     note_id: str,
-    hard: bool = Query(
-        default=False, description="Permanently delete (true) or soft delete (false)"
-    ),
+    hard: bool = Query(default=False, description="Permanently delete (true) or soft delete (false)"),
 ) -> NoteDeletedResponse:
     """
     Delete a note by its ID.

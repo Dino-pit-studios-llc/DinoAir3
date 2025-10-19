@@ -1,5 +1,5 @@
 [tool.ruff]
-line-length = 100
+line-length = 120
 src = ["API", "core_router", "database", "input_processing", "models", "routing", "utils", "scripts"]
 
 [tool.ruff.lint]

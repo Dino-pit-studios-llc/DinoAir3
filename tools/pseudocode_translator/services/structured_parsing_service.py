@@ -106,9 +106,7 @@ class StructuredParsingService(ShutdownMixin):
                     block_type = self.classify_block(block)
 
                     # Translate based on block type and target language
-                    translated_block = self._translate_block(
-                        block, block_type, context.target_language, i
-                    )
+                    translated_block = self._translate_block(block, block_type, context.target_language, i)
 
                     if translated_block:
                         translated_blocks.append(translated_block)
@@ -124,14 +122,10 @@ class StructuredParsingService(ShutdownMixin):
                     logger.warning(error_msg)
 
             # Combine translated blocks
-            final_code = StructuredParsingService._combine_blocks(
-                translated_blocks, context.target_language
-            )
+            final_code = StructuredParsingService._combine_blocks(translated_blocks, context.target_language)
 
             # Validate final code
-            validation_warnings = StructuredParsingService._validate_generated_code(
-                final_code, context.target_language
-            )
+            validation_warnings = StructuredParsingService._validate_generated_code(final_code, context.target_language)
             warnings.extend(validation_warnings)
 
             # Determine success
@@ -151,9 +145,7 @@ class StructuredParsingService(ShutdownMixin):
                 code=final_code if success else None,
                 errors=errors,
                 warnings=warnings,
-                metadata=self._create_metadata(
-                    context, start_time, len(blocks), blocks_translated, success
-                ),
+                metadata=self._create_metadata(context, start_time, len(blocks), blocks_translated, success),
             )
 
         except Exception as e:
@@ -263,9 +255,7 @@ class StructuredParsingService(ShutdownMixin):
 
             # Try different translation approaches
             if StructuredParsingService._looks_like_code(line):
-                translated_line = StructuredParsingService._translate_code_line(
-                    line, target_language
-                )
+                translated_line = StructuredParsingService._translate_code_line(line, target_language)
             else:
                 translated_line = self._translate_pseudocode_line(line, target_language)
 
@@ -349,10 +339,7 @@ class StructuredParsingService(ShutdownMixin):
     def _translate_code_line(line: str, target_language: OutputLanguage) -> str:
         """Translate a code-like line to target language."""
         # Basic code translation patterns
-        if (
-            target_language == OutputLanguage.JAVASCRIPT
-            and target_language != OutputLanguage.PYTHON
-        ):
+        if target_language == OutputLanguage.JAVASCRIPT and target_language != OutputLanguage.PYTHON:
             # Python to JavaScript conversions
             line = line.replace("print(", "console.log(")
             line = line.replace("True", "true")
@@ -471,14 +458,9 @@ class StructuredParsingService(ShutdownMixin):
     def get_statistics(self) -> dict[str, Any]:
         """Get service statistics."""
         total_translations = self._successful_translations + self._failed_translations
-        success_rate = (
-            self._successful_translations / total_translations * 100
-            if total_translations > 0
-            else 0.0
-        )
+        success_rate = self._successful_translations / total_translations * 100 if total_translations > 0 else 0.0
         avg_processing_time = (
-            self._total_processing_time
-            / (self._successful_translations + self._failed_translations)
+            self._total_processing_time / (self._successful_translations + self._failed_translations)
             if total_translations > 0
             else 0.0
         )

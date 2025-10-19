@@ -6,10 +6,9 @@ from collections.abc import Awaitable, Callable
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
+from core_router.errors import error_response as core_error_response
 from starlette import status
 from starlette.types import Receive, Scope, Send
-
-from core_router.errors import error_response as core_error_response
 from utils.asgi import get_header
 from utils.log_sanitizer import sanitize_for_log
 

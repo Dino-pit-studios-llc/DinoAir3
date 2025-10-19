@@ -115,9 +115,7 @@ class QdrantSetupAlternatives:
 
         # For demo, we'll use a mock cloud URL
         # In real usage, user would provide their Qdrant Cloud URL
-        cloud_url = input(
-            "Enter your Qdrant Cloud URL (e.g., https://your-project.cloud.qdrant.io): "
-        ).strip()
+        cloud_url = input("Enter your Qdrant Cloud URL (e.g., https://your-project.cloud.qdrant.io): ").strip()
 
         if not cloud_url:
             print("No cloud URL provided, using localhost for demo")
@@ -344,15 +342,11 @@ class QdrantSetupAlternatives:
             random.seed(123)
             query_vector = [random.random() for _ in range(384)]
 
-            results = client.search(
-                collection_name=collection_name, query_vector=query_vector, limit=3
-            )
+            results = client.search(collection_name=collection_name, query_vector=query_vector, limit=3)
 
             print(f"Search returned {len(results)} results:")
             for i, result in enumerate(results):
-                print(
-                    f"  {i + 1}. {result.payload.get('file_name', 'Unknown')} (score: {result.score:.3f})"
-                )
+                print(f"  {i + 1}. {result.payload.get('file_name', 'Unknown')} (score: {result.score:.3f})")
 
             return True
 

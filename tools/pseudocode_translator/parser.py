@@ -15,9 +15,9 @@ try:
     from .models import BlockType, CodeBlock, ParseError, ParseResult
 except ImportError:
     # Fallback for when run as a script
-    from exceptions import ErrorContext, ParsingError
-
     from models import BlockType, CodeBlock, ParseError, ParseResult
+
+    from exceptions import ErrorContext, ParsingError
 
 
 class ParserModule:
@@ -50,9 +50,7 @@ class ParserModule:
         r"^(create|make|define|set|get|calculate|return|display|show|print)",
         re.IGNORECASE,
     )
-    _ENGLISH_MODAL_RE = re.compile(
-        r"(should|must|need to|have to|will|would|can|could)", re.IGNORECASE
-    )
+    _ENGLISH_MODAL_RE = re.compile(r"(should|must|need to|have to|will|would|can|could)", re.IGNORECASE)
     _ENGLISH_TEMPORAL_RE = re.compile(r"(then|next|after|before|when|while|until)", re.IGNORECASE)
     _ENGLISH_ARTICLE_RE = re.compile(r"(a|an|the|this|that|these|those)\s+\w+", re.IGNORECASE)
     _ENGLISH_CONJUNC_RE = re.compile(r"\b(and|or|but|if|then|else)\b", re.IGNORECASE)
@@ -722,10 +720,7 @@ class ParserModule:
             if (
                 not line
                 or self._DEF_CLASS_IMPORT_RE.match(line)
-                or (
-                    i > 0
-                    and self._get_indent_level(lines[i]) < self._get_indent_level(lines[i - 1])
-                )
+                or (i > 0 and self._get_indent_level(lines[i]) < self._get_indent_level(lines[i - 1]))
             ):
                 return i
 
@@ -776,9 +771,7 @@ class ParserModule:
                 # Create detailed parsing error for streaming
                 context = ErrorContext(line_number=current_line, code_snippet=block_text[:100])
 
-                error = ParsingError(
-                    message=str(e), block_content=block_text, context=context, cause=e
-                )
+                error = ParsingError(message=str(e), block_content=block_text, context=context, cause=e)
 
                 self.errors.append(error)
 

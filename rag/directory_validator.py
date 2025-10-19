@@ -330,13 +330,9 @@ class DirectoryValidator:
             if validation["valid"]:
                 # Additional check: is it a directory?
                 if os.path.isdir(validation["resolved_path"]):
-                    results["valid"].append(
-                        {"path": directory, "resolved": validation["resolved_path"]}
-                    )
+                    results["valid"].append({"path": directory, "resolved": validation["resolved_path"]})
                 else:
-                    results["invalid"].append(
-                        {"path": directory, "reason": "Path is not a directory"}
-                    )
+                    results["invalid"].append({"path": directory, "reason": "Path is not a directory"})
             else:
                 results["invalid"].append({"path": directory, "reason": validation["message"]})
 

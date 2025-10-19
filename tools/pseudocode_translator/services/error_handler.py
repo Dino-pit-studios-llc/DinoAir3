@@ -142,9 +142,7 @@ class ErrorHandler:
 
         return error_info
 
-    def create_translator_error(
-        self, error_info: ErrorInfo, add_context: bool = True
-    ) -> TranslatorError:
+    def create_translator_error(self, error_info: ErrorInfo, add_context: bool = True) -> TranslatorError:
         """Convert ErrorInfo to a TranslatorError with proper formatting."""
         translator_error = TranslatorError(
             error_info.message,
@@ -187,9 +185,7 @@ class ErrorHandler:
         return {
             "total_errors": sum(self._error_counts.values()),
             "error_breakdown": dict(self._error_counts),
-            "most_common_errors": sorted(
-                self._error_counts.items(), key=lambda x: x[1], reverse=True
-            )[:5],
+            "most_common_errors": sorted(self._error_counts.items(), key=lambda x: x[1], reverse=True)[:5],
         }
 
     def clear_error_stats(self) -> None:

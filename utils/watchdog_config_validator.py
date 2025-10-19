@@ -245,8 +245,7 @@ class WatchdogConfigValidator:
             result.add_issue(
                 param_name,
                 ValidationLevel.error,
-                f"Invalid value '{value}' for parameter '{param_name}'; "
-                f"allowed values are {rule.allowed_values}",
+                f"Invalid value '{value}' for parameter '{param_name}'; allowed values are {rule.allowed_values}",
             )
             corrected[param_name] = rule.default_value
             return
@@ -303,9 +302,7 @@ class WatchdogConfigValidator:
 
         return result
 
-    def _validate_circuit_breaker_config(
-        self, value: Any, result: ValidationResult, param_name: str
-    ) -> dict[str, Any]:
+    def _validate_circuit_breaker_config(self, value: Any, result: ValidationResult, param_name: str) -> dict[str, Any]:
         """Validate circuit breaker configuration."""
         default_config = self.rules["circuit_breaker_config"].default_value
 
@@ -457,9 +454,7 @@ class WatchdogConfigValidator:
         }
 
     @staticmethod
-    def _add_category_lines(
-        lines: list[str], category: str, params: list[str], config: dict[str, Any]
-    ) -> None:
+    def _add_category_lines(lines: list[str], category: str, params: list[str], config: dict[str, Any]) -> None:
         """Add formatted lines for a configuration category.
 
         Args:
@@ -504,8 +499,6 @@ def validate_watchdog_config(config: dict[str, Any]) -> dict[str, Any]:
     result = validator.validate(config)
 
     if not result.is_valid:
-        logger.warning(
-            f"Configuration validation failed with {len(result.issues)} issues. Using corrected values."
-        )
+        logger.warning(f"Configuration validation failed with {len(result.issues)} issues. Using corrected values.")
 
     return result.corrected_config

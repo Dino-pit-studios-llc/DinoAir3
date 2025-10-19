@@ -337,10 +337,7 @@ class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
         result: dict[Any, Any] = {}
         for k, v in zip(node.keys, node.values, strict=False):
             if k is None:
-                raise ValueError(
-                    "Dictionary key is None (possibly from **kwargs "
-                    "expansion); this is not allowed."
-                )
+                raise ValueError("Dictionary key is None (possibly from **kwargs expansion); this is not allowed.")
             key = self.visit(k)
             value = self.visit(v)
             result[key] = value
@@ -389,9 +386,7 @@ def evaluate_bool_expr(expr: str, variables: dict[str, Any], max_length: int = 1
         return bool(cast("object", result))
 
     # For any other type (unexpected), reject
-    raise TypeError(
-        f"Expression did not evaluate to a boolean-compatible value: {type(result).__name__}"
-    )
+    raise TypeError(f"Expression did not evaluate to a boolean-compatible value: {type(result).__name__}")
 
 
 __all__ = ["evaluate_bool_expr", "ValidationError"]

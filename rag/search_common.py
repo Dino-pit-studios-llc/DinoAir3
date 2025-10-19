@@ -134,9 +134,7 @@ def compute_cosine_scores(
 
             _ = _import_module("numpy")
         except Exception as e:
-            raise ImportError(
-                "NumPy is required for 'vectorized' cosine scoring but is not available"
-            ) from e
+            raise ImportError("NumPy is required for 'vectorized' cosine scoring but is not available") from e
         return _cosine_scores_vectorized(query, docs)
 
     # Safety fallback
@@ -187,9 +185,7 @@ def _cosine_scores_simple(query: Sequence[float], docs: Sequence[Sequence[float]
         return scores_py
 
 
-def _cosine_scores_vectorized(
-    query: Sequence[float], docs: Sequence[Sequence[float]]
-) -> list[float]:
+def _cosine_scores_vectorized(query: Sequence[float], docs: Sequence[Sequence[float]]) -> list[float]:
     """
     NumPy-backed vectorized cosine similarity:
     - Uses float64
@@ -199,9 +195,7 @@ def _cosine_scores_vectorized(
     try:
         import numpy as np
     except Exception as e:
-        raise ImportError(
-            "NumPy is required for the vectorized cosine scorer but is not available"
-        ) from e
+        raise ImportError("NumPy is required for the vectorized cosine scorer but is not available") from e
 
     # Handle empty docs quickly
     if not docs:
@@ -215,9 +209,7 @@ def _cosine_scores_vectorized(
     if q.ndim != 1:
         raise ValueError("Query must be a 1D vector")
     if D.shape[1] != q.shape[0]:
-        raise ValueError(
-            f"Dimension mismatch: docs vectors have dim {D.shape[1]} but query has dim {q.shape[0]}"
-        )
+        raise ValueError(f"Dimension mismatch: docs vectors have dim {D.shape[1]} but query has dim {q.shape[0]}")
 
     qn = float(np.linalg.norm(q))
     dn = np.linalg.norm(D, axis=1).astype(np.float64)

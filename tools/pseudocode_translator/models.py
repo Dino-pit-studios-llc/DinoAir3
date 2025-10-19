@@ -27,9 +27,7 @@ class CodeBlock:
     def __post_init__(self):
         """Validate the code block after initialization"""
         if self.line_numbers[0] > self.line_numbers[1]:
-            raise ValueError(
-                f"Invalid line numbers: start ({self.line_numbers[0]}) > end ({self.line_numbers[1]})"
-            )
+            raise ValueError(f"Invalid line numbers: start ({self.line_numbers[0]}) > end ({self.line_numbers[1]})")
 
         if not self.content.strip():
             raise ValueError("Code block content cannot be empty")

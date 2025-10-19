@@ -156,25 +156,25 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return findings
 
 
- def _check_xml_etree_usage(p: Path, text: str):
-     findings = []
-     for m in PATTERNS["xml_etree_usage"].finditer(text):
-         line, col = line_and_col_for(text, m.start())
-         if has_nosec_on_line(text, line):
-             continue
-         findings.append(
-             (
-                 p,
-                 line,
-                 col,
-                 "xml_etree_usage",
-                 "xml.etree usage is banned; prefer defusedxml alternatives.",
-             )
-         )
-     return findings
+def _check_xml_etree_usage(p: Path, text: str):
+    findings = []
+    for m in PATTERNS["xml_etree_usage"].finditer(text):
+        line, col = line_and_col_for(text, m.start())
+        if has_nosec_on_line(text, line):
+            continue
+        findings.append(
+            (
+                p,
+                line,
+                col,
+                "xml_etree_usage",
+                "xml.etree usage is banned; prefer defusedxml alternatives.",
+            )
+        )
+    return findings
 
 
- def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int, int]]):
+def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int, int]]):
     findings = []
     if not is_in_tests(p) and not is_utils_process(p):
         for m in PATTERNS["direct_subprocess"].finditer(text):
@@ -195,7 +195,7 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return findings
 
 
- def _check_interpolated_sql(p: Path, text: str):
+def _check_interpolated_sql(p: Path, text: str):
     findings = []
     for m in PATTERNS["interpolated_sql"].finditer(text):
         line, col = line_and_col_for(text, m.start())
@@ -213,7 +213,7 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return findings
 
 
- def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
+def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
     """
     Returns list of findings as tuples:
       (path, line, col, rule_id, message)
@@ -234,17 +234,14 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return findings
 
 
- def main() -> int:
+def main() -> int:
     """Main function."""
     args = _parse_args()
     warn_sql = bool(getattr(args, "warn_sql", False))
     all_findings = []
     for p in REPO_ROOT.rglob("*.py"):
         # Skip .venv, virtualenvs, build caches, etc.
-        if (
-            any(part.startswith(".") and part not in {".github"} for part in p.parts)
-            and ".github" not in p.parts
-        ):
+        if any(part.startswith(".") and part not in {".github"} for part in p.parts) and ".github" not in p.parts:
             continue
 
         # Only scan real project files
@@ -267,5 +264,5 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return 1 if fatal_findings else 0
 
 
- if __name__ == "__main__":
+if __name__ == "__main__":
     sys.exit(main())

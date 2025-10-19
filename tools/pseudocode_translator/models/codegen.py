@@ -161,9 +161,7 @@ class CodeGenModel(BaseModel):
         if "fibonacci" in prompt.lower():
             return "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)"
         if "factorial" in prompt.lower():
-            return (
-                "def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n-1)"
-            )
+            return "def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n-1)"
         if "sort" in prompt.lower():
             return (
                 "def bubble_sort(arr):\n"
@@ -207,9 +205,7 @@ class CodeGenModel(BaseModel):
     def refine_code(self, code: str, error_context: str, max_attempts: int = 1) -> str:
         """Attempt to fix code based on error feedback"""
         # Create a prompt for code fixing
-        prompt = (
-            f"# Fix the following Python code:\n{code}\n# Error: {error_context}\n# Fixed code:\n"
-        )
+        prompt = f"# Fix the following Python code:\n{code}\n# Error: {error_context}\n# Fixed code:\n"
 
         # Generate with slightly higher temperature for creativity
         fixed_code = self.generate(prompt, temperature=0.3, max_tokens=512)

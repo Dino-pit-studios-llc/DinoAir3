@@ -251,9 +251,7 @@ class VersionedConfigManager:
 
                         try:
                             typed_value = self._convert_env_value(raw_value, config_path)
-                            VersionedConfigManager._set_nested_value(
-                                source.data, config_path, typed_value
-                            )
+                            VersionedConfigManager._set_nested_value(source.data, config_path, typed_value)
                         except Exception as e:
                             self.logger.warning(f"Failed to convert .env var {env_var}: {e}")
 

@@ -262,9 +262,7 @@ class ASTCache:
 
         # Create cache entry with explicit timestamp to support test-time clock patching
         now_ts = time.time()
-        entry = CacheEntry(
-            ast_obj=ast_obj, size_bytes=size_bytes, timestamp=now_ts, last_access=now_ts
-        )
+        entry = CacheEntry(ast_obj=ast_obj, size_bytes=size_bytes, timestamp=now_ts, last_access=now_ts)
 
         # Store in cache
         with self._lock:
@@ -272,9 +270,7 @@ class ASTCache:
 
         return ast_obj
 
-    def get(
-        self, source: str | bytes, filename: str = "<unknown>", mode: str = "exec"
-    ) -> Any | None:
+    def get(self, source: str | bytes, filename: str = "<unknown>", mode: str = "exec") -> Any | None:
         """
         Get a cached AST if available, without parsing.
 
@@ -332,9 +328,7 @@ class ASTCache:
         size_bytes = ASTCache._estimate_ast_size(ast_obj)
 
         now_ts = time.time()
-        entry = CacheEntry(
-            ast_obj=ast_obj, size_bytes=size_bytes, timestamp=now_ts, last_access=now_ts
-        )
+        entry = CacheEntry(ast_obj=ast_obj, size_bytes=size_bytes, timestamp=now_ts, last_access=now_ts)
 
         with self._lock:
             self._add_entry(cache_key, entry)
@@ -368,9 +362,7 @@ class ASTCache:
             avg_entry_size = self._current_memory_usage / len(self._cache) if self._cache else 0
 
             # Find hottest entries
-            hot_entries = sorted(
-                self._cache.items(), key=lambda x: x[1].access_count, reverse=True
-            )[:5]
+            hot_entries = sorted(self._cache.items(), key=lambda x: x[1].access_count, reverse=True)[:5]
 
             return {
                 "hits": self._hits,
@@ -707,9 +699,7 @@ class ASTCache:
                 sleep_time = min(60, self.ttl_seconds / 10 if self.ttl_seconds else 60)
                 self._stop_cleanup.wait(sleep_time)
 
-        self._cleanup_thread = threading.Thread(
-            target=cleanup_loop, daemon=True, name="ASTCache-Cleanup"
-        )
+        self._cleanup_thread = threading.Thread(target=cleanup_loop, daemon=True, name="ASTCache-Cleanup")
         self._cleanup_thread.start()
 
     @staticmethod
@@ -830,7 +820,5 @@ def configure_global_cache(
         max_memory_mb=(max_memory_mb or (cache.max_memory_bytes / 1024 / 1024)),
         persistent_path=persistent_path,
         enable_compression=True,
-        eviction_mode=(
-            eviction_mode if eviction_mode is not None else getattr(cache, "eviction_mode", "lru")
-        ),
+        eviction_mode=(eviction_mode if eviction_mode is not None else getattr(cache, "eviction_mode", "lru")),
     )

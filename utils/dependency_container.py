@@ -350,13 +350,9 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         resolved_dependencies = self._resolve_dependencies(dependency_info.dependencies)
 
         if dependency_info.factory:
-            return DependencyContainer._create_instance_with_factory(
-                dependency_info, resolved_dependencies
-            )
+            return DependencyContainer._create_instance_with_factory(dependency_info, resolved_dependencies)
 
-        return DependencyContainer._create_instance_with_constructor(
-            dependency_info, resolved_dependencies
-        )
+        return DependencyContainer._create_instance_with_constructor(dependency_info, resolved_dependencies)
 
     def _resolve_dependencies(self, dependencies: list[str]) -> dict[str, Any]:
         """Resolve all dependencies for an instance.
@@ -373,9 +369,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         return resolved_dependencies
 
     @staticmethod
-    def _create_instance_with_factory(
-        dependency_info: DependencyInfo, resolved_dependencies: dict[str, Any]
-    ) -> Any:
+    def _create_instance_with_factory(dependency_info: DependencyInfo, resolved_dependencies: dict[str, Any]) -> Any:
         """Create instance using a factory function.
 
         Args:
@@ -393,9 +387,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             factory_kwargs = DependencyContainer._get_factory_kwargs(factory, resolved_dependencies)
             return factory(**factory_kwargs)
         except RuntimeError as e:
-            raise DependencyResolutionError(
-                f"Factory failed for {dependency_info.name}: {e}"
-            ) from e
+            raise DependencyResolutionError(f"Factory failed for {dependency_info.name}: {e}") from e
 
     @staticmethod
     def _create_instance_with_constructor(
@@ -415,19 +407,13 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         """
         try:
             constructor = dependency_info.dependency_type
-            constructor_kwargs = DependencyContainer._get_constructor_kwargs(
-                constructor, resolved_dependencies
-            )
+            constructor_kwargs = DependencyContainer._get_constructor_kwargs(constructor, resolved_dependencies)
             return constructor(**constructor_kwargs)
         except RuntimeError as e:
-            raise DependencyResolutionError(
-                f"Constructor failed for {dependency_info.name}: {e}"
-            ) from e
+            raise DependencyResolutionError(f"Constructor failed for {dependency_info.name}: {e}") from e
 
     @staticmethod
-    def _get_factory_kwargs(
-        factory: Callable[..., Any], resolved_dependencies: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _get_factory_kwargs(factory: Callable[..., Any], resolved_dependencies: dict[str, Any]) -> dict[str, Any]:
         """Get keyword arguments for factory function.
 
         Args:
@@ -449,9 +435,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         return kwargs
 
     @staticmethod
-    def _get_constructor_kwargs(
-        constructor: type[Any], resolved_dependencies: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _get_constructor_kwargs(constructor: type[Any], resolved_dependencies: dict[str, Any]) -> dict[str, Any]:
         """Get keyword arguments for constructor.
 
         Args:
@@ -476,9 +460,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
         return kwargs
 
     @staticmethod
-    def _match_params_by_name(
-        sig: inspect.Signature, resolved_dependencies: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _match_params_by_name(sig: inspect.Signature, resolved_dependencies: dict[str, Any]) -> dict[str, Any]:
         """Match parameters by name.
 
         Args:
@@ -516,18 +498,14 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
             if param_name in already_matched or param.annotation == inspect.Parameter.empty:
                 continue
 
-            matched_instance = DependencyContainer._find_instance_by_type(
-                param.annotation, resolved_dependencies
-            )
+            matched_instance = DependencyContainer._find_instance_by_type(param.annotation, resolved_dependencies)
             if matched_instance is not None:
                 kwargs[param_name] = matched_instance
 
         return kwargs
 
     @staticmethod
-    def _find_instance_by_type(
-        annotation: Any, resolved_dependencies: dict[str, Any]
-    ) -> Any | None:
+    def _find_instance_by_type(annotation: Any, resolved_dependencies: dict[str, Any]) -> Any | None:
         """Find a dependency instance matching the type annotation.
 
         Args:
@@ -644,9 +622,7 @@ class DependencyContainer:  # pylint: disable=too-many-instance-attributes
 
         try:
             # Get singletons sorted by initialization order
-            singletons = [
-                info for info in self._dependencies.values() if info.scope == Scope.singleton
-            ]
+            singletons = [info for info in self._dependencies.values() if info.scope == Scope.singleton]
             singletons.sort(key=lambda x: x.initialization_order)
 
             # Initialize each singleton

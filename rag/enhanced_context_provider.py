@@ -81,9 +81,7 @@ class SearchHistory:
                     break
         return suggestions
 
-    def _add_popular_matching_terms(
-        self, partial_lower: str, suggestions: list[str], limit: int
-    ) -> list[str]:
+    def _add_popular_matching_terms(self, partial_lower: str, suggestions: list[str], limit: int) -> list[str]:
         """Add popular terms that match the partial query.
 
         Args:
@@ -568,9 +566,7 @@ class EnhancedContextProvider:
                 "search_history_count": len(history_queries),
                 "popular_terms": self.search_history.term_frequency.most_common(10),
                 "average_results_per_search": (
-                    sum(q["result_count"] for q in history_queries) / len(history_queries)
-                    if history_queries
-                    else 0
+                    sum(q["result_count"] for q in history_queries) / len(history_queries) if history_queries else 0
                 ),
             }
 

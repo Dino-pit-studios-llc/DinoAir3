@@ -197,9 +197,7 @@ def _load_services_safely(services_file: str) -> list:
         return []
 
 
-def _register_service_safely(
-    registry: ServiceRegistry, service: Any, health_state_cls: Any
-) -> None:
+def _register_service_safely(registry: ServiceRegistry, service: Any, health_state_cls: Any) -> None:
     """Register a service and validate its health if it's an LM Studio service.
 
     Args:
@@ -219,9 +217,7 @@ def _register_service_safely(
     _validate_and_probe_service(registry, service, health_state_cls)
 
 
-def _validate_and_probe_service(
-    registry: ServiceRegistry, service: Any, health_state_cls: Any
-) -> None:
+def _validate_and_probe_service(registry: ServiceRegistry, service: Any, health_state_cls: Any) -> None:
     """Validate service configuration and probe its health.
 
     Args:

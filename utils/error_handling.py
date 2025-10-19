@@ -377,9 +377,7 @@ def _execute_with_retry(
     raise RuntimeError("Unexpected error in retry logic")
 
 
-def _handle_retry_failure(
-    config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception
-) -> None:
+def _handle_retry_failure(config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception) -> None:
     """Handle a failed retry attempt.
 
     Args:
@@ -396,9 +394,7 @@ def _handle_retry_failure(
         _log_all_attempts_failed(config, func, attempt, error)
 
 
-def _log_retry_attempt(
-    config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception
-) -> None:
+def _log_retry_attempt(config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception) -> None:
     """Log a retry attempt.
 
     Args:
@@ -435,9 +431,7 @@ def _log_retry_attempt(
         )
 
 
-def _log_all_attempts_failed(
-    config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception
-) -> None:
+def _log_all_attempts_failed(config: RetryConfig, func: Callable[..., Any], attempt: int, error: Exception) -> None:
     """Log when all retry attempts have failed.
 
     Args:
@@ -643,9 +637,7 @@ class ErrorAggregator:
             self._stats.total_errors += 1
             self._stats.errors_by_category[context.category] += 1
             self._stats.errors_by_severity[context.severity] += 1
-            self._stats.recent_errors.append(
-                {"timestamp": time.time(), "context": context, "error": str(error)}
-            )
+            self._stats.recent_errors.append({"timestamp": time.time(), "context": context, "error": str(error)})
 
     def get_stats(self) -> ErrorStats:
         """Get current error statistics."""

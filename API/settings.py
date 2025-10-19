@@ -105,9 +105,7 @@ def get_lmstudio_env() -> LMStudioEnv:
     """
     base_url = os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234") or "http://127.0.0.1:1234"
     api_key = os.getenv("LMSTUDIO_API_KEY") or None
-    default_model = (
-        os.getenv("LMSTUDIO_DEFAULT_MODEL", "llama-3.1-8b-instruct") or "llama-3.1-8b-instruct"
-    )
+    default_model = os.getenv("LMSTUDIO_DEFAULT_MODEL", "llama-3.1-8b-instruct") or "llama-3.1-8b-instruct"
     timeout_s = _parse_int(os.getenv("LMSTUDIO_REQUEST_TIMEOUT_S"), 30)
     return LMStudioEnv(
         base_url=base_url,
@@ -176,29 +174,17 @@ class Settings:
         self.log_dir: str = _get_env("DINOAIR_LOG_DIR", "logs") or "logs"
 
         # Timeouts and limits
-        self.request_timeout_seconds: int = _parse_int(
-            _get_env("DINOAIR_REQUEST_TIMEOUT_SECONDS"), 30
-        )
-        self.max_request_body_bytes: int = _parse_int(
-            _get_env("DINOAIR_MAX_REQUEST_BODY_BYTES"), 10_485_760
-        )
+        self.request_timeout_seconds: int = _parse_int(_get_env("DINOAIR_REQUEST_TIMEOUT_SECONDS"), 30)
+        self.max_request_body_bytes: int = _parse_int(_get_env("DINOAIR_MAX_REQUEST_BODY_BYTES"), 10_485_760)
 
         # Docs in dev
-        self.expose_openapi_in_dev: bool = _parse_bool(
-            _get_env("DINOAIR_EXPOSE_OPENAPI_IN_DEV"), True
-        )
+        self.expose_openapi_in_dev: bool = _parse_bool(_get_env("DINOAIR_EXPOSE_OPENAPI_IN_DEV"), True)
         # RAG feature toggles and runtime options
         self.rag_enabled: bool = _parse_bool(_get_env("DINOAIR_RAG_ENABLED"), True)
-        self.rag_use_optimized_engine: bool = _parse_bool(
-            _get_env("DINOAIR_RAG_USE_OPTIMIZED_ENGINE"), True
-        )
+        self.rag_use_optimized_engine: bool = _parse_bool(_get_env("DINOAIR_RAG_USE_OPTIMIZED_ENGINE"), True)
         self.rag_cache_size: int = _parse_int(_get_env("DINOAIR_RAG_CACHE_SIZE"), 100)
-        self.rag_cache_ttl_seconds: int = _parse_int(
-            _get_env("DINOAIR_RAG_CACHE_TTL_SECONDS"), 3600
-        )
-        self.rag_embed_model: str = (
-            _get_env("DINOAIR_RAG_EMBED_MODEL", "all-MiniLM-L6-v2") or "all-MiniLM-L6-v2"
-        )
+        self.rag_cache_ttl_seconds: int = _parse_int(_get_env("DINOAIR_RAG_CACHE_TTL_SECONDS"), 3600)
+        self.rag_embed_model: str = _get_env("DINOAIR_RAG_EMBED_MODEL", "all-MiniLM-L6-v2") or "all-MiniLM-L6-v2"
         self.rag_embed_max_length: int = _parse_int(_get_env("DINOAIR_RAG_EMBED_MAX_LENGTH"), 256)
         self.rag_embed_device: str = _get_env("DINOAIR_RAG_EMBED_DEVICE", "auto") or "auto"
         self.rag_chunk_size: int = _parse_int(_get_env("DINOAIR_RAG_CHUNK_SIZE"), 1000)
@@ -207,12 +193,8 @@ class Settings:
         self.rag_allowed_dirs: list[str] = _parse_csv(_get_env("DINOAIR_RAG_ALLOWED_DIRS"))
         self.rag_excluded_dirs: list[str] = _parse_csv(_get_env("DINOAIR_RAG_EXCLUDED_DIRS"))
         self.rag_file_extensions: list[str] = _parse_csv(_get_env("DINOAIR_RAG_FILE_EXTENSIONS"))
-        self.rag_watchdog_enabled: bool = _parse_bool(
-            _get_env("DINOAIR_RAG_WATCHDOG_ENABLED"), False
-        )
-        self.rag_watchdog_max_workers: int = _parse_int(
-            _get_env("DINOAIR_RAG_WATCHDOG_MAX_WORKERS"), 2
-        )
+        self.rag_watchdog_enabled: bool = _parse_bool(_get_env("DINOAIR_RAG_WATCHDOG_ENABLED"), False)
+        self.rag_watchdog_max_workers: int = _parse_int(_get_env("DINOAIR_RAG_WATCHDOG_MAX_WORKERS"), 2)
 
         # Optional override for services config path (used by ServiceRouter)
         # Env var: DINOAIR_SERVICES_FILE

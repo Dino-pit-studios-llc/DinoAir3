@@ -82,23 +82,22 @@ class CircularDependencyDetector:
         python_files = list(self.root_path.rglob("*.py"))
 
         # Filter out test files, __pycache__, and other non-source files
+        excluded_parts = {
+            "__pycache__",
+            ".git",
+            "test",
+            "tests",
+            "venv",
+            ".venv",
+            "build",
+            "dist",
+            "site-packages",
+        }
+        
         python_files = [
             f
             for f in python_files
-            if not any(
-                part in str(f)
-                for part in [
-                    "__pycache__",
-                    ".git",
-                    "test",
-                    "tests",
-                    "venv",
-                    ".venv",
-                    "build",
-                    "dist",
-                    "site-packages",
-                ]
-            )
+            if not any(part in excluded_parts for part in f.relative_to(self.root_path).parts)
         ]
 
         if self.verbose:
@@ -245,9 +244,7 @@ def format_output(
         output = ["[ERROR] Circular dependencies detected:\n"]
         for cycle in cycles:
             cycle_str = " -> ".join(cycle + [cycle[0]])  # Close the loop
-            output.append(
-                f"::error file={module_paths.get(cycle[0], 'unknown')}::Circular dependency: {cycle_str}"
-            )
+            output.append(f"::error file={module_paths.get(cycle[0], 'unknown')}::Circular dependency: {cycle_str}")
 
         return "\n".join(output)
 

@@ -111,17 +111,13 @@ class ResilientDB:
                 self._backup_corrupted_db()
                 attempt += 1
                 if attempt < retries:
-                    self.log(
-                        f"Setup attempt {attempt} failed. Trying again in {delay * attempt} seconds..."
-                    )
+                    self.log(f"Setup attempt {attempt} failed. Trying again in {delay * attempt} seconds...")
                     time.sleep(delay * attempt)
             except (sqlite3.OperationalError, OSError) as e:
                 last_exc = e
                 attempt += 1
                 if attempt < retries:
-                    self.log(
-                        f"Setup attempt {attempt} failed. Trying again in {delay * attempt} seconds..."
-                    )
+                    self.log(f"Setup attempt {attempt} failed. Trying again in {delay * attempt} seconds...")
                     time.sleep(delay * attempt)
 
         # If we get here, all attempts failed

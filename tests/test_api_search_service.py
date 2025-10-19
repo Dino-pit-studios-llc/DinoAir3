@@ -13,9 +13,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import Mock, patch
 
 import pytest
-from fastapi import HTTPException
-from starlette import status
-
 from API.services.search import (
     DirectorySettingsResponse,
     FileIndexStatsResponse,
@@ -36,6 +33,8 @@ from API.services.search import (
     router_search,
     vector,
 )
+from fastapi import HTTPException
+from starlette import status
 
 
 class TestSearchService:
@@ -99,9 +98,7 @@ class TestSearchService:
         assert hit.file_type == "txt"
 
         # Verify database call
-        mock_db.search_by_keywords.assert_called_once_with(
-            keywords=["test query"], limit=10, file_types=["txt", "md"]
-        )
+        mock_db.search_by_keywords.assert_called_once_with(keywords=["test query"], limit=10, file_types=["txt", "md"])
 
     @staticmethod
     def test_search_keyword_empty_results(search_service, mock_db):

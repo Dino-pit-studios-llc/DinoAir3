@@ -241,9 +241,7 @@ def track_api_request(endpoint: str, method: str, status_code: int, duration_ms:
         increment_counter("api.errors", tags=tags)
 
 
-def track_security_event(
-    event_type: str, severity: str, details: dict[str, Any] | None = None
-) -> None:
+def track_security_event(event_type: str, severity: str, details: dict[str, Any] | None = None) -> None:
     """Track a security-related event."""
     tags = [f"event_type:{event_type}", f"severity:{severity}"]
 

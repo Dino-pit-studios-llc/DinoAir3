@@ -173,9 +173,7 @@ class WatchdogCommandHandler:
         """Handle watchdog pause command."""
         try:
             if not self.watchdog.monitoring:
-                return CommandResult(
-                    success=False, message="❌ Cannot pause - watchdog is not running."
-                )
+                return CommandResult(success=False, message="❌ Cannot pause - watchdog is not running.")
 
             # Pause functionality would need to be implemented in Watchdog
             # For now, we'll stop monitoring
@@ -236,9 +234,7 @@ class WatchdogCommandHandler:
                 message=f"✅ {threshold_name} threshold set to {float_value}",
             )
         except ValueError:
-            return CommandResult(
-                success=False, message=f"❌ Invalid value: '{value}' is not a number"
-            )
+            return CommandResult(success=False, message=f"❌ Invalid value: '{value}' is not a number")
         except Exception as e:
             return CommandResult(success=False, message=f"❌ Error setting threshold: {str(e)}")
 
@@ -258,9 +254,7 @@ class WatchdogCommandHandler:
             # Get the threshold value
             if hasattr(self.watchdog, "thresholds") and threshold_name in self.watchdog.thresholds:
                 value = self.watchdog.thresholds[threshold_name]
-                return CommandResult(
-                    success=True, message=f"📊 {threshold_name} threshold: {value}"
-                )
+                return CommandResult(success=True, message=f"📊 {threshold_name} threshold: {value}")
             return CommandResult(success=False, message=f"❌ Cannot get {threshold_name} threshold")
         except Exception as e:
             return CommandResult(success=False, message=f"❌ Error getting threshold: {str(e)}")
@@ -291,9 +285,7 @@ class WatchdogCommandHandler:
                 if hasattr(self.watchdog, "kill_process_by_pid"):
                     success = self.watchdog.kill_process_by_pid(pid)
                     if success:
-                        return CommandResult(
-                            success=True, message=f"✅ Killed process with PID {pid}"
-                        )
+                        return CommandResult(success=True, message=f"✅ Killed process with PID {pid}")
                     return CommandResult(
                         success=False,
                         message=f"❌ Failed to kill process with PID {pid}",
@@ -347,9 +339,7 @@ class WatchdogCommandHandler:
                 return CommandResult(success=True, message="ℹ️ No metrics history available")
             return CommandResult(success=False, message="❌ Metrics history not available")
         except ValueError:
-            return CommandResult(
-                success=False, message=f"❌ Invalid count: '{count}' is not a number"
-            )
+            return CommandResult(success=False, message=f"❌ Invalid count: '{count}' is not a number")
         except Exception as e:
             return CommandResult(success=False, message=f"❌ Error getting history: {str(e)}")
 

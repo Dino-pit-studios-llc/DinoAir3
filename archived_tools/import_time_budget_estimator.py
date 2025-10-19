@@ -93,9 +93,7 @@ def build_reverse_import_graph(results: dict) -> dict[str, set]:
 
 def cold_start_hotspot_analysis(results: dict) -> dict:
     reverse_graph = build_reverse_import_graph(results)
-    hotspots = {
-        mod: list(importers) for mod, importers in reverse_graph.items() if len(importers) > 1
-    }
+    hotspots = {mod: list(importers) for mod, importers in reverse_graph.items() if len(importers) > 1}
     sorted_hotspots = sorted(hotspots.items(), key=lambda x: len(x[1]), reverse=True)
     return dict(sorted_hotspots)
 
@@ -139,11 +137,7 @@ def main() -> None:
         if analysis is None:
             continue
         # Simple complexity score: import count + 2*heavy_imports + top_level_count
-        score = (
-            len(analysis["imports"])
-            + 2 * len(analysis["heavy_imports"])
-            + analysis["top_level_count"]
-        )
+        score = len(analysis["imports"]) + 2 * len(analysis["heavy_imports"]) + analysis["top_level_count"]
         results[relpath] = {
             "import_count": len(analysis["imports"]),
             "heavy_imports": analysis["heavy_imports"],

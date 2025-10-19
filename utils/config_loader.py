@@ -78,9 +78,7 @@ class ConfigLoader:
             return
 
         # Normal file-based behavior
-        self.config_path = (
-            config_path or Path(__file__).parent.parent.parent / "config" / "app_config.json"
-        )
+        self.config_path = config_path or Path(__file__).parent.parent.parent / "config" / "app_config.json"
         Logger().debug(f"ConfigLoader init - config_path: {self.config_path}")
 
         # Set env_path relative to config_path directory if custom path provided

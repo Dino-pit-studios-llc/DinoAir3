@@ -174,8 +174,7 @@ class NotesSecurity:
                 return policy
         except Exception as exc:
             self.logger.error(
-                "Custom notes security module import failed: %s. "
-                "Falling back to built-in safeguards.",
+                "Custom notes security module import failed: %s. Falling back to built-in safeguards.",
                 exc,
             )
 
@@ -186,12 +185,8 @@ class NotesSecurity:
         )
 
         if strict:
-            self.logger.critical(
-                "STRICT_NOTES_SECURITY enabled but no custom policy available. Aborting."
-            )
-            raise RuntimeError(
-                "Notes security module not available and STRICT_NOTES_SECURITY is enabled."
-            )
+            self.logger.critical("STRICT_NOTES_SECURITY enabled but no custom policy available. Aborting.")
+            raise RuntimeError("Notes security module not available and STRICT_NOTES_SECURITY is enabled.")
 
         # Fallback to conservative security
         self.logger.warning("Using FallbackSecurity for notes validation.")
@@ -227,8 +222,7 @@ class NotesSecurity:
                 self.logger.critical(error_msg)
                 return False, "Security module unavailable; write operation blocked"
             self.logger.warning(
-                f"Proceeding with '{operation}' under FallbackSecurity. "
-                "Not recommended for production."
+                f"Proceeding with '{operation}' under FallbackSecurity. Not recommended for production."
             )
 
         return True, None

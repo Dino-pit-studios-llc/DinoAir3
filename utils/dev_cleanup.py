@@ -118,9 +118,7 @@ class UserDataCleanupManager:
                 if user_data_path.exists():
                     try:
                         info["users"] = [
-                            d.name
-                            for d in user_data_path.iterdir()
-                            if d.is_dir() and not d.name.startswith(".")
+                            d.name for d in user_data_path.iterdir() if d.is_dir() and not d.name.startswith(".")
                         ]
                     except OSError:
                         LOGGER.warning("Could not list users in %s", user_data_path)
@@ -306,9 +304,7 @@ class UserDataCleanupManager:
 
         # 4. Summary
         total_space_freed = sum(r.get("space_freed_mb", 0) for r in results.values())
-        total_items_removed = sum(
-            r.get("directories_removed", 0) + r.get("files_removed", 0) for r in results.values()
-        )
+        total_items_removed = sum(r.get("directories_removed", 0) + r.get("files_removed", 0) for r in results.values())
 
         results["summary"] = {
             "total_space_freed_mb": round(total_space_freed, 2),

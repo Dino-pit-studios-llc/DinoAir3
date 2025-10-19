@@ -22,9 +22,7 @@ class RagMonitorService:
         self.settings = settings
         self._monitor: Any = None  # mirrors semantics from RagService
 
-    def monitor_start(
-        self, directories: list[str], file_extensions: list[str] | None = None
-    ) -> dict[str, Any]:
+    def monitor_start(self, directories: list[str], file_extensions: list[str] | None = None) -> dict[str, Any]:
         if not getattr(self.settings, "rag_enabled", True):
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
         if not getattr(self.settings, "rag_watchdog_enabled", False):
@@ -44,9 +42,7 @@ class RagMonitorService:
             if self._monitor is None:
                 self._monitor = FileMonitor(user_name="default_user")
             if hasattr(self._monitor, "start_monitoring"):
-                self._monitor.start_monitoring(
-                    directories=directories or [], file_extensions=file_extensions
-                )
+                self._monitor.start_monitoring(directories=directories or [], file_extensions=file_extensions)
             return resp(
                 True,
                 {

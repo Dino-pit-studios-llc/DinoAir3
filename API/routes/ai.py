@@ -11,11 +11,10 @@ import logging
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any, cast
 
-from fastapi import APIRouter, HTTPException
-from starlette import status
-
 from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
 from core_router.errors import ValidationError as CoreValidationError
+from fastapi import APIRouter, HTTPException
+from starlette import status
 
 from ..schemas import ChatRequest, ChatResponse
 from ..services import router_client
@@ -25,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 # ErrorResponse model may not exist in local test stubs; provide a safe pydantic fallback
 try:
-    from core_router.errors import ErrorResponse as ErrorResponseModel  # type: ignore[import-not-found,unused-ignore]
+    from core_router.errors import (
+        ErrorResponse as ErrorResponseModel,  # type: ignore[import-not-found,unused-ignore]
+    )
 except ImportError:  # pragma: no cover
     from pydantic import BaseModel
 
@@ -202,9 +203,7 @@ async def _maybe_continue_with_function_calls(
     function_call_results = await _handle_function_calls(result_dict)
 
     if function_call_results and _should_continue_conversation(mapping_params):
-        updated_messages = base_messages + _build_function_call_messages(
-            result_dict, function_call_results
-        )
+        updated_messages = base_messages + _build_function_call_messages(result_dict, function_call_results)
         updated_payload = _build_payload(updated_messages, options, tool_schemas)
         result_dict = _execute_chat_round(router_instance, svc_name, tag, policy, updated_payload)
 
@@ -322,9 +321,7 @@ def _execute_router_call(
     except (ServiceNotFound, NoHealthyService) as exc:
         return _handle_router_service_error(r, payload, exc)
     except CoreValidationError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
     except AdapterError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
@@ -440,9 +437,7 @@ def _extract_usage(data: Mapping[str, Any] | None) -> dict[str, int] | None:
         return None
 
 
-def _extract_bool_param(
-    extra_params: dict[str, Any] | None, key: str, default: bool = False
-) -> bool:
+def _extract_bool_param(extra_params: dict[str, Any] | None, key: str, default: bool = False) -> bool:
     """
     Extract a boolean parameter from extra_params.
 
@@ -587,9 +582,7 @@ def _prepare_function_arguments(raw_arguments: Any, function_name: str) -> Any:
         try:
             return json.loads(raw_arguments) if raw_arguments else {}
         except json.JSONDecodeError as exc:
-            raise ValueError(
-                f"Malformed JSON in function arguments for '{function_name}': {exc}"
-            ) from exc
+            raise ValueError(f"Malformed JSON in function arguments for '{function_name}': {exc}") from exc
     return raw_arguments if raw_arguments is not None else {}
 
 
@@ -657,9 +650,7 @@ def _create_tool_message(func_result: Mapping[str, Any]) -> dict[str, Any] | Non
         "tool_call_id": tool_call_id,
         "name": function_name,
         "content": (
-            f"Error: {func_result['error']}"
-            if "error" in func_result
-            else _serialize_result(func_result.get("result"))
+            f"Error: {func_result['error']}" if "error" in func_result else _serialize_result(func_result.get("result"))
         ),
     }
     return tool_message

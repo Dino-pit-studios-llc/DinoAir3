@@ -103,9 +103,7 @@ async def async_translate_block_by_block(
         translator.wait_if_paused()
         accumulated_input.append(chunk)
         loop = asyncio.get_running_loop()
-        result = await loop.run_in_executor(
-            None, process_accumulated_blocks, translator, accumulated_input, on_update
-        )
+        result = await loop.run_in_executor(None, process_accumulated_blocks, translator, accumulated_input, on_update)
         if result:
             translated_chunks, remaining = result
             if translated_chunks:

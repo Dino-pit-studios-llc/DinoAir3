@@ -170,8 +170,8 @@ class TestCircularDependencyDetector:
 
         # Assert that only non-test files are included after filtering
         included_files = set(detector.module_paths.keys())
-        assert "module.py" in included_files
-        assert "tests/test_module.py" not in included_files
+        assert "module" in included_files
+        assert "tests.test_module" not in included_files
 
     @staticmethod
     def test_detect_cycles_no_cycles(tmp_path):
@@ -188,13 +188,9 @@ class TestCircularDependencyDetector:
         detector.scan_directory()
         cycles = detector.detect_cycles()
 
-        # Should return a list of cycles
+        # Should return an empty list since no cycles exist
         assert isinstance(cycles, list)
-        if detector.dependencies:
-            # Should detect a cycle between 'a' and 'b'
-            expected_cycle = {"a", "b"}
-            found = any(set(cycle) == expected_cycle for cycle in cycles)
-            assert found, f"Expected cycle between 'a' and 'b', got: {cycles}"
+        assert len(cycles) == 0, f"Expected no cycles, but found: {cycles}"
 
     @staticmethod
     def test_detect_cycles_simple_cycle(tmp_path):
@@ -253,10 +249,7 @@ class TestCircularDependencyDetector:
 
         assert "a -> b -> c" in suggestions
         assert len(suggestions["a -> b -> c"]) > 0
-        assert any(
-            "interface" in fix.lower() or "protocol" in fix.lower()
-            for fix in suggestions["a -> b -> c"]
-        )
+        assert any("interface" in fix.lower() or "protocol" in fix.lower() for fix in suggestions["a -> b -> c"])
 
 
 class TestFormatOutput:
@@ -318,8 +311,7 @@ class TestMainFunctionality:
     """Test main script functionality."""
 
     @patch("check_circular_dependencies.CircularDependencyDetector")
-    @staticmethod
-    def test_main_with_path_argument(mock_detector):
+    def test_main_with_path_argument(self, mock_detector):
         """Test main function with path argument."""
         from check_circular_dependencies import main
 
@@ -342,8 +334,7 @@ class TestMainFunctionality:
         mock_detector.assert_called()
 
     @patch("check_circular_dependencies.CircularDependencyDetector")
-    @staticmethod
-    def test_main_default_path(mock_detector):
+    def test_main_default_path(self, mock_detector):
         """Test main function with default path."""
         from check_circular_dependencies import main
 

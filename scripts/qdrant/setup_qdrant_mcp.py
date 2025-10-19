@@ -67,9 +67,7 @@ class QdrantMCPSetup:
         # Check Python version
         python_version = sys.version_info
         if python_version < (3, 8):
-            print(
-                f"ERROR: Python {python_version.major}.{python_version.minor} detected. Python 3.8+ required."
-            )
+            print(f"ERROR: Python {python_version.major}.{python_version.minor} detected. Python 3.8+ required.")
             return False
 
         print(f"OK: Python {python_version.major}.{python_version.minor}.{python_version.micro}")
@@ -149,9 +147,7 @@ DEBUG=false
 """
 
         try:
-            _secure_write_text(
-                str(self.env_file), env_content
-            )  # restrict file permissions to 0o600
+            _secure_write_text(str(self.env_file), env_content)  # restrict file permissions to 0o600
 
             print(f"OK: Environment file created: {self.env_file}")
 
@@ -165,9 +161,7 @@ DEBUG=false
 
                 # Write YAML with restricted permissions
                 yaml_text = yaml.dump(config, default_flow_style=False)
-                _secure_write_text(
-                    str(self.config_file), yaml_text
-                )  # restrict file permissions to 0o600
+                _secure_write_text(str(self.config_file), yaml_text)  # restrict file permissions to 0o600
 
                 print(f"OK: Configuration updated: {self.config_file}")
 
@@ -245,9 +239,7 @@ DEBUG=false
                         existing.config.params.size != collection_info["vector_size"]
                         or existing.config.params.distance != collection_info["distance"]
                     ):
-                        print(
-                            f"Warning: Collection '{collection_info['name']}' exists but has different config"
-                        )
+                        print(f"Warning: Collection '{collection_info['name']}' exists but has different config")
                         print("   Consider recreating or updating the collection")
                     else:
                         print(f"OK: Collection '{collection_info['name']}' already exists")
@@ -298,9 +290,7 @@ python mcp_qdrant_server.py --qdrant-url "$QDRANT_URL" --api-key "$QDRANT_API_KE
 
         script_file = self.project_root / "start_qdrant_mcp.sh"
         try:
-            _secure_write_text(
-                str(script_file), script_content
-            )  # restrict file permissions to 0o600
+            _secure_write_text(str(script_file), script_content)  # restrict file permissions to 0o600
 
             # Make executable
             os.chmod(script_file, 0o700)

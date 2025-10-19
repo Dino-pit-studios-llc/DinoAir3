@@ -136,9 +136,7 @@ def insert_docstrings(lines: list, missing_items: list) -> (list, bool):
         if item["type"] == "class":
             doc = generate_class_docstring(item["name"], indent)
         else:
-            doc = generate_function_docstring(
-                item["name"], item["args"], item["has_return"], indent
-            )
+            doc = generate_function_docstring(item["name"], item["args"], item["has_return"], indent)
         lines.insert(idx + 1, doc)
         modified = True
     return lines, modified

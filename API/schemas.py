@@ -60,9 +60,7 @@ class ValidationFieldError(BaseModel):
 class ValidationErrors(BaseModel):
     """Container for validation field errors."""
 
-    field_errors: list[ValidationFieldError] = Field(
-        default_factory=lambda: cast("list[ValidationFieldError]", [])
-    )
+    field_errors: list[ValidationFieldError] = Field(default_factory=lambda: cast("list[ValidationFieldError]", []))
 
 
 # -----------------------

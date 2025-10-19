@@ -20,10 +20,9 @@ import contextlib
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Union, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 from pydantic import Field as PydField
 from pydantic import ValidationError as PydanticValidationError
-from pydantic import create_model
 from pydantic.config import ConfigDict
 
 from .errors import ValidationError
@@ -104,9 +103,7 @@ def _map_json_type(
         if isinstance(items, Mapping):
             it = items.get("type")
             if isinstance(it, str):
-                inner_items = (
-                    items.get("items") if isinstance(items.get("items"), Mapping) else None
-                )
+                inner_items = items.get("items") if isinstance(items.get("items"), Mapping) else None
                 item_type = _map_json_type(it, inner_items)
         return list[item_type]  # PEP 585
 
@@ -136,9 +133,7 @@ def _array_type_from_prop(prop: Mapping[str, JSONValue]) -> type[object]:
     return _map_json_type("array", items)
 
 
-def _string_field_def(
-    key: str, prop: Mapping[str, JSONValue], required: list[str] | None
-) -> FieldDefinition:
+def _string_field_def(key: str, prop: Mapping[str, JSONValue], required: list[str] | None) -> FieldDefinition:
     min_len = _coerce_nonneg_int(prop.get("minLength"))
     if min_len is not None:
         if _is_required(required, key):
@@ -148,9 +143,7 @@ def _string_field_def(
     return (str, ...) if _is_required(required, key) else (str | None, None)
 
 
-def _array_field_def(
-    key: str, prop: Mapping[str, JSONValue], required: list[str] | None
-) -> FieldDefinition:
+def _array_field_def(key: str, prop: Mapping[str, JSONValue], required: list[str] | None) -> FieldDefinition:
     array_type = _array_type_from_prop(prop)
     min_items = _coerce_nonneg_int(prop.get("minItems"))
     if min_items is not None:

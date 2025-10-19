@@ -14,7 +14,6 @@ Security Features:
 
 import base64
 import json
-import os
 import secrets
 from typing import Any
 
@@ -254,9 +253,7 @@ class ArtifactEncryption:
         return decrypted_data
 
 
-def encrypt_artifact_fields(
-    self, artifact_dict: dict[str, Any], fields: list[str]
-) -> dict[str, Any]:
+def encrypt_artifact_fields(self, artifact_dict: dict[str, Any], fields: list[str]) -> dict[str, Any]:
     """
     Encrypt specific fields in an artifact dictionary
 

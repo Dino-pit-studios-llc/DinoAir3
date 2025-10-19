@@ -487,8 +487,7 @@ class EnhancedLogger:
             return EnhancedJsonFormatter(self.config.formatter_config)
         else:
             return logging.Formatter(
-                self.config.formatter_config.custom_format
-                or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                self.config.formatter_config.custom_format or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
             )
 
     def _create_file_handler(self, log_dir: Path, formatter: logging.Formatter) -> logging.Handler:
@@ -599,8 +598,7 @@ class EnhancedLogger:
         """Get current module-specific log levels."""
         # Use logging's built-in level names mapping
         return {
-            module: logging.getLevelName(level)
-            for module, level in self.config.filter_config.level_filters.items()
+            module: logging.getLevelName(level) for module, level in self.config.filter_config.level_filters.items()
         }
 
     def shutdown(self):
@@ -757,33 +755,23 @@ class LogAggregator:
 
             if recent_entries:
                 # Level distribution
-                summary["level_distribution"] = LogAggregator._count_by_field(
-                    recent_entries, "level"
-                )
+                summary["level_distribution"] = LogAggregator._count_by_field(recent_entries, "level")
 
                 # Component distribution
-                summary["component_distribution"] = LogAggregator._count_by_field(
-                    recent_entries, "component"
-                )
+                summary["component_distribution"] = LogAggregator._count_by_field(recent_entries, "component")
 
                 # Error rate tracking
                 if self.config.enable_error_rate_tracking:
-                    error_entries = [
-                        e for e in recent_entries if e["level"] in ["ERROR", "CRITICAL"]
-                    ]
+                    error_entries = [e for e in recent_entries if e["level"] in ["ERROR", "CRITICAL"]]
                     summary["error_rate"] = len(error_entries) / len(recent_entries)
                     summary["error_count"] = len(error_entries)
 
                     # Error types
-                    summary["error_types"] = LogAggregator._count_by_field(
-                        error_entries, "error_type"
-                    )
+                    summary["error_types"] = LogAggregator._count_by_field(error_entries, "error_type")
 
                 # Operations with most logs
                 operations = LogAggregator._count_by_field(recent_entries, "operation")
-                summary["top_operations"] = dict(
-                    sorted(operations.items(), key=lambda x: x[1], reverse=True)[:10]
-                )
+                summary["top_operations"] = dict(sorted(operations.items(), key=lambda x: x[1], reverse=True)[:10])
 
             return summary
 
@@ -815,18 +803,14 @@ class LogAggregator:
 
                 # Frequent error messages
                 messages = LogAggregator._count_by_field(error_entries, "message")
-                patterns["frequent_messages"] = dict(
-                    sorted(messages.items(), key=lambda x: x[1], reverse=True)[:10]
-                )
+                patterns["frequent_messages"] = dict(sorted(messages.items(), key=lambda x: x[1], reverse=True)[:10])
 
             return patterns
 
     def get_performance_insights(self) -> dict[str, Any]:
         """Extract performance-related insights from logs."""
         with self._lock:
-            perf_entries = [
-                e for e in self._entries if "performance" in str(e).lower() or "duration" in e
-            ]
+            perf_entries = [e for e in self._entries if "performance" in str(e).lower() or "duration" in e]
 
             insights: dict[str, Any] = {
                 "performance_alerts": len(perf_entries),
@@ -843,10 +827,7 @@ class LogAggregator:
                             "component": entry["component"],
                         }
                     )
-                elif any(
-                    word in entry.get("message", "").lower()
-                    for word in ["memory", "cpu", "resource"]
-                ):
+                elif any(word in entry.get("message", "").lower() for word in ["memory", "cpu", "resource"]):
                     insights["resource_alerts"].append(
                         {
                             "timestamp": entry["timestamp"],
@@ -874,9 +855,7 @@ class LogAnalyzer:
     """Advanced log analysis utilities."""
 
     @staticmethod
-    def detect_anomalies(
-        entries: list[dict[str, Any]], baseline_window: int = 3600
-    ) -> dict[str, Any]:
+    def detect_anomalies(entries: list[dict[str, Any]], baseline_window: int = 3600) -> dict[str, Any]:
         """Detect anomalous patterns in log entries."""
         if len(entries) < 10:
             return {"anomalies_detected": False, "reason": "Insufficient data"}
@@ -888,12 +867,12 @@ class LogAnalyzer:
         if not baseline_entries:
             return {"anomalies_detected": False, "reason": "No baseline data"}
 
-        recent_error_rate = len(
-            [e for e in recent_entries if e["level"] in ["ERROR", "CRITICAL"]]
-        ) / len(recent_entries)
-        baseline_error_rate = len(
-            [e for e in baseline_entries if e["level"] in ["ERROR", "CRITICAL"]]
-        ) / len(baseline_entries)
+        recent_error_rate = len([e for e in recent_entries if e["level"] in ["ERROR", "CRITICAL"]]) / len(
+            recent_entries
+        )
+        baseline_error_rate = len([e for e in baseline_entries if e["level"] in ["ERROR", "CRITICAL"]]) / len(
+            baseline_entries
+        )
 
         threshold = baseline_error_rate * 2.0  # 2x baseline is anomalous
 
@@ -903,11 +882,7 @@ class LogAnalyzer:
             "baseline_error_rate": baseline_error_rate,
             "threshold": threshold,
             "severity": (
-                "high"
-                if recent_error_rate > threshold * 2
-                else "medium"
-                if recent_error_rate > threshold
-                else "low"
+                "high" if recent_error_rate > threshold * 2 else "medium" if recent_error_rate > threshold else "low"
             ),
         }
 

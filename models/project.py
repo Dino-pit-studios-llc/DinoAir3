@@ -81,9 +81,7 @@ class Project:
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "status": (
-                self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)
-            ),
+            "status": (self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)),
             "color": self.color,
             "icon": self.icon,
             "parent_project_id": self.parent_project_id,
@@ -106,17 +104,13 @@ class Project:
             try:
                 metadata_str = json.dumps(self.metadata, ensure_ascii=False)
             except (TypeError, ValueError):
-                metadata_str = json.dumps(
-                    {"error": "serialization_failed", "raw": str(self.metadata)}
-                )
+                metadata_str = json.dumps({"error": "serialization_failed", "raw": str(self.metadata)})
 
         return {
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "status": (
-                self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)
-            ),
+            "status": (self.status.value if isinstance(self.status, ProjectStatus) else str(self.status)),
             "color": self.color,
             "icon": self.icon,
             "parent_project_id": self.parent_project_id,
@@ -228,8 +222,6 @@ class ProjectStatistics:
     def calculate_completion_percentage(self) -> None:
         """Calculate completion percentage with proper error handling."""
         try:
-            self.completion_percentage = (
-                (self.completed_items / self.total_items) * 100.0 if self.total_items else 0.0
-            )
+            self.completion_percentage = (self.completed_items / self.total_items) * 100.0 if self.total_items else 0.0
         except (ZeroDivisionError, TypeError, AttributeError):
             self.completion_percentage = 0.0

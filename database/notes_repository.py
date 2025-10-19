@@ -345,9 +345,7 @@ class NotesRepository:
             self.logger.error(f"Error retrieving deleted notes: {str(e)}")
             return QueryResult(success=False, error=str(e))
 
-    def search_notes(
-        self, query: str, filter_option: str = "All", project_id: str | None = None
-    ) -> QueryResult:
+    def search_notes(self, query: str, filter_option: str = "All", project_id: str | None = None) -> QueryResult:
         """Search notes with various filter options"""
         try:
             q_like = f"%{query}%"
@@ -481,9 +479,7 @@ class NotesRepository:
                         if normalized_tag in (note.tags or []):
                             notes.append(note)
 
-            self.logger.info(
-                f"Found {len(notes)} notes with tag: '{tag}' (normalized: '{normalized_tag}')"
-            )
+            self.logger.info(f"Found {len(notes)} notes with tag: '{tag}' (normalized: '{normalized_tag}')")
             return QueryResult(success=True, data=notes)
 
         except Exception as e:
@@ -570,18 +566,14 @@ class NotesRepository:
                 note_id = row[0]
                 tags = json.loads(row[1]) if row[1] else []
 
-                updated_tags, tag_found = self._replace_tag_in_list(
-                    tags, old_tag_normalized, new_tag_normalized
-                )
+                updated_tags, tag_found = self._replace_tag_in_list(tags, old_tag_normalized, new_tag_normalized)
 
                 if tag_found and self._update_note_tags(note_id, updated_tags):
                     affected_notes += 1
 
         return affected_notes
 
-    def _replace_tag_in_list(
-        self, tags: list[str], old_tag: str, new_tag: str
-    ) -> tuple[list[str], bool]:
+    def _replace_tag_in_list(self, tags: list[str], old_tag: str, new_tag: str) -> tuple[list[str], bool]:
         """Replace occurrences of old tag with new tag in a tag list.
 
         Args:
@@ -654,11 +646,7 @@ class NotesRepository:
 
                     # Remove normalized tag
                     original_count = len(tags)
-                    updated_tags = [
-                        tag
-                        for tag in tags
-                        if isinstance(tag, str) and tag.lower() != tag_normalized
-                    ]
+                    updated_tags = [tag for tag in tags if isinstance(tag, str) and tag.lower() != tag_normalized]
 
                     if len(updated_tags) < original_count:
                         # Update the note

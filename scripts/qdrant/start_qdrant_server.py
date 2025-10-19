@@ -15,7 +15,6 @@ import time
 from pathlib import Path
 
 import requests
-
 from utils.process import safe_run
 
 # Constants
@@ -195,9 +194,7 @@ def main():
     # Check Docker availability
     if not check_docker_available():
         print("Please start Qdrant manually or install Docker:")
-        print(
-            "docker run -p 6333:6333 -p 6334:6334 -e QDRANT__SERVICE__API_KEY=<your_key> qdrant/qdrant"
-        )
+        print("docker run -p 6333:6333 -p 6334:6334 -e QDRANT__SERVICE__API_KEY=<your_key> qdrant/qdrant")
         return 1
 
     # Start Qdrant with Docker

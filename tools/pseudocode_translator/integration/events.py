@@ -338,9 +338,7 @@ def create_event_dispatcher() -> EventDispatcher:
 
         logger.log(level, "Event: %s from %s", event.name, event.source, extra=event.data)
 
-    log_handler = EventHandler(
-        log_event, filter_func=lambda e: e.type != EventType.translation_progress
-    )
+    log_handler = EventHandler(log_event, filter_func=lambda e: e.type != EventType.translation_progress)
     dispatcher.register(log_handler)
 
     return dispatcher

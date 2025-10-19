@@ -262,9 +262,7 @@ class InputValidator:
 
         # Check for empty or whitespace-only input
         if not text or text.isspace():
-            return ValidationResult(
-                is_valid=True, cleaned_text="", threat_level=ThreatLevel.none, issues=[]
-            )
+            return ValidationResult(is_valid=True, cleaned_text="", threat_level=ThreatLevel.none, issues=[])
 
         # Pattern-based threat detection
         for category, patterns in self.dangerous_patterns.items():
@@ -328,10 +326,7 @@ class InputValidator:
         if threat_level == ThreatLevel.high:
             # Aggressive cleaning for high threats
             # For path traversal, completely reject the input
-            if any(
-                pattern in text.lower()
-                for pattern in ["..", "etc/passwd", "windows/system", "cmd.exe"]
-            ):
+            if any(pattern in text.lower() for pattern in ["..", "etc/passwd", "windows/system", "cmd.exe"]):
                 return ""  # Completely reject path traversal attempts
             # Remove special chars except basic punctuation and whitespace
             allowed = string.ascii_letters + string.digits + " .,!?-_\n\r\t"

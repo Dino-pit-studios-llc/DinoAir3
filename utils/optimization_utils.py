@@ -145,9 +145,7 @@ class OptimizedPatterns:
     phone_pattern = re.compile(r"^\+?[\d\s\-\(\)]{10,}$")
 
     # Code patterns - Fixed ReDoS: limit repetitions and avoid nested quantifiers
-    import_pattern = re.compile(
-        r"^(?:from\s+\w+(?:\.\w+){0,10}\s+import\s+[\w\s,]{1,200}|import\s+\w+(?:\.\w+){0,10})"
-    )
+    import_pattern = re.compile(r"^(?:from\s+\w+(?:\.\w+){0,10}\s+import\s+[\w\s,]{1,200}|import\s+\w+(?:\.\w+){0,10})")
     comment_pattern = re.compile(r"#.*$", re.MULTILINE)
     string_pattern = re.compile(r'["\'](?:[^"\\]|\\.)*["\']')
 
@@ -374,9 +372,7 @@ class LazyComponentManager:
         dependencies: list[str] | None = None,
     ) -> None:
         """Register a component for lazy initialization."""
-        self._components[name] = ComponentInfo(
-            name=name, factory_func=factory_func, dependencies=dependencies or []
-        )
+        self._components[name] = ComponentInfo(name=name, factory_func=factory_func, dependencies=dependencies or [])
 
     def get_component(self, name: str) -> Any:
         """Get a component, initializing it if necessary."""
@@ -401,9 +397,7 @@ class LazyComponentManager:
 
     def _initialize_component(self, component_info: ComponentInfo) -> Any:
         """Initialize a single component."""
-        operation_id = self._performance_monitor.start_operation(
-            f"component_init_{component_info.name}"
-        )
+        operation_id = self._performance_monitor.start_operation(f"component_init_{component_info.name}")
         component_info.state = ComponentState.initializing
 
         try:
@@ -419,9 +413,7 @@ class LazyComponentManager:
             component_info.state = ComponentState("error")
             component_info.error = str(e)
             self._performance_monitor.end_operation(operation_id)
-            raise RuntimeError(
-                f"Failed to initialize component '{component_info.name}': {e}"
-            ) from e
+            raise RuntimeError(f"Failed to initialize component '{component_info.name}': {e}") from e
 
     @staticmethod
     def _create_and_register_component(component_info: ComponentInfo) -> None:
@@ -533,9 +525,7 @@ class SignalConnectionManager:
         return {
             "total_connections": total_connections,
             "connection_groups": total_groups,
-            "group_details": {
-                group: len(conn_ids) for group, conn_ids in self._connection_groups.items()
-            },
+            "group_details": {group: len(conn_ids) for group, conn_ids in self._connection_groups.items()},
         }
 
 
@@ -548,9 +538,7 @@ class DebouncedEventHandler:
         self._callbacks: dict[str, Callable[..., Any]] = {}
         self._performance_monitor = get_performance_monitor()
 
-    def debounce(
-        self, event_id: str, callback: Callable[..., Any], *args: Any, **kwargs: Any
-    ) -> None:
+    def debounce(self, event_id: str, callback: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
         """Debounce an event with the specified callback."""
         # Cancel existing timer for this event
         if event_id in self._timers:

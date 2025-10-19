@@ -121,9 +121,7 @@ class AdaptiveChunkSizer:
             step_pct=float(step_pct),
         )
 
-        self.current_size: int | None = (
-            int(self._clamp(initial_size)) if initial_size is not None else None
-        )
+        self.current_size: int | None = int(self._clamp(initial_size)) if initial_size is not None else None
         self.cooldown_remaining: int = 0
         self.smoothed_latency_ms: float | None = None
 

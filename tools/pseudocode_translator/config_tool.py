@@ -292,9 +292,7 @@ class ConfigTool:
         )
 
         # Generate command
-        generate_parser = subparsers.add_parser(
-            "generate", help="Generate a new configuration file"
-        )
+        generate_parser = subparsers.add_parser("generate", help="Generate a new configuration file")
         generate_parser.add_argument(
             "-o",
             "--output",
@@ -316,9 +314,7 @@ class ConfigTool:
 
         # Check command
         check_parser = subparsers.add_parser("check", help="Check configuration and environment")
-        check_parser.add_argument(
-            "config_file", nargs="?", help="Path to configuration file (optional)"
-        )
+        check_parser.add_argument("config_file", nargs="?", help="Path to configuration file (optional)")
         check_parser.add_argument("--env", action="store_true", help="Check environment variables")
 
         # Wizard command
@@ -335,13 +331,9 @@ class ConfigTool:
         info_parser.add_argument("config_file", help="Path to configuration file")
 
         # Upgrade command (for old configs)
-        upgrade_parser = subparsers.add_parser(
-            "upgrade", help="Upgrade old configuration to new format"
-        )
+        upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade old configuration to new format")
         upgrade_parser.add_argument("config_file", help="Path to old configuration file")
-        upgrade_parser.add_argument(
-            "-o", "--output", help="Output file path (default: overwrite input)"
-        )
+        upgrade_parser.add_argument("-o", "--output", help="Output file path (default: overwrite input)")
         upgrade_parser.add_argument(
             "--backup",
             action="store_true",

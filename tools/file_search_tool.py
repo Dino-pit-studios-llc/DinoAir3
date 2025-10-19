@@ -320,9 +320,7 @@ def add_file_to_index(
             return _map_validate_path_error(ve, file_path)
 
         # Compute metadata via helper
-        file_hash, file_size, modified_date, resolved_type = _compute_file_metadata(
-            path_obj, file_type
-        )
+        file_hash, file_size, modified_date, resolved_type = _compute_file_metadata(path_obj, file_type)
 
         # Initialize database and add file
         file_search_db = get_file_search_db(user_name)
@@ -336,9 +334,7 @@ def add_file_to_index(
         )
 
         # Build file_info and handle DB result via helper
-        file_info = _build_file_info_response(
-            path_obj, file_hash, file_size, resolved_type, modified_date
-        )
+        file_info = _build_file_info_response(path_obj, file_hash, file_size, resolved_type, modified_date)
         return _handle_db_add_result(result, file_info)
 
     except Exception as e:
@@ -452,9 +448,7 @@ def get_search_statistics(user_name: str = "default_user") -> dict[str, Any]:
         }
 
 
-def manage_search_directories(
-    action: str, directory: str, user_name: str = "default_user"
-) -> dict[str, Any]:
+def manage_search_directories(action: str, directory: str, user_name: str = "default_user") -> dict[str, Any]:
     """
     Manage allowed and excluded directories for file search.
 

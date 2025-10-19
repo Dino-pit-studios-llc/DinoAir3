@@ -354,9 +354,7 @@ class IntentClassifier:
         ][:3]  # Max 3 secondary intents
 
         # Generate reasoning
-        reasoning = IntentClassifier._generate_reasoning(
-            primary_intent, primary_score, pattern_scores, keyword_scores
-        )
+        reasoning = IntentClassifier._generate_reasoning(primary_intent, primary_score, pattern_scores, keyword_scores)
 
         return IntentClassification(
             primary_intent=primary_intent,

@@ -128,9 +128,7 @@ class LLMConfig:
                 if isinstance(cfg, dict):
                     cfg_d = cast("dict[str, Any]", cfg)
                     params_raw = cfg_d.get("parameters")
-                    params = (
-                        cast("dict[str, Any]", params_raw) if isinstance(params_raw, dict) else {}
-                    )
+                    params = cast("dict[str, Any]", params_raw) if isinstance(params_raw, dict) else {}
                     self.models[name] = ModelConfig(
                         name=name,
                         enabled=bool(cfg_d.get("enabled", True)),
@@ -283,9 +281,7 @@ class StreamingConfig:
         if value <= error_threshold:
             errors.append(f"{name} must be > {error_threshold}, got {value}")
         elif not warn_range[0] <= value <= warn_range[1]:
-            warnings.append(
-                f"{name} should be between {warn_range[0]} and {warn_range[1]}, got {value}"
-            )
+            warnings.append(f"{name} should be between {warn_range[0]} and {warn_range[1]}, got {value}")
 
     @staticmethod
     def _validate_min(
@@ -323,22 +319,15 @@ class StreamingConfig:
             warnings,
         )
 
-        StreamingConfig._validate_min(
-            "max_concurrent_chunks", self.max_concurrent_chunks, 1, errors
-        )
+        StreamingConfig._validate_min("max_concurrent_chunks", self.max_concurrent_chunks, 1, errors)
         StreamingConfig._validate_min("max_queue_size", self.max_queue_size, 0, errors)
         StreamingConfig._validate_min("chunk_timeout", self.chunk_timeout, 0, errors)
-        StreamingConfig._validate_min(
-            "progress_callback_interval", self.progress_callback_interval, 0, errors
-        )
+        StreamingConfig._validate_min("progress_callback_interval", self.progress_callback_interval, 0, errors)
         StreamingConfig._validate_min("context_window_size", self.context_window_size, 0, errors)
 
         allowed_evictions = {"lru", "fifo", "none"}
         if self.eviction_policy not in allowed_evictions:
-            errors.append(
-                f"eviction_policy must be one of {sorted(allowed_evictions)}, "
-                f"got '{self.eviction_policy}'"
-            )
+            errors.append(f"eviction_policy must be one of {sorted(allowed_evictions)}, got '{self.eviction_policy}'")
 
         if self.adaptive_min_chunk_size <= 0:
             errors.append("adaptive_min_chunk_size must be > 0")
@@ -385,9 +374,7 @@ class ExecutionConfig:
 
     # Feature flag and targeting
     process_pool_enabled: bool = False
-    process_pool_max_workers: int | None = (
-        None  # None -> resolve at runtime to max(2, os.cpu_count() or 2)
-    )
+    process_pool_max_workers: int | None = None  # None -> resolve at runtime to max(2, os.cpu_count() or 2)
     process_pool_target: str = "parse_validate"
 
     # Task constraints
@@ -410,30 +397,20 @@ class ExecutionConfig:
         allowed_targets = {"parse_validate", "parse_only", "validate_only"}
         if self.process_pool_target not in allowed_targets:
             errors.append(
-                f"process_pool_target must be one of {sorted(allowed_targets)}, "
-                f"got '{self.process_pool_target}'"
+                f"process_pool_target must be one of {sorted(allowed_targets)}, got '{self.process_pool_target}'"
             )
 
         # Timeouts and limits
         if self.process_pool_task_timeout_ms <= 0:
-            errors.append(
-                f"process_pool_task_timeout_ms must be > 0, got {self.process_pool_task_timeout_ms}"
-            )
+            errors.append(f"process_pool_task_timeout_ms must be > 0, got {self.process_pool_task_timeout_ms}")
         if self.process_pool_job_max_chars <= 0:
-            errors.append(
-                f"process_pool_job_max_chars must be > 0, got {self.process_pool_job_max_chars}"
-            )
+            errors.append(f"process_pool_job_max_chars must be > 0, got {self.process_pool_job_max_chars}")
         if self.process_pool_retry_limit < 0:
-            errors.append(
-                f"process_pool_retry_limit must be >= 0, got {self.process_pool_retry_limit}"
-            )
+            errors.append(f"process_pool_retry_limit must be >= 0, got {self.process_pool_retry_limit}")
 
         # Max workers
         if self.process_pool_max_workers is not None and self.process_pool_max_workers < 1:
-            errors.append(
-                f"process_pool_max_workers must be >= 1 when set, got "
-                f"{self.process_pool_max_workers}"
-            )
+            errors.append(f"process_pool_max_workers must be >= 1 when set, got {self.process_pool_max_workers}")
 
         result = {"errors": errors, "warnings": warnings}
 
@@ -479,10 +456,7 @@ class CacheConfig:
         warnings: list[str] = []
 
         if self.eviction_mode not in {"lru", "lfu_lite"}:
-            errors.append(
-                f"cache.eviction_mode must be one of ['lru', 'lfu_lite'], got '"
-                f"{self.eviction_mode}'"
-            )
+            errors.append(f"cache.eviction_mode must be one of ['lru', 'lfu_lite'], got '{self.eviction_mode}'")
         if self.max_size < 1:
             errors.append(f"cache.max_size must be >= 1, got {self.max_size}")
         if self.ttl_seconds is not None and self.ttl_seconds < 1:
@@ -563,9 +537,7 @@ class Config:
             errors.append(f"indent_size should be 2, 4, or 8, got {self.indent_size}")
 
         if not 50 <= self.max_line_length <= 120:
-            errors.append(
-                f"max_line_length should be between 50 and 120, got {self.max_line_length}"
-            )
+            errors.append(f"max_line_length should be between 50 and 120, got {self.max_line_length}")
 
         return errors
 
@@ -692,9 +664,7 @@ class Config:
             "llm.n_threads": lambda v: _try_int(v, f"Invalid threads value from env: {v}"),
             "llm.n_gpu_layers": lambda v: _try_int(v, f"Invalid GPU layers value from env: {v}"),
             "streaming.enabled": lambda v: (True, v.lower() in truthy),
-            "streaming.chunk_size": lambda v: _try_int(
-                v, f"Invalid chunk size value from env: {v}"
-            ),
+            "streaming.chunk_size": lambda v: _try_int(v, f"Invalid chunk size value from env: {v}"),
             "validate_imports": lambda v: (True, v.lower() in truthy),
             "check_undefined_vars": lambda v: (True, v.lower() in truthy),
             # Adaptive streaming overrides
@@ -702,24 +672,12 @@ class Config:
                 True,
                 v.lower() in truthy,
             ),
-            "streaming.adaptive_target_latency_ms": lambda v: _try_int(
-                v, f"Invalid adaptive target ms from env: {v}"
-            ),
-            "streaming.adaptive_min_chunk_size": lambda v: _try_int(
-                v, f"Invalid adaptive min size from env: {v}"
-            ),
-            "streaming.adaptive_max_chunk_size": lambda v: _try_int(
-                v, f"Invalid adaptive max size from env: {v}"
-            ),
-            "streaming.adaptive_hysteresis_pct": lambda v: _try_float(
-                v, f"Invalid adaptive hysteresis from env: {v}"
-            ),
-            "streaming.adaptive_cooldown_chunks": lambda v: _try_int(
-                v, f"Invalid adaptive cooldown from env: {v}"
-            ),
-            "streaming.adaptive_smoothing_alpha": lambda v: _try_float(
-                v, f"Invalid adaptive alpha from env: {v}"
-            ),
+            "streaming.adaptive_target_latency_ms": lambda v: _try_int(v, f"Invalid adaptive target ms from env: {v}"),
+            "streaming.adaptive_min_chunk_size": lambda v: _try_int(v, f"Invalid adaptive min size from env: {v}"),
+            "streaming.adaptive_max_chunk_size": lambda v: _try_int(v, f"Invalid adaptive max size from env: {v}"),
+            "streaming.adaptive_hysteresis_pct": lambda v: _try_float(v, f"Invalid adaptive hysteresis from env: {v}"),
+            "streaming.adaptive_cooldown_chunks": lambda v: _try_int(v, f"Invalid adaptive cooldown from env: {v}"),
+            "streaming.adaptive_smoothing_alpha": lambda v: _try_float(v, f"Invalid adaptive alpha from env: {v}"),
             "streaming.adaptive_initial_chunk_size": lambda v: _try_int(
                 v, f"Invalid adaptive initial size from env: {v}"
             ),
@@ -747,9 +705,7 @@ class Config:
             "cache.eviction_mode": lambda v: (True, v),
             "cache.max_size": lambda v: _try_int(v, f"Invalid cache max size from env: {v}"),
             "cache.ttl_seconds": lambda v: _try_int(v, f"Invalid cache ttl seconds from env: {v}"),
-            "cache.max_memory_mb": lambda v: _try_float(
-                v, f"Invalid cache max memory MB from env: {v}"
-            ),
+            "cache.max_memory_mb": lambda v: _try_float(v, f"Invalid cache max memory MB from env: {v}"),
             "cache.persistent_path": lambda v: (True, v),
             "cache.enable_compression": lambda v: (True, v.lower() in truthy),
         }
@@ -812,9 +768,7 @@ class Config:
         if "llm" in data and isinstance(data["llm"], dict):
             llm_data = cast("dict[str, Any]", data["llm"])
             models_raw = llm_data.pop("models", {})
-            models: dict[str, Any] = (
-                cast("dict[str, Any]", models_raw) if isinstance(models_raw, dict) else {}
-            )
+            models: dict[str, Any] = cast("dict[str, Any]", models_raw) if isinstance(models_raw, dict) else {}
             data["llm"] = LLMConfig(**llm_data)
             # Recreate model configs
             for name, model_data_raw in models.items():
@@ -906,9 +860,7 @@ class ConfigManager:
             all_errors.append(f"indent_size should be 2, 4, or 8, got {cfg.indent_size}")
 
         if not 50 <= cfg.max_line_length <= 120:
-            all_errors.append(
-                f"max_line_length should be between 50 and 120, got {cfg.max_line_length}"
-            )
+            all_errors.append(f"max_line_length should be between 50 and 120, got {cfg.max_line_length}")
 
         result = {"errors": all_errors, "warnings": all_warnings}
 

@@ -26,9 +26,7 @@ def load_migration_from_file(migration_file: Path) -> BaseMigration:
         AttributeError: If migration class cannot be found
     """
     # Load the module from file
-    spec = importlib.util.spec_from_file_location(
-        f"migration_{migration_file.stem}", migration_file
-    )
+    spec = importlib.util.spec_from_file_location(f"migration_{migration_file.stem}", migration_file)
     if spec is None or spec.loader is None:
         raise ImportError(f"Cannot load migration from {migration_file}")
 

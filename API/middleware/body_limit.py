@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 from fastapi.responses import JSONResponse
 from starlette import status
 from starlette.types import Message, Receive, Scope, Send
-
 from utils.asgi import get_header
 
 if TYPE_CHECKING:
@@ -107,10 +106,7 @@ class BodySizeLimitMiddleware:
         response = core_error_response(
             status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             code="ERR_PAYLOAD_TOO_LARGE",
-            message=(
-                f"Request body exceeds the maximum allowed size of "
-                f"{self.settings.max_request_body_bytes} bytes."
-            ),
+            message=(f"Request body exceeds the maximum allowed size of {self.settings.max_request_body_bytes} bytes."),
             error="Payload Too Large",
             details=None,
             endpoint=endpoint,
@@ -123,9 +119,7 @@ class BodySizeLimitMiddleware:
         return response
 
     @staticmethod
-    def _process_body_chunk(
-        chunk: bytes, total: int, max_bytes: int, parts: list[bytes]
-    ) -> tuple[int, bool]:
+    def _process_body_chunk(chunk: bytes, total: int, max_bytes: int, parts: list[bytes]) -> tuple[int, bool]:
         """Process a body chunk and return updated total and whether limit exceeded."""
         new_total = total + len(chunk)
         if new_total > max_bytes:
@@ -147,9 +141,7 @@ class BodySizeLimitMiddleware:
                 break
 
             if chunk := (message.get("body") or b""):
-                total, limit_exceeded = BodySizeLimitMiddleware._process_body_chunk(
-                    chunk, total, max_bytes, parts
-                )
+                total, limit_exceeded = BodySizeLimitMiddleware._process_body_chunk(chunk, total, max_bytes, parts)
                 if limit_exceeded:
                     return parts, extra_message, total
 
@@ -160,9 +152,7 @@ class BodySizeLimitMiddleware:
         return parts, extra_message, total
 
     @staticmethod
-    def _create_replay_queue(
-        body_parts: list[bytes], extra_message: Message | None
-    ) -> list[Message]:
+    def _create_replay_queue(body_parts: list[bytes], extra_message: Message | None) -> list[Message]:
         """Create a replay queue for the request body messages."""
         replay_queue: list[Message] = []
 

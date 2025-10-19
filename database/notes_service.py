@@ -69,9 +69,7 @@ class NotesService:
         """
         try:
             # Business validation
-            biz_validation = self.validator.validate_note_creation(
-                note.title, note.content, note.tags
-            )
+            biz_validation = self.validator.validate_note_creation(note.title, note.content, note.tags)
             if not biz_validation.is_valid:
                 return OperationResult(
                     success=False,
@@ -80,9 +78,7 @@ class NotesService:
                 )
 
             # Security validation
-            security_validation = self.security.validate_note_data(
-                note.title, note.content, note.tags
-            )
+            security_validation = self.security.validate_note_data(note.title, note.content, note.tags)
             if not security_validation["valid"]:
                 return OperationResult(
                     success=False,
@@ -203,9 +199,7 @@ class NotesService:
                 action = "deleted"
 
             if repo_result.success and repo_result.affected_rows > 0:
-                return OperationResult(
-                    success=True, data={"message": f"Note {action} successfully"}
-                )
+                return OperationResult(success=True, data={"message": f"Note {action} successfully"})
             return OperationResult(success=False, error="Note not found or already deleted")
 
         except Exception as e:
@@ -228,9 +222,7 @@ class NotesService:
             self.logger.error(f"Error restoring note {note_id}: {str(e)}")
             return OperationResult(success=False, error=f"Failed to restore note: {str(e)}")
 
-    def search_notes(
-        self, query: str, filter_option: str = "All", project_id: str | None = None
-    ) -> OperationResult:
+    def search_notes(self, query: str, filter_option: str = "All", project_id: str | None = None) -> OperationResult:
         """Search notes with validation"""
         try:
             # Validate search parameters
@@ -248,9 +240,7 @@ class NotesService:
             # Perform search
             repo_result = self.repository.search_notes(escaped_query, filter_option, project_id)
             if repo_result.success:
-                return OperationResult(
-                    success=True, data=repo_result.data, warnings=validation.warnings
-                )
+                return OperationResult(success=True, data=repo_result.data, warnings=validation.warnings)
             return OperationResult(success=False, error=repo_result.error)
 
         except Exception as e:
@@ -343,9 +333,7 @@ class NotesService:
                     warnings=validation.warnings,
                 )
 
-            can_write, write_error = self.security.can_perform_write_operation(
-                "assign_notes_to_project"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("assign_notes_to_project")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -373,9 +361,7 @@ class NotesService:
                     warnings=validation.warnings,
                 )
 
-            can_write, write_error = self.security.can_perform_write_operation(
-                "remove_notes_from_project"
-            )
+            can_write, write_error = self.security.can_perform_write_operation("remove_notes_from_project")
             if not can_write:
                 return OperationResult(success=False, error=write_error)
 
@@ -383,9 +369,7 @@ class NotesService:
             if repo_result.success:
                 return OperationResult(
                     success=True,
-                    data={
-                        "message": f"Removed project association from {repo_result.affected_rows} notes"
-                    },
+                    data={"message": f"Removed project association from {repo_result.affected_rows} notes"},
                     warnings=validation.warnings,
                 )
             return OperationResult(success=False, error=repo_result.error)

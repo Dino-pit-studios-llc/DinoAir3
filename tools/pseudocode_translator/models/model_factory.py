@@ -234,9 +234,7 @@ class ModelFactory:
             return name
 
         # Try capability-based selection
-        selected = cls._select_model_by_capabilities(
-            require_streaming=require_streaming, language=language
-        )
+        selected = cls._select_model_by_capabilities(require_streaming=require_streaming, language=language)
         if selected is not None:
             return selected
 
@@ -254,9 +252,7 @@ class ModelFactory:
         return model_name
 
     @classmethod
-    def _try_fallback_models(
-        cls, model_name: str, config: dict[str, Any] | None
-    ) -> BaseTranslationModel:
+    def _try_fallback_models(cls, model_name: str, config: dict[str, Any] | None) -> BaseTranslationModel:
         """Try fallback models when primary model fails.
 
         Args:
@@ -280,9 +276,7 @@ class ModelFactory:
         raise ValueError(f"No suitable model found (tried {model_name} and fallbacks)")
 
     @classmethod
-    def _create_model_instance(
-        cls, name: str, config: dict[str, Any] | None = None
-    ) -> BaseTranslationModel:
+    def _create_model_instance(cls, name: str, config: dict[str, Any] | None = None) -> BaseTranslationModel:
         """
         Internal method to create a model instance
 
@@ -435,9 +429,7 @@ class ModelFactory:
         return fallbacks
 
     @classmethod
-    def _select_model_by_capabilities(
-        cls, require_streaming: bool | None, language: str | None
-    ) -> str | None:
+    def _select_model_by_capabilities(cls, require_streaming: bool | None, language: str | None) -> str | None:
         """
         Select the best model from the registry based on normalized capability metadata.
 
@@ -573,23 +565,15 @@ class ModelFactory:
         Returns:
             True if it's a BaseTranslationModel subclass
         """
-        return (
-            isinstance(attr, type)
-            and issubclass(attr, BaseTranslationModel)
-            and attr != BaseTranslationModel
-        )
+        return isinstance(attr, type) and issubclass(attr, BaseTranslationModel) and attr != BaseTranslationModel
 
     @classmethod
     def _is_model_registered(cls, model_class: type[BaseTranslationModel]) -> bool:
         """Check if a model class is already registered"""
-        return any(
-            registration.model_class == model_class for registration in cls._registry.values()
-        )
+        return any(registration.model_class == model_class for registration in cls._registry.values())
 
     @classmethod
-    def validate_configuration(
-        cls, model_name: str, config: dict[str, Any]
-    ) -> tuple[bool, list[str]]:
+    def validate_configuration(cls, model_name: str, config: dict[str, Any]) -> tuple[bool, list[str]]:
         """
         Validate a configuration for a specific model
 

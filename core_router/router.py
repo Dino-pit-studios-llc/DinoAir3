@@ -298,9 +298,7 @@ class ServiceRouter:
             raise ServiceNotFound(f"No services registered for tag '{tag}'")
 
         if not (healthy := [d for d in candidates if ServiceRouter._is_healthy(d)]):
-            raise NoHealthyService(
-                f"No healthy service available for tag '{tag}' with policy '{policy}'"
-            )
+            raise NoHealthyService(f"No healthy service available for tag '{tag}' with policy '{policy}'")
 
         p = (policy or "first_healthy").strip().lower()
 
@@ -339,9 +337,7 @@ class ServiceRouter:
             return adapter.strip().lower()
         return None
 
-    def _lookup_desc_or_log_raise(
-        self, started: float, service_name: str, event: str
-    ) -> ServiceDescriptor:
+    def _lookup_desc_or_log_raise(self, started: float, service_name: str, event: str) -> ServiceDescriptor:
         """
         Lookup a service descriptor by name; on ServiceNotFound, log and
         re-raise via _extracted_from_check_health_19.
@@ -367,9 +363,7 @@ class ServiceRouter:
         Return an adapter instance for the given descriptor and kind using either the
         injected factory or default.
         """
-        factory: AdapterFactory = self._adapter_factory or (
-            lambda _d: _typed_make_adapter(kind, desc.adapter_config)
-        )
+        factory: AdapterFactory = self._adapter_factory or (lambda _d: _typed_make_adapter(kind, desc.adapter_config))
         return factory(desc)
 
     @staticmethod
@@ -608,40 +602,24 @@ translate_post.__name__ = "translate_post"
 translate_post.__doc__ = "POST /translate — operationId: translate_translate_post"
 
 
-file_search_keyword_post = _make_ni_body(
-    "POST", "/file-search/keyword", "keyword_search_file_search_keyword_post"
-)
+file_search_keyword_post = _make_ni_body("POST", "/file-search/keyword", "keyword_search_file_search_keyword_post")
 file_search_keyword_post.__name__ = "file_search_keyword_post"
-file_search_keyword_post.__doc__ = (
-    "POST /file-search/keyword — operationId: keyword_search_file_search_keyword_post"
-)
+file_search_keyword_post.__doc__ = "POST /file-search/keyword — operationId: keyword_search_file_search_keyword_post"
 
 
-file_search_vector_post = _make_ni_body(
-    "POST", "/file-search/vector", "vector_search_file_search_vector_post"
-)
+file_search_vector_post = _make_ni_body("POST", "/file-search/vector", "vector_search_file_search_vector_post")
 file_search_vector_post.__name__ = "file_search_vector_post"
-file_search_vector_post.__doc__ = (
-    "POST /file-search/vector — operationId: vector_search_file_search_vector_post"
-)
+file_search_vector_post.__doc__ = "POST /file-search/vector — operationId: vector_search_file_search_vector_post"
 
 
-file_search_hybrid_post = _make_ni_body(
-    "POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post"
-)
+file_search_hybrid_post = _make_ni_body("POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post")
 file_search_hybrid_post.__name__ = "file_search_hybrid_post"
-file_search_hybrid_post.__doc__ = (
-    "POST /file-search/hybrid — operationId: hybrid_search_file_search_hybrid_post"
-)
+file_search_hybrid_post.__doc__ = "POST /file-search/hybrid — operationId: hybrid_search_file_search_hybrid_post"
 
 
-file_index_stats_get = _make_ni_noargs(
-    "GET", "/file-index/stats", "file_index_stats_file_index_stats_get"
-)
+file_index_stats_get = _make_ni_noargs("GET", "/file-index/stats", "file_index_stats_file_index_stats_get")
 file_index_stats_get.__name__ = "file_index_stats_get"
-file_index_stats_get.__doc__ = (
-    "GET /file-index/stats — operationId: file_index_stats_file_index_stats_get"
-)
+file_index_stats_get.__doc__ = "GET /file-index/stats — operationId: file_index_stats_file_index_stats_get"
 
 
 config_dirs_get = _make_ni_noargs("GET", "/config/dirs", "get_config_dirs_config_dirs_get")
@@ -661,18 +639,12 @@ ai_chat_post.__doc__ = "POST /ai/chat — operationId: ai_chat_ai_chat_post"
 
 router_execute_post = _make_ni_body("POST", "/router/execute", "router_execute_router_execute_post")
 router_execute_post.__name__ = "router_execute_post"
-router_execute_post.__doc__ = (
-    "POST /router/execute — operationId: router_execute_router_execute_post"
-)
+router_execute_post.__doc__ = "POST /router/execute — operationId: router_execute_router_execute_post"
 
 
-router_execute_by_post = _make_ni_body(
-    "POST", "/router/executeBy", "router_execute_by_router_executeBy_post"
-)
+router_execute_by_post = _make_ni_body("POST", "/router/executeBy", "router_execute_by_router_executeBy_post")
 router_execute_by_post.__name__ = "router_execute_by_post"
-router_execute_by_post.__doc__ = (
-    "POST /router/executeBy — operationId: router_execute_by_router_executeBy_post"
-)
+router_execute_by_post.__doc__ = "POST /router/executeBy — operationId: router_execute_by_router_executeBy_post"
 
 
 router_metrics_get = _make_ni_noargs("GET", "/router/metrics", "router_metrics_router_metrics_get")

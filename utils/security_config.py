@@ -217,32 +217,22 @@ def validate_security_config(config: SecurityConfig) -> list[str]:
 
     # Check for production security requirements
     if not config.encryption_enabled:
-        validation_warnings.append(
-            "❌ CRITICAL: Encryption is disabled - required for HIPAA compliance"
-        )
+        validation_warnings.append("❌ CRITICAL: Encryption is disabled - required for HIPAA compliance")
 
     if not config.database_encryption:
-        validation_warnings.append(
-            "❌ CRITICAL: Database encryption is disabled - required for PHI protection"
-        )
+        validation_warnings.append("❌ CRITICAL: Database encryption is disabled - required for PHI protection")
 
     if not config.audit_logging_enabled:
-        validation_warnings.append(
-            "❌ CRITICAL: Audit logging is disabled - required for compliance"
-        )
+        validation_warnings.append("❌ CRITICAL: Audit logging is disabled - required for compliance")
 
     if not config.require_mfa:
-        validation_warnings.append(
-            "⚠️  WARNING: MFA is disabled - strongly recommended for healthcare environments"
-        )
+        validation_warnings.append("⚠️  WARNING: MFA is disabled - strongly recommended for healthcare environments")
 
     if config.session_timeout_minutes > 30:
         validation_warnings.append("⚠️  WARNING: Session timeout is longer than 30 minutes")
 
     if not config.require_tls:
-        validation_warnings.append(
-            "❌ CRITICAL: TLS is disabled - required for data in transit protection"
-        )
+        validation_warnings.append("❌ CRITICAL: TLS is disabled - required for data in transit protection")
 
     if config.tls_min_version not in ["1.2", "1.3"]:
         validation_warnings.append("⚠️  WARNING: TLS version should be 1.2 or 1.3")
@@ -251,15 +241,11 @@ def validate_security_config(config: SecurityConfig) -> list[str]:
         validation_warnings.append("⚠️  WARNING: PII detection is disabled")
 
     if config.audit_retention_days < 2555:  # 7 years
-        validation_warnings.append(
-            "⚠️  WARNING: Audit retention is less than 7 years (HIPAA requirement)"
-        )
+        validation_warnings.append("⚠️  WARNING: Audit retention is less than 7 years (HIPAA requirement)")
 
     # Check for development overrides in production
     if config.security_overrides and _is_production():
-        validation_warnings.append(
-            "❌ CRITICAL: Security overrides detected in production environment"
-        )
+        validation_warnings.append("❌ CRITICAL: Security overrides detected in production environment")
 
     return validation_warnings
 
@@ -298,9 +284,7 @@ def print_security_status() -> None:
     print("=" * 60)
 
     print(f"Environment: {os.environ.get('DINOAIR_ENVIRONMENT', 'development')}")
-    print(
-        f"HIPAA Compliance Mode: {'✅ Enabled' if config.hipaa_compliance_mode else '❌ Disabled'}"
-    )
+    print(f"HIPAA Compliance Mode: {'✅ Enabled' if config.hipaa_compliance_mode else '❌ Disabled'}")
     print(f"SOC2 Compliance Mode: {'✅ Enabled' if config.soc2_compliance_mode else '❌ Disabled'}")
     print()
 
@@ -312,9 +296,7 @@ def print_security_status() -> None:
 
     print("🔍 Audit & Monitoring:")
     print(f"  Audit Logging: {'✅ Enabled' if config.audit_logging_enabled else '❌ Disabled'}")
-    print(
-        f"  Security Monitoring: {'✅ Enabled' if config.security_monitoring_enabled else '❌ Disabled'}"
-    )
+    print(f"  Security Monitoring: {'✅ Enabled' if config.security_monitoring_enabled else '❌ Disabled'}")
     print(f"  Retention: {config.audit_retention_days} days")
     print()
 

@@ -15,9 +15,7 @@ _container: DependencyContainer | None = None
 _container_lock = threading.Lock()
 
 
-def get_container(
-    container: DependencyContainer | None, container_lock: threading.Lock
-) -> DependencyContainer:
+def get_container(container: DependencyContainer | None, container_lock: threading.Lock) -> DependencyContainer:
     """Get the dependency container."""
     if container is None:
         with container_lock:

@@ -122,9 +122,7 @@ class HealthChecker:
 
     async def __aenter__(self) -> "HealthChecker":
         """Async context manager entry."""
-        self._http_client = httpx.AsyncClient(
-            timeout=httpx.Timeout(self.timeout), follow_redirects=True
-        )
+        self._http_client = httpx.AsyncClient(timeout=httpx.Timeout(self.timeout), follow_redirects=True)
         return self
 
     async def __aexit__(
@@ -138,9 +136,7 @@ class HealthChecker:
             await self._http_client.aclose()
 
     @retry_on_failure()
-    async def check_http_endpoint(
-        self, name: str, url: str, expected_status: int = 200
-    ) -> HealthCheck:
+    async def check_http_endpoint(self, name: str, url: str, expected_status: int = 200) -> HealthCheck:
         """Check HTTP endpoint health."""
         start_time = time.perf_counter()
 
@@ -323,9 +319,7 @@ class HealthChecker:
             )
 
     @circuit_breaker(_name="lmstudio")
-    async def check_lmstudio(
-        self, name: str = "lmstudio", base_url: str = "http://localhost:1234"
-    ) -> HealthCheck:
+    async def check_lmstudio(self, name: str = "lmstudio", base_url: str = "http://localhost:1234") -> HealthCheck:
         """Check LM Studio health."""
         models_url = f"{base_url}/v1/models"
         return await self.check_http_endpoint(name, models_url)

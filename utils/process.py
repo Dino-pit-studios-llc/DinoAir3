@@ -158,13 +158,9 @@ class SecurityConfig:
         """Get the configured allowlist of binaries."""
         if self._config:
             try:
-                return set(
-                    self._config.get("security.process.allowlist.binaries", self._default_allowlist)
-                )
+                return set(self._config.get("security.process.allowlist.binaries", self._default_allowlist))
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.allowlist.binaries from config, using defaults"
-                )
+                logger.warning("Failed to load security.process.allowlist.binaries from config, using defaults")
         return self._default_allowlist.copy()
 
     def get_arg_patterns(self, binary: str) -> list[str]:
@@ -195,9 +191,7 @@ class SecurityConfig:
             try:
                 return self._config.get("security.process.flags.no_window_windows", True)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.flags.no_window_windows from config"
-                )
+                logger.warning("Failed to load security.process.flags.no_window_windows from config")
         return True
 
     def get_close_fds_unix(self) -> bool:
@@ -224,9 +218,7 @@ class SecurityConfig:
             try:
                 return self._config.get("security.process.flags.stdin_default_devnull", True)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.flags.stdin_default_devnull from config"
-                )
+                logger.warning("Failed to load security.process.flags.stdin_default_devnull from config")
         return True
 
     def get_redact_env_keys(self) -> list[str]:
@@ -238,9 +230,7 @@ class SecurityConfig:
                     self._default_redact_env_keys,
                 )
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.logging.redact_env_keys from config"
-                )
+                logger.warning("Failed to load security.process.logging.redact_env_keys from config")
         return self._default_redact_env_keys.copy()
 
     def get_redact_arg_patterns(self) -> list[str]:
@@ -252,9 +242,7 @@ class SecurityConfig:
                     self._default_redact_arg_patterns,
                 )
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.logging.redact_arg_patterns from config"
-                )
+                logger.warning("Failed to load security.process.logging.redact_arg_patterns from config")
         return self._default_redact_arg_patterns.copy()
 
     def get_log_command_execution(self) -> bool:
@@ -263,9 +251,7 @@ class SecurityConfig:
             try:
                 return self._config.get("security.process.logging.log_command_execution", True)
             except (KeyError, TypeError, AttributeError):
-                logger.warning(
-                    "Failed to load security.process.logging.log_command_execution from config"
-                )
+                logger.warning("Failed to load security.process.logging.log_command_execution from config")
         return True
 
 
@@ -281,9 +267,7 @@ def _ensure_list_command(command: Sequence[str]) -> None:
         raise ValueError("command cannot be empty")
 
 
-def _merge_allowlists(
-    per_call_allowlist: set[str], config_allowlist: set[str], enable_merge: bool
-) -> set[str]:
+def _merge_allowlists(per_call_allowlist: set[str], config_allowlist: set[str], enable_merge: bool) -> set[str]:
     """Merge per-call and config allowlists based on merge policy."""
     if enable_merge:
         # Union: more permissive, allows anything from either list
@@ -356,9 +340,7 @@ def _validate_arguments(binary: str, command: Sequence[str]) -> None:
                 )
 
         if not matched and patterns:  # If patterns exist but none match
-            raise PermissionError(
-                f"Argument '{arg}' for binary '{binary}' does not match any allowed patterns"
-            )
+            raise PermissionError(f"Argument '{arg}' for binary '{binary}' does not match any allowed patterns")
 
 
 def _redact_environment(env: dict[str, str] | None) -> dict[str, str]:
@@ -608,9 +590,7 @@ def safe_popen(
 # -----------------------------------------------------------------------------
 # Backward-compatible helpers expected by tests/test_utils_core.py
 # -----------------------------------------------------------------------------
-def run_subprocess(
-    command: Sequence[str], timeout: int | None = None, cwd: Path | None = None
-) -> dict[str, Any]:
+def run_subprocess(command: Sequence[str], timeout: int | None = None, cwd: Path | None = None) -> dict[str, Any]:
     """
     Backward-compatible wrapper around safe_run that returns a dict result.
 

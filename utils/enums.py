@@ -110,9 +110,7 @@ class Enums:
     def list_enum_names(cls) -> list[str]:
         """Return a list of all enum class names in this container."""
         return [
-            name
-            for name in dir(cls)
-            if isinstance(getattr(cls, name), type) and issubclass(getattr(cls, name), Enum)
+            name for name in dir(cls) if isinstance(getattr(cls, name), type) and issubclass(getattr(cls, name), Enum)
         ]
 
     @staticmethod

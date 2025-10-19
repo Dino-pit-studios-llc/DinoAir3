@@ -74,9 +74,7 @@ class ModelService(ShutdownMixin):
             logger.info("Initializing model: %s", model_name)
 
             # Skip if already initialized
-            if ModelInitializer.should_skip_initialization(
-                self._current_model, self._model_name, model_name
-            ):
+            if ModelInitializer.should_skip_initialization(self._current_model, self._model_name, model_name):
                 return
 
             # Create model configuration
@@ -84,9 +82,7 @@ class ModelService(ShutdownMixin):
 
             # Create and initialize model using shared utility
             model_path = self._get_model_path()
-            model = ModelInitializer.create_and_initialize_model(
-                model_name, model_config, model_path
-            )
+            model = ModelInitializer.create_and_initialize_model(model_name, model_config, model_path)
 
             # Update state
             old_model = self._current_model
@@ -100,9 +96,7 @@ class ModelService(ShutdownMixin):
             logger.info("Model initialized successfully: %s", model_name)
 
         except Exception as e:
-            self.error_handler.handle_exception(
-                e, ErrorCategory.MODEL, additional_context="Model initialization"
-            )
+            self.error_handler.handle_exception(e, ErrorCategory.MODEL, additional_context="Model initialization")
 
             raise RuntimeError(f"Failed to initialize model '{model_name}': {str(e)}") from e
 
@@ -140,17 +134,13 @@ class ModelService(ShutdownMixin):
             logger.debug("Translating text with model: %s", self._model_name)
 
             # Perform translation
-            result = self._current_model.translate(
-                instruction=text, config=translation_config, context=context or {}
-            )
+            result = self._current_model.translate(instruction=text, config=translation_config, context=context or {})
 
             logger.debug("Translation completed successfully")
             return result
 
         except Exception as e:
-            self.error_handler.handle_exception(
-                e, ErrorCategory.TRANSLATION, additional_context="Model translation"
-            )
+            self.error_handler.handle_exception(e, ErrorCategory.TRANSLATION, additional_context="Model translation")
 
             raise RuntimeError(f"Translation failed: {str(e)}") from e
 

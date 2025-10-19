@@ -40,9 +40,7 @@ class RedactionConfig:
     redacted_placeholder: str = "***"
     auth_header_lower: str = "x-dinoair-auth"
     auth_header_mixed: str = "X-DinoAir-Auth"
-    sensitive_field_names: frozenset[str] = field(
-        default_factory=lambda: frozenset(["headers", "extra", "data"])
-    )
+    sensitive_field_names: frozenset[str] = field(default_factory=lambda: frozenset(["headers", "extra", "data"]))
     structured_log_fields: tuple[str, ...] = field(
         default_factory=lambda: (
             "status",
@@ -184,9 +182,7 @@ class RedactionService:
             )
         return text
 
-    def _replace_auth_pattern(
-        self, text: str, key: str, sep: str, terminator: str | None = None
-    ) -> str:
+    def _replace_auth_pattern(self, text: str, key: str, sep: str, terminator: str | None = None) -> str:
         """Replace authentication patterns in text.
 
         Args:
@@ -273,9 +269,7 @@ class RedactionFilter(logging.Filter):
         with contextlib.suppress(Exception):
             if record.args:
                 if isinstance(record.args, dict):
-                    record.args = {
-                        k: self.redaction_service.redact_value(v) for k, v in record.args.items()
-                    }
+                    record.args = {k: self.redaction_service.redact_value(v) for k, v in record.args.items()}
                 elif isinstance(record.args, tuple):
                     record.args = tuple(self.redaction_service.redact_value(a) for a in record.args)
 
@@ -284,9 +278,7 @@ class RedactionFilter(logging.Filter):
         with contextlib.suppress(Exception):
             for key in record.__dict__:
                 if key in self.config.sensitive_field_names:
-                    record.__dict__[key] = self.redaction_service.redact_structure(
-                        record.__dict__[key]
-                    )
+                    record.__dict__[key] = self.redaction_service.redact_structure(record.__dict__[key])
                 elif isinstance(record.__dict__[key], str):
                     record.__dict__[key] = self.redaction_service.redact_text(record.__dict__[key])
 
@@ -387,11 +379,7 @@ class ISOFormatter(JsonFormatter):
         record: logging.LogRecord,
     ) -> JSONValue:
         """Get field value from various sources in priority order."""
-        return (
-            message_dict.get(field_name)
-            or log_record.get(field_name)
-            or getattr(record, field_name, None)
-        )
+        return message_dict.get(field_name) or log_record.get(field_name) or getattr(record, field_name, None)
 
 
 def ensure_log_dir(path: str) -> None:
@@ -520,9 +508,7 @@ def _configure_root_logger(settings: Settings) -> None:
     _add_logging_handlers(root_logger, logfile, level, settings)
 
 
-def _add_logging_handlers(
-    logger: logging.Logger, logfile: str, level: int, settings: Settings
-) -> None:
+def _add_logging_handlers(logger: logging.Logger, logfile: str, level: int, settings: Settings) -> None:
     """Add stream and file handlers to the logger.
 
     Args:

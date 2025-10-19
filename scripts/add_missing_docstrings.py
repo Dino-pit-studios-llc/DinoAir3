@@ -26,9 +26,8 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 
 @dataclass
@@ -38,15 +37,15 @@ class FunctionInfo:
     name: str
     lineno: int
     col_offset: int
-    args: List[str]
-    return_type: Optional[str]
+    args: list[str]
+    return_type: str | None
     is_async: bool
     is_method: bool
     is_property: bool
     is_classmethod: bool
     is_staticmethod: bool
-    decorators: List[str]
-    parent_class: Optional[str] = None
+    decorators: list[str]
+    parent_class: str | None = None
 
 
 @dataclass
@@ -56,10 +55,10 @@ class ClassInfo:
     name: str
     lineno: int
     col_offset: int
-    bases: List[str]
-    decorators: List[str]
-    methods: List[FunctionInfo]
-    properties: List[str]
+    bases: list[str]
+    decorators: list[str]
+    methods: list[FunctionInfo]
+    properties: list[str]
 
 
 @dataclass
@@ -67,16 +66,16 @@ class ModuleInfo:
     """Information about a module."""
 
     filepath: Path
-    classes: List[ClassInfo]
-    functions: List[FunctionInfo]
-    imports: List[str]
+    classes: list[ClassInfo]
+    functions: list[FunctionInfo]
+    imports: list[str]
     has_module_docstring: bool
 
 
 class DocstringGenerator:
     """Generates appropriate docstring templates based on code analysis."""
 
-    def __init__(self, templates_dir: Optional[Path] = None):
+    def __init__(self, templates_dir: Path | None = None):
         """Initialize the docstring generator."""
         self.templates_dir = templates_dir
         self.common_exceptions = {
@@ -96,9 +95,7 @@ class DocstringGenerator:
         summary = self._generate_function_summary(func_info)
         lines.append(f'    """{summary}')
         # Add parameter documentation if function has parameters
-        if func_info.args and not (
-            len(func_info.args) == 1 and func_info.args[0] in ("self", "cls")
-        ):
+        if func_info.args and not (len(func_info.args) == 1 and func_info.args[0] in ("self", "cls")):
             lines.append("")
             lines.append("    Args:")
             for arg in func_info.args:
@@ -235,7 +232,9 @@ class DocstringGenerator:
         elif name.endswith("Validator"):
             return f"Validates {self._humanize_name(name[:-9])} input."
         elif name.endswith("Exception") or name.endswith("Error"):
-            return f"Exception for {self._humanize_name(name[:-9] if name.endswith('Exception') else name[:-5])} errors."
+            return (
+                f"Exception for {self._humanize_name(name[:-9] if name.endswith('Exception') else name[:-5])} errors."
+            )
         elif name.endswith("Config") or name.endswith("Configuration"):
             suffix_len = 6 if name.endswith("Config") else 13
             return f"Configuration for {self._humanize_name(name[:-suffix_len])}."
@@ -277,9 +276,9 @@ class DocstringGenerator:
         elif arg_name in ("callback", "handler"):
             return "Callback function to execute"
         elif arg_name.endswith("_id") or arg_name == "id":
-            return f"Unique identifier"
+            return "Unique identifier"
         elif arg_name.endswith("_name") or arg_name == "name":
-            return f"Name of the item"
+            return "Name of the item"
         elif arg_name in ("value", "val"):
             return "Value to process"
         else:
@@ -323,14 +322,14 @@ class DocstringGenerator:
         """Generate description for class attributes."""
         return f"{self._humanize_name(attr_name).capitalize()} attribute"
 
-    def _generate_class_example(self, class_info: ClassInfo) -> List[str]:
+    def _generate_class_example(self, class_info: ClassInfo) -> list[str]:
         """Generate usage example for a class."""
         class_name = class_info.name
         instance_name = class_name.lower()
         lines = [f"{instance_name} = {class_name}()", f"result = {instance_name}.method()"]
         return lines
 
-    def _detect_potential_exceptions(self, func_info: FunctionInfo) -> List[str]:
+    def _detect_potential_exceptions(self, func_info: FunctionInfo) -> list[str]:
         """Detect potential exceptions based on function patterns."""
         exceptions = []
         name = func_info.name
@@ -342,7 +341,7 @@ class DocstringGenerator:
             exceptions.extend(["ConnectionError", "TimeoutError"])
         return exceptions
 
-    def _detect_class_attributes(self, class_info: ClassInfo) -> List[str]:
+    def _detect_class_attributes(self, class_info: ClassInfo) -> list[str]:
         """Detect likely class attributes from method names."""
         attributes = []
         for method in class_info.methods:
@@ -363,7 +362,7 @@ class DocstringAnalyzer:
     def analyze_file(self, filepath: Path) -> ModuleInfo:
         """Analyze a Python file for missing docstrings."""
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 content = f.read()
             tree = ast.parse(content, filename=str(filepath))
             # Check for module docstring
@@ -421,8 +420,8 @@ class DocstringAnalyzer:
 
     def _analyze_function(
         self,
-        func_node: Union[ast.FunctionDef, ast.AsyncFunctionDef],
-        parent_class: Optional[str] = None,
+        func_node: ast.FunctionDef | ast.AsyncFunctionDef,
+        parent_class: str | None = None,
     ) -> FunctionInfo:
         """Analyze a function definition."""
         args = [arg.arg for arg in func_node.args.args]
@@ -448,9 +447,7 @@ class DocstringAnalyzer:
             parent_class=parent_class,
         )
 
-    def _is_nested_function(
-        self, func_node: Union[ast.FunctionDef, ast.AsyncFunctionDef], tree: ast.AST
-    ) -> bool:
+    def _is_nested_function(self, func_node: ast.FunctionDef | ast.AsyncFunctionDef, tree: ast.AST) -> bool:
         """Check if function is nested inside another function."""
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node != func_node:
@@ -459,9 +456,7 @@ class DocstringAnalyzer:
                         return True
         return False
 
-    def has_docstring(
-        self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]
-    ) -> bool:
+    def has_docstring(self, node: ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef) -> bool:
         """Check if a node has a docstring."""
         if (
             len(node.body) > 0
@@ -495,7 +490,7 @@ class DocstringFixer:
         print(f"Processing {filepath}")
 
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 original_content = f.read()
 
             tree = ast.parse(original_content, filename=str(filepath))
@@ -507,9 +502,7 @@ class DocstringFixer:
             changes_made = False
 
             # Add module docstring if missing
-            if not module_info.has_module_docstring and (
-                module_info.classes or module_info.functions
-            ):
+            if not module_info.has_module_docstring and (module_info.classes or module_info.functions):
                 if self._should_add_docstring("module", filepath.stem):
                     module_docstring = self.generator.generate_module_docstring(module_info)
                     lines.insert(0, module_docstring)
@@ -568,9 +561,9 @@ class DocstringFixer:
                 else:
                     with open(filepath, "w", encoding="utf-8") as f:
                         f.write(new_content)
-                    print(f"  ✓ Added docstrings")
+                    print("  ✓ Added docstrings")
             else:
-                print(f"  No missing docstrings found")
+                print("  No missing docstrings found")
 
             self.stats["files_processed"] += 1
             return changes_made
@@ -579,7 +572,7 @@ class DocstringFixer:
             print(f"  Error processing {filepath}: {e}")
             return False
 
-    def _has_docstring_at_line(self, lines: List[str], lineno: int) -> bool:
+    def _has_docstring_at_line(self, lines: list[str], lineno: int) -> bool:
         """Check if there's already a docstring at the given line."""
         if lineno >= len(lines):
             return False
@@ -636,7 +629,7 @@ class DocstringFixer:
         if self.dry_run:
             print("\n[DRY RUN] No changes were made to files.")
         else:
-            print(f"\n✓ All changes have been applied!")
+            print("\n✓ All changes have been applied!")
 
 
 def main():
@@ -652,16 +645,10 @@ Examples:
         """,
     )
 
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be changed without making changes"
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without making changes")
     parser.add_argument("--files", type=str, help="Process only files matching pattern (glob)")
-    parser.add_argument(
-        "--fix-all", action="store_true", help="Process all Python files in the project"
-    )
-    parser.add_argument(
-        "--interactive", action="store_true", help="Ask for confirmation before each change"
-    )
+    parser.add_argument("--fix-all", action="store_true", help="Process all Python files in the project")
+    parser.add_argument("--interactive", action="store_true", help="Ask for confirmation before each change")
     parser.add_argument("--templates", type=str, help="Use custom template directory")
 
     args = parser.parse_args()

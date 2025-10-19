@@ -87,9 +87,7 @@ def get_search_engine(
                 "enable_caching": enable_caching,
                 "max_workers": max_workers,
             }
-            init_kwargs = _filter_kwargs_for_callable(
-                OptimizedVectorSearchEngine.__init__, init_kwargs
-            )
+            init_kwargs = _filter_kwargs_for_callable(OptimizedVectorSearchEngine.__init__, init_kwargs)
             logger.debug("Creating OptimizedVectorSearchEngine via factory")
             return OptimizedVectorSearchEngine(**init_kwargs)
         except ImportError as e:

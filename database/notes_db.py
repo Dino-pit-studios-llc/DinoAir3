@@ -48,9 +48,7 @@ class NotesDatabase:
         return operation_result.data if operation_result.success else default_value
 
     @staticmethod
-    def _handle_success_result(
-        operation_result: OperationResult, **extra_data: Any
-    ) -> dict[str, Any]:
+    def _handle_success_result(operation_result: OperationResult, **extra_data: Any) -> dict[str, Any]:
         """Handle OperationResult for methods that return success/error dict."""
         if operation_result.success:
             return {"success": True, **operation_result.data, **extra_data}
@@ -102,9 +100,7 @@ class NotesDatabase:
         Returns:
             Dict with success status and note_id or error message
         """
-        return NotesDatabase._handle_success_result(
-            self._service.create_note(note, content_html, project_id)
-        )
+        return NotesDatabase._handle_success_result(self._service.create_note(note, content_html, project_id))
 
     def get_note(self, note_id: str) -> Note | None:
         """
@@ -162,9 +158,7 @@ class NotesDatabase:
 
     # ===== SEARCH AND TAG METHODS =====
 
-    def search_notes(
-        self, query: str, filter_option: str = "All", project_id: str | None = None
-    ) -> list[Note]:
+    def search_notes(self, query: str, filter_option: str = "All", project_id: str | None = None) -> list[Note]:
         """
         Search notes by title, content, or tags with SQL-safe filtering.
 
@@ -179,9 +173,7 @@ class NotesDatabase:
         """
         return cast(
             list[Note],
-            NotesDatabase._handle_data_result(
-                self._service.search_notes(query, filter_option, project_id), []
-            ),
+            NotesDatabase._handle_data_result(self._service.search_notes(query, filter_option, project_id), []),
         )
 
     def get_notes_by_tag(self, tag: str) -> list[Note]:
@@ -258,9 +250,7 @@ class NotesDatabase:
         Returns:
             Dict with success status and number of affected notes
         """
-        return NotesDatabase._handle_success_result(
-            "delete_tag", self._service.delete_tag(tag_to_delete)
-        )
+        return NotesDatabase._handle_success_result("delete_tag", self._service.delete_tag(tag_to_delete))
 
     # ===== PROJECT MANAGEMENT METHODS =====
 
@@ -298,9 +288,7 @@ class NotesDatabase:
         Returns:
             True if all notes were successfully assigned, False otherwise
         """
-        return NotesDatabase._handle_simple_success(
-            self._service.assign_notes_to_project(note_ids, project_id)
-        )
+        return NotesDatabase._handle_simple_success(self._service.assign_notes_to_project(note_ids, project_id))
 
     def remove_notes_from_project(self, note_ids: list[str]) -> bool:
         """
@@ -312,9 +300,7 @@ class NotesDatabase:
         Returns:
             True if all notes were successfully updated, False otherwise
         """
-        return NotesDatabase._handle_simple_success(
-            self._service.remove_notes_from_project(note_ids)
-        )
+        return NotesDatabase._handle_simple_success(self._service.remove_notes_from_project(note_ids))
 
     def get_project_notes_count(self, project_id: str) -> int:
         """
@@ -333,6 +319,4 @@ class NotesDatabase:
 
     def update_note_project(self, note_id: str, project_id: str | None) -> bool:
         """Update a single note's project association"""
-        return NotesDatabase._handle_simple_success(
-            self._service.update_note_project(note_id, project_id)
-        )
+        return NotesDatabase._handle_simple_success(self._service.update_note_project(note_id, project_id))

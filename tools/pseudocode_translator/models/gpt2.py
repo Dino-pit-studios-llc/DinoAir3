@@ -204,9 +204,7 @@ class GPT2LargeCodeModel(GPT2Model):
         return ModelMetadata(
             name="gpt2-large-code",
             display_name="GPT-2 Large Code",
-            description=(
-                "GPT-2 Large variant (774M parameters) fine-tuned specifically for code generation tasks."
-            ),
+            description=("GPT-2 Large variant (774M parameters) fine-tuned specifically for code generation tasks."),
             version="large",
             author=meta.author,
             license=meta.license,

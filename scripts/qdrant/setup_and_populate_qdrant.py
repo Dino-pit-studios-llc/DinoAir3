@@ -19,7 +19,6 @@ import time
 from pathlib import Path
 
 import requests
-
 from utils.process import PYTHON_EXE, safe_popen, safe_run
 
 # Constants

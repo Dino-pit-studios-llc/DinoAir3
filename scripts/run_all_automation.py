@@ -65,12 +65,8 @@ def run_tests() -> bool:
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Run all automation scripts")
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Run in dry-run mode (no changes made)"
-    )
-    parser.add_argument(
-        "--skip-tests", action="store_true", help="Skip running tests after automation"
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode (no changes made)")
+    parser.add_argument("--skip-tests", action="store_true", help="Skip running tests after automation")
     parser.add_argument(
         "--scripts-dir",
         type=Path,

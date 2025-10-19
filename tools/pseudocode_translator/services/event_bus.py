@@ -181,9 +181,7 @@ class EventBus:
 
         # Check global handlers
         original_count = len(self._global_handlers)
-        self._global_handlers = [
-            h for h in self._global_handlers if f"global_{id(h)}" != handler_id
-        ]
+        self._global_handlers = [h for h in self._global_handlers if f"global_{id(h)}" != handler_id]
         removed = len(self._global_handlers) < original_count
         if removed:
             self._handler_count -= 1

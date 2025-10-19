@@ -93,9 +93,7 @@ class GitHubSecurityDiagnostic:
                 permissions = repo.get_permissions(self.user)
                 repo_info["permissions"] = {
                     "admin": permissions.admin,
-                    "maintain": (
-                        permissions.maintain if hasattr(permissions, "maintain") else False
-                    ),
+                    "maintain": (permissions.maintain if hasattr(permissions, "maintain") else False),
                     "push": permissions.push,
                     "triage": (permissions.triage if hasattr(permissions, "triage") else False),
                     "pull": permissions.pull,
@@ -131,15 +129,13 @@ class GitHubSecurityDiagnostic:
             features = {
                 "advanced_security": security_analysis.get("advanced_security", {}).get("status"),
                 "secret_scanning": security_analysis.get("secret_scanning", {}).get("status"),
-                "secret_scanning_push_protection": security_analysis.get(
-                    "secret_scanning_push_protection", {}
-                ).get("status"),
-                "dependabot_security_updates": security_analysis.get(
-                    "dependabot_security_updates", {}
-                ).get("status"),
-                "private_vulnerability_reporting": security_analysis.get(
-                    "private_vulnerability_reporting", {}
-                ).get("status"),
+                "secret_scanning_push_protection": security_analysis.get("secret_scanning_push_protection", {}).get(
+                    "status"
+                ),
+                "dependabot_security_updates": security_analysis.get("dependabot_security_updates", {}).get("status"),
+                "private_vulnerability_reporting": security_analysis.get("private_vulnerability_reporting", {}).get(
+                    "status"
+                ),
             }
 
             # Explicit whitelist of feature names to ensure only known/safe features are logged
@@ -154,9 +150,7 @@ class GitHubSecurityDiagnostic:
             print("🔒 Security Features Status:")
             for feature in security_feature_list:
                 status = features.get(feature)
-                status_icon = (
-                    "✅" if status == "enabled" else "❌" if status == "disabled" else "❓"
-                )
+                status_icon = "✅" if status == "enabled" else "❌" if status == "disabled" else "❓"
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
                 # If detailed status is necessary for privileged contexts, handle it separately (not in logs)
             return features
@@ -171,9 +165,7 @@ class GitHubSecurityDiagnostic:
             "code_scanning": (f"https://api.github.com/repos/{repo_name}/code-scanning/alerts"),
             "secret_scanning": (f"https://api.github.com/repos/{repo_name}/secret-scanning/alerts"),
             "dependabot": (f"https://api.github.com/repos/{repo_name}/dependabot/alerts"),
-            "vulnerability_alerts": (
-                f"https://api.github.com/repos/{repo_name}/vulnerability-alerts"
-            ),
+            "vulnerability_alerts": (f"https://api.github.com/repos/{repo_name}/vulnerability-alerts"),
         }
 
         results = {}

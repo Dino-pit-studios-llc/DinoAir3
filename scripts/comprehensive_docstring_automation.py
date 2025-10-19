@@ -13,7 +13,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 
 class ComprehensiveDocstringAutomation:
@@ -21,9 +20,7 @@ class ComprehensiveDocstringAutomation:
 
     def __init__(self):
         """Initialize the automation system."""
-        self.pydocstring_path = Path(
-            "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
-        )
+        self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
         self.backup_dir = Path("docstring_backup")
         self.results = {
             "processed_files": [],
@@ -55,10 +52,10 @@ class ComprehensiveDocstringAutomation:
             print(f"✗ Failed to create backup: {e}")
             return False
 
-    def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
+    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
         """Find functions that need docstrings."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -146,7 +143,7 @@ class ComprehensiveDocstringAutomation:
     def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             func_line_idx = line_number - 1
@@ -202,7 +199,7 @@ class ComprehensiveDocstringAutomation:
 
         return {"file": str(file_path), "functions": added_count, "status": "processed"}
 
-    def run_automation(self, target_dirs: List[str]) -> dict:
+    def run_automation(self, target_dirs: list[str]) -> dict:
         """Run the complete automation process."""
         print("🔧 Starting Comprehensive Docstring Automation")
         print("=" * 50)

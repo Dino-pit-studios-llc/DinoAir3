@@ -179,9 +179,7 @@ def set_structured_logging_configured(logger: logging.Logger) -> None:
     logger.configure_structured_logging()
 
 
-def setup_logging(
-    app_name: str = "dinoair-core", log_dir: str = "logs", level: str = "INFO"
-) -> None:
+def setup_logging(app_name: str = "dinoair-core", log_dir: str = "logs", level: str = "INFO") -> None:
     """Configure structured logging with rotation and redaction.
 
     Args:

@@ -271,9 +271,7 @@ class RagService:
     # -------------------------
     # Monitoring
     # -------------------------
-    def monitor_start(
-        self, directories: list[str], file_extensions: list[str] | None = None
-    ) -> dict[str, Any]:
+    def monitor_start(self, directories: list[str], file_extensions: list[str] | None = None) -> dict[str, Any]:
         """Start monitoring directories for changes."""
         # delegated to sub-service
         return self._monitor.monitor_start(directories=directories, file_extensions=file_extensions)

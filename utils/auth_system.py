@@ -334,9 +334,7 @@ class UserManager:
                     minutes=self.password_policy.lockout_duration_minutes
                 )
 
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
         # Reset failed attempts on successful password
         auth_user.failed_login_attempts = 0
@@ -418,9 +416,7 @@ class UserManager:
             raise ValueError("Current password is incorrect")
 
         # Validate new password
-        self._validate_password(
-            new_password, target_user.username, target_user.email, target_user.full_name
-        )
+        self._validate_password(new_password, target_user.username, target_user.email, target_user.full_name)
 
         # Check password history
         new_hash = UserManager._hash_password(new_password)
@@ -462,9 +458,7 @@ class UserManager:
     def cleanup_expired_sessions(self) -> None:
         """Remove expired or idle sessions from storage."""
         expired_sessions = [
-            sid
-            for sid, session in self.sessions.items()
-            if session.is_expired() or session.is_idle_timeout()
+            sid for sid, session in self.sessions.items() if session.is_expired() or session.is_idle_timeout()
         ]
 
         for session_id in expired_sessions:
@@ -528,13 +522,9 @@ class UserManager:
         if policy.require_special_chars:
             special_pattern = f"[{re.escape(policy.special_chars)}]"
             if not re.search(special_pattern, password):
-                raise ValueError(
-                    f"Password must contain special characters: {policy.special_chars}"
-                )
+                raise ValueError(f"Password must contain special characters: {policy.special_chars}")
 
-    def _validate_personal_info(
-        self, password: str, username: str, email: str, full_name: str
-    ) -> None:
+    def _validate_personal_info(self, password: str, username: str, email: str, full_name: str) -> None:
         """Prevent password from containing personal user information."""
         policy = self.password_policy
         if policy.disallow_personal_info:
@@ -600,9 +590,7 @@ class UserManager:
 
     def _invalidate_user_sessions(self, user_id: str) -> None:
         """Invalidate all sessions for a given user."""
-        sessions_to_remove = [
-            sid for sid, session in self.sessions.items() if session.user_id == user_id
-        ]
+        sessions_to_remove = [sid for sid, session in self.sessions.items() if session.user_id == user_id]
 
         for session_id in sessions_to_remove:
             del self.sessions[session_id]
@@ -659,9 +647,7 @@ class AuthenticationMiddleware:
 
         def role_checker(current_user: User = Depends(self.get_current_user)) -> User:
             if role not in current_user.roles:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role"
-                )
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role")
             return current_user
 
         return role_checker

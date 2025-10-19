@@ -20,9 +20,7 @@ class SimpleInMemoryQdrant:
         self.collections = {}
         self.points = {}  # collection_name -> {point_id -> point_data}
 
-    def create_collection(
-        self, collection_name: str, vector_size: int = 384, distance: str = "Cosine"
-    ):
+    def create_collection(self, collection_name: str, vector_size: int = 384, distance: str = "Cosine"):
         """Create a new collection."""
         if collection_name in self.collections:
             raise ValueError(f"Collection '{collection_name}' already exists")
@@ -36,9 +34,7 @@ class SimpleInMemoryQdrant:
         }
         self.points[collection_name] = {}
 
-        print(
-            f"Created collection '{collection_name}' with vector_size={vector_size}, distance={distance}"
-        )
+        print(f"Created collection '{collection_name}' with vector_size={vector_size}, distance={distance}")
 
     def upsert_points(self, collection_name: str, points: list[dict]) -> dict:
         """Upload points to a collection."""
@@ -139,9 +135,7 @@ class SimpleInMemoryQdrant:
         collections = []
 
         for name, info in self.collections.items():
-            collections.append(
-                {"name": name, "status": "green", "vectors_count": info["points_count"]}
-            )
+            collections.append({"name": name, "status": "green", "vectors_count": info["points_count"]})
 
         return {"collections": collections, "total": len(collections)}
 

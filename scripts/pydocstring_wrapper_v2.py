@@ -8,7 +8,6 @@ import ast
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, List, Tuple
 
 
 class PydocstringWrapper:
@@ -21,11 +20,9 @@ class PydocstringWrapper:
             formatter: The docstring formatter to use (google, numpy, reST)
         """
         self.formatter = formatter
-        self.pydocstring_path = Path(
-            "C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe"
-        )
+        self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
 
-    def find_functions_without_docstrings(self, file_path: Path) -> List[Tuple[int, str]]:
+    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
 
         Args:
@@ -35,7 +32,7 @@ class PydocstringWrapper:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -153,7 +150,7 @@ class PydocstringWrapper:
             True if successful, False otherwise
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             # Find the function definition line and the next line to insert docstring
@@ -234,15 +231,11 @@ class PydocstringWrapper:
 
         return {
             "file": str(file_path),
-            "functions_processed": processed_count
-            if not dry_run
-            else len(functions_without_docstrings),
+            "functions_processed": processed_count if not dry_run else len(functions_without_docstrings),
             "status": "processed" if not dry_run else "dry_run",
         }
 
-    def process_directory(
-        self, directory: Path, pattern: str = "*.py", dry_run: bool = True
-    ) -> dict:
+    def process_directory(self, directory: Path, pattern: str = "*.py", dry_run: bool = True) -> dict:
         """Process all Python files in a directory.
 
         Args:

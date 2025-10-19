@@ -104,9 +104,7 @@ class RagIngestionService:
             return resp(False, None, RAG_UNAVAILABLE_MSG, 501)
 
         try:
-            return self._process_ingest_file_paths(
-                DirectoryValidator, paths, OptimizedFileProcessor, force_reprocess
-            )
+            return self._process_ingest_file_paths(DirectoryValidator, paths, OptimizedFileProcessor, force_reprocess)
         except (OSError, ValueError, RuntimeError, AttributeError, TypeError) as e:
             log.exception("ingest_files failed")
             return resp(False, None, str(e), 500)
@@ -212,9 +210,7 @@ class RagIngestionService:
         has_run_single = hasattr(proc, "run_single")
 
         # Process files with reduced branching
-        results, stats = RagIngestionService._process_files(
-            proc, allowed, force_reprocess, has_run_single
-        )
+        results, stats = RagIngestionService._process_files(proc, allowed, force_reprocess, has_run_single)
 
         out: dict[str, Any] = {
             "success": stats["failed"] == 0,

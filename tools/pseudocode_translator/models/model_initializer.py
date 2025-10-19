@@ -73,9 +73,7 @@ class ModelInitializer:
             raise RuntimeError(f"Model initialization failed: {e}") from e
 
     @staticmethod
-    def should_skip_initialization(
-        current_model: Any, current_model_name: str | None, target_model_name: str
-    ) -> bool:
+    def should_skip_initialization(current_model: Any, current_model_name: str | None, target_model_name: str) -> bool:
         """
         Check if model initialization can be skipped.
 

@@ -151,9 +151,7 @@ class FileProcessor:
             for file_path in files_to_process:
                 try:
                     # Base class delegates to process_file (abstract by default)
-                    file_result = FileProcessor.process_file(
-                        file_path, force_reprocess=force_reprocess
-                    )
+                    file_result = FileProcessor.process_file(file_path, force_reprocess=force_reprocess)
                     if not isinstance(file_result, dict):
                         raise TypeError("process_file must return a dict")
 
@@ -173,13 +171,11 @@ class FileProcessor:
                             )
                             results["stats"]["processed"] += 1
                             results["stats"]["total_chunks"] += len(file_result.get("chunks", []))
-                            results["stats"]["total_embeddings"] += (
-                                file_result.get("stats", {}) or {}
-                            ).get("embeddings_generated", 0)
+                            results["stats"]["total_embeddings"] += (file_result.get("stats", {}) or {}).get(
+                                "embeddings_generated", 0
+                            )
                     else:
-                        results["failed_files"].append(
-                            {"file_path": file_path, "error": file_result.get("error")}
-                        )
+                        results["failed_files"].append({"file_path": file_path, "error": file_result.get("error")})
                         results["stats"]["failed"] += 1
 
                 except NotImplementedError:
@@ -292,10 +288,7 @@ class FileProcessor:
         Returns:
             Set of normalized extensions with leading dot
         """
-        return {
-            ext.lower() if ext.startswith(".") else f".{ext.lower()}"
-            for ext in (file_extensions or [])
-        }
+        return {ext.lower() if ext.startswith(".") else f".{ext.lower()}" for ext in (file_extensions or [])}
 
     def _find_files_non_recursive(self, root: str, normalized_exts: set[str]) -> list[str]:
         """Find files in a single directory (non-recursive).
@@ -348,9 +341,7 @@ class FileProcessor:
         Returns:
             True if file should be included
         """
-        return os.path.isfile(path) and (
-            not normalized_exts or os.path.splitext(name)[1].lower() in normalized_exts
-        )
+        return os.path.isfile(path) and (not normalized_exts or os.path.splitext(name)[1].lower() in normalized_exts)
 
     @staticmethod
     def _matches_extension(name: str, normalized_exts: set[str]) -> bool:

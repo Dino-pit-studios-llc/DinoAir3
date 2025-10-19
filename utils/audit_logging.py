@@ -130,11 +130,7 @@ class AuditLogger:
         2) AuditLogger(Path(...), secret_key="...") -> full control
         """
         # Convenience mode: first argument is treated as component name when secret_key is None
-        if (
-            secret_key is None
-            and isinstance(log_file, str)
-            and ("/" not in log_file and "\\" not in log_file)
-        ):
+        if secret_key is None and isinstance(log_file, str) and ("/" not in log_file and "\\" not in log_file):
             component_name = log_file
             default_dir = Path("logs") / "audit"
             default_dir.mkdir(parents=True, exist_ok=True)
@@ -245,11 +241,7 @@ class AuditLogger:
         # Create HMAC signature
         signature: str | None = None
         if self.secret_key:
-            key = (
-                self.secret_key.encode("utf-8")
-                if isinstance(self.secret_key, str)
-                else self.secret_key
-            )
+            key = self.secret_key.encode("utf-8") if isinstance(self.secret_key, str) else self.secret_key
             signature = hmac.new(key, canonical_json.encode(), hashlib.sha256).hexdigest()
 
         # Remove event_type and severity from dict to avoid duplicate keyword arguments
@@ -336,14 +328,8 @@ class AuditLogger:
                 return False
 
             # Verify signature with proper encoding
-            key = (
-                self.secret_key.encode("utf-8")
-                if isinstance(self.secret_key, str)
-                else self.secret_key
-            )
-            calculated_signature = hmac.new(
-                key, canonical_json.encode(), hashlib.sha256
-            ).hexdigest()
+            key = self.secret_key.encode("utf-8") if isinstance(self.secret_key, str) else self.secret_key
+            calculated_signature = hmac.new(key, canonical_json.encode(), hashlib.sha256).hexdigest()
 
             return hmac.compare_digest(calculated_signature, stored_signature)
 
@@ -484,18 +470,14 @@ class SecurityAuditManager:
         )
 
 
-def create_audit_logger(
-    log_dir: str | Path = "logs/audit", secret_key: str | None = None
-) -> AuditLogger:
+def create_audit_logger(log_dir: str | Path = "logs/audit", secret_key: str | None = None) -> AuditLogger:
     """Create and configure an audit logger."""
     if secret_key is None:
         import os
 
         secret_key = os.environ.get("DINOAIR_AUDIT_SECRET")
         if not secret_key:
-            raise ValueError(
-                "Audit secret key required. Set DINOAIR_AUDIT_SECRET environment variable."
-            )
+            raise ValueError("Audit secret key required. Set DINOAIR_AUDIT_SECRET environment variable.")
 
     log_file = Path(log_dir) / "dinoair_audit.log"
 
@@ -526,9 +508,7 @@ def get_audit_manager() -> SecurityAuditManager:
 # Convenience functions for common audit events
 def audit_login_success(user_id: str, source_ip: str, **kwargs) -> str:
     """Audit successful login."""
-    return get_audit_manager().log_authentication(
-        AuditEventType.login_success, user_id, source_ip, **kwargs
-    )
+    return get_audit_manager().log_authentication(AuditEventType.login_success, user_id, source_ip, **kwargs)
 
 
 def audit_login_failure(user_id: str | None, source_ip: str, reason: str, **kwargs) -> str:
@@ -563,14 +543,10 @@ if __name__ == "__main__":
 
     # Test various audit events
     print("✅ Testing authentication events...")
-    manager.log_authentication(
-        AuditEventType.login_success, user_id="test_user", source_ip="192.168.1.100"
-    )
+    manager.log_authentication(AuditEventType.login_success, user_id="test_user", source_ip="192.168.1.100")
 
     print("✅ Testing data access events...")
-    manager.log_data_access(
-        action="read", resource="patient_records", user_id="test_user", record_count=5
-    )
+    manager.log_data_access(action="read", resource="patient_records", user_id="test_user", record_count=5)
 
     print("✅ Testing security events...")
     manager.log_security_event(

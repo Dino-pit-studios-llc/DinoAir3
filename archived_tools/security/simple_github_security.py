@@ -81,18 +81,14 @@ class SimpleGitHubSecurityLoader:
                 data = response.json()
                 security_analysis = data.get("security_and_analysis", {})
                 return {
-                    "advanced_security": security_analysis.get("advanced_security", {}).get(
+                    "advanced_security": security_analysis.get("advanced_security", {}).get("status", "unknown"),
+                    "secret_scanning": security_analysis.get("secret_scanning", {}).get("status", "unknown"),
+                    "secret_scanning_push_protection": security_analysis.get("secret_scanning_push_protection", {}).get(
                         "status", "unknown"
                     ),
-                    "secret_scanning": security_analysis.get("secret_scanning", {}).get(
+                    "dependabot_security_updates": security_analysis.get("dependabot_security_updates", {}).get(
                         "status", "unknown"
                     ),
-                    "secret_scanning_push_protection": security_analysis.get(
-                        "secret_scanning_push_protection", {}
-                    ).get("status", "unknown"),
-                    "dependabot_security_updates": security_analysis.get(
-                        "dependabot_security_updates", {}
-                    ).get("status", "unknown"),
                 }
         except Exception:
             print("⚠️  Could not fetch security features: API error")

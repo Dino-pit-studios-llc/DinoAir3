@@ -84,9 +84,7 @@ class LlmFirstController:
             )
 
         if not getattr(result, "success", False):
-            raise RuntimeError(
-                f"LLM translation failed: {', '.join(getattr(result, 'errors', []) or [])}"
-            )
+            raise RuntimeError(f"LLM translation failed: {', '.join(getattr(result, 'errors', []) or [])}")
 
         generated_code = getattr(result, "code", None)
         if not generated_code:

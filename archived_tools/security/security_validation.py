@@ -82,9 +82,7 @@ def test_password_security():
             for _, (pwd, should_pass) in enumerate(test_passwords):
                 # This is a basic test - the actual validation might be in a different method
                 result = len(pwd) >= 8  # Basic check
-                print(
-                    f"   📝 Password '<REDACTED, length={len(pwd)}>' : {'✅' if result == should_pass else '❌'}"
-                )
+                print(f"   📝 Password '<REDACTED, length={len(pwd)}>' : {'✅' if result == should_pass else '❌'}")
         except Exception as e:
             print("   ⚠️  Password validation method not found")
             logger.debug("password validation unavailable: %s", e)
@@ -157,9 +155,7 @@ def test_audit_logging():
                 )
             # Generate a temporary test secret for validation flows when not strictly required
             test_secret = secrets.token_hex(32)
-            print(
-                "⚠️  Using generated test secret for audit logging validation (not for production)"
-            )
+            print("⚠️  Using generated test secret for audit logging validation (not for production)")
 
         audit_logger = AuditLogger(log_file=test_log_file, secret_key=test_secret)
 
@@ -316,9 +312,7 @@ def report_security_validation_results(
     allowed_filenames = {DEFAULT_REPORT_FILENAME}
     filename = os.path.basename(report_path)
     if filename not in allowed_filenames:
-        print(
-            f"Warning: report_path '{report_path}' not allowed. Using default '{DEFAULT_REPORT_FILENAME}'."
-        )
+        print(f"Warning: report_path '{report_path}' not allowed. Using default '{DEFAULT_REPORT_FILENAME}'.")
         filename = DEFAULT_REPORT_FILENAME
     safe_path = os.path.join(os.getcwd(), filename)
     with open(safe_path, "w") as f:
@@ -361,11 +355,7 @@ def run_security_validation():
         if isinstance(test_results, dict):
             for test_name, test_result in test_results.items():
                 total_tests += 1
-                if (
-                    test_result
-                    and "❌" not in str(test_result)
-                    and "error" not in test_name.lower()
-                ):
+                if test_result and "❌" not in str(test_result) and "error" not in test_name.lower():
                     passed_tests += 1
 
     score = (passed_tests / total_tests * 100) if total_tests > 0 else 0

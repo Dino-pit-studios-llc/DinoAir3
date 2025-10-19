@@ -168,18 +168,10 @@ class GitHubSecurityLoader:
                     location_data = {
                         "type": location.type,
                         "path": (location.details.get("path") if location.details else None),
-                        "start_line": (
-                            location.details.get("start_line") if location.details else None
-                        ),
-                        "end_line": (
-                            location.details.get("end_line") if location.details else None
-                        ),
-                        "start_column": (
-                            location.details.get("start_column") if location.details else None
-                        ),
-                        "end_column": (
-                            location.details.get("end_column") if location.details else None
-                        ),
+                        "start_line": (location.details.get("start_line") if location.details else None),
+                        "end_line": (location.details.get("end_line") if location.details else None),
+                        "start_column": (location.details.get("start_column") if location.details else None),
+                        "end_column": (location.details.get("end_column") if location.details else None),
                     }
                     alert_data["locations"].append(location_data)
 
@@ -222,11 +214,7 @@ class GitHubSecurityLoader:
                         "summary": alert.security_advisory.summary,
                         "description": alert.security_advisory.description,
                         "severity": alert.security_advisory.severity,
-                        "cvss_score": (
-                            alert.security_advisory.cvss.score
-                            if alert.security_advisory.cvss
-                            else None
-                        ),
+                        "cvss_score": (alert.security_advisory.cvss.score if alert.security_advisory.cvss else None),
                         "published_at": (
                             alert.security_advisory.published_at.isoformat()
                             if alert.security_advisory.published_at

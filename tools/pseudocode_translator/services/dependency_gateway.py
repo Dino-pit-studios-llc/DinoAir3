@@ -103,11 +103,7 @@ class DependencyAnalysisGateway:
             if not DependencyAnalysisGateway._is_python_block(block):
                 return
 
-            result = (
-                analyses[idx]
-                if idx < len(analyses)
-                else {"defined_names": [], "required_imports": []}
-            )
+            result = analyses[idx] if idx < len(analyses) else {"defined_names": [], "required_imports": []}
             dn = result.get("defined_names", []) or []
             ri = result.get("required_imports", []) or []
 

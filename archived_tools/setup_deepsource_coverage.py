@@ -349,9 +349,7 @@ if __name__ == "__main__":
         if missing_patterns:
             # Rewrite file atomically with secure permissions (simulate append)
             new_content = existing_content + ("\n" + "\n".join(missing_patterns))
-            _secure_write_text(
-                str(gitignore_path), new_content
-            )  # restrict file permissions to 0o600
+            _secure_write_text(str(gitignore_path), new_content)  # restrict file permissions to 0o600
             print(f"✅ Updated .gitignore with {len(missing_patterns)} coverage patterns")
         else:
             print("✅ .gitignore already contains coverage patterns")
@@ -420,9 +418,7 @@ jobs:
 """
 
         workflow_file = workflow_dir / "coverage.yml"
-        _secure_write_text(
-            str(workflow_file), workflow_content
-        )  # restrict file permissions to 0o600
+        _secure_write_text(str(workflow_file), workflow_content)  # restrict file permissions to 0o600
 
         print(f"✅ Created GitHub workflow: {workflow_file}")
         print("💡 Don't forget to add DEEPSOURCE_DSN to GitHub Secrets!")

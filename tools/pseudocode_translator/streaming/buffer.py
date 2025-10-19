@@ -222,9 +222,7 @@ class StreamBuffer:
                 **self._stats,
                 "size": self._current_size,
                 "chunks": len(self._buffer),
-                "hit_rate": (
-                    self._stats["hits"] / max(1, self._stats["hits"] + self._stats["misses"])
-                ),
+                "hit_rate": (self._stats["hits"] / max(1, self._stats["hits"] + self._stats["misses"])),
             }
 
     def _compress(self, data: Any) -> bytes | None:

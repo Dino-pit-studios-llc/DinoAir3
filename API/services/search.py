@@ -6,11 +6,10 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, cast
 
+from database.file_search_db import FileSearchDB
 from fastapi import HTTPException
 from pydantic import ValidationError
 from starlette import status
-
-from database.file_search_db import FileSearchDB
 
 from ..schemas import (
     DirectorySettingsResponse,
@@ -142,9 +141,7 @@ class SearchService:
                 file_types=file_types,
             )
             raw_rows = rows or []
-            typed_rows: list[Mapping[str, Any]] = [
-                cast("Mapping[str, Any]", r) for r in raw_rows[:top_k]
-            ]
+            typed_rows: list[Mapping[str, Any]] = [cast("Mapping[str, Any]", r) for r in raw_rows[:top_k]]
             # Map DB rows to a uniform shape for _to_hit
             mapped: list[dict[str, Any]] = [
                 {
@@ -155,11 +152,7 @@ class SearchService:
                     "start_pos": int(r.get("start_pos") or 0),
                     "end_pos": int(r.get("end_pos") or 0),
                     "file_type": r.get("file_type"),
-                    "metadata": (
-                        r.get("chunk_metadata")
-                        if isinstance(r.get("chunk_metadata"), dict)
-                        else None
-                    ),
+                    "metadata": (r.get("chunk_metadata") if isinstance(r.get("chunk_metadata"), dict) else None),
                 }
                 for r in typed_rows
             ]
@@ -196,9 +189,7 @@ class SearchService:
 
         top_k = min(MAX_TOP_K, max(1, req.top_k))
         file_types = _sanitize_file_types(req.file_types)
-        similarity_threshold = (
-            req.similarity_threshold if req.similarity_threshold is not None else 0.5
-        )
+        similarity_threshold = req.similarity_threshold if req.similarity_threshold is not None else 0.5
         metric = req.distance_metric.value
 
         try:
@@ -226,9 +217,7 @@ class SearchService:
 
         top_k = min(MAX_TOP_K, max(1, req.top_k))
         file_types = _sanitize_file_types(req.file_types)
-        similarity_threshold = (
-            req.similarity_threshold if req.similarity_threshold is not None else 0.5
-        )
+        similarity_threshold = req.similarity_threshold if req.similarity_threshold is not None else 0.5
         vector_weight = float(req.vector_weight)
         keyword_weight = float(req.keyword_weight)
         # Ensure non-degenerate weights (avoid direct float equality; treat near-zero as zero)

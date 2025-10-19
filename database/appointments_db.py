@@ -113,14 +113,10 @@ class AppointmentsDatabase:
                 elif isinstance(raw_tags, str):
                     tags_value = raw_tags or None
 
-                metadata_value = (
-                    json.dumps(event.metadata) if isinstance(event.metadata, dict) else None
-                )
+                metadata_value = json.dumps(event.metadata) if isinstance(event.metadata, dict) else None
 
                 # Normalize recurrence_pattern; bind "none" when None to align with schema default
-                recurrence_pattern = (
-                    event.recurrence_pattern if event.recurrence_pattern is not None else "none"
-                )
+                recurrence_pattern = event.recurrence_pattern if event.recurrence_pattern is not None else "none"
 
                 cursor.execute(
                     """
@@ -189,9 +185,7 @@ class AppointmentsDatabase:
                 params.append(event_id)
 
                 set_clause_sql = ", ".join(set_clauses)
-                update_query = "".join(
-                    ["UPDATE calendar_events SET ", set_clause_sql, " WHERE id = ?"]
-                )
+                update_query = "".join(["UPDATE calendar_events SET ", set_clause_sql, " WHERE id = ?"])
 
                 cursor.execute(update_query, tuple(params))
                 rows_updated = cursor.rowcount or 0
@@ -538,9 +532,7 @@ class AppointmentsDatabase:
             )
 
     @staticmethod
-    def _update_reminder(
-        cursor: sqlite3.Cursor, event_id: str, reminder_minutes: int | None
-    ) -> None:
+    def _update_reminder(cursor: sqlite3.Cursor, event_id: str, reminder_minutes: int | None) -> None:
         """Update or create reminder for an event"""
         # Delete existing reminder
         cursor.execute("DELETE FROM event_reminders WHERE event_id = ?", (event_id,))

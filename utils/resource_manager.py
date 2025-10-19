@@ -298,9 +298,7 @@ class RetryConfig:
     base_delay: float = 0.1
     max_delay: float = 5.0
     backoff_factor: float = 2.0
-    retry_exceptions: tuple[type[Exception], ...] = (
-        Exception,
-    )  # Will be updated after class definition
+    retry_exceptions: tuple[type[Exception], ...] = (Exception,)  # Will be updated after class definition
 
     def calculate_delay(self, attempt: int) -> float:
         """Calculate delay for given attempt using exponential backoff."""
@@ -421,9 +419,7 @@ class ResourceManager:
 
                 result = operation()
                 if attempt > 0:
-                    logger.info(
-                        f"{operation_name} succeeded for {resource_id} on attempt {attempt + 1}"
-                    )
+                    logger.info(f"{operation_name} succeeded for {resource_id} on attempt {attempt + 1}")
                 return result
 
             except Exception as e:
@@ -431,9 +427,7 @@ class ResourceManager:
 
                 # Check if this exception should be retried
                 if not any(isinstance(e, exc_type) for exc_type in retry_config.retry_exceptions):
-                    logger.warning(
-                        f"{operation_name} failed for {resource_id} with non-retryable error: {e}"
-                    )
+                    logger.warning(f"{operation_name} failed for {resource_id} with non-retryable error: {e}")
                     raise
 
                 logger.warning(
@@ -442,9 +436,7 @@ class ResourceManager:
 
                 # If this was the last attempt, don't wait
 
-        logger.error(
-            f"{operation_name} failed for {resource_id} after {retry_config.max_attempts} attempts"
-        )
+        logger.error(f"{operation_name} failed for {resource_id} after {retry_config.max_attempts} attempts")
         if last_exception:
             raise ResourceManagerError(
                 f"{operation_name} failed after {retry_config.max_attempts} attempts",
@@ -520,17 +512,13 @@ class ResourceManager:
             raise ResourceRegistrationError("Invalid resource type", resource_id)
 
         if resource_id in self._resources:
-            raise ResourceRegistrationError(
-                f"Resource {resource_id} is already registered", resource_id
-            )
+            raise ResourceRegistrationError(f"Resource {resource_id} is already registered", resource_id)
 
         # Validate dependencies exist
         if dependencies:
             missing_deps = [dep for dep in dependencies if dep not in self._resources]
             if missing_deps:
-                raise DependencyValidationError(
-                    f"Missing dependencies for {resource_id}", missing_deps
-                )
+                raise DependencyValidationError(f"Missing dependencies for {resource_id}", missing_deps)
 
     @performance_monitor(operation="register_resource")
     def register_resource(
@@ -570,9 +558,7 @@ class ResourceManager:
                     )
 
                 # Validate registration parameters
-                self._validate_resource_registration(
-                    resource_id, resource, resource_type, dependencies
-                )
+                self._validate_resource_registration(resource_id, resource, resource_type, dependencies)
 
                 if priority is None:
                     priority = self._shutdown_priorities.get(resource_type, 100)
@@ -781,9 +767,7 @@ class ResourceManager:
                     in_degree[resource.resource_id] += 1
 
         # Detect circular dependencies
-        circular_deps = ResourceManager._detect_circular_dependencies(
-            shutdown_graph, list(resource_map.keys())
-        )
+        circular_deps = ResourceManager._detect_circular_dependencies(shutdown_graph, list(resource_map.keys()))
         if circular_deps:
             logger.warning(f"Circular dependencies detected: {circular_deps}")
             # Fall back to priority-only ordering for circular dependencies
@@ -814,9 +798,7 @@ class ResourceManager:
         return [resource_map[rid] for rid in ordered_ids]
 
     @staticmethod
-    def _detect_circular_dependencies(
-        graph: dict[str, set[str]], nodes: list[str]
-    ) -> list[list[str]]:
+    def _detect_circular_dependencies(graph: dict[str, set[str]], nodes: list[str]) -> list[list[str]]:
         """
         Detect circular dependencies in the resource graph.
 
@@ -927,9 +909,7 @@ class ResourceManager:
                 if len(test_order) != len(all_resources):
                     # Circular dependency detected, remove the added dependency
                     resource_info.dependencies.remove(dependency_id)
-                    logger.error(
-                        f"Circular dependency detected, removed: {resource_id} -> {dependency_id}"
-                    )
+                    logger.error(f"Circular dependency detected, removed: {resource_id} -> {dependency_id}")
                     return False
 
             return True
@@ -967,8 +947,7 @@ class ResourceManager:
         """
         with self._lock:
             return {
-                resource_id: resource_info.dependencies.copy()
-                for resource_id, resource_info in self._resources.items()
+                resource_id: resource_info.dependencies.copy() for resource_id, resource_info in self._resources.items()
             }
 
     def validate_dependencies(self) -> dict[str, Any]:
@@ -987,9 +966,7 @@ class ResourceManager:
             for resource in resources:
                 for dep_id in resource.dependencies:
                     if dep_id not in all_resource_ids:
-                        issues.append(
-                            f"Resource {resource.resource_id} depends on non-existent resource {dep_id}"
-                        )
+                        issues.append(f"Resource {resource.resource_id} depends on non-existent resource {dep_id}")
 
             # Check for circular dependencies
             circular_deps = self._detect_circular_dependencies(
@@ -998,9 +975,7 @@ class ResourceManager:
             )
 
             if circular_deps:
-                issues.extend(
-                    [f"Circular dependency: {' -> '.join(cycle)}" for cycle in circular_deps]
-                )
+                issues.extend([f"Circular dependency: {' -> '.join(cycle)}" for cycle in circular_deps])
 
             # Test dependency resolution
             try:
@@ -1020,9 +995,7 @@ class ResourceManager:
             }
 
     @staticmethod
-    def _shutdown_single_resource(
-        resource_info: ResourceInfo, timeout: float | None = None
-    ) -> bool:
+    def _shutdown_single_resource(resource_info: ResourceInfo, timeout: float | None = None) -> bool:
         """
         Shutdown a single resource.
 
@@ -1074,15 +1047,11 @@ class ResourceManager:
                         f"(timeout: {timeout}s). Resource may not be fully cleaned up."
                     )
                 elif cleanup_result["exception"]:
-                    logger.error(
-                        f"Cleanup function for {resource_id} raised exception: {cleanup_result['exception']}"
-                    )
+                    logger.error(f"Cleanup function for {resource_id} raised exception: {cleanup_result['exception']}")
                     resource_info.state = ResourceState.error
                     return False
                 else:
-                    logger.debug(
-                        f"Cleanup function for {resource_id} completed in {cleanup_elapsed:.2f}s"
-                    )
+                    logger.debug(f"Cleanup function for {resource_id} completed in {cleanup_elapsed:.2f}s")
 
             # Try standard cleanup methods if no custom function
             else:

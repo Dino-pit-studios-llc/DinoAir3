@@ -75,56 +75,44 @@ class OpenAIModel(BaseTranslationModel):
                 "Python code following PEP 8 conventions."
             ),
             OutputLanguage.JAVASCRIPT: (
-                "You are an expert JavaScript developer. Generate modern, clean "
-                "JavaScript code using ES6+ features."
+                "You are an expert JavaScript developer. Generate modern, clean JavaScript code using ES6+ features."
             ),
             OutputLanguage.TYPESCRIPT: (
                 "You are an expert TypeScript developer. Generate type-safe, clean "
                 "TypeScript code with proper type annotations."
             ),
             OutputLanguage.JAVA: (
-                "You are an expert Java developer. Generate clean, object-oriented "
-                "Java code following best practices."
+                "You are an expert Java developer. Generate clean, object-oriented Java code following best practices."
             ),
             OutputLanguage.CPP: (
-                "You are an expert C++ programmer. Generate efficient, modern "
-                "C++ code using appropriate STL features."
+                "You are an expert C++ programmer. Generate efficient, modern C++ code using appropriate STL features."
             ),
             OutputLanguage.CSHARP: (
-                "You are an expert C# developer. Generate clean, object-oriented "
-                "C# code following .NET conventions."
+                "You are an expert C# developer. Generate clean, object-oriented C# code following .NET conventions."
             ),
             OutputLanguage.GO: (
-                "You are an expert Go developer. Generate idiomatic, concurrent "
-                "Go code following Go conventions."
+                "You are an expert Go developer. Generate idiomatic, concurrent Go code following Go conventions."
             ),
             OutputLanguage.RUST: (
-                "You are an expert Rust developer. Generate safe, efficient "
-                "Rust code with proper ownership handling."
+                "You are an expert Rust developer. Generate safe, efficient Rust code with proper ownership handling."
             ),
             OutputLanguage.RUBY: (
-                "You are an expert Ruby developer. Generate clean, expressive "
-                "Ruby code following Ruby conventions."
+                "You are an expert Ruby developer. Generate clean, expressive Ruby code following Ruby conventions."
             ),
             OutputLanguage.PHP: (
-                "You are an expert PHP developer. Generate modern, secure "
-                "PHP code following PSR standards."
+                "You are an expert PHP developer. Generate modern, secure PHP code following PSR standards."
             ),
             OutputLanguage.KOTLIN: (
-                "You are an expert Kotlin developer. Generate concise, null-safe "
-                "Kotlin code using modern features."
+                "You are an expert Kotlin developer. Generate concise, null-safe Kotlin code using modern features."
             ),
             OutputLanguage.SWIFT: (
-                "You are an expert Swift developer. Generate safe, expressive "
-                "Swift code following Swift conventions."
+                "You are an expert Swift developer. Generate safe, expressive Swift code following Swift conventions."
             ),
             OutputLanguage.SQL: (
-                "You are an expert SQL developer. Generate efficient, portable "
-                "SQL queries following ANSI standards."
+                "You are an expert SQL developer. Generate efficient, portable SQL queries following ANSI standards."
             ),
             OutputLanguage.BASH: (
-                "You are an expert Bash scripter. Generate robust, portable "
-                "shell scripts with proper error handling."
+                "You are an expert Bash scripter. Generate robust, portable shell scripts with proper error handling."
             ),
         }
 
@@ -138,10 +126,7 @@ class OpenAIModel(BaseTranslationModel):
             name="openai",
             version=model_name,
             supported_languages=list(OutputLanguage),
-            description=(
-                f"OpenAI {model_name} model for multi-language code generation. "
-                f"Requires API key for access."
-            ),
+            description=(f"OpenAI {model_name} model for multi-language code generation. Requires API key for access."),
             author="OpenAI",
             license="OpenAI Terms",
             model_type="api",
@@ -185,8 +170,7 @@ class OpenAIModel(BaseTranslationModel):
         api_key = self.config.get("api_key") or kwargs.get("api_key")
         if not api_key:
             raise ValueError(
-                "OpenAI API key not provided. Set OPENAI_API_KEY environment "
-                "variable or provide in config."
+                "OpenAI API key not provided. Set OPENAI_API_KEY environment variable or provide in config."
             )
 
         # Initialize client

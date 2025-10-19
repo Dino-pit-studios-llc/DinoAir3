@@ -125,9 +125,7 @@ class InputPipeline:
     def _setup_security(self, _watchdog_ref: Any | None) -> None:
         """Setup enhanced security components."""
         # Enhanced sanitizer doesn't require external logger - it has internal logging
-        self.enhanced_sanitizer = (
-            EnhancedInputSanitizer(None) if self.enable_enhanced_security else None
-        )
+        self.enhanced_sanitizer = EnhancedInputSanitizer(None) if self.enable_enhanced_security else None
 
     def _setup_rate_limiter(self) -> None:
         """Setup rate limiting configuration."""
@@ -145,9 +143,7 @@ class InputPipeline:
         self.context = ContextManager()
 
         # Initialize watchdog command handler
-        self.watchdog_handler = WatchdogCommandHandler(
-            watchdog=self.watchdog_ref, chat_callback=self.feedback_channel
-        )
+        self.watchdog_handler = WatchdogCommandHandler(watchdog=self.watchdog_ref, chat_callback=self.feedback_channel)
 
         # Store alerts history for legacy compatibility
         self.watchdog_alerts_history: list[tuple[str, str, datetime]] = []
@@ -289,9 +285,7 @@ class InputPipeline:
                 }
                 if filter_result.max_severity:
                     emoji = severity_emoji.get(filter_result.max_severity, "⚠️")
-                    self.feedback_channel(
-                        f"{emoji} Content filtered (severity: {filter_result.max_severity.name})"
-                    )
+                    self.feedback_channel(f"{emoji} Content filtered (severity: {filter_result.max_severity.name})")
                 else:
                     self.feedback_channel("⚠️ Content filtered")
                 text = filter_result.filtered_text
@@ -311,9 +305,7 @@ class InputPipeline:
             self.context.add_entry(text)
 
             # Final feedback
-            confidence_emoji = (
-                "🎯" if intent_result.confidence > HIGH_CONFIDENCE_THRESHOLD else "🤔"
-            )
+            confidence_emoji = "🎯" if intent_result.confidence > HIGH_CONFIDENCE_THRESHOLD else "🤔"
             self.feedback_channel(
                 f"{confidence_emoji} Intent: {intent.value} ({intent_result.confidence:.0%} confident)"
             )

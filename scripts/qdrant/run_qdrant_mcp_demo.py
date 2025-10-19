@@ -22,7 +22,6 @@ from typing import Any
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
-
 from utils.process import PYTHON_EXE, safe_popen, safe_run
 
 # Constants
@@ -98,9 +97,7 @@ class QdrantMCPDemoRunner:
             )
         except Exception:
             print("Docker not available. Please start Qdrant manually:")
-            print(
-                "/usr/bin/docker run -p 6333:6333 -p 6334:6334 -e QDRANT__SERVICE__API_KEY=<your_key> qdrant/qdrant"
-            )
+            print("/usr/bin/docker run -p 6333:6333 -p 6334:6334 -e QDRANT__SERVICE__API_KEY=<your_key> qdrant/qdrant")
             return False
 
         # Check if container already exists

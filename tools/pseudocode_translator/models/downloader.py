@@ -16,8 +16,9 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from pseudocode_translator.exceptions import ConfigurationError
 from tqdm import tqdm
+
+from pseudocode_translator.exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -151,9 +152,7 @@ class ModelDownloader:
                 temp_path.unlink()
             raise DownloadError(f"Failed to download model: {str(e)}")
 
-    def download_from_huggingface(
-        self, repo_id: str, filename: str, revision: str = "main", **kwargs
-    ) -> Path:
+    def download_from_huggingface(self, repo_id: str, filename: str, revision: str = "main", **kwargs) -> Path:
         """
         Download a model from Hugging Face Hub
 
@@ -174,9 +173,7 @@ class ModelDownloader:
 
         return self.download_model(url, model_name, **kwargs)
 
-    def _download_with_resume(
-        self, url: str, file_path: Path, progress_callback: Callable | None = None
-    ) -> None:
+    def _download_with_resume(self, url: str, file_path: Path, progress_callback: Callable | None = None) -> None:
         """
         Download with resume capability
 
@@ -396,9 +393,7 @@ def download_model(url: str, model_name: str, download_dir: str = "./models", **
     return downloader.download_model(url, model_name, **kwargs)
 
 
-def download_from_huggingface(
-    repo_id: str, filename: str, download_dir: str = "./models", **kwargs
-) -> Path:
+def download_from_huggingface(repo_id: str, filename: str, download_dir: str = "./models", **kwargs) -> Path:
     """
     Quick function to download from Hugging Face
 

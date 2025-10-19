@@ -26,9 +26,7 @@ class SecurityMonitor:
         self.attack_counts: dict[str, int] = {}
         self.last_reset = datetime.now()
 
-    def log_attack_attempt(
-        self, attack_type: str, payload: str, source_info: dict[str, Any] | None = None
-    ) -> None:
+    def log_attack_attempt(self, attack_type: str, payload: str, source_info: dict[str, Any] | None = None) -> None:
         """Log detected attack attempt."""
         timestamp = datetime.now().isoformat()
 
@@ -38,9 +36,7 @@ class SecurityMonitor:
         self.attack_counts[attack_type] += 1
 
         # Log the attempt
-        log_message = (
-            f"SECURITY: {attack_type} attack detected at {timestamp} Payload: {payload[:100]}..."
-        )
+        log_message = f"SECURITY: {attack_type} attack detected at {timestamp} Payload: {payload[:100]}..."
 
         if source_info:
             log_message += f" Source: {source_info}"
@@ -53,8 +49,7 @@ class SecurityMonitor:
         # Alert if threshold exceeded
         if self.attack_counts[attack_type] > 10:
             alert_message = (
-                f"SECURITY ALERT: Multiple {attack_type} attacks detected! "
-                f"Count: {self.attack_counts[attack_type]}"
+                f"SECURITY ALERT: Multiple {attack_type} attacks detected! Count: {self.attack_counts[attack_type]}"
             )
             if self.logger:
                 self.logger.error(alert_message)
@@ -127,9 +122,7 @@ class EnhancedInputSanitizer:
             self.logger.debug(f"Sanitizing input (context={context}, length={len(user_input)})")
 
         # Apply Unicode normalization and attack checks
-        sanitized = self._apply_unicode_protection(
-            user_input, allow_unicode, max_length, strict_mode
-        )
+        sanitized = self._apply_unicode_protection(user_input, allow_unicode, max_length, strict_mode)
 
         # Apply context-specific sanitization
         sanitized = self._sanitize_by_context(sanitized, context, strict_mode)
@@ -144,9 +137,7 @@ class EnhancedInputSanitizer:
         strict_mode: bool,
     ) -> str:
         """Handle Unicode normalization and attacks."""
-        sanitized = self.unicode_protection.sanitize(
-            user_input, allow_unicode=allow_unicode, max_length=max_length
-        )
+        sanitized = self.unicode_protection.sanitize(user_input, allow_unicode=allow_unicode, max_length=max_length)
         if self.unicode_protection.detect_unicode_attack(user_input):
             self.security_monitor.log_attack_attempt("Unicode", user_input)
             if strict_mode:

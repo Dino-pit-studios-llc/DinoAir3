@@ -91,9 +91,7 @@ class EmbeddingGenerator:
                 )
 
             # Load model with custom cache directory
-            self._model = SentenceTransformer(
-                self.model_name, device=self.device, cache_folder=self.model_cache_dir
-            )
+            self._model = SentenceTransformer(self.model_name, device=self.device, cache_folder=self.model_cache_dir)
 
             # Set max sequence length
             self._model.max_seq_length = self.max_length
@@ -129,9 +127,7 @@ class EmbeddingGenerator:
         try:
             # Truncate text if needed
             if len(text) > self.max_length * 4:  # Rough character estimate
-                self.logger.debug(
-                    f"Truncating text from {len(text)} to ~{self.max_length * 4} chars"
-                )
+                self.logger.debug(f"Truncating text from {len(text)} to ~{self.max_length * 4} chars")
                 text = text[: self.max_length * 4]
 
             # Generate embedding
@@ -175,9 +171,7 @@ class EmbeddingGenerator:
                 return self._create_zero_embeddings(len(texts))
 
             batch_size = self._determine_batch_size(batch_size)
-            embeddings = self._generate_embeddings(
-                valid_texts, batch_size, normalize, show_progress
-            )
+            embeddings = self._generate_embeddings(valid_texts, batch_size, normalize, show_progress)
 
             return self._reorder_embeddings(embeddings, valid_indices, len(texts))
 
@@ -251,9 +245,7 @@ class EmbeddingGenerator:
         Returns:
             Array of embeddings
         """
-        self.logger.info(
-            f"Generating embeddings for {len(valid_texts)} texts in batches of {batch_size}"
-        )
+        self.logger.info(f"Generating embeddings for {len(valid_texts)} texts in batches of {batch_size}")
 
         return self.model.encode(
             valid_texts,
@@ -264,9 +256,7 @@ class EmbeddingGenerator:
         )
 
     @staticmethod
-    def _reorder_embeddings(
-        embeddings: np.ndarray, valid_indices: list[int], total_count: int
-    ) -> list[np.ndarray]:
+    def _reorder_embeddings(embeddings: np.ndarray, valid_indices: list[int], total_count: int) -> list[np.ndarray]:
         """Reorder embeddings to match original text order.
 
         Args:
@@ -313,9 +303,7 @@ class EmbeddingGenerator:
                         "tokenizer_info": {
                             "type": type(self._model.tokenizer).__name__,
                             "vocab_size": (
-                                len(self._model.tokenizer)
-                                if hasattr(self._model.tokenizer, "__len__")
-                                else "unknown"
+                                len(self._model.tokenizer) if hasattr(self._model.tokenizer, "__len__") else "unknown"
                             ),
                         },
                     }

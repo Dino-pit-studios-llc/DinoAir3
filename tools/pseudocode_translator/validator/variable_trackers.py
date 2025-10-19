@@ -183,9 +183,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         # Target must be previously defined; do not bind new names here
         if isinstance(node.target, ast.Name):
             if not self.current_scope.is_defined(node.target.id, node.lineno):
-                self.undefined_names.append(
-                    (node.target.id, node.lineno, getattr(node, "col_offset", None))
-                )
+                self.undefined_names.append((node.target.id, node.lineno, getattr(node, "col_offset", None)))
         else:
             # Suppress loads while visiting complex target
             self._suppress_loads += 1
@@ -197,12 +195,8 @@ class UndefinedVariableChecker(ast.NodeVisitor):
     def visit_Name(self, node: ast.Name):
         """Handle name references."""
         if isinstance(node.ctx, ast.Load) and not self.in_annotation:
-            if self._suppress_loads == 0 and not self.current_scope.is_defined(
-                node.id, node.lineno
-            ):
-                self.undefined_names.append(
-                    (node.id, node.lineno, getattr(node, "col_offset", None))
-                )
+            if self._suppress_loads == 0 and not self.current_scope.is_defined(node.id, node.lineno):
+                self.undefined_names.append((node.id, node.lineno, getattr(node, "col_offset", None)))
         elif isinstance(node.ctx, ast.Store):
             # Respect global/nonlocal bindings
             if node.id in self.current_scope.global_vars:

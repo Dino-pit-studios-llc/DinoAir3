@@ -46,9 +46,7 @@ def _current_adapter_config(svc: object) -> dict[str, Any]:
 
 def _build_overridden_config(cfg_dict: dict[str, Any], env: Any) -> dict[str, Any]:
     headers = cfg_dict.get("headers")
-    headers_dict: dict[str, Any] = (
-        dict(cast(Mapping[str, Any], headers)) if isinstance(headers, Mapping) else {}
-    )
+    headers_dict: dict[str, Any] = dict(cast(Mapping[str, Any], headers)) if isinstance(headers, Mapping) else {}
 
     # Apply env-backed overrides
     cfg_dict["base_url"] = env.base_url

@@ -47,11 +47,7 @@ class Scope:
         if name in self.deleted and self.deleted[name] <= line:
             # Only considered defined if there is a strictly later redefinition that
             # also occurs before or at the query line.
-            if not (
-                name in self.defined
-                and self.defined[name] > self.deleted[name]
-                and self.defined[name] <= line
-            ):
+            if not (name in self.defined and self.defined[name] > self.deleted[name] and self.defined[name] <= line):
                 return False
 
         # Check local scope

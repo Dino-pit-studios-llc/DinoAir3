@@ -85,9 +85,7 @@ class TranslatorAPI(ShutdownMixin):
             if use_streaming:
                 # Use streaming translation
                 results = list(
-                    self._translator.translate_streaming(
-                        pseudocode, chunk_size=kwargs.get("chunk_size", 4096)
-                    )
+                    self._translator.translate_streaming(pseudocode, chunk_size=kwargs.get("chunk_size", 4096))
                 )
                 # Return the final result
                 result = (
@@ -245,9 +243,7 @@ class TranslatorAPI(ShutdownMixin):
             self._default_language = OutputLanguage(language.lower())
             self._translator.set_target_language(self._default_language)
         except ValueError:
-            raise ValueError(
-                f"Unsupported language: {language}. Supported: {[lang.value for lang in OutputLanguage]}"
-            )
+            raise ValueError(f"Unsupported language: {language}. Supported: {[lang.value for lang in OutputLanguage]}")
 
     def switch_model(self, model_name: str):
         """
@@ -375,9 +371,7 @@ class SimpleTranslator:
 # Convenience functions
 
 
-def translate(
-    pseudocode: str, language: str = "python", config_path: str | None = None
-) -> dict[str, Any]:
+def translate(pseudocode: str, language: str = "python", config_path: str | None = None) -> dict[str, Any]:
     """
     Quick function to translate pseudocode
 
@@ -415,9 +409,7 @@ def translate_file(
         return api.translate_file(file_path, output_path, language)
 
 
-async def translate_async(
-    pseudocode: str, language: str = "python", config_path: str | None = None
-) -> dict[str, Any]:
+async def translate_async(pseudocode: str, language: str = "python", config_path: str | None = None) -> dict[str, Any]:
     """
     Async function to translate pseudocode
 

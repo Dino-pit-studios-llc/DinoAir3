@@ -200,9 +200,7 @@ class LLMInterface(ShutdownMixin):
         model_to_load = model_name or self.config.model_type
 
         # Skip if already initialized
-        if ModelInitializer.should_skip_initialization(
-            self._current_model, self._model_name, model_to_load
-        ):
+        if ModelInitializer.should_skip_initialization(self._current_model, self._model_name, model_to_load):
             return None
 
         # Determine model path
@@ -222,9 +220,7 @@ class LLMInterface(ShutdownMixin):
 
         # Create and initialize model using shared utility
         try:
-            self._current_model = ModelInitializer.create_and_initialize_model(
-                model_to_load, model_config, model_path
-            )
+            self._current_model = ModelInitializer.create_and_initialize_model(model_to_load, model_config, model_path)
             self._model_name = model_to_load
             logger.info("LLM Interface initialized with model: %s", model_to_load)
         except Exception as e:
@@ -453,9 +449,7 @@ class LLMInterface(ShutdownMixin):
 
 
 # Convenience factory function
-def create_llm_interface(
-    config_path: str | None = None, model_name: str | None = None
-) -> LLMInterface:
+def create_llm_interface(config_path: str | None = None, model_name: str | None = None) -> LLMInterface:
     """
     Create an LLM interface with configuration
 

@@ -29,9 +29,7 @@ class TestErrorHandling:
         """Test ErrorContext creation and usage."""
         from utils.error_handling import ErrorContext
 
-        context = ErrorContext(
-            operation="test_operation", component="test_component", user_id="test_user"
-        )
+        context = ErrorContext(operation="test_operation", component="test_component", user_id="test_user")
 
         assert context.operation == "test_operation"
         assert context.component == "test_component"

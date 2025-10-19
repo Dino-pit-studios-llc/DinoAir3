@@ -145,15 +145,13 @@ class PrometheusExporter(TelemetryExporter):
                 if "memory_usage" in metric and metric["memory_usage"]:
                     memory_bytes = metric["memory_usage"]
                     prometheus_lines.append(
-                        f'dinoair_operation_memory_bytes{{operation="{operation}"}} '
-                        f"{memory_bytes} {timestamp}"
+                        f'dinoair_operation_memory_bytes{{operation="{operation}"}} {memory_bytes} {timestamp}'
                     )
 
                 # CPU metric
                 if "cpu_usage" in metric and metric["cpu_usage"]:
                     prometheus_lines.append(
-                        f'dinoair_operation_cpu_percent{{operation="{operation}"}} '
-                        f"{metric['cpu_usage']} {timestamp}"
+                        f'dinoair_operation_cpu_percent{{operation="{operation}"}} {metric["cpu_usage"]} {timestamp}'
                     )
 
             with self._lock, open(self.output_file, "a") as f:
@@ -267,9 +265,7 @@ class TelemetryManager:
                 self._exporter = ConsoleExporter()
 
             else:
-                raise ValueError(
-                    f"Unsupported export destination: {self.config.export_destination}"
-                )
+                raise ValueError(f"Unsupported export destination: {self.config.export_destination}")
 
         except Exception as e:
             logger.error("Failed to initialize telemetry exporter: %s", e)
@@ -278,9 +274,7 @@ class TelemetryManager:
     def _start_export_thread(self) -> None:
         """Start the background export thread."""
         if self._exporter and not self._export_thread:
-            self._export_thread = threading.Thread(
-                target=self._export_loop, name="TelemetryExporter", daemon=True
-            )
+            self._export_thread = threading.Thread(target=self._export_loop, name="TelemetryExporter", daemon=True)
             self._export_thread.start()
 
     def _export_loop(self) -> None:
@@ -380,9 +374,7 @@ class TelemetryManager:
 
             # Initialize operation buffer if needed
             if operation not in self._metrics_buffer:
-                self._metrics_buffer[operation] = deque(
-                    maxlen=self.config.max_metrics_per_operation
-                )
+                self._metrics_buffer[operation] = deque(maxlen=self.config.max_metrics_per_operation)
 
             operation_buffer = self._metrics_buffer[operation]
 
@@ -476,9 +468,7 @@ _global_telemetry_manager: TelemetryManager | None = None
 _telemetry_lock = threading.Lock()
 
 
-def get_telemetry_manager(
-    manager: TelemetryManager | None, lock: threading.Lock
-) -> TelemetryManager:
+def get_telemetry_manager(manager: TelemetryManager | None, lock: threading.Lock) -> TelemetryManager:
     """Get or create the telemetry manager."""
     with lock:
         if manager is None:

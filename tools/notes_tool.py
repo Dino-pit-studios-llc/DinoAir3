@@ -267,9 +267,7 @@ def update_note(
         }
 
 
-def delete_note(
-    note_id: str, hard_delete: bool = False, user_name: str = "default_user"
-) -> dict[str, Any]:
+def delete_note(note_id: str, hard_delete: bool = False, user_name: str = "default_user") -> dict[str, Any]:
     """
     Delete a note from the database.
 

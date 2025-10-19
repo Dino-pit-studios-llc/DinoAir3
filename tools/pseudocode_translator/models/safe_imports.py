@@ -1,4 +1,5 @@
 """Module module."""
+
 from __future__ import annotations
 
 import os
@@ -115,9 +116,7 @@ def _check_module_allowlist(module_name: str) -> None:
         if module_name == base or module_name.startswith(base + "."):
             return
 
-    raise ValueError(
-        f"Module {module_name!r} is not within allowed bases: {', '.join(ALLOWED_BASE_PACKAGES)}"
-    )
+    raise ValueError(f"Module {module_name!r} is not within allowed bases: {', '.join(ALLOWED_BASE_PACKAGES)}")
 
 
 def safe_import_module(module_name: str) -> ModuleType:

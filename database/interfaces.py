@@ -6,11 +6,12 @@ Protocol-based interfaces for breaking circular dependencies using dependency in
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from models.note import Note
+
 # Import existing result types to maintain compatibility
 from database.notes_repository import QueryResult
 from database.notes_service import OperationResult
 from database.notes_validator import ValidationResult
-from models.note import Note
 
 
 @dataclass
@@ -106,9 +107,7 @@ class INotesRepository(Protocol):
         """Get all soft-deleted notes."""
         ...
 
-    def search_notes(
-        self, query: str, filter_option: str = "All", project_id: str | None = None
-    ) -> QueryResult:
+    def search_notes(self, query: str, filter_option: str = "All", project_id: str | None = None) -> QueryResult:
         """Search notes by text content."""
         ...
 
@@ -136,9 +135,7 @@ class INotesRepository(Protocol):
         """Get all notes not associated with any project."""
         ...
 
-    def bulk_update_project(
-        self, note_ids: list[str], project_id: str | None = None
-    ) -> QueryResult:
+    def bulk_update_project(self, note_ids: list[str], project_id: str | None = None) -> QueryResult:
         """Assign multiple notes to a project or remove project association."""
         ...
 
@@ -212,9 +209,7 @@ class INotesService(Protocol):
         """Restore a soft-deleted note."""
         ...
 
-    def search_notes(
-        self, query: str, filter_option: str = "All", project_id: str | None = None
-    ) -> OperationResult:
+    def search_notes(self, query: str, filter_option: str = "All", project_id: str | None = None) -> OperationResult:
         """Search notes with user permission filtering."""
         ...
 

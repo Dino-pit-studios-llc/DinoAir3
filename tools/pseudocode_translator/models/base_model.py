@@ -265,15 +265,11 @@ class BaseTranslationModel(ABC, ShutdownMixin):
             except Exception as e:
                 logger.error("Failed to translate instruction %d: %s", i + 1, e)
                 language = config.target_language if config else OutputLanguage.python
-                results.append(
-                    TranslationResult(success=False, code=None, language=language, errors=[str(e)])
-                )
+                results.append(TranslationResult(success=False, code=None, language=language, errors=[str(e)]))
 
         return results
 
-    def refine_code(
-        self, code: str, error_context: str, config: TranslationConfig | None = None
-    ) -> TranslationResult:
+    def refine_code(self, code: str, error_context: str, config: TranslationConfig | None = None) -> TranslationResult:
         """
         Attempt to fix code based on error feedback
 
@@ -359,10 +355,7 @@ class BaseTranslationModel(ABC, ShutdownMixin):
         # Check language support
         if not self.metadata.supports_language(config.target_language):
             supported_langs = ", ".join(self.get_supported_languages())
-            issues.append(
-                f"Language {config.target_language.value} not supported. "
-                f"Supported: {supported_langs}"
-            )
+            issues.append(f"Language {config.target_language.value} not supported. Supported: {supported_langs}")
 
         # Validate parameters
         if not 0 <= config.temperature <= 2:
@@ -391,9 +384,7 @@ class BaseTranslationModel(ABC, ShutdownMixin):
         try:
             logger.info("Warming up %s...", self.metadata.name)
             simple_instruction = "print hello world"
-            config = TranslationConfig(
-                target_language=self.metadata.supported_languages[0], max_tokens=50
-            )
+            config = TranslationConfig(target_language=self.metadata.supported_languages[0], max_tokens=50)
             self.translate(simple_instruction, config)
             logger.info("Warmup complete")
         except Exception as e:
@@ -428,9 +419,7 @@ def create_default_config() -> TranslationConfig:
     return TranslationConfig()
 
 
-def validate_instruction(
-    instruction: str, min_length: int = 3, max_length: int = 1000
-) -> tuple[bool, str | None]:
+def validate_instruction(instruction: str, min_length: int = 3, max_length: int = 1000) -> tuple[bool, str | None]:
     """
     Basic instruction validation helper
 

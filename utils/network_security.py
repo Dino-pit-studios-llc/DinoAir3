@@ -103,9 +103,7 @@ except ImportError as e:
             self.app = app
 
         @staticmethod
-        async def dispatch(
-            request: Any, call_next: Callable[[Any], Awaitable[Response]]
-        ) -> Response:
+        async def dispatch(request: Any, call_next: Callable[[Any], Awaitable[Response]]) -> Response:
             """Dispatch method."""
             return await call_next(request)
 

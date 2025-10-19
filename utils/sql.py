@@ -102,9 +102,7 @@ def _validate_identifier(name: str, kind: str) -> None:
         raise ValueError(f"Invalid {kind} identifier: {name!r}")
 
 
-def parameterize_delete_older_than(
-    table: str, ts_field: str, days: int = 7
-) -> tuple[str, tuple[str, ...]]:
+def parameterize_delete_older_than(table: str, ts_field: str, days: int = 7) -> tuple[str, tuple[str, ...]]:
     """Build a parameterized DELETE statement for retention jobs.
 
     Args:

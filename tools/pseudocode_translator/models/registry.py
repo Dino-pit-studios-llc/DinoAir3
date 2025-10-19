@@ -92,9 +92,7 @@ class ModelRegistry:
             logger.info("Unregistered model: %s", actual_name)
 
             # Remove associated aliases
-            aliases_to_remove = [
-                alias for alias, target in cls._aliases.items() if target == actual_name
-            ]
+            aliases_to_remove = [alias for alias, target in cls._aliases.items() if target == actual_name]
             for alias in aliases_to_remove:
                 del cls._aliases[alias]
 

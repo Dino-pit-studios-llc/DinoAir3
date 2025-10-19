@@ -5,8 +5,6 @@ SonarQube CI Setup Verification Script
 This script checks if SonarQube CI integration is properly configured.
 """
 
-import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -29,7 +27,7 @@ def check_sonar_properties() -> bool:
         print(f"❌ SonarQube configuration: {sonar_file} (missing)")
         return False
 
-    with open(sonar_file, "r") as f:
+    with open(sonar_file) as f:
         content = f.read()
 
     required_keys = [
@@ -65,7 +63,7 @@ def check_github_workflows() -> bool:
             all_exist = False
         else:
             # Check if workflow contains SonarQube steps
-            with open(filepath, "r") as f:
+            with open(filepath) as f:
                 content = f.read()
             if "sonar" in content.lower():
                 print("   ✅ Contains SonarQube integration")
@@ -114,9 +112,7 @@ def check_environment_variables() -> bool:
     if python_version >= (3, 8):
         print(f"✅ Python version: {python_version.major}.{python_version.minor}")
     else:
-        print(
-            f"⚠️  Python version: {python_version.major}.{python_version.minor} (3.8+ recommended)"
-        )
+        print(f"⚠️  Python version: {python_version.major}.{python_version.minor} (3.8+ recommended)")
 
     return True
 
@@ -188,9 +184,7 @@ def main():
         print("\n📝 Next steps:")
         print("1. Add SONAR_TOKEN to GitHub repository secrets")
         print("2. Push changes to trigger SonarCloud analysis")
-        print(
-            "3. Check results at: https://sonarcloud.io/project/overview?id=Dino-pit-studios-llc_DinoAir3"
-        )
+        print("3. Check results at: https://sonarcloud.io/project/overview?id=Dino-pit-studios-llc_DinoAir3")
     else:
         print("⚠️  Some configuration issues need to be resolved")
         print("📖 See docs/SONARQUBE_CI_SETUP.md for detailed setup instructions")

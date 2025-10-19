@@ -150,9 +150,7 @@ class SafePDFProcessor:
             def check_timeout(self) -> None:
                 """Check Timeout method."""
                 if time.time() - self.start_time > self.timeout:
-                    raise PDFProcessingTimeoutError(
-                        TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)
-                    )
+                    raise PDFProcessingTimeoutError(TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout))
 
         timeout_checker = TimeoutThread(self.timeout)
         self._timeout_checker = timeout_checker
@@ -183,9 +181,7 @@ class SafePDFProcessor:
         # Check file size
         file_size = path.stat().st_size
         if file_size > self.max_file_size:
-            raise PDFProcessingError(
-                f"PDF file too large: {file_size} bytes (max: {self.max_file_size})"
-            )
+            raise PDFProcessingError(f"PDF file too large: {file_size} bytes (max: {self.max_file_size})")
 
         # Check file extension
         if path.suffix.lower() != PDF_EXTENSION:
@@ -221,9 +217,7 @@ class SafePDFProcessor:
         # Check file size
         file_size = path.stat().st_size
         if file_size > self.max_file_size:
-            raise PDFProcessingError(
-                f"PDF file too large: {file_size} bytes (max: {self.max_file_size})"
-            )
+            raise PDFProcessingError(f"PDF file too large: {file_size} bytes (max: {self.max_file_size})")
 
         # Check file extension
         if path.suffix.lower() != PDF_EXTENSION:
@@ -301,9 +295,7 @@ class SafePDFProcessor:
                     chunk = content_str[start:end]
 
                     # Apply sanitization to chunk
-                    sanitized_chunk = re.sub(
-                        NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk
-                    )
+                    sanitized_chunk = re.sub(NON_PRINTABLE_PATTERN, NON_PRINTABLE_REPLACEMENT, chunk)
 
                     # For non-first chunks, skip the overlap portion to avoid duplicates
                     if start > 0:
@@ -419,9 +411,7 @@ class SafePDFProcessor:
                     text = str(text)
                 # Remove null bytes and control characters except newlines/tabs
                 text = "".join(
-                    char
-                    for char in text
-                    if ord(char) >= MIN_PRINTABLE_CHAR or char in ALLOWED_CONTROL_CHARS
+                    char for char in text if ord(char) >= MIN_PRINTABLE_CHAR or char in ALLOWED_CONTROL_CHARS
                 )
                 # Limit text length per page to prevent memory issues
                 if len(text) > MAX_PAGE_TEXT_LENGTH:
@@ -436,9 +426,7 @@ class SafePDFProcessor:
             logger.warning("Error extracting text from page %d: %s", page_num, str(e))
             return ERROR_EXTRACTING_PAGE_TEMPLATE.format(page_num=page_num, error=str(e))
 
-    def _process_reader(
-        self, reader: Any, start_time: float, pages_limit: int
-    ) -> tuple[list[str], int, list[str]]:
+    def _process_reader(self, reader: Any, start_time: float, pages_limit: int) -> tuple[list[str], int, list[str]]:
         """
         Process pages from a PdfReader with timeout checks and error handling.
 
@@ -461,9 +449,7 @@ class SafePDFProcessor:
                 page_text = self._extract_page_text_safe(page, page_num + 1)
 
                 if page_text.strip():
-                    extracted_texts.append(
-                        PAGE_HEADER_TEMPLATE.format(page_num=page_num + 1, page_text=page_text)
-                    )
+                    extracted_texts.append(PAGE_HEADER_TEMPLATE.format(page_num=page_num + 1, page_text=page_text))
 
                 pages_processed += 1
 
@@ -522,9 +508,7 @@ class SafePDFProcessor:
                 result["warnings"].append(f"Processing limited to {pages_limit} pages")
 
             # Extract text using shared processor
-            extracted_texts, pages_processed, warnings = self._process_reader(
-                reader, start_time, pages_limit
-            )
+            extracted_texts, pages_processed, warnings = self._process_reader(reader, start_time, pages_limit)
             result["text"] = "\n".join(extracted_texts)
             result["pages_processed"] = pages_processed
             result["warnings"].extend(warnings)
@@ -552,9 +536,7 @@ class SafePDFProcessor:
 
         return result
 
-    async def extract_text_async(
-        self, file_path: str | Path, max_pages: int | None = None
-    ) -> dict[str, Any]:
+    async def extract_text_async(self, file_path: str | Path, max_pages: int | None = None) -> dict[str, Any]:
         """
         Extract text from PDF file safely and asynchronously with timeout and error handling.
 
@@ -600,9 +582,7 @@ class SafePDFProcessor:
                 result["warnings"].append(f"Processing limited to {pages_limit} pages")
 
             # Extract text using shared processor
-            extracted_texts, pages_processed, warnings = self._process_reader(
-                reader, start_time, pages_limit
-            )
+            extracted_texts, pages_processed, warnings = self._process_reader(reader, start_time, pages_limit)
             result["text"] = "\n".join(extracted_texts)
             result["pages_processed"] = pages_processed
             result["warnings"].extend(warnings)
@@ -630,9 +610,7 @@ class SafePDFProcessor:
 
         return result
 
-    def extract_text_from_bytes(
-        self, pdf_bytes: bytes, filename: str = "unknown.pdf"
-    ) -> dict[str, Any]:
+    def extract_text_from_bytes(self, pdf_bytes: bytes, filename: str = "unknown.pdf") -> dict[str, Any]:
         """
         Extract text from PDF bytes safely.
 
@@ -657,9 +635,7 @@ class SafePDFProcessor:
         try:
             # Validate size
             if len(pdf_bytes) > self.max_file_size:
-                raise PDFProcessingError(
-                    f"PDF data too large: {len(pdf_bytes)} bytes (max: {self.max_file_size})"
-                )
+                raise PDFProcessingError(f"PDF data too large: {len(pdf_bytes)} bytes (max: {self.max_file_size})")
 
             # Validate PDF header
             if not pdf_bytes.startswith(PDF_HEADER_PREFIX):
@@ -685,13 +661,9 @@ class SafePDFProcessor:
 
             pages_limit = min(self.max_pages, total_pages)
             if pages_limit < total_pages:
-                result["warnings"].append(
-                    PROCESSING_LIMITED_MESSAGE.format(pages_limit=pages_limit)
-                )
+                result["warnings"].append(PROCESSING_LIMITED_MESSAGE.format(pages_limit=pages_limit))
 
-            extracted_texts, pages_processed, warnings = self._process_reader(
-                reader, start_time, pages_limit
-            )
+            extracted_texts, pages_processed, warnings = self._process_reader(reader, start_time, pages_limit)
             result["text"] = "\n".join(extracted_texts)
             result["pages_processed"] = pages_processed
             result["warnings"].extend(warnings)

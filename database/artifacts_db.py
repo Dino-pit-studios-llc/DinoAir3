@@ -179,9 +179,7 @@ class ArtifactsDatabase:
             # Fall back to unencrypted storage
             return content, None
 
-    def _decrypt_file_content(
-        self, encrypted_content: bytes, encryption_metadata: dict[str, str] | None
-    ) -> bytes:
+    def _decrypt_file_content(self, encrypted_content: bytes, encryption_metadata: dict[str, str] | None) -> bytes:
         """Decrypt file content from storage
 
         Args:
@@ -278,9 +276,7 @@ class ArtifactsDatabase:
         normalized_metadata = cast("Mapping[str, object]", metadata)
         return {str(key): str(value) for key, value in normalized_metadata.items()}
 
-    def create_artifact(
-        self, artifact: Artifact, content: bytes | None = None
-    ) -> ArtifactCreateResult:
+    def create_artifact(self, artifact: Artifact, content: bytes | None = None) -> ArtifactCreateResult:
         """Create a new artifact with content storage and metadata tracking.
 
         Args:
@@ -391,9 +387,7 @@ class ArtifactsDatabase:
             self.logger.error(f"Error updating artifact: {e}")
             return False
 
-    def _prepare_content_update(
-        self, current: Artifact, content: bytes | None
-    ) -> dict[str, object]:
+    def _prepare_content_update(self, current: Artifact, content: bytes | None) -> dict[str, object]:
         updates: dict[str, object] = {}
         if content is not None:
             temp_artifact = Artifact(id=current.id)
@@ -433,9 +427,7 @@ class ArtifactsDatabase:
         # Column names validated via _validate_column_name() before use
         return f"UPDATE artifacts SET {clause} WHERE id = ?"  # nosec B608
 
-    def _build_collection_update(
-        self, updates: Mapping[str, object]
-    ) -> tuple[list[str], list[object]]:
+    def _build_collection_update(self, updates: Mapping[str, object]) -> tuple[list[str], list[object]]:
         set_clauses: list[str] = []
         params: list[object] = []
         for key in self._COLLECTION_UPDATE_FIELDS:
@@ -627,9 +619,7 @@ class ArtifactsDatabase:
             if file_bytes is None:
                 return None
 
-            encryption_metadata = ArtifactsDatabase._normalize_encryption_metadata(
-                artifact.metadata
-            )
+            encryption_metadata = ArtifactsDatabase._normalize_encryption_metadata(artifact.metadata)
             if encryption_metadata and encryption_metadata.get("encrypted") == "true":
                 result = self._decrypt_file_content(file_bytes, encryption_metadata)
             else:

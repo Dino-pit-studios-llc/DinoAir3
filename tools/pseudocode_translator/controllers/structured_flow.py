@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..exceptions import ParsingError, TranslatorError  # type: ignore
+
 """Module module."""
 """Module module."""
 
@@ -87,11 +88,7 @@ class StructuredParsingController:
 
                 # Compatible success check
                 success_attr = getattr(parse_result, "success", None)
-                parse_success = (
-                    success_attr
-                    if isinstance(success_attr, bool)
-                    else (len(parse_result.errors) == 0)
-                )
+                parse_success = success_attr if isinstance(success_attr, bool) else (len(parse_result.errors) == 0)
 
                 if not parse_success:
                     # Convert parse errors to detailed error messages
@@ -110,9 +107,7 @@ class StructuredParsingController:
                         metadata=self._create_metadata(start_time, 0, 0, 0, 0, False),
                     )
             except Exception as e:
-                error = ParsingError(
-                    "Failed to parse input", block_content=input_text[:200], cause=e
-                )
+                error = ParsingError("Failed to parse input", block_content=input_text[:200], cause=e)
                 error.add_suggestion("Check input format")
                 error.add_suggestion("Ensure pseudocode syntax is valid")
 
@@ -195,9 +190,7 @@ class StructuredParsingController:
         # Validate the code (structured path semantics)
         logger.debug("Validating generated code")
         original_code = assembled_code
-        fixed_code, validation_result = self._validation.validate_and_optionally_fix(
-            assembled_code, llm_first=False
-        )
+        fixed_code, validation_result = self._validation.validate_and_optionally_fix(assembled_code, llm_first=False)
 
         assembled_final = original_code
         if not getattr(validation_result, "is_valid", False):

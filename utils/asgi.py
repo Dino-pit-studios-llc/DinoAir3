@@ -13,9 +13,7 @@ if TYPE_CHECKING:
 try:
     # starlette is already a dependency in this project
     from starlette.types import Scope
-except (
-    ImportError
-):  # pragma: no cover - fallback typing if starlette not available at type-check time
+except ImportError:  # pragma: no cover - fallback typing if starlette not available at type-check time
     from typing import Any as Scope  # type: ignore
 
 

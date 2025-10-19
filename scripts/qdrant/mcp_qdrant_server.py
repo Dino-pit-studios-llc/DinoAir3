@@ -237,9 +237,7 @@ class QdrantMCPServer:
     async def _handle_initialize(params: Any) -> Any:
         """Handle server initialization."""
         return {
-            "capabilities": ServerCapabilities(
-                tools={"listChanged": False}, resources={"listChanged": False}
-            ),
+            "capabilities": ServerCapabilities(tools={"listChanged": False}, resources={"listChanged": False}),
             "serverInfo": {"name": "Qdrant MCP Server", "version": "1.0.0"},
         }
 
@@ -316,9 +314,7 @@ class QdrantMCPServer:
                         "id": result.id,
                         "score": result.score,
                         "payload": result.payload,
-                        "vector": (
-                            result.vector[:10] if result.vector else None
-                        ),  # First 10 dimensions
+                        "vector": (result.vector[:10] if result.vector else None),  # First 10 dimensions
                     }
                 )
 
@@ -362,9 +358,7 @@ class QdrantMCPServer:
                 )
 
             # Upload points
-            operation_info = self.client.upsert(
-                collection_name=collection_name, points=point_structs
-            )
+            operation_info = self.client.upsert(collection_name=collection_name, points=point_structs)
 
             return {
                 "content": [
@@ -443,9 +437,7 @@ class QdrantMCPServer:
                     {
                         "name": collection.name,
                         "status": "active",
-                        "vectors_config": (
-                            str(collection.config.params) if collection.config else None
-                        ),
+                        "vectors_config": (str(collection.config.params) if collection.config else None),
                     }
                 )
 
@@ -628,9 +620,7 @@ async def main():
     api_key = args.api_key or os.getenv("QDRANT_API_KEY")
 
     if not api_key:
-        print(
-            "Error: Qdrant API key required. Provide via --api-key or QDRANT_API_KEY environment variable"
-        )
+        print("Error: Qdrant API key required. Provide via --api-key or QDRANT_API_KEY environment variable")
         return 1
 
     try:

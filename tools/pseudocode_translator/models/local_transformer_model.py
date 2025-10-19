@@ -78,9 +78,7 @@ class LocalTransformerModel(BaseTranslationModel):
         super().__init__(config)
 
         if not TRANSFORMERS_AVAILABLE:
-            raise ImportError(
-                "transformers package is required. Install with: pip install transformers torch"
-            )
+            raise ImportError("transformers package is required. Install with: pip install transformers torch")
 
         # Set default configuration
         self.config.setdefault("model_name", "Salesforce/codegen-350M-mono")
@@ -289,9 +287,7 @@ class LocalTransformerModel(BaseTranslationModel):
             # Only include relevant fields and format context for clarity
             relevant_keys = ["filename", "function_name", "dependencies", "description"]
             formatted_context = "\n".join(
-                f"#   {key}: {context[key]}"
-                for key in relevant_keys
-                if key in context and context[key] is not None
+                f"#   {key}: {context[key]}" for key in relevant_keys if key in context and context[key] is not None
             )
             if formatted_context:
                 prompt += "# Context:\n" + formatted_context + "\n"

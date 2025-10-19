@@ -18,8 +18,10 @@ import numpy as np
 # Import DinoAir components
 from utils import Logger
 
-from .search_common import compute_cosine_scores  # shared utilities
-from .search_common import text_similarity
+from .search_common import (
+    compute_cosine_scores,  # shared utilities
+    text_similarity,
+)
 
 # Import RAG components
 from .vector_search import SearchResult, VectorSearchEngine
@@ -61,9 +63,7 @@ def _compute_cosine_chunk_scores(
     query_list = [float(x) for x in np.asarray(query_embedding, dtype=np.float64).tolist()]
     scores = compute_cosine_scores(query_list, docs_list, mode="auto")
     results: list[tuple[float, dict[str, Any]]] = [
-        (float(sim), emb_data)
-        for emb_data, sim in zip(meta_ref, scores, strict=False)
-        if sim >= threshold
+        (float(sim), emb_data) for emb_data, sim in zip(meta_ref, scores, strict=False) if sim >= threshold
     ]
     return results
 
@@ -244,10 +244,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
         """Get embeddings with caching"""
         # Check if cache needs refresh
         current_time = time.time()
-        if (
-            self._embeddings_cache is None
-            or current_time - self._embeddings_cache_time > self._cache_refresh_interval
-        ):
+        if self._embeddings_cache is None or current_time - self._embeddings_cache_time > self._cache_refresh_interval:
             self.logger.debug("Refreshing embeddings cache")
             self._embeddings_cache = self._retrieve_all_embeddings(file_types)
             self._embeddings_cache_time = current_time
@@ -255,9 +252,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
             # Pre-parse embeddings for efficiency
             for emb_data in self._embeddings_cache:
                 if isinstance(emb_data["embedding_vector"], str):
-                    emb_data["embedding_vector"] = np.array(
-                        json.loads(emb_data["embedding_vector"])
-                    )
+                    emb_data["embedding_vector"] = np.array(json.loads(emb_data["embedding_vector"]))
 
         # Filter by file types if needed
         if file_types and self._embeddings_cache:
@@ -276,9 +271,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
         """Perform similarity search in parallel"""
         # Split embeddings for parallel processing
         chunk_size = max(100, len(all_embeddings) // self.max_workers)
-        chunks = [
-            all_embeddings[i : i + chunk_size] for i in range(0, len(all_embeddings), chunk_size)
-        ]
+        chunks = [all_embeddings[i : i + chunk_size] for i in range(0, len(all_embeddings), chunk_size)]
 
         # Process chunks in parallel
         all_results: list[tuple[float, dict[str, Any]]] = []
@@ -333,9 +326,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
 
         return results
 
-    def _get_top_k_results(
-        self, scored_results: list[tuple[float, dict[str, Any]]], top_k: int
-    ) -> list[SearchResult]:
+    def _get_top_k_results(self, scored_results: list[tuple[float, dict[str, Any]]], top_k: int) -> list[SearchResult]:
         """Efficiently get top-k results using a heap"""
         # Use negative scores for max heap
         heap = []
@@ -423,9 +414,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
                 keyword_results = keyword_future.result()
 
             # Merge results
-            merged_results = self._merge_search_results(
-                vector_results, keyword_results, vector_weight, keyword_weight
-            )
+            merged_results = self._merge_search_results(vector_results, keyword_results, vector_weight, keyword_weight)
 
             # Rerank if requested
             if rerank and merged_results:
@@ -472,9 +461,7 @@ class OptimizedVectorSearchEngine(VectorSearchEngine):
 
         # Process queries in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            future_to_query = {
-                executor.submit(search_func, query, top_k, **kwargs): query for query in queries
-            }
+            future_to_query = {executor.submit(search_func, query, top_k, **kwargs): query for query in queries}
 
             for future in concurrent.futures.as_completed(future_to_query):
                 query = future_to_query[future]
@@ -670,9 +657,7 @@ class SearchOptimizer:
         return dict(grouped)
 
     @staticmethod
-    def deduplicate_results(
-        results: list[SearchResult], similarity_threshold: float = 0.9
-    ) -> list[SearchResult]:
+    def deduplicate_results(results: list[SearchResult], similarity_threshold: float = 0.9) -> list[SearchResult]:
         """
         Remove duplicate or highly similar results.
 
@@ -693,10 +678,7 @@ class SearchOptimizer:
 
             for kept_result in deduplicated:
                 # Check if from same file and overlapping chunks
-                if (
-                    result.file_id == kept_result.file_id
-                    and abs(result.chunk_index - kept_result.chunk_index) <= 1
-                ):
+                if result.file_id == kept_result.file_id and abs(result.chunk_index - kept_result.chunk_index) <= 1:
                     is_duplicate = True
                     break
 

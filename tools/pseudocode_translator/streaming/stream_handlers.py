@@ -344,12 +344,8 @@ class PipeStreamHandler(StreamHandler):
             self.write_fd = write_fd
 
         # Create file objects from descriptors
-        self.read_file = (
-            os.fdopen(self.read_fd, "r", encoding=self.config.encoding) if self.read_fd else None
-        )
-        self.write_file = (
-            os.fdopen(self.write_fd, "w", encoding=self.config.encoding) if self.write_fd else None
-        )
+        self.read_file = os.fdopen(self.read_fd, "r", encoding=self.config.encoding) if self.read_fd else None
+        self.write_file = os.fdopen(self.write_fd, "w", encoding=self.config.encoding) if self.write_fd else None
 
     def read(self, size: int = -1) -> str:
         """Read from pipe"""
@@ -693,9 +689,7 @@ class AsyncFileStreamHandler(AsyncStreamHandler):
 
                 loop = asyncio.get_event_loop()
                 if "b" in self.mode:
-                    self._file = await loop.run_in_executor(
-                        None, open, str(self.filepath), self.mode
-                    )
+                    self._file = await loop.run_in_executor(None, open, str(self.filepath), self.mode)
                 else:
                     self._file = await loop.run_in_executor(
                         None,

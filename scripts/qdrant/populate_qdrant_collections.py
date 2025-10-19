@@ -427,9 +427,7 @@ def generate_mock_embeddings(text: str, dimensions: int = 384) -> list[float]:
     return embeddings[:dimensions]
 
 
-def create_collection_with_mcp(
-    mcp_server_url: str, collection_name: str, vector_size: int, api_key: str
-):
+def create_collection_with_mcp(mcp_server_url: str, collection_name: str, vector_size: int, api_key: str):
     """Create a collection using MCP server."""
     import requests
 
@@ -458,9 +456,7 @@ def create_collection_with_mcp(
         return False
 
 
-def upload_points_with_mcp(
-    mcp_server_url: str, collection_name: str, points: list[dict], api_key: str
-):
+def upload_points_with_mcp(mcp_server_url: str, collection_name: str, points: list[dict], api_key: str):
     """Upload points using MCP server."""
     import requests
 

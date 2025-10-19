@@ -191,9 +191,7 @@ class PerformanceMonitor:
             cpu_usage = None
 
             if timer_data["initial_memory"] is not None and "memory_mb" in final_metrics:
-                memory_usage = int(
-                    final_metrics["memory_mb"] * 1024 * 1024
-                )  # Convert back to bytes
+                memory_usage = int(final_metrics["memory_mb"] * 1024 * 1024)  # Convert back to bytes
 
             if timer_data["initial_cpu"] is not None and "cpu_percent" in final_metrics:
                 cpu_usage = final_metrics["cpu_percent"]
@@ -229,13 +227,9 @@ class PerformanceMonitor:
 
         alerts = []
 
-        if (
-            self.config.duration_threshold_seconds
-            and metric.duration > self.config.duration_threshold_seconds
-        ):
+        if self.config.duration_threshold_seconds and metric.duration > self.config.duration_threshold_seconds:
             alerts.append(
-                f"Duration {metric.duration:.3f}s exceeds threshold "
-                f"{self.config.duration_threshold_seconds}s"
+                f"Duration {metric.duration:.3f}s exceeds threshold {self.config.duration_threshold_seconds}s"
             )
 
         if (
@@ -244,19 +238,14 @@ class PerformanceMonitor:
             and metric.memory_usage > self.config.memory_threshold_mb * 1024 * 1024
         ):
             memory_mb = metric.memory_usage / 1024 / 1024
-            alerts.append(
-                f"Memory {memory_mb:.1f}MB exceeds threshold {self.config.memory_threshold_mb}MB"
-            )
+            alerts.append(f"Memory {memory_mb:.1f}MB exceeds threshold {self.config.memory_threshold_mb}MB")
 
         if (
             self.config.cpu_threshold_percent
             and metric.cpu_usage
             and metric.cpu_usage > self.config.cpu_threshold_percent
         ):
-            alerts.append(
-                f"CPU {metric.cpu_usage:.1f}% exceeds threshold "
-                f"{self.config.cpu_threshold_percent}%"
-            )
+            alerts.append(f"CPU {metric.cpu_usage:.1f}% exceeds threshold {self.config.cpu_threshold_percent}%")
 
         if alerts:
             alert_msg = f"Performance alert for {metric.operation}: {'; '.join(alerts)}"
@@ -282,9 +271,7 @@ class PerformanceMonitor:
                         "alerts": alerts,
                         "performance_data": {
                             "duration": metric.duration,
-                            "memory_mb": (
-                                metric.memory_usage / 1024 / 1024 if metric.memory_usage else None
-                            ),
+                            "memory_mb": (metric.memory_usage / 1024 / 1024 if metric.memory_usage else None),
                             "cpu_percent": metric.cpu_usage,
                         },
                     },

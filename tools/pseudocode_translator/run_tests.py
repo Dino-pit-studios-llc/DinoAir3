@@ -97,9 +97,7 @@ def add_test_options_args(parser):
 
 def add_coverage_args(parser):
     """Add coverage-related arguments to the parser for coverage analysis and reporting."""
-    parser.add_argument(
-        "--cov", "--coverage", action="store_true", help="Run with coverage analysis"
-    )
+    parser.add_argument("--cov", "--coverage", action="store_true", help="Run with coverage analysis")
     parser.add_argument(
         "--cov-report",
         choices=["term", "html", "xml", "json"],

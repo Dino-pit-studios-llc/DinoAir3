@@ -165,9 +165,7 @@ class QwenModel(BaseTranslationModel):
             raise ValueError("Model path must be provided either in config or as parameter")
 
         if not model_path.exists():
-            raise FileNotFoundError(
-                f"Model file not found: {model_path}\nPlease download the Qwen 7B GGUF model."
-            )
+            raise FileNotFoundError(f"Model file not found: {model_path}\nPlease download the Qwen 7B GGUF model.")
 
         logger.info("Loading Qwen model from: %s", model_path)
 

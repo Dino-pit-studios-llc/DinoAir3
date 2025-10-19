@@ -36,7 +36,6 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 import requests
-
 from utils.config_loader import save_json_config
 from utils.process import safe_run
 
@@ -205,9 +204,7 @@ class AlertManager:
     @staticmethod
     def _format_email_body(alert: Alert) -> str:
         """Format email body for alert."""
-        metric_line = (
-            f"Metric Value: {alert.metric_value}" if alert.metric_value is not None else ""
-        )
+        metric_line = f"Metric Value: {alert.metric_value}" if alert.metric_value is not None else ""
         threshold_line = f"Threshold: {alert.threshold}" if alert.threshold is not None else ""
 
         body = f"""
@@ -374,9 +371,7 @@ DinoAir Import Organization Monitoring
 
             # Check if similar issue already exists
             search_url = "https://api.github.com/search/issues"
-            search_query = (
-                f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
-            )
+            search_query = f'repo:{self.config.github_repo} is:issue is:open "Import Alert" "{alert.title}"'
             search_params = {"q": search_query}
 
             response = requests.get(
@@ -540,9 +535,7 @@ Please investigate and resolve the underlying import organization issues.
                                 id=f"health_score_{module_name}",
                                 severity="warning",
                                 title="Module Health Warning",
-                                message=(
-                                    f"Module {module_name} health score below recommended threshold"
-                                ),
+                                message=(f"Module {module_name} health score below recommended threshold"),
                                 module=module_name,
                                 metric_value=health_score,
                                 threshold=0.8,
@@ -632,8 +625,7 @@ def main():  # noqa: C901
         else:
             for alert in alert_manager.alerts_history[-10:]:  # Show last 10
                 print(
-                    f"  {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')} | "
-                    f"{alert.severity.upper():<8} | {alert.title}"
+                    f"  {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')} | {alert.severity.upper():<8} | {alert.title}"
                 )
 
     elif args.command == "configure":

@@ -106,9 +106,7 @@ _request_error: int = 0
 _req_lock = Lock()
 
 
-def increment_request(
-    success: bool, request_total: int, request_error: int, req_lock
-) -> tuple[int, int]:
+def increment_request(success: bool, request_total: int, request_error: int, req_lock) -> tuple[int, int]:
     """Increment process-level request counters."""
     with req_lock:
         request_total += 1
@@ -247,9 +245,7 @@ def minimal_snapshot() -> dict[str, Any]:
     """
     # Derive adapter successes/failures from the structured snapshot
     full: dict[str, Any] = _STORE.snapshot()
-    services_dict: dict[str, dict[str, Any]] = cast(
-        "dict[str, dict[str, Any]]", full.get("services", {})
-    )
+    services_dict: dict[str, dict[str, Any]] = cast("dict[str, dict[str, Any]]", full.get("services", {}))
     adapters: dict[str, Any] = {}
     if isinstance(services_dict, dict):
         for name, stats in services_dict.items():

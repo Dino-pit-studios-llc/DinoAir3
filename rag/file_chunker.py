@@ -110,9 +110,7 @@ class FileChunker:
         chunk_index = 0
 
         while current_pos < text_length:
-            chunk_end = self._determine_chunk_end(
-                text, current_pos, text_length, respect_boundaries
-            )
+            chunk_end = self._determine_chunk_end(text, current_pos, text_length, respect_boundaries)
             chunk_content = text[current_pos:chunk_end]
 
             # Skip if chunk is too small (unless it's the last chunk)
@@ -121,9 +119,7 @@ class FileChunker:
                 continue
 
             # Calculate and create chunk
-            overlap_prev, overlap_next = self._calculate_overlaps(
-                chunk_index, current_pos, chunk_end, text_length
-            )
+            overlap_prev, overlap_next = self._calculate_overlaps(chunk_index, current_pos, chunk_end, text_length)
 
             chunk = self._create_chunk(
                 chunk_content,
@@ -142,9 +138,7 @@ class FileChunker:
         self.logger.info("Created %d chunks from %d characters", len(chunks), text_length)
         return chunks
 
-    def _determine_chunk_end(
-        self, text: str, current_pos: int, text_length: int, respect_boundaries: bool
-    ) -> int:
+    def _determine_chunk_end(self, text: str, current_pos: int, text_length: int, respect_boundaries: bool) -> int:
         """Determine the end position for the current chunk.
 
         Args:
@@ -296,9 +290,7 @@ class FileChunker:
 
                 # Add overlap from previous chunk
                 if self.overlap > 0 and i > 0:
-                    overlap_sentences = FileChunker._get_previous_sentences(
-                        sentences, i, self.overlap
-                    )
+                    overlap_sentences = FileChunker._get_previous_sentences(sentences, i, self.overlap)
                     current_chunk.extend(overlap_sentences)
                     current_size = sum(len(s) for s in overlap_sentences)
 
@@ -600,9 +592,7 @@ class FileChunker:
         return final_boundaries
 
     @staticmethod
-    def _update_string_brace(
-        line: str, in_string: bool, string_char: str, brace_count: int
-    ) -> tuple[bool, str, int]:
+    def _update_string_brace(line: str, in_string: bool, string_char: str, brace_count: int) -> tuple[bool, str, int]:
         for char in line:
             if not in_string and char in ("'", '"'):
                 in_string = True
@@ -680,9 +670,7 @@ class FileChunker:
         return min(end_pos, start + len(code[start:]))
 
     @staticmethod
-    def _get_sentence_overlap(
-        sentences: list[tuple[str, int, int]], start_idx: int, target_size: int
-    ) -> str:
+    def _get_sentence_overlap(sentences: list[tuple[str, int, int]], start_idx: int, target_size: int) -> str:
         """Get overlap content from following sentences."""
         overlap_content = []
         current_size = 0
@@ -697,9 +685,7 @@ class FileChunker:
         return "".join(overlap_content)
 
     @staticmethod
-    def _get_previous_sentences(
-        sentences: list[tuple[str, int, int]], current_idx: int, target_size: int
-    ) -> list[str]:
+    def _get_previous_sentences(sentences: list[tuple[str, int, int]], current_idx: int, target_size: int) -> list[str]:
         """Get sentences from previous chunk for overlap."""
         overlap_sentences = []
         current_size = 0

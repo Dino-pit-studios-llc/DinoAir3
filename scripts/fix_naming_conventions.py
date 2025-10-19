@@ -230,9 +230,7 @@ class NamingFixer:
                 return True
 
             # Create temporary file with fixed content
-            with tempfile.NamedTemporaryFile(
-                mode="w", encoding="utf-8", suffix=".py", delete=False
-            ) as tmp_file:
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".py", delete=False) as tmp_file:
                 tmp_path = Path(tmp_file.name)
                 tmp_file.write(new_content)
 

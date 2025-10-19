@@ -57,9 +57,7 @@ class PerformanceChecker(ast.NodeVisitor):
             and isinstance(node.func.value.value, str)
             and node.func.value.value == ""
         ):
-            self.suggestions.append(
-                f"Good use of join() for string concatenation at line {node.lineno}"
-            )
+            self.suggestions.append(f"Good use of join() for string concatenation at line {node.lineno}")
 
         self.generic_visit(node)
 
@@ -74,21 +72,13 @@ class PerformanceChecker(ast.NodeVisitor):
             and isinstance(node.iter.args[0].func, ast.Name)
             and node.iter.args[0].func.id == "len"
         ):
-            self.suggestions.append(
-                f"Use enumerate() instead of range(len()) at line {node.lineno}"
-            )
+            self.suggestions.append(f"Use enumerate() instead of range(len()) at line {node.lineno}")
 
     def visit_BinOp(self, node: ast.BinOp):
         """Check binary operations for performance issues."""
         # Check for string concatenation in loops
-        if (
-            isinstance(node.op, ast.Add)
-            and self.in_loop
-            and PerformanceChecker._involves_string_concatenation(node)
-        ):
-            self.suggestions.append(
-                f"Avoid string concatenation in loops at line {node.lineno} - use list and join()"
-            )
+        if isinstance(node.op, ast.Add) and self.in_loop and PerformanceChecker._involves_string_concatenation(node):
+            self.suggestions.append(f"Avoid string concatenation in loops at line {node.lineno} - use list and join()")
 
         self.generic_visit(node)
 
@@ -152,9 +142,7 @@ class AlgorithmicComplexityChecker(ast.NodeVisitor):
         self.nested_loops += 1
 
         if self.nested_loops > 2:
-            self.suggestions.append(
-                f"Deeply nested loops at line {node.lineno} - consider algorithmic optimization"
-            )
+            self.suggestions.append(f"Deeply nested loops at line {node.lineno} - consider algorithmic optimization")
 
         self.generic_visit(node)
         self.nested_loops -= 1
@@ -164,9 +152,7 @@ class AlgorithmicComplexityChecker(ast.NodeVisitor):
         self.nested_loops += 1
 
         if self.nested_loops > 2:
-            self.suggestions.append(
-                f"Deeply nested loops at line {node.lineno} - consider algorithmic optimization"
-            )
+            self.suggestions.append(f"Deeply nested loops at line {node.lineno} - consider algorithmic optimization")
 
         self.generic_visit(node)
         self.nested_loops -= 1
@@ -195,11 +181,7 @@ class DataStructureChecker(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call):
         """Check function calls for data structure optimization."""
         # Check for list.count() in conditions (suggests set might be better)
-        if (
-            isinstance(node.func, ast.Attribute)
-            and node.func.attr == "count"
-            and isinstance(node.func.value, ast.Name)
-        ):
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "count" and isinstance(node.func.value, ast.Name):
             self.suggestions.append(
                 f"Using list.count() at line {node.lineno} - consider using 'in' operator or set for membership testing"
             )

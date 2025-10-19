@@ -370,9 +370,7 @@ class FuzzyMatcher:
 
         return None
 
-    def find_all_matches(
-        self, query: str, threshold: float = 0.6, max_results: int = 5
-    ) -> list[tuple[str, float]]:
+    def find_all_matches(self, query: str, threshold: float = 0.6, max_results: int = 5) -> list[tuple[str, float]]:
         """Find all matching candidates above threshold.
 
         Args:
