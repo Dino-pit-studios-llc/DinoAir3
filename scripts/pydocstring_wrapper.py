@@ -35,7 +35,11 @@ class PydocstringWrapper:
         if filename not in allowed_files:
             raise ValueError(f"Unauthorized file: {filename}")
         # Construct safe path inside trusted directory
-        safe_path = Path("/trusted/scripts") / filename
+        trusted_dir = Path("/trusted/scripts").resolve()
+        safe_path = (trusted_dir / filename).resolve()
+        # Check containment in trusted directory after normalization
+        if not str(safe_path).startswith(str(trusted_dir)):
+            raise ValueError(f"Attempted path traversal: {safe_path}")
         try:
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
