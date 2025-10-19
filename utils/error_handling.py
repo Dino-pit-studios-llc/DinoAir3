@@ -57,26 +57,14 @@ class ErrorCategory(Enum):
 
 @dataclass
 class ErrorContext:
-    """Context information for error classification and legacy compatibility.
+    """Context information for error classification."""
 
-    Backward-compat fields expected by tests:
-    - component: Optional component name
-    - user_id: Optional user identifier
-    - timestamp: Creation timestamp
-    """
-
-    # Original fields (kept for current usage)
     category: ErrorCategory | None = None
     severity: ErrorSeverity | None = None
     message: str | None = None
     operation: str | None = None
     retryable: bool = True
     details: dict[str, Any] = field(default_factory=dict)
-
-    # Compatibility fields (used by tests)
-    component: str | None = None
-    user_id: str | None = None
-    timestamp: float = field(default_factory=time.time)
 
 
 class ErrorClassifier:

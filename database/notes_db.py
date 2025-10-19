@@ -59,28 +59,6 @@ class NotesDatabase:
         """Handle OperationResult for methods that return simple boolean success."""
         return operation_result.success
 
-    # ===== LEGACY COMPATIBILITY METHODS =====
-
-    def _get_security(self) -> Any:
-        """Legacy method for backward compatibility"""
-        # This is now handled by NotesSecurity in the service layer
-        return self._service.security
-
-    def _get_database_path(self) -> str:
-        """Compatibility helper used in tests to patch DB location."""
-        # This is now handled by NotesRepository in the service layer
-        return str(self._service.repository.db_manager.notes_db_path)
-
-    def _enforce_security_for_write(self, operation: str) -> tuple[bool, str | None]:
-        """Legacy method for backward compatibility"""
-        # This is now handled by NotesSecurity in the service layer
-        return self._service.security.can_perform_write_operation(operation)
-
-    def _escape_sql_wildcards(self, text: str) -> str:
-        """Legacy method for backward compatibility"""
-        # This is now handled by NotesSecurity in the service layer
-        return self._service.security.escape_sql_wildcards(text)
-
     # ===== CRUD METHODS =====
 
     def create_note(

@@ -9,7 +9,6 @@ Security Features:
 - AES-256-GCM for authenticated encryption (prevents tampering)
 - PBKDF2 with SHA-256 for secure key derivation
 - Cryptographically secure random nonces and salts
-- Backward compatibility with legacy CBC encrypted data
 """
 
 import base64
@@ -17,9 +16,7 @@ import json
 import secrets
 from typing import Any
 
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
@@ -28,8 +25,7 @@ class ArtifactEncryption:
     """
     Handles field-level encryption for artifacts using AES-256-GCM
 
-    Uses authenticated encryption (GCM mode) for security.
-    Maintains backward compatibility with legacy CBC encrypted data.
+    Uses authenticated encryption (GCM mode) for security and data integrity.
     """
 
     # Encryption parameters
@@ -62,9 +58,8 @@ class ArtifactEncryption:
             length=self.key_length,
             salt=salt,
             iterations=self.iterations,
-            backend=default_backend(),
         )
-        return kdf.derive(password.encode("utf-8"))
+        return kdf.derive(password.encode())
 
     def generate_salt(self) -> bytes:
         """Generate a random salt"""
@@ -148,30 +143,12 @@ class ArtifactEncryption:
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
         else:
-            # Legacy CBC format - maintain backward compatibility
-            from cryptography.hazmat.primitives import padding
-
-            encrypted = base64.b64decode(encrypted_data["data"])
-            salt = base64.b64decode(encrypted_data["salt"])
-            iv = base64.b64decode(encrypted_data["iv"])
-
-            # Derive key if not provided
-            if key is None:
-                key = self.derive_key(self.password, salt)
-
-            # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-            # NOTE: This uses PKCS7 padding with 128-bit block size - a secure padding scheme
-            # CBC mode is maintained only for backward compatibility with existing encrypted data
-            # New encryptions use AES-GCM (see encrypt_data method) which is more secure
-            # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
-            # nosonar: python:S5542 - CBC mode with PKCS7 required for legacy data compatibility
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
-            decryptor = cipher.decryptor()
-            decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
-
-            # Remove PKCS7 padding using cryptography unpadder (secure padding scheme)
-            unpadder = padding.PKCS7(128).unpadder()
-            return unpadder.update(decrypted_padded) + unpadder.finalize()
+            # Legacy CBC encryption is no longer supported
+            raise ValueError(
+                "Legacy CBC encrypted data is no longer supported. "
+                "All data must be encrypted using AES-GCM. "
+                "Please re-encrypt your data with the current encryption method."
+            )
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """
