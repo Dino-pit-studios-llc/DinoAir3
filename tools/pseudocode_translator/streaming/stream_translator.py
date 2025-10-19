@@ -152,19 +152,15 @@ class StreamingTranslator:
         try:
             # Initialize translation manager
             self.translation_manager = TranslationManager(self.config)
-    """
-    Streaming translator module providing synchronous and asynchronous interactive and block translation strategies.
-    """
 
-                # Get strategy and translate
-                strategy = self._get_async_strategy(mode)
-                if strategy:
-                    async for translated in self._execute_async_strategy(strategy, mode, input_stream, on_update):
-                        yield translated
-
-            except Exception as e:
-                self._emit_event(StreamingEventData(event=StreamingEvent.ERROR, error=str(e)))
-                raise StreamingError(f"Streaming translation failed: {e}")
+            # Get strategy and translate
+            strategy = self._get_async_strategy(mode)
+            if strategy:
+                async for translated in self._execute_async_strategy(strategy, mode, input_stream, on_update):
+                    yield translated
+        except Exception as e:
+            self._emit_event(StreamingEventData(event=StreamingEvent.ERROR, error=str(e)))
+            raise StreamingError(f"Streaming translation failed: {e}")
 
             finally:
                 self._stop_streaming()

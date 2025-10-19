@@ -273,38 +273,11 @@ def validate_input(
 
 def validate_output(
     desc: DescriptorType,
-    payload: dict[str, JSONValue] | object,
+    payload: Mapping[str, JSONValue] | object,
 ) -> dict[str, JSONValue] | object:
     """
     Validate output payload using descriptor's output_schema.
     - If no schema: return payload unchanged.
-    - On success: return validated dict (exclude None).
-    - On failure: raise core_router.errors.ValidationError with details.
-    """
-    schema = _get_schema(desc, "output")
-    if schema is None:
-        return payload
-
-    name = _to_service_name(desc)
-    model_name = f"{name.replace(' ', '_').replace('-', '_')}_Output"
-    try:
-        model_class = _build_model_from_schema(schema, model_name)
-        inst = model_class.model_validate(payload if isinstance(payload, dict) else {"value": payload})
-        result = inst.model_dump(by_alias=False, exclude_none=True)
-        return result if isinstance(payload, dict) else result.get("value")
-    except PydanticValidationError as e:
-        raise ValidationError(
-            f"output validation failed for '{name}'",
-            details=cast("object", e.errors()),
-        ) from e
-    except Exception as e:
-        raise ValidationError(
-            f"output validation failed for '{name}'",
-            details=str(e),
-        ) from e
-    Validate output payload using descriptor's output_schema.
-    - If no schema: return payload unchanged.
-    - Accept Mapping or objects convertible to dict via model_dump()/dict().
     - On success: return validated dict (exclude None).
     - On failure: raise core_router.errors.ValidationError with details.
     """
@@ -332,7 +305,8 @@ def validate_output(
     try:
         model_class = _build_model_from_schema(schema, model_name)
         inst = model_class.model_validate(candidate)
-        return inst.model_dump(by_alias=False, exclude_none=True)
+        result = inst.model_dump(by_alias=False, exclude_none=True)
+        return result if isinstance(payload, dict) else result.get("value")
     except PydanticValidationError as e:
         raise ValidationError(
             f"output validation failed for '{name}'",

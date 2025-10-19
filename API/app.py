@@ -68,7 +68,7 @@ class TimeoutMiddleware:
             details=None,
             endpoint=endpoint,
             operation_id=None,
-            request_id=str(trace_id) if isinstance(trace_id, str) and trace_id else None,
+            trace_id=str(trace_id) if isinstance(trace_id, str) and trace_id else None,
         )
         if trace_id:
             from contextlib import suppress

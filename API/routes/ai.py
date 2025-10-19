@@ -619,7 +619,8 @@ def _prepare_function_arguments(raw_arguments: Any, function_name: str) -> Any:
             raise ValueError(f"Malformed JSON in function arguments for '{function_name}': {exc}") from exc
     return raw_arguments if raw_arguments is not None else {}
 # ... rest of code continues unchanged ...
-    - Returns available models from LM Studio via direct proxy
+    """
+    Returns available models from LM Studio via direct proxy
     """
     import httpx
 

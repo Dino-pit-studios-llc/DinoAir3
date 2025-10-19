@@ -265,10 +265,6 @@ class TestFileSearchDB:
         assert "success" in result or "error" in result
 
     @staticmethod
-    """
-    Tests for concurrent access safety of the file search database.
-    """
-
     def test_concurrent_access_safety(file_search_db):
         """Test that database handles concurrent access safely."""
         import threading
