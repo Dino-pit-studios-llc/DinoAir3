@@ -685,6 +685,7 @@ class ASTCache:
         """Start background thread for cleaning up expired entries"""
 
         def cleanup_loop():
+            """Loop running in a background thread to periodically remove expired cache entries until stopped."""
             while not self._stop_cleanup.is_set():
                 self._cleanup_expired_entries()
                 # Check every 60 seconds or 1/10 of TTL, whichever is smaller

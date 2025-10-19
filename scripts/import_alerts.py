@@ -269,7 +269,8 @@ DinoAir Import Organization Monitoring
             return self._create_teams_payload(alert)
         return self._create_generic_payload(alert)
 
-    def _create_slack_payload(self, alert: Alert) -> dict:
+    @staticmethod
+    def _create_slack_payload(alert: Alert) -> dict:
         """Create Slack webhook payload."""
         metric_fields = (
             [
@@ -312,7 +313,8 @@ DinoAir Import Organization Monitoring
             ],
         }
 
-    def _create_teams_payload(self, alert: Alert) -> dict:
+    @staticmethod
+    def _create_teams_payload(alert: Alert) -> dict:
         """Create Microsoft Teams webhook payload."""
         color = "FF0000" if alert.severity == "critical" else "FFA500"
         metric_facts = (
@@ -351,7 +353,8 @@ DinoAir Import Organization Monitoring
             ],
         }
 
-    def _create_generic_payload(self, alert: Alert) -> dict:
+    @staticmethod
+    def _create_generic_payload(alert: Alert) -> dict:
         """Create generic webhook payload."""
         return {
             "alert": asdict(alert),
@@ -469,7 +472,7 @@ Please investigate and resolve the underlying import organization issues.
                     "--format",
                     "json",
                 ],
-                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
+                allowed_binaries={Path(sys.executable).name, "python"},
                 timeout=60,
                 check=False,
                 text=True,
@@ -502,11 +505,7 @@ Please investigate and resolve the underlying import organization issues.
                         "--format",
                         "json",
                     ],
-                    allowed_binaries={
-                        Path(sys.executable).name,
-                        "python",
-                        PYTHON_EXE,
-                    },
+                    allowed_binaries={Path(sys.executable).name, "python"},
                     timeout=60,
                     check=False,
                     text=True,

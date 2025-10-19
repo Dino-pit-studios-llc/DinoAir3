@@ -128,6 +128,14 @@ class CircularDependencyDetector:
         path = []
 
         def dfs(node: str) -> bool:
+            """Perform a depth-first search from the given node to detect cycles.
+
+            Args:
+                node (str): The module name to start DFS from.
+
+            Returns:
+                bool: True if a cycle is found including the node, False otherwise.
+            """
             if node in rec_stack:
                 # Found cycle - extract it
                 cycle_start = path.index(node)

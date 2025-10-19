@@ -265,6 +265,10 @@ class TestFileSearchDB:
         assert "success" in result or "error" in result
 
     @staticmethod
+    """
+    Tests for concurrent access safety of the file search database.
+    """
+
     def test_concurrent_access_safety(file_search_db):
         """Test that database handles concurrent access safely."""
         import threading
@@ -273,6 +277,7 @@ class TestFileSearchDB:
         errors = []
 
         def add_files(start_id):
+            """Add files concurrently to the database, including delays to test race conditions."""
             try:
                 for i in range(5):
                     file_search_db.add_indexed_file(

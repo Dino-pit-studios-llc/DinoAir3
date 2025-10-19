@@ -47,8 +47,6 @@ from .validator import ValidationResult, Validator
 if TYPE_CHECKING:
     from .config import TranslatorConfig
 
-"""Module providing utilities for pseudocode translation, including event dispatching, timing wrappers, and translation result handling."""
-
 try:
     from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
@@ -146,7 +144,6 @@ class _EnumSentinel(Enum):
 
 # Reference to avoid unused-class diagnostics
 _ENUM_SENTINEL_REF = _EnumSentinel.__unused__
-
 
 # Event/timing wrappers to eliminate Unknown types across boundaries
 def _dispatch_event(
@@ -389,7 +386,8 @@ class TranslationManager(ShutdownMixin):
 
     def _ensure_exec_pool(self) -> ParseValidateExecutor:
         """Ensure an execution pool is available for parsing and validation tasks.
-        If not present, create one using the execution configuration or raise RuntimeError."""
+        If not present, create one using the execution configuration or raise RuntimeError.
+        """
         if self._exec_pool is None:
             try:
                 exec_cfg = getattr(self.config, "execution", None)

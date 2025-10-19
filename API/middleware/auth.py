@@ -123,7 +123,7 @@ class AuthMiddleware:
                 error="Unauthorized",
                 details=None,
                 endpoint=endpoint,
-                operationId=None,
+                operation_id=None,
                 requestId=(str(trace_id) if isinstance(trace_id, str) and trace_id else None),
             )
             if trace_id:

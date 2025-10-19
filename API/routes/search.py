@@ -1,3 +1,8 @@
+"""
+File search and index stats API routes module.
+
+Provides HTTP endpoints for keyword, vector, and hybrid file searches, and file index statistics.
+"""
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
@@ -90,6 +95,11 @@ def svc_hybrid(body: HybridSearchRequest) -> HybridSearchResponse:
     status_code=status.HTTP_200_OK,
 )
 async def keyword_search(_request: Request, body: KeywordSearchRequest) -> KeywordSearchResponse:
+    """
+    Route handler for keyword file search.
+
+    Processes incoming keyword search requests and returns search results via service router.
+    """
     return svc_keyword(body)
 
 
@@ -100,6 +110,11 @@ async def keyword_search(_request: Request, body: KeywordSearchRequest) -> Keywo
     status_code=status.HTTP_200_OK,
 )
 async def vector_search(_request: Request, body: VectorSearchRequest) -> VectorSearchResponse:
+    """
+    Route handler for vector file search.
+
+    Processes incoming vector search requests and returns search results via service router.
+    """
     return svc_vector(body)
 
 
@@ -110,6 +125,11 @@ async def vector_search(_request: Request, body: VectorSearchRequest) -> VectorS
     status_code=status.HTTP_200_OK,
 )
 async def hybrid_search(_request: Request, body: HybridSearchRequest) -> HybridSearchResponse:
+    """
+    Route handler for hybrid file search.
+
+    Processes incoming hybrid search requests and returns combined keyword and vector search results via service router.
+    """
     return svc_hybrid(body)
 
 
@@ -120,4 +140,9 @@ async def hybrid_search(_request: Request, body: HybridSearchRequest) -> HybridS
     status_code=status.HTTP_200_OK,
 )
 async def file_index_stats() -> FileIndexStatsResponse:
+    """
+    Route handler for retrieving file index statistics.
+
+    Invokes underlying service to gather and return index statistics for files.
+    """
     return svc_index_stats()

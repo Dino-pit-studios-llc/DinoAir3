@@ -142,7 +142,7 @@ def _json_error_response(
         error=error,
         details=details,
         endpoint=endpoint,
-        operationId=operation_id,
+        operation_id=operation_id,
         requestId=rid or None,
     )
 
