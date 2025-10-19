@@ -34,7 +34,7 @@ PATTERNS = {
 
 
 def read_text(p: Path) -> str:
-        """Read Text function."""
+    """Read Text function."""
     try:
         return p.read_text(encoding="utf-8", errors="replace")
     except Exception:
@@ -42,18 +42,18 @@ def read_text(p: Path) -> str:
 
 
 def is_python_file(p: Path) -> bool:
-        """Is Python File function."""
+    """Is Python File function."""
     return p.suffix == ".py"
 
 
 def is_in_tests(p: Path) -> bool:
-        """Is In Tests function."""
+    """Is In Tests function."""
     parts = p.parts
     return "tests" in parts
 
 
 def is_utils_process(p: Path) -> bool:
-        """Is Utils Process function."""
+    """Is Utils Process function."""
     # Only the wrapper module is allowed to use subprocess directly or with shell=True.
     try:
         rel = p.relative_to(REPO_ROOT).as_posix()

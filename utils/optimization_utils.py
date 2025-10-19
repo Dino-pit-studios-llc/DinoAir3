@@ -51,7 +51,7 @@ except ImportError:
 
             @property
             def timeout(self) -> Any:
-            """Timeout method."""
+                """Timeout method."""
                 class _Signal:
                     """Signal interface to connect callbacks for DummyQTimer."""
 
@@ -59,14 +59,14 @@ except ImportError:
                         self._outer = outer
 
                     def connect(self, cb: Callable[[], Any]) -> None:
-            """Connect method."""
+                        """Connect method."""
                         # Use public interface method
                         self._outer.set_callback(cb)
 
                 return _Signal(self)
 
             def start(self, ms: int) -> None:
-            """Start method."""
+                """Start method."""
                 if self._timer:
                     self._timer.cancel()
                 delay = ms / 1000.0
@@ -87,7 +87,7 @@ except ImportError:
                     self._callback = None
 
             def stop(self) -> None:
-            """Stop method."""
+                """Stop method."""
                 if self._timer:
                     self._timer.cancel()
                     self._timer = None
@@ -101,24 +101,29 @@ if TYPE_CHECKING:
     class _SignalProto(Protocol):
         """Protocol for signal-like objects with connect method."""
 
-        def connect(self, cb: Callable[..., Any]) -> Any: ...
+        def connect(self, cb: Callable[..., Any]) -> Any:
             """Connect method."""
+            ...
 
     class _QTimerProto(Protocol):
         """Protocol defining the interface for QTimer-like objects."""
 
-        def set_single_shot(self, single_shot: bool) -> None: ...
+        def set_single_shot(self, single_shot: bool) -> None:
             """Set single shot method."""
+            ...
 
         @property
-        def timeout(self) -> _SignalProto: ...
+        def timeout(self) -> _SignalProto:
             """Timeout method."""
+            ...
 
-        def start(self, ms: int) -> None: ...
+        def start(self, ms: int) -> None:
             """Start method."""
+            ...
 
-        def stop(self) -> None: ...
+        def stop(self) -> None:
             """Stop method."""
+            ...
 
 else:
     _QTimerProto = Any  # type: ignore[assignment, misc]
