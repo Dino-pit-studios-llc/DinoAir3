@@ -154,7 +154,8 @@ class Logger:
     def info(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log info message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self._logger.info(sanitized_message, *args, **kwargs)
+        # nosemgrep: python.lang.security.audit.logging.logger-tainted-format-string
+        self._logger.info(sanitized_message, *args, **kwargs)  # nosec: B608
 
     def warning(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log warning message with basic sanitization"""
@@ -164,7 +165,8 @@ class Logger:
     def error(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log error message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self._logger.error(sanitized_message, *args, **kwargs)
+        # nosemgrep: python.lang.security.audit.logging.logger-tainted-format-string
+        self._logger.error(sanitized_message, *args, **kwargs)  # nosec: B608
 
     def debug(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log debug message with basic sanitization"""

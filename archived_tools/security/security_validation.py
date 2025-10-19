@@ -4,6 +4,9 @@ DinoAir Security Validation Script
 Tests all implemented security components to ensure they're working correctly.
 """
 
+# Constants
+DEFAULT_GRADE_POOR = "D (Needs Improvement)"
+
 import json
 import os
 import secrets
@@ -298,7 +301,7 @@ def report_security_validation_results(
 ):
     """Generate and display security validation results, save report file, and provide recommendations."""
     score = validation_results.get("overall_score", 0)
-    grade = validation_results.get("security_grade", "D (Needs Improvement)")
+    grade = validation_results.get("security_grade", DEFAULT_GRADE_POOR)
 
     print("\n📊 SECURITY VALIDATION RESULTS")
     print(f"Overall Score: {score:.1f}% ({passed_tests}/{total_tests} tests passed)")
@@ -308,7 +311,7 @@ def report_security_validation_results(
         "A": ("🟢", "A (Excellent)"),
         "B": ("🟡", "B (Good)"),
         "C": ("🟠", "C (Acceptable)"),
-        "D": ("🔴", "D (Needs Improvement)"),
+        "D": ("🔴", DEFAULT_GRADE_POOR),
     }
     grade_key = grade[0] if isinstance(grade, str) and grade else "D"
     icon, label = grade_display.get(grade_key, grade_display["D"])
@@ -374,7 +377,7 @@ def run_security_validation():
         (80, "B (Good)"),
         (70, "C (Acceptable)"),
     ]
-    grade = next((g for t, g in thresholds if score >= t), "D (Needs Improvement)")
+    grade = next((g for t, g in thresholds if score >= t), DEFAULT_GRADE_POOR)
 
     validation_results["security_grade"] = grade
 

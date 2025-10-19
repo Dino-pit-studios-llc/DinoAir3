@@ -359,11 +359,11 @@ jobs:
           SONAR_PROJECT_KEY: ${{ vars.SONARQUBE_PROJECT_KEY }}
         run: |
           sonar-scanner-bin/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
-            -Dsonar.projectKey=${{ vars.SONARQUBE_PROJECT_KEY }} \
+            -Dsonar.projectKey="${SONAR_PROJECT_KEY}" \
             -Dsonar.sources=. \
             -Dsonar.tests=tests/ \
-            -Dsonar.host.url=${{ secrets.SONARQUBE_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} \
+            -Dsonar.host.url="${SONAR_HOST_URL}" \
+            -Dsonar.login="${SONAR_LOGIN}" \
             -Dsonar.python.coverage.reportPaths=coverage.xml \
             -Dsonar.python.version=3.11 \
             -Dsonar.branch.name=${{ github.ref_name }} \
