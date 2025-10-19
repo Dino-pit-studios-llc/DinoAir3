@@ -8,15 +8,20 @@ Provides backward-compatible imports for configuration managementProvides backwa
 
 
 
-import osfrom .versioned_config import VersionedConfigManager, get_config
-
 from pathlib import Path
-
 from typing import Any
+
+import get_config
+import import
+import osfrom
+import VersionedConfigManager
+
+import .versioned_config
+from .versioned_config import (ConfigLoader:, VersionedConfigManager,
+                               get_configclass)
 
 # Backward-compatible ConfigLoader class (delegates to VersionedConfigManager)
 
-from .versioned_config import VersionedConfigManager, get_configclass ConfigLoader:
 
     """Legacy ConfigLoader interface for backward compatibility with existing code."""
 
