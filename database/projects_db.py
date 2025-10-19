@@ -257,16 +257,7 @@ class ProjectsDatabase:
 
             # Build safe query using validated table name
             # The 'where' clause must use parameterized queries (? placeholders)
-            if table == "projects":
-                sql = f"SELECT COUNT(*) FROM projects WHERE {where}"
-            elif table == "notes":
-                sql = f"SELECT COUNT(*) FROM notes WHERE {where}"
-            elif table == "artifacts":
-                sql = f"SELECT COUNT(*) FROM artifacts WHERE {where}"
-            elif table == "calendar_events":
-                sql = f"SELECT COUNT(*) FROM calendar_events WHERE {where}"
-            else:
-                return 0
+            sql = f"SELECT COUNT(*) FROM {table} WHERE {where}"
 
             cursor.execute(sql, params)
             row = cursor.fetchone()
