@@ -1352,7 +1352,7 @@ class TranslationManager(ShutdownMixin):
 
             if _t_enabled():
                 rec_any: Any = _get_rec()
-                return cast("dict[str, Any]", rec_any.snapshot())
+                return cast(dict[str, Any], rec_any.snapshot())
         except Exception:
             # Never raise from telemetry; keep behavior unchanged
             pass

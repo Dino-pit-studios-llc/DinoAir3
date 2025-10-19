@@ -13,7 +13,7 @@ Features:
 - Health metrics and alerting
 - Historical trend analysis
 
-
+"""
 Usage:
     python scripts/dependency_monitor.py [command] [options]
 
@@ -261,29 +261,22 @@ if __name__ == "__main__":
         )
 
     def _write_temp_script(self, script: str) -> str:
-        import tempfile
-
-    def _write_temp_script(self, script: str):
         """Write the provided script string to a temporary Python file and return its file path."""
+        import tempfile
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_file:
             temp_file.write(script)
             temp_file.flush()
             return temp_file.name
 
-    def _run_script(self, script_path: str):
+    @staticmethod
+    def _run_script(script_path: str):
         """Execute the Python script at the specified path and return its output or result."""
-        """
-        Run an external script safely using safe_run with specified allowed binaries.
-
-        script_path: path to the script to execute.
-        Returns the CompletedProcess result of running the script.
-        """
         return safe_run(
             [sys.executable, script_path],
             allowed_binaries={
                 Path(sys.executable).name,
                 "python",
-                PYTHON_EXE,
+                sys.executable,
             },
             text=True,
             timeout=10,
@@ -314,7 +307,6 @@ if __name__ == "__main__":
     @staticmethod
     def _fallback_time(module_path: Path) -> float:
         """Estimate fallback import time based on module file size."""
-
         try:
             file_size = module_path.stat().st_size
             return max(0.001, (file_size / 1000000) * 0.001)
@@ -354,7 +346,7 @@ if __name__ == "__main__":
 
     def run_import_performance_analysis(self) -> dict[str, Any]:
         """
-        Run comprehensive import performance analysis using actual timing measurements.
+        Run comprehensive import performance analysis using actual timing measurements
 
         Returns:
             Performance analysis report with timing statistics and recommendations
@@ -799,7 +791,7 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
         print(json.dumps(analysis, indent=2, default=str))
 
 
-def execute_alert(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
+def execute_alert(_monitor: DependencyMonitor, _args: argparse.Namespace) -> None:
     """Execute Alert function."""
     # Placeholder for alert implementation
 
@@ -820,7 +812,7 @@ def execute_visualize(monitor: DependencyMonitor, args: argparse.Namespace) -> N
         sys.exit(1)
 
 
-def execute_performance(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
+def execute_performance(_monitor: DependencyMonitor, _args: argparse.Namespace) -> None:
     """Execute Performance function."""
 
 
@@ -857,7 +849,6 @@ def main() -> None:
     args = parse_args()
     validate_path(args.path)
     execute_command(args)
-
 
 if __name__ == "__main__":
     main()

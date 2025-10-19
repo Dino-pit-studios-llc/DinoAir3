@@ -97,7 +97,8 @@ class LogicValidator:
 
         return issues
 
-    def _check_undefined_names(self, tree: ast.AST) -> list[str]:
+    @staticmethod
+    def _check_undefined_names(tree: ast.AST) -> list[str]:
         """Check for undefined variable names (instance method wrapper)."""
         return LogicValidator.check_undefined_names(tree)
 
