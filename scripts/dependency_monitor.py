@@ -262,6 +262,7 @@ if __name__ == "__main__":
 
     def _write_temp_script(self, script: str) -> str:
         import tempfile
+
     def _write_temp_script(self, script: str):
         """Write the provided script string to a temporary Python file and return its file path."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_file:
