@@ -26,8 +26,10 @@ try:
     from concurrent.futures.process import BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
     # fallback for environments without symbol export
-    class BrokenProcessPool(Exception):
+    class BrokenProcessPoolError(Exception):
         """Custom exception indicating the process pool is broken or unavailable."""
+
+    BrokenProcessPool = BrokenProcessPoolError
 
 
 logger = logging.getLogger(__name__)

@@ -183,8 +183,10 @@ class TelemetryRecorder:
 
     @staticmethod
     def _bucket_label(duration_ms: float) -> str:
-        """Return the histogram bucket label for a given duration in milliseconds.
-        Iterates through predefined bucket edges and returns the string label corresponding to the smallest edge greater than or equal to the duration.
+        """
+        Return the histogram bucket label for a given duration in milliseconds.
+        Iterates through predefined bucket edges and returns the string label
+        corresponding to the smallest edge greater than or equal to the duration.
         """
         for edge in _BUCKET_EDGES_MS:
             if duration_ms <= edge:
@@ -309,8 +311,10 @@ def _apply_sampling_wrapper(rec: TelemetryRecorder, sample_rate: int) -> None:
         extra: dict | None = None,
         counters: dict[str, int] | None = None,
     ) -> None:
-        """Wrapper for record_event that applies deterministic sampling.
-        Increments sequence counter and only forwards the call to the original record_event when the sequence number meets the sampling criterion.
+        """
+        Wrapper for record_event that applies deterministic sampling.
+        Increments sequence counter and only forwards the call to
+        the original record_event when the sequence number meets the sampling criterion.
         """
         seq = rec.increment_seq()
         if seq % sample_rate != 0:

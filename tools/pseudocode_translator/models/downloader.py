@@ -149,7 +149,7 @@ class ModelDownloader:
             # Clean up temp file on error
             if temp_path.exists():
                 temp_path.unlink()
-            raise DownloadError(f"Failed to download model: {str(e)}")
+            raise DownloadError(f"Failed to download model: {str(e)}") from e
 
     def download_from_huggingface(self, repo_id: str, filename: str, revision: str = "main", **kwargs) -> Path:
         """

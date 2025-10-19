@@ -37,12 +37,12 @@ except Exception:  # pragma: no cover
     _MPBroken = None  # type: ignore
 
 
-class _BrokenPoolSentinel(Exception):
+class _BrokenPoolSentinelError(Exception):
     """Local sentinel to allow except blocks to match consistently when symbol is missing."""
 
 
 # type: ignore[misc]
-BrokenProcessPool = _CFBroken or _MPBroken or _BrokenPoolSentinel
+BrokenProcessPool = _CFBroken or _MPBroken or _BrokenPoolSentinelError
 
 
 class OffloadExecutor:

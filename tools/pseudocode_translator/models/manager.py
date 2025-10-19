@@ -164,7 +164,7 @@ class ModelManager(ShutdownMixin):
                 else:
                     raise RuntimeError(f"No download URL provided for model '{name}'")
             except Exception as e:
-                raise RuntimeError(f"Failed to download model: {e}")
+                raise RuntimeError(f"Failed to download model: {e}") from e
 
         # Initialize the model
         if model_path is None:
@@ -178,7 +178,7 @@ class ModelManager(ShutdownMixin):
                 model.warmup()
 
         except Exception as e:
-            raise RuntimeError(f"Failed to initialize model '{name}': {e}")
+            raise RuntimeError(f"Failed to initialize model '{name}': {e}") from e
 
         # Cache the instance
         self._instances[name] = ModelInstance(
@@ -292,7 +292,8 @@ class ModelManager(ShutdownMixin):
 
         if available_gb < capabilities.min_memory_gb:
             raise RuntimeError(
-                f"Insufficient memory for model '{model_name}'. Available: {available_gb:.1f}GB, Required: {capabilities.min_memory_gb}GB"
+                f"Insufficient memory for model '{model_name}'. "
+                f"Available: {available_gb:.1f}GB, Required: {capabilities.min_memory_gb}GB"
             )
 
         # Warn if below recommended

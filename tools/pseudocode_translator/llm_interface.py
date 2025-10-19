@@ -285,7 +285,7 @@ class LLMInterface(ShutdownMixin):
 
         except Exception as e:
             logger.error("Translation failed: %s", str(e))
-            raise RuntimeError(f"Failed to translate instruction: {str(e)}")
+            raise RuntimeError(f"Failed to translate instruction: {str(e)}") from e
 
     def batch_translate(self, instructions: list[str]) -> list[str]:
         """

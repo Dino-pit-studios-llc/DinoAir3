@@ -637,9 +637,9 @@ class ASTCache:
                 counters={"eviction": 1},
                 extra={"policy": self.eviction_mode, "reason": reason},
             )
-        except Exception:
+        except Exception as e:
             # Never raise from telemetry
-            pass
+            logger.debug("Exception in telemetry (ignored): %s", e)
 
     def _get_valid_entry(self, cache_key: str) -> CacheEntry | None:
         """Get entry if it exists and is still valid"""

@@ -67,10 +67,10 @@ class TranslatorAPI(ShutdownMixin):
         if language:
             try:
                 target_lang = OutputLanguage(language.lower())
-            except ValueError:
+            except ValueError as ve:
                 raise ValueError(
                     f"Unsupported language: {language}. Supported: {[lang.value for lang in OutputLanguage]}"
-                )
+                ) from ve
         else:
             target_lang = self._default_language
 
@@ -242,8 +242,9 @@ class TranslatorAPI(ShutdownMixin):
         try:
             self._default_language = OutputLanguage(language.lower())
             self._translator.set_target_language(self._default_language)
-        except ValueError:
-            raise ValueError(f"Unsupported language: {language}. Supported: {[lang.value for lang in OutputLanguage]}")
+        except ValueError as ve:
+            msg = f"Unsupported language: {language}. Supported: {[lang.value for lang in OutputLanguage]}"
+            raise ValueError(msg) from ve
 
     def switch_model(self, model_name: str):
         """

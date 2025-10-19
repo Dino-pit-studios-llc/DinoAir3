@@ -46,7 +46,8 @@ class CodeGenModel(BaseModel):
             name="codegen",
             display_name="CodeGen-Mono",
             description=(
-                "CodeGen is a family of open-source model for code generation by Salesforce AI Research. The mono variant is trained on Python code."
+                "CodeGen is a family of open-source model for code generation "
+                "by Salesforce AI Research. The mono variant is trained on Python code."
             ),
             version="350M-mono",
             author="Salesforce Research",
@@ -60,7 +61,10 @@ class CodeGenModel(BaseModel):
                 {
                     "instruction": "fibonacci function",
                     "output": (
-                        "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)"
+                        "def fibonacci(n):\n"
+                        "    if n <= 1:\n"
+                        "        return n\n"
+                        "    return fibonacci(n-1) + fibonacci(n-2)"
                     ),
                 }
             ],
