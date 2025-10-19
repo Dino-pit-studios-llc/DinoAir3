@@ -29,8 +29,15 @@ class PydocstringWrapper:
         Returns:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
+        # Whitelist of permitted filenames
+        allowed_files = {"allowed1.py", "allowed2.py"}
+        filename = file_path.name
+        if filename not in allowed_files:
+            raise ValueError(f"Unauthorized file: {filename}")
+        # Construct safe path inside trusted directory
+        safe_path = Path("/trusted/scripts") / filename
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -52,7 +59,7 @@ class PydocstringWrapper:
             return functions_without_docstrings
 
         except Exception as e:
-            print(f"Error analyzing {file_path}: {e}")
+            print(f"Error analyzing {safe_path}: {e}")
             return []
 
     def generate_docstring(self, file_path: Path, line_number: int) -> str:
@@ -110,6 +117,10 @@ class PydocstringWrapper:
         Returns:
             True if successful, False otherwise
         """
+        allowed_filenames = {"file1.py", "file2.py"}
+        if file_path.name not in allowed_filenames:
+            print(f"File {file_path.name} is not an allowed file for docstring insertion.")
+            return False
         try:
             with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()

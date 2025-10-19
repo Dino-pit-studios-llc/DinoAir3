@@ -74,8 +74,15 @@ class NamingFixer:
         Returns:
             Tuple of (is_valid, error_message)
         """
+        # Whitelist allowed filenames and construct safe path
+        allowed_files = {"script1.py", "script2.py"}
+        trusted_base_dir = Path("/trusted/scripts")
+        filename = file_path.name
+        if filename not in allowed_files:
+            return False, f"Filename '{filename}' is not permitted."
+        safe_path = trusted_base_dir / filename
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
             return True, ""
