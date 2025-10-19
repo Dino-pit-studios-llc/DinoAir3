@@ -165,16 +165,12 @@ class EnhancedLogFilter(logging.Filter):
         message = record.getMessage()
 
         # Check exclude patterns
-        for pattern in self.config.exclude_patterns:
-            if pattern in message:
-                return False
+        if any(pattern in message for pattern in self.config.exclude_patterns):
+            return False
 
         # Check include patterns (if specified, only include matching)
         if self.config.include_patterns:
-            for pattern in self.config.include_patterns:
-                if pattern in message:
-                    return True
-            return False
+            return any(pattern in message for pattern in self.config.include_patterns)
 
         return True
 
