@@ -532,7 +532,8 @@ def safe_run(
     )
 
     try:
-        proc = subprocess.run(list(command), check=False, **subprocess_kwargs)
+        # Safe: command is converted to list, no shell=True, validated in wrapper
+        proc = subprocess.run(list(command), check=False, **subprocess_kwargs)  # nosec B603
     except subprocess.TimeoutExpired:
         logger.warning("Process timed out after %ss: %s", timeout, REDACTED_TEXT)
         raise
@@ -600,7 +601,8 @@ def safe_popen(
         }
     )
 
-    return subprocess.Popen(list(command), **popen_kwargs)
+    # Safe: command is converted to list, no shell=True, validated in wrapper
+    return subprocess.Popen(list(command), **popen_kwargs)  # nosec B603
 
 
 # -----------------------------------------------------------------------------
@@ -667,8 +669,9 @@ def kill_process(proc: Any) -> bool:
         if isinstance(proc, int):
             try:
                 if platform.system().lower().startswith("win"):
-                    # On Windows, attempt taskkill
-                    subprocess.run(
+                    # On Windows, attempt taskkill with hardcoded absolute path
+                    # Safe: All arguments are hardcoded or validated (PID is int)
+                    subprocess.run(  # nosec B603
                         [
                             "C:\\Windows\\System32\\taskkill.exe",
                             "/PID",

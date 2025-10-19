@@ -117,7 +117,6 @@ def _now_rfc3339() -> str:
 
 def error_response(
     status: int,
-        """Error Response function."""
     code: str,
     message: str,
     *,
@@ -127,6 +126,7 @@ def error_response(
     operation_id: str | None = None,
     requestId: str | None = None,
 ) -> JSONResponse:
+    """Error Response function."""
     rid = requestId or str(uuid4())
     body = ErrorResponse(
         error=error,

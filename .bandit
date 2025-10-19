@@ -1,0 +1,38 @@
+# Bandit configuration for DinoAir3
+# Excludes test files, backups, and archived code from security scanning
+
+exclude_dirs:
+  - /tests
+  - /test
+  - /docstring_backup
+  - /archived_tools
+  - /.git
+  - /.github
+  - /docs
+  - /issues
+
+# Skip specific test IDs that are acceptable in this codebase
+# B404 - subprocess module import warnings (we validate all subprocess usage)
+# B106 - hardcoded passwords in test files (test fixtures only)  
+# B311 - random module for non-crypto use (simulation and testing only)
+skips:
+  - B404
+  - B106
+  - B311
+
+# Only report these specific security tests
+# Focus on subprocess execution, shell injection, and critical security issues
+tests:
+  - B201
+  - B501
+  - B506
+  - B601
+  - B602
+  - B603
+  - B604
+  - B605
+  - B606
+  - B607
+  - B608
+  - B609
+

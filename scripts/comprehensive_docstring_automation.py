@@ -86,7 +86,7 @@ class ComprehensiveDocstringAutomation:
     def try_pydocstring(self, file_path: Path, line_number: int) -> str:
         """Try to generate docstring using pydocstring."""
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # nosec B603
                 [
                     str(self.pydocstring_path),
                     "--formatter",

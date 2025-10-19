@@ -105,8 +105,8 @@ except ImportError as e:
         @staticmethod
         async def dispatch(
             request: Any, call_next: Callable[[Any], Awaitable[Response]]
-            """Dispatch method."""
         ) -> Response:
+            """Dispatch method."""
             return await call_next(request)
 
     class _FallbackMockStatus:  # noqa: N801

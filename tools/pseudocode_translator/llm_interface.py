@@ -35,9 +35,9 @@ try:
     from .models.manager import ModelManager as _ImportedModelManager
 except ImportError:
     try:
-        from .models import (
-            ModelManager as _ImportedModelManager,
-        )  # fallback if models/__init__.py exposes it
+        from .models import \
+            ModelManager as \
+            _ImportedModelManager  # fallback if models/__init__.py exposes it
     except ImportError:
         _ImportedModelManager = None  # type: ignore[assignment]
 
@@ -51,34 +51,34 @@ if _ImportedModelManager is None:
         """
 
         def __init__(self, *args, **kwargs):
-            """No-op initialization for fallback manager."""
+        """No-op initialization for fallback manager."""
 
         @staticmethod
         def get_model(*args, **kwargs):
-            """Get model method."""
+        """Get model method."""
             return None
 
         @staticmethod
         def load_model(*args, **kwargs):
-            """Load Model method."""
+        """Load Model method."""
             return None
 
         @staticmethod
         def unload_model(*args, **kwargs):
-            """Unload Model method."""
+        """Unload Model method."""
             return None
 
         @staticmethod
         def shutdown(*args, **kwargs):
-            """No-op shutdown for fallback manager."""
+        """No-op shutdown for fallback manager."""
 
         @staticmethod
         def close(*args, **kwargs):
-            """No-op close for fallback manager."""
+        """No-op close for fallback manager."""
 
         @staticmethod
         def get_memory_usage(*args, **kwargs):
-            """Get memory usage method."""
+        """Get memory usage method."""
             return {}
 
     ModelManagerRef = _FallbackModelManager

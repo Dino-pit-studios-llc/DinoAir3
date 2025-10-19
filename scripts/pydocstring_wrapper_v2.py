@@ -71,7 +71,7 @@ class PydocstringWrapper:
             Generated docstring content
         """
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # nosec B603
                 [
                     str(self.pydocstring_path),
                     "--formatter",

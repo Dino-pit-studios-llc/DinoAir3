@@ -18,18 +18,18 @@ class WatchdogController:
 
     @staticmethod
     def start() -> None:  # pragma: no cover - stub
-            """Start method."""
+        """Start method."""
         pass  # No-op stub for compatibility
 
     @staticmethod
     def stop() -> None:  # pragma: no cover - stub
-            """Stop method."""
+        """Stop method."""
         pass  # No-op stub for compatibility
 
     @staticmethod
     def get_current_metrics() -> dict[str, object]:  # pragma: no cover - stub
-            """Get current metrics method."""
-        return {}
+        """Get Current Metrics method."""
+        return {}  # No-op stub for compatibility
 
 
 __all__ = ["IS_QT_AVAILABLE", "WatchdogController"]

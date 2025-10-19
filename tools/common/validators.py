@@ -45,27 +45,27 @@ class Validator:
 
     @staticmethod
     def check_exists(p: Path, raw_value: Any) -> None:
-            """Check Exists method."""
+        """Check Exists method."""
         if not p.exists():
             raise ValueError(f"Path does not exist: {raw_value}")
 
     @staticmethod
     def check_file(p: Path, raw_value: Any) -> None:
-            """Check File method."""
+        """Check File method."""
         if not p.is_file():
             raise ValueError(f"Path is not a file: {raw_value}")
 
     @staticmethod
     def check_dir(p: Path, raw_value: Any) -> None:
-            """Check Dir method."""
+        """Check Dir method."""
         if not p.is_dir():
             raise ValueError(f"Path is not a directory: {raw_value}")
 
     @staticmethod
     def validate_path_exists(
         path: str, must_be_file: bool | None = None, must_be_dir: bool | None = None
-            """Validate path exists method."""
     ) -> Path:
+        """Validate path exists method."""
         p = Validator.normalize_to_path(path)
         Validator.check_exists(p, path)
         if must_be_file:

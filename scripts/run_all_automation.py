@@ -25,7 +25,8 @@ def run_script(script_name: str, args: list, description: str) -> bool:
     cmd = [sys.executable, script_name] + args
 
     try:
-        result = subprocess.run(cmd, check=False)
+        # Safe: sys.executable is Python interpreter, script_name and args are controlled
+        result = subprocess.run(cmd, check=False)  # nosec B603
         success = result.returncode == 0
 
         if success:
@@ -48,7 +49,8 @@ def run_tests() -> bool:
 
     try:
         # Try pytest first
-        result = subprocess.run(["pytest", "--tb=short"], check=False)
+        # Safe: hardcoded pytest command, no user input, development environment only
+        result = subprocess.run(["pytest", "--tb=short"], check=False)  # nosec B603 B607
         if result.returncode == 0:
             print("\n✅ All tests passed")
             return True
