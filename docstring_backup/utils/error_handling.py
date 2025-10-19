@@ -313,8 +313,6 @@ class CircuitBreakerOpenError(Exception):
     """Exception raised when circuit breaker is open."""
 
 
-
-
 def _execute_with_retry(
     func: Callable[..., T],
     config: RetryConfig,
@@ -449,6 +447,7 @@ def _log_all_attempts_failed(
 Utilities for handling errors and providing circuit breaker decorator support.
 """
 
+
 def circuit_breaker(
     config: CircuitBreakerConfig | None = None, name: str = ""
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -530,6 +529,7 @@ def timeout_context(seconds: float) -> Generator[None, None, None]:
 Module for error handling utilities providing a timeout decorator to enforce execution time limits on functions.
 """
 
+
 def with_timeout(
     timeout_seconds: float,
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -544,6 +544,7 @@ def with_timeout(
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         """Creates a decorator that applies a timeout to the decorated function."""
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             """Wrapper function that enforces the timeout context for the original function call."""
