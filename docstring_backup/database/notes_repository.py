@@ -404,15 +404,15 @@ class NotesRepository:
         """
         if filter_option == "Title Only":
             return "AND title LIKE ? ESCAPE '\\'", (q_like,)
-        elif filter_option == "Content Only":
+        if filter_option == "Content Only":
             return "AND content LIKE ? ESCAPE '\\'", (q_like,)
-        elif filter_option == "Tags Only":
+        if filter_option == "Tags Only":
             return "AND tags LIKE ? ESCAPE '\\'", (q_like,)
-        else:  # "All"
-            return (
-                "AND (title LIKE ? ESCAPE '\\' OR content LIKE ? ESCAPE '\\' OR tags LIKE ? ESCAPE '\\')",
-                (q_like, q_like, q_like),
-            )
+        # "All"
+        return (
+            "AND (title LIKE ? ESCAPE '\\' OR content LIKE ? ESCAPE '\\' OR tags LIKE ? ESCAPE '\\')",
+            (q_like, q_like, q_like),
+        )
 
     @staticmethod
     def _apply_project_filter(

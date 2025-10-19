@@ -87,11 +87,10 @@ class PydocstringWrapper:
                     for line in lines[1:]:
                         if line.strip().startswith('"""') or content_lines:
                             content_lines.append(line)
-                    return '\\n'.join(content_lines).strip()
+                    return '\n'.join(content_lines).strip()
                 return output
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
                 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
@@ -127,16 +126,16 @@ class PydocstringWrapper:
             docstring_indent = " " * (func_indent + 4)  # Add 4 spaces for docstring indentation
             
             # Format the docstring with proper indentation
-            docstring_lines = docstring.split('\\n')
+            docstring_lines = docstring.split('\n')
             formatted_docstring = []
             
             for i, line in enumerate(docstring_lines):
                 if i == 0:
-                    formatted_docstring.append(f'{docstring_indent}"""{line}\\n')
+                    formatted_docstring.append(f'{docstring_indent}"""{line}\n')
                 elif i == len(docstring_lines) - 1:
-                    formatted_docstring.append(f'{docstring_indent}"""\\n')
+                    formatted_docstring.append(f'{docstring_indent}"""\n')
                 else:
-                    formatted_docstring.append(f'{docstring_indent}{line}\\n')
+                    formatted_docstring.append(f'{docstring_indent}{line}\n')
             
             # Insert the formatted docstring
             for i, docstring_line in enumerate(formatted_docstring):
@@ -170,9 +169,8 @@ class PydocstringWrapper:
             
             if result.returncode == 0:
                 return result.stdout.strip()
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
                 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")

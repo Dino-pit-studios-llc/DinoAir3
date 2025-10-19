@@ -468,8 +468,7 @@ def _get_default_user_data_directory() -> Path:
     """
     if os.name == "nt":
         return _get_windows_data_directory()
-    else:
-        return _get_unix_data_directory()
+    return _get_unix_data_directory()
 
 
 def _get_windows_data_directory() -> Path:

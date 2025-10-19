@@ -257,18 +257,17 @@ class QdrantMCPServer:
         try:
             if tool_name == "search_vectors":
                 return await self._search_vectors(arguments)
-            elif tool_name == "upload_points":
+            if tool_name == "upload_points":
                 return await self._upload_points(arguments)
-            elif tool_name == "create_collection":
+            if tool_name == "create_collection":
                 return await self._create_collection(arguments)
-            elif tool_name == "list_collections":
+            if tool_name == "list_collections":
                 return await self._list_collections(arguments)
-            elif tool_name == "delete_collection":
+            if tool_name == "delete_collection":
                 return await self._delete_collection(arguments)
-            elif tool_name == "get_collection_info":
+            if tool_name == "get_collection_info":
                 return await self._get_collection_info(arguments)
-            else:
-                raise ValueError(f"Unknown tool: {tool_name}")
+            raise ValueError(f"Unknown tool: {tool_name}")
         except Exception as e:
             logger.error("Error executing tool %s: %s", tool_name, e)
             return {
@@ -287,10 +286,9 @@ class QdrantMCPServer:
 
         if uri == "qdrant://health":
             return await self._get_health_resource()
-        elif uri == "qdrant://collections":
+        if uri == "qdrant://collections":
             return await self._get_collections_resource()
-        else:
-            raise ValueError(f"Unknown resource: {uri}")
+        raise ValueError(f"Unknown resource: {uri}")
 
     async def _search_vectors(self, args: dict[str, Any]) -> dict[str, Any]:
         """Execute vector search."""

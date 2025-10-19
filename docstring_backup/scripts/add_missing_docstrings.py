@@ -188,46 +188,45 @@ class DocstringGenerator:
         # Common patterns for function names
         if name.startswith("get_"):
             return f"Get {self._humanize_name(name[4:])}."
-        elif name.startswith("set_"):
+        if name.startswith("set_"):
             return f"Set {self._humanize_name(name[4:])}."
-        elif name.startswith("create_"):
+        if name.startswith("create_"):
             return f"Create {self._humanize_name(name[7:])}."
-        elif name.startswith("build_"):
+        if name.startswith("build_"):
             return f"Build {self._humanize_name(name[6:])}."
-        elif name.startswith("init_") or name == "__init__":
+        if name.startswith("init_") or name == "__init__":
             return f"Initialize {self._humanize_name(func_info.parent_class or 'instance')}."
-        elif name.startswith("validate_"):
+        if name.startswith("validate_"):
             return f"Validate {self._humanize_name(name[9:])}."
-        elif name.startswith("process_"):
+        if name.startswith("process_"):
             return f"Process {self._humanize_name(name[8:])}."
-        elif name.startswith("handle_"):
+        if name.startswith("handle_"):
             return f"Handle {self._humanize_name(name[7:])}."
-        elif name.startswith("parse_"):
+        if name.startswith("parse_"):
             return f"Parse {self._humanize_name(name[6:])}."
-        elif name.startswith("load_"):
+        if name.startswith("load_"):
             return f"Load {self._humanize_name(name[5:])}."
-        elif name.startswith("save_"):
+        if name.startswith("save_"):
             return f"Save {self._humanize_name(name[5:])}."
-        elif name.startswith("update_"):
+        if name.startswith("update_"):
             return f"Update {self._humanize_name(name[7:])}."
-        elif name.startswith("delete_") or name.startswith("remove_"):
+        if name.startswith("delete_") or name.startswith("remove_"):
             prefix_len = 7 if name.startswith("delete_") else 7
             return f"Delete {self._humanize_name(name[prefix_len:])}."
-        elif name.startswith("is_") or name.startswith("has_"):
+        if name.startswith("is_") or name.startswith("has_"):
             prefix_len = 3 if name.startswith("is_") else 4
             return f"Check if {self._humanize_name(name[prefix_len:])}."
-        elif name.startswith("can_"):
+        if name.startswith("can_"):
             return f"Check if can {self._humanize_name(name[4:])}."
-        elif name == "__str__":
+        if name == "__str__":
             return "Return string representation."
-        elif name == "__repr__":
+        if name == "__repr__":
             return "Return detailed string representation."
-        elif name == "__call__":
+        if name == "__call__":
             return "Make instance callable."
-        elif name.startswith("__") and name.endswith("__"):
+        if name.startswith("__") and name.endswith("__"):
             return f"Implement {name} magic method."
-        else:
-            return f"{self._humanize_name(name).capitalize()}."
+        return f"{self._humanize_name(name).capitalize()}."
 
     def _generate_class_summary(self, class_info: ClassInfo) -> str:
         """Generate a summary line for a class."""
@@ -236,30 +235,29 @@ class DocstringGenerator:
         # Common patterns for class names
         if name.endswith("Manager"):
             return f"Manages {self._humanize_name(name[:-7])} operations."
-        elif name.endswith("Handler"):
+        if name.endswith("Handler"):
             return f"Handles {self._humanize_name(name[:-7])} events."
-        elif name.endswith("Controller"):
+        if name.endswith("Controller"):
             return f"Controls {self._humanize_name(name[:-10])} behavior."
-        elif name.endswith("Service"):
+        if name.endswith("Service"):
             return f"Provides {self._humanize_name(name[:-7])} services."
-        elif name.endswith("Factory"):
+        if name.endswith("Factory"):
             return f"Creates {self._humanize_name(name[:-7])} instances."
-        elif name.endswith("Builder"):
+        if name.endswith("Builder"):
             return f"Builds {self._humanize_name(name[:-7])} objects."
-        elif name.endswith("Parser"):
+        if name.endswith("Parser"):
             return f"Parses {self._humanize_name(name[:-6])} data."
-        elif name.endswith("Validator"):
+        if name.endswith("Validator"):
             return f"Validates {self._humanize_name(name[:-9])} input."
-        elif name.endswith("Exception") or name.endswith("Error"):
+        if name.endswith("Exception") or name.endswith("Error"):
             return f"Exception for {self._humanize_name(name[:-9] if name.endswith('Exception') else name[:-5])} errors."
-        elif name.endswith("Config") or name.endswith("Configuration"):
+        if name.endswith("Config") or name.endswith("Configuration"):
             suffix_len = 6 if name.endswith("Config") else 13
             return f"Configuration for {self._humanize_name(name[:-suffix_len])}."
-        elif name.endswith("Proto") or name.endswith("Protocol"):
+        if name.endswith("Proto") or name.endswith("Protocol"):
             suffix_len = 5 if name.endswith("Proto") else 8
             return f"Protocol defining {self._humanize_name(name[:-suffix_len])} interface."
-        else:
-            return f"{self._humanize_name(name)} implementation."
+        return f"{self._humanize_name(name)} implementation."
 
     def _generate_module_summary(self, module_name: str, module_info: ModuleInfo) -> str:
         """Generate a summary for a module."""
@@ -267,10 +265,9 @@ class DocstringGenerator:
 
         if len(module_info.classes) > len(module_info.functions):
             return f"{humanized.capitalize()} classes and utilities."
-        elif len(module_info.functions) > 0:
+        if len(module_info.functions) > 0:
             return f"{humanized.capitalize()} utility functions."
-        else:
-            return f"{humanized.capitalize()} module."
+        return f"{humanized.capitalize()} module."
 
     def _humanize_name(self, name: str) -> str:
         """Convert snake_case or CamelCase to human readable form."""
@@ -287,58 +284,55 @@ class DocstringGenerator:
         # Common argument patterns
         if arg_name in ("data", "content"):
             return "The data to process"
-        elif arg_name in ("filename", "filepath", "path"):
+        if arg_name in ("filename", "filepath", "path"):
             return "Path to the file"
-        elif arg_name in ("config", "configuration"):
+        if arg_name in ("config", "configuration"):
             return "Configuration parameters"
-        elif arg_name in ("timeout", "delay"):
+        if arg_name in ("timeout", "delay"):
             return "Timeout in seconds"
-        elif arg_name in ("max_size", "limit", "max_length"):
+        if arg_name in ("max_size", "limit", "max_length"):
             return "Maximum size or limit"
-        elif arg_name in ("callback", "handler"):
+        if arg_name in ("callback", "handler"):
             return "Callback function to execute"
-        elif arg_name.endswith("_id") or arg_name == "id":
+        if arg_name.endswith("_id") or arg_name == "id":
             return f"Unique identifier"
-        elif arg_name.endswith("_name") or arg_name == "name":
+        if arg_name.endswith("_name") or arg_name == "name":
             return f"Name of the item"
-        elif arg_name in ("value", "val"):
+        if arg_name in ("value", "val"):
             return "Value to process"
-        else:
-            return f"{self._humanize_name(arg_name).capitalize()}"
+        return f"{self._humanize_name(arg_name).capitalize()}"
 
     def _generate_return_description(self, return_type: str, func_name: str) -> str:
         """Generate description for return value."""
         if return_type in ("bool", "Boolean"):
             return "True if successful, False otherwise"
-        elif return_type in ("str", "string", "String"):
+        if return_type in ("str", "string", "String"):
             return "Processed string result"
-        elif return_type in ("int", "Integer"):
+        if return_type in ("int", "Integer"):
             return "Numeric result"
-        elif return_type in ("list", "List"):
+        if return_type in ("list", "List"):
             return "List of results"
-        elif return_type in ("dict", "Dict"):
+        if return_type in ("dict", "Dict"):
             return "Dictionary containing results"
-        elif "Optional" in return_type:
+        if "Optional" in return_type:
             return "Result if successful, None otherwise"
-        else:
-            return f"{return_type} result"
+        return f"{return_type} result"
 
     def _generate_exception_description(self, exc_name: str, func_name: str) -> str:
         """Generate description for potential exceptions."""
         if exc_name == "ValueError":
             return "If input values are invalid"
-        elif exc_name == "TypeError":
+        if exc_name == "TypeError":
             return "If arguments are of wrong type"
-        elif exc_name == "KeyError":
+        if exc_name == "KeyError":
             return "If required key is missing"
-        elif exc_name == "FileNotFoundError":
+        if exc_name == "FileNotFoundError":
             return "If file cannot be found"
-        elif exc_name == "ConnectionError":
+        if exc_name == "ConnectionError":
             return "If connection fails"
-        elif exc_name == "TimeoutError":
+        if exc_name == "TimeoutError":
             return "If operation times out"
-        else:
-            return f"If {self._humanize_name(exc_name.replace('Error', '').replace('Exception', ''))} error occurs"
+        return f"If {self._humanize_name(exc_name.replace('Error', '').replace('Exception', ''))} error occurs"
 
     def _generate_attribute_description(self, attr_name: str, class_name: str) -> str:
         """Generate description for class attributes."""
@@ -658,12 +652,11 @@ class DocstringFixer:
         """Generate appropriate docstring for the item."""
         if item_type == "class":
             return self.generator.generate_class_docstring(item_info)
-        elif item_type in ("function", "method"):
+        if item_type in ("function", "method"):
             return self.generator.generate_function_docstring(item_info)
-        elif item_type == "module":
+        if item_type == "module":
             return self.generator.generate_module_docstring(module_info)
-        else:
-            return '    """TODO: Add description."""'
+        return '    """TODO: Add description.""'
 
     def print_stats(self):
         """Print statistics about the fixing process."""
