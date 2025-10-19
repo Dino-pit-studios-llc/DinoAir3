@@ -29,10 +29,8 @@ from .controllers.structured_flow import StructuredParsingController
 from .exceptions import AssemblyError, ErrorContext, TranslatorError
 from .execution.process_pool import ParseValidateExecutor
 from .integration.events import EventDispatcher, EventType
-
 # Import from models.py file (not the models directory)
 from .models import BlockType, CodeBlock
-
 # Import new model abstraction from models directory
 from .models.base_model import BaseTranslationModel, OutputLanguage
 from .models.base_model import TranslationConfig as ModelTranslationConfig
@@ -48,7 +46,8 @@ if TYPE_CHECKING:
     from .config import TranslatorConfig
 
 try:
-    from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
+    from concurrent.futures.process import \
+        BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
     class _FallbackBrokenProcessPool(Exception):
@@ -408,7 +407,8 @@ class TranslationManager(ShutdownMixin):
         # Use OffloadExecutor facade to centralize gating, submission, and fallbacks.
         # Local import to avoid potential import cycles (support must not import translator.py).
         try:
-            from .translator_support.offload_executor import OffloadExecutor  # type: ignore
+            from .translator_support.offload_executor import \
+                OffloadExecutor  # type: ignore
         except Exception:
             # On facade import failure, preserve behavior by using in-process parse.
             return cast("Any", self.parser).get_parse_result(text)
@@ -444,7 +444,8 @@ class TranslationManager(ShutdownMixin):
 
         # Local import to avoid cycles; support module must not import translator.py.
         try:
-            from .translator_support.offload_executor import OffloadExecutor  # type: ignore
+            from .translator_support.offload_executor import \
+                OffloadExecutor  # type: ignore
         except Exception:
             # Preserve behavior if facade isn't available.
             return self.validator.validate_syntax(
@@ -1224,7 +1225,8 @@ class TranslationManager(ShutdownMixin):
         # Build compact error summary (parity is enforced in support helper too)
         try:
             # Local import to avoid cycles; support module must not import translator.py
-            from .translator_support.fix_refiner import attempt_fixes as _support_attempt_fixes  # type: ignore
+            from .translator_support.fix_refiner import \
+                attempt_fixes as _support_attempt_fixes  # type: ignore
         except Exception:
             # Preserve previous error/warning logging semantics on failure
             logger.error("Failed to fix code: import error in fix_refiner")
@@ -1450,7 +1452,8 @@ class TranslationManager(ShutdownMixin):
     def _setup_stream_emitter(self) -> Any:
         """Setup stream emitter for event handling."""
         try:
-            from .translator_support.stream_emitter import StreamEmitter  # type: ignore
+            from .translator_support.stream_emitter import \
+                StreamEmitter  # type: ignore
 
             return StreamEmitter(self._events, source=self.__class__.__name__)
         except Exception:
