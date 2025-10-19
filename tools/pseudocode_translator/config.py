@@ -189,7 +189,8 @@ class LLMConfig:
             # Limit the number of errors surfaced in the exception message
             preview = "; ".join(errors[:3])
             # Local import to avoid circular dependency; keep in function scope.
-            from .exceptions import ConfigurationError  # local import to avoid cycles
+            from .exceptions import \
+                ConfigurationError  # local import to avoid cycles
 
             raise ConfigurationError(f"Invalid LLM configuration: {preview}")
 
