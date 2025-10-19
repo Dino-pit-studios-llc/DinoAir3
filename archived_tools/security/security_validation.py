@@ -20,6 +20,7 @@ except Exception:  # pragma: no cover
     import logging as _logging
 
     def _get_logger(name: str):
+        """Fallback logger initializer: returns a standard library logger with the given name."""
         return _logging.getLogger(name)
 
 
@@ -186,6 +187,8 @@ def test_audit_logging():
             if test_log_file.exists():
                 test_log_file.unlink()
 
+"""Security validation module providing functions to test various security aspects and generate reports."""
+
         return {
             "logger_created": True,
             "event_types": len(event_types),
@@ -238,7 +241,7 @@ def test_network_security():
 
 def test_security_configuration():
     """Test overall security configuration."""
-    print("\n⚙️  Testing Security Configuration...")
+    print("\n⚙️  Testing Security Configuration..." )
 
     try:
         from utils.security_config import SecurityConfig
@@ -292,6 +295,7 @@ def report_security_validation_results(
     total_tests,
     report_path: str = DEFAULT_REPORT_FILENAME,
 ):
+    """Generate and display security validation results, save report file, and provide recommendations."""
     score = validation_results.get("overall_score", 0)
     grade = validation_results.get("security_grade", "D (Needs Improvement)")
 
@@ -377,7 +381,6 @@ def run_security_validation():
     report_security_validation_results(validation_results, passed_tests, total_tests)
 
     return validation_results
-
 
 if __name__ == "__main__":
     try:

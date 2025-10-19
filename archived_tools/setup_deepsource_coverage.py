@@ -13,6 +13,11 @@ from utils.process import SafeProcessError, safe_run
 
 
 def _secure_write_text(path: str, content: str) -> None:
+    """
+    Securely write text to the specified file path with restricted permissions.
+    Restricts file permissions to 0o600 (owner read/write only) and writes the provided content.
+    On non-POSIX systems, chmod is best-effort and failures are ignored.
+    """
     # Restrict file permissions to 0o600 (owner read/write only). Works on Unix; on Windows chmod is best-effort.
 
     flags = OS.O_WRONLY | OS.O_CREAT | OS.O_TRUNC
@@ -38,6 +43,10 @@ class DeepSourceCoverageSetup:
     """Setup DeepSource coverage reporting securely."""
 
     def __init__(self):
+        """
+        Initialize DeepSourceCoverageSetup with default settings.
+        Sets deepsource_dsn to None and project_root to the current working directory.
+        """
         self.deepsource_dsn = None
         self.project_root = Path.cwd()
 
@@ -116,7 +125,7 @@ class DeepSourceCoverageSetup:
         try:
             safe_run(
                 [sys.executable, "-m", "pip", "install", "coverage", "pytest-cov"],
-                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
+                allowed_binaries={Path(sys.executable).name, "python", sys.executable},
                 timeout=600,
                 check=True,
             )

@@ -38,6 +38,7 @@ STATUS_TIMESTAMPS: dict[str, dict[str, Any]] = {
 
 
 def _is_list_any(x: Any) -> TypeGuard[list[Any]]:
+    """Determine if x is a list of any type for type narrowing."""
     return isinstance(x, list)
 
 

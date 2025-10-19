@@ -41,8 +41,6 @@ def _sanitize_for_log(s: str) -> str:
 class SafeImportError(ImportError):
     """Raised when a safe import or attribute load is rejected by policy."""
 
-    pass
-
 
 def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     """Safely import a module using an explicit allowlist mapping.
