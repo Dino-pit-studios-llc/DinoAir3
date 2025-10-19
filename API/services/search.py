@@ -6,10 +6,11 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, cast
 
-from database.file_search_db import FileSearchDB
 from fastapi import HTTPException
 from pydantic import ValidationError
 from starlette import status
+
+from database.file_search_db import FileSearchDB
 
 from ..schemas import (
     DirectorySettingsResponse,

@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from core_router import metrics as core_metrics
-from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
-from core_router.errors import ValidationError as CoreValidationError
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
+
+from core_router import metrics as core_metrics
+from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
+from core_router.errors import ValidationError as CoreValidationError
 
 from ..services import router_client
 

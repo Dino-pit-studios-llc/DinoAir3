@@ -9,11 +9,12 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field, field_validator
+
 from database.initialize_db import DatabaseManager
 from database.projects_db import ProjectsDatabase
-from fastapi import APIRouter, HTTPException, Query, status
 from models.project import Project, ProjectStatus
-from pydantic import BaseModel, Field, field_validator
 
 log = logging.getLogger("api.routes.projects")
 

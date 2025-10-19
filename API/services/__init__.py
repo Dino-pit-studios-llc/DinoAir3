@@ -4,8 +4,9 @@ from __future__ import annotations
 from . import router_client
 
 # Search service (safe/lightweight)
-from .search import SearchService, get_search_service
+from .search import SearchService
 from .search import directory_settings as get_directory_settings
+from .search import get_search_service
 from .search import hybrid as hybrid_search
 from .search import index_stats as get_index_stats
 from .search import keyword as keyword_search

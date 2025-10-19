@@ -22,6 +22,7 @@ from typing import Any
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
+
 from utils.process import PYTHON_EXE, safe_popen, safe_run
 
 # Constants

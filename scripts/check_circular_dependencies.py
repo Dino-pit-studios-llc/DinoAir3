@@ -93,11 +93,9 @@ class CircularDependencyDetector:
             "dist",
             "site-packages",
         }
-        
+
         python_files = [
-            f
-            for f in python_files
-            if not any(part in excluded_parts for part in f.relative_to(self.root_path).parts)
+            f for f in python_files if not any(part in excluded_parts for part in f.relative_to(self.root_path).parts)
         ]
 
         if self.verbose:

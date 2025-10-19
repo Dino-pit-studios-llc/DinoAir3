@@ -5,6 +5,7 @@ from contextlib import suppress
 
 from starlette import status
 from starlette.types import Receive, Scope, Send
+
 from utils.asgi import get_header
 
 try:

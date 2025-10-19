@@ -1206,9 +1206,7 @@ class TranslationManager(ShutdownMixin):
         # Build compact error summary (parity is enforced in support helper too)
         try:
             # Local import to avoid cycles; support module must not import translator.py
-            from .translator_support.fix_refiner import (
-                attempt_fixes as _support_attempt_fixes,  # type: ignore
-            )
+            from .translator_support.fix_refiner import attempt_fixes as _support_attempt_fixes  # type: ignore
         except Exception:
             # Preserve previous error/warning logging semantics on failure
             logger.error("Failed to fix code: import error in fix_refiner")

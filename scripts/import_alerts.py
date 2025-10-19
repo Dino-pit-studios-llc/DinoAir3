@@ -36,6 +36,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 import requests
+
 from utils.config_loader import save_json_config
 from utils.process import safe_run
 

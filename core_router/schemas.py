@@ -20,9 +20,10 @@ import contextlib
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Union, cast
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 from pydantic import Field as PydField
 from pydantic import ValidationError as PydanticValidationError
+from pydantic import create_model
 from pydantic.config import ConfigDict
 
 from .errors import ValidationError

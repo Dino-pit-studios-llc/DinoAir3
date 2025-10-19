@@ -21,11 +21,7 @@ from .buffer import BufferConfig, ContextBuffer, StreamBuffer
 from .chunker import ChunkConfig, CodeChunker
 from .event_runtime import EventRuntime
 from .events import StreamingEvent, StreamingEventData, StreamingMode, TranslationUpdate
-from .interactive_core import (
-    interactive_translate,
-    interactive_translate_async,
-    process_interactive_input,
-)
+from .interactive_core import interactive_translate, interactive_translate_async, process_interactive_input
 from .pipeline import StreamingProgress
 from .translation_invoker import TranslationInvoker
 from .translator_core import (

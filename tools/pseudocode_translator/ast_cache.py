@@ -237,9 +237,7 @@ class ASTCache:
                 self._hits += 1
                 # Telemetry: increment-only cache hit counter.
                 # This is effectively free when telemetry is disabled because get_recorder() returns a no-op.
-                from pseudocode_translator.telemetry import (
-                    get_recorder,
-                )  # lazy import to avoid overhead when disabled
+                from pseudocode_translator.telemetry import get_recorder  # lazy import to avoid overhead when disabled
 
                 get_recorder().record_event("cache", counters={"hit": 1})  # counters: "hit"
                 return entry.ast_obj
@@ -248,9 +246,7 @@ class ASTCache:
             self._misses += 1
             # Telemetry: increment-only cache miss counter.
             # Negligible cost when telemetry is disabled due to no-op recorder.
-            from pseudocode_translator.telemetry import (
-                get_recorder,
-            )  # lazy import to avoid overhead when disabled
+            from pseudocode_translator.telemetry import get_recorder  # lazy import to avoid overhead when disabled
 
             get_recorder().record_event("cache", counters={"miss": 1})  # counters: "miss"
 
@@ -292,18 +288,14 @@ class ASTCache:
                 entry.update_access()
                 self._hits += 1
                 # Telemetry: increment-only cache hit counter (no-op when disabled).
-                from pseudocode_translator.telemetry import (
-                    get_recorder,
-                )  # lazy import to avoid overhead when disabled
+                from pseudocode_translator.telemetry import get_recorder  # lazy import to avoid overhead when disabled
 
                 get_recorder().record_event("cache", counters={"hit": 1})  # counters: "hit"
                 return entry.ast_obj
 
             self._misses += 1
             # Telemetry: increment-only cache miss counter (no-op when disabled).
-            from pseudocode_translator.telemetry import (
-                get_recorder,
-            )  # lazy import to avoid overhead when disabled
+            from pseudocode_translator.telemetry import get_recorder  # lazy import to avoid overhead when disabled
 
             get_recorder().record_event("cache", counters={"miss": 1})  # counters: "miss"
             return None

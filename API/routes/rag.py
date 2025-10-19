@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
-from core_router.errors import ValidationError as CoreValidationError
 from fastapi import APIRouter, HTTPException, Request
 from starlette import status
+
+from core_router.errors import AdapterError, NoHealthyService, ServiceNotFound
+from core_router.errors import ValidationError as CoreValidationError
 
 from ..schemas import (
     ContextRequest,

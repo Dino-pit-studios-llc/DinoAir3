@@ -10,6 +10,7 @@ import sqlite3
 import tempfile
 
 import pytest
+
 from database.file_search_db import FileSearchDB
 from database.initialize_db import DatabaseManager
 
