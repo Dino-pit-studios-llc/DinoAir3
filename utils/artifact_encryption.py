@@ -9,7 +9,6 @@ Security Features:
 - AES-256-GCM for authenticated encryption (prevents tampering)
 - PBKDF2 with SHA-256 for secure key derivation
 - Cryptographically secure random nonces and salts
-- Backward compatibility with legacy CBC encrypted data
 """
 
 import base64
@@ -17,9 +16,7 @@ import json
 import secrets
 from typing import Any
 
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
@@ -28,8 +25,7 @@ class ArtifactEncryption:
     """
     Handles field-level encryption for artifacts using AES-256-GCM
 
-    Uses authenticated encryption (GCM mode) for security.
-    Maintains backward compatibility with legacy CBC encrypted data.
+    Uses authenticated encryption (GCM mode) for security and data integrity.
     """
 
     # Encryption parameters
@@ -62,9 +58,8 @@ class ArtifactEncryption:
             length=self.key_length,
             salt=salt,
             iterations=self.iterations,
-            backend=default_backend(),
         )
-        return kdf.derive(password.encode("utf-8"))
+        return kdf.derive(password.encode())
 
     def generate_salt(self) -> bytes:
         """Generate a random salt"""
@@ -161,6 +156,9 @@ class ArtifactEncryption:
 
         # Create cipher and decrypt (legacy CBC mode for backward compatibility)
         # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
         decryptor = cipher.decryptor()
         decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
