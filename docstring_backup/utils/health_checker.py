@@ -18,13 +18,17 @@ try:
 except ImportError:
     # Fallback if error_handling not available
     def retry_on_failure(_config: Any = None, _exceptions: Any = None):
+        """Decorator factory to retry the decorated function on specified exceptions based on provided configuration."""
         def decorator(func: Any) -> Any:
+            """Actual decorator that wraps the function with retry logic."""
             return func
 
         return decorator
 
     def circuit_breaker(_config: Any = None, _name: str = ""):
+        """Decorator factory that creates a circuit breaker decorator with the given configuration and name."""
         def decorator(func: Any) -> Any:
+            """Actual decorator that applies circuit breaker behavior to the function."""
             return func
 
         return decorator

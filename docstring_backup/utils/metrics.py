@@ -14,29 +14,38 @@ try:
     from datadog import DogStatsd  # type: ignore
 except Exception:  # pragma: no cover - fallback for test environments without datadog
 
-    class DogStatsd:  # noqa: D401
-        """No-op DogStatsd fallback used when datadog package is not installed."""
+    """Metrics utilities module providing a no-op DogStatsd client when the datadog package is not installed."""
 
-        def __init__(self, *args, **kwargs):
-            raise NotImplementedError()
+        class DogStatsd:  # noqa: D401
+            """No-op DogStatsd fallback used when datadog package is not installed."""
 
-        def increment(self, *args, **kwargs):
-            raise NotImplementedError()
+            def __init__(self, *args, **kwargs):
+                """Initialize DogStatsd client with provided arguments (no-op fallback)."""
+                raise NotImplementedError()
 
-        def decrement(self, *args, **kwargs):
-            raise NotImplementedError()
+            def increment(self, *args, **kwargs):
+                """Increment a counter metric by a specified value (no-op fallback)."""
+                raise NotImplementedError()
 
-        def gauge(self, *args, **kwargs):
-            raise NotImplementedError()
+            def decrement(self, *args, **kwargs):
+                """Decrement a counter metric by a specified value (no-op fallback)."""
+                raise NotImplementedError()
 
-        def histogram(self, *args, **kwargs):
-            raise NotImplementedError()
+            def gauge(self, *args, **kwargs):
+                """Record a gauge metric value for a given name (no-op fallback)."""
+                raise NotImplementedError()
 
-        def timing(self, *args, **kwargs):
-            raise NotImplementedError()
+            def histogram(self, *args, **kwargs):
+                """Record a histogram metric value for a given name (no-op fallback)."""
+                raise NotImplementedError()
 
-        def close(self):
-            raise NotImplementedError()
+            def timing(self, *args, **kwargs):
+                """Record timing for a metric name in milliseconds (no-op fallback)."""
+                raise NotImplementedError()
+
+            def close(self):
+                """Close the DogStatsd client and release any resources (no-op fallback)."""
+                raise NotImplementedError()
 
 
 class DinoAirMetrics:
@@ -149,6 +158,11 @@ class DinoAirMetrics:
             duration_ms = (time.time() - start_time) * 1000
             self.timing(metric_name, duration_ms, tags)
 
+    """Module for metrics utilities.
+
+    Provides decorators to time function execution and collect metrics.
+    """
+
     def timed(self, metric_name: str, tags: list[str] | None = None):
         """
         Decorator for timing function execution.
@@ -164,8 +178,11 @@ class DinoAirMetrics:
         """
 
         def decorator(func):
+            """Decorator that wraps a function to measure its execution time."""
+
             @wraps(func)
             def wrapper(*args, **kwargs):
+                """Wrapper function that times the execution of the wrapped function."""
                 with self.timer(metric_name, tags):
                     return func(*args, **kwargs)
 

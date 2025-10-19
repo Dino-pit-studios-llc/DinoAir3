@@ -392,12 +392,15 @@ class UndefinedVariableChecker(ast.NodeVisitor):
             self._inside_comprehension -= 1
 
     def visit_ListComp(self, node: ast.ListComp):
+        """Visit list comprehension constructs and track variable scopes."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_SetComp(self, node: ast.SetComp):
+        """Visit set comprehension constructs and track variable scopes."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_DictComp(self, node: ast.DictComp):
+        """Visit dict comprehension constructs and track variable scopes."""
         self._visit_comprehension(
             node.generators,
             lambda: (self.visit(node.key), self.visit(node.value)),
@@ -405,6 +408,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         )
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp):
+        """Visit generator expressions and track variable scopes."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_NamedExpr(self, node: ast.NamedExpr):
@@ -413,19 +417,23 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         self._define_names(node.target, node.lineno)
 
     def visit_Global(self, node: ast.Global):
+        """Handle global declarations by registering names as globals in the current scope."""
         for name in node.names:
             self.current_scope.global_vars.add(name)
 
     def visit_Nonlocal(self, node: ast.Nonlocal):
+        """Handle nonlocal declarations by registering names as nonlocals in the current scope."""
         for name in node.names:
             self.current_scope.nonlocal_vars.add(name)
 
     def visit_Delete(self, node: ast.Delete):
+        """Handle delete statements by marking variable names as deleted in the current scope."""
         for target in node.targets:
             for name in self._iter_delete_names(target):
                 self.current_scope.mark_deleted(name, node.lineno)
 
     def _iter_delete_names(self, node: ast.AST) -> Iterable[str]:
+        """Yield variable names from delete target patterns (name, tuple, list, starred)."""
         if isinstance(node, ast.Name):
             yield node.id
         elif isinstance(node, ast.Tuple | ast.List):
@@ -455,6 +463,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
 
     # Structural pattern matching (Python 3.10+)
     def visit_Match(self, node: ast.Match):
+        """Handle match statements: evaluate subject and process cases with temporary variable definitions."""
         self.visit(node.subject)
         for case in node.cases:
             bound = self._collect_pattern_binds(case.pattern)
@@ -465,6 +474,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
                     self.visit(stmt)
 
     def _collect_pattern_binds(self, pattern: ast.AST) -> set[str]:
+        """Collect variable names bound by a pattern in structural pattern matching."""
         for pat_type, handler in (
             (ast.MatchAs, self._bind_match_as),
             (ast.MatchStar, UndefinedVariableChecker._bind_match_star),
@@ -528,6 +538,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
 
     @contextlib.contextmanager
     def _temporarily_defined(self, names: Iterable[str], line_no: int):
+        """Context manager to temporarily define variables in the current scope and remove them after use."""
         defined_now = []
         try:
             for n in names:
@@ -540,12 +551,14 @@ class UndefinedVariableChecker(ast.NodeVisitor):
                 self.current_scope.remove_definition(n, line_no)
 
     def _module_scope(self) -> Scope:
+        """Return the top-level module scope."""
         scope = self.current_scope
         while scope.parent:
             scope = scope.parent
         return scope
 
     def _nearest_enclosing_function_scope(self) -> Scope | None:
+        """Return the nearest enclosing function scope, or None if not in a function."""
         scope = self.current_scope
         while scope:
             if scope.name.startswith("function:"):

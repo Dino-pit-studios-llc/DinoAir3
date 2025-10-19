@@ -58,12 +58,14 @@ except ImportError:
                         self._outer = outer
 
                     def connect(self, cb: Callable[[], Any]) -> None:
+                        """Connect a callback to be invoked when the timer expires."""
                         # Use public interface method
                         self._outer.set_callback(cb)
 
                 return _Signal(self)
 
             def start(self, ms: int) -> None:
+                """Start the timer with the specified delay in milliseconds."""
                 if self._timer:
                     self._timer.cancel()
                 delay = ms / 1000.0
@@ -71,6 +73,7 @@ except ImportError:
                 self._timer.start()
 
             def _invoke(self) -> None:
+                """Invoke the stored callback, handle errors, and reset the callback."""
                 cb = self._callback
                 if callable(cb):
                     try:
@@ -84,6 +87,7 @@ except ImportError:
                     self._callback = None
 
             def stop(self) -> None:
+                """Stop the timer and cancel any pending callback."""
                 if self._timer:
                     self._timer.cancel()
                     self._timer = None
@@ -97,19 +101,38 @@ if TYPE_CHECKING:
     class _SignalProto(Protocol):
         """Protocol for signal-like objects with connect method."""
 
-        def connect(self, cb: Callable[..., Any]) -> Any: ...
+        def connect(self, cb: Callable[..., Any]) -> Any:
+            """Connect a callback function to the signal.
+
+            Args:
+                cb: A callable to be invoked when the signal is emitted.
+
+            Returns:
+                A reference representing the established connection.
+            """
+            ...
+
+    """Module providing protocols for QTimer-like objects used in optimization utilities."""
 
     class _QTimerProto(Protocol):
         """Protocol defining the interface for QTimer-like objects."""
 
-        def set_single_shot(self, single_shot: bool) -> None: ...
+        def set_single_shot(self, single_shot: bool) -> None:
+            """Configure the timer to fire only once if set to True."""
+            ...
 
         @property
-        def timeout(self) -> _SignalProto: ...
+        def timeout(self) -> _SignalProto:
+            """Signal emitted when the timer interval elapses."""
+            ...
 
-        def start(self, ms: int) -> None: ...
+        def start(self, ms: int) -> None:
+            """Start the timer for the specified number of milliseconds."""
+            ...
 
-        def stop(self) -> None: ...
+        def stop(self) -> None:
+            """Stop the timer if it is currently running."""
+            ...
 
 else:
     _QTimerProto = Any  # type: ignore[assignment, misc]
@@ -212,12 +235,15 @@ class StringBuilder:
 class ObjectPool:
     """Object pooling for frequently created objects"""
 
+"""Utilities for object pooling, lazy importing, performance monitoring, and component management."""
+
     def __init__(
         self,
         factory_func: Callable[[], Any],
         max_size: int = 100,
         cleanup_func: Callable[[Any], Any] | None = None,
     ) -> None:
+        """Initialize the object pool with a factory function, maximum size, and optional cleanup function."""
         self._pool: list[Any] = []
         self._factory: Callable[[], Any] = factory_func
         self._cleanup: Callable[[Any], Any] | None = cleanup_func
@@ -225,12 +251,12 @@ class ObjectPool:
         self._lock = threading.Lock()
 
     def get(self) -> Any:
-        """Get an object from the pool or create a new one"""
+        """Get an object from the pool or create a new one if the pool is empty."""
         with self._lock:
             return self._pool.pop() if self._pool else self._factory()
 
     def put(self, obj: Any) -> None:
-        """Return an object to the pool"""
+        """Return an object to the pool, applying cleanup if provided and respecting max size."""
         if obj is None:
             return
 
@@ -241,12 +267,12 @@ class ObjectPool:
                 self._pool.append(obj)
 
     def clear(self) -> None:
-        """Clear the pool"""
+        """Clear all objects from the pool."""
         with self._lock:
             self._pool.clear()
 
     def size(self) -> int:
-        """Get current pool size"""
+        """Get the current number of objects in the pool."""
         with self._lock:
             return len(self._pool)
 
@@ -255,11 +281,12 @@ class LazyImporter:
     """Lazy import utility for performance optimization"""
 
     def __init__(self) -> None:
+        """Initialize the lazy importer with an empty cache and thread lock."""
         self._imports: dict[str, Any] = {}
         self._lock = threading.Lock()
 
     def get_module(self, module_name: str) -> Any:
-        """Get a module, importing it lazily if needed"""
+        """Get a module, importing it lazily if not already imported."""
         if module_name not in self._imports:
             with self._lock:
                 if module_name not in self._imports:
@@ -267,19 +294,19 @@ class LazyImporter:
         return self._imports[module_name]
 
     def get_class(self, module_name: str, class_name: str) -> type:
-        """Get a class from a module, importing it lazily if needed"""
+        """Get a class from a module, importing the module lazily if needed."""
         module = self.get_module(module_name)
         return getattr(module, class_name)
 
     def clear_cache(self) -> None:
-        """Clear the import cache"""
+        """Clear the import cache, removing all stored modules."""
         with self._lock:
             self._imports.clear()
 
 
 @contextmanager
 def operation_timer(operation: str, monitor: PerformanceMonitor | None = None):
-    """Context manager for timing operations"""
+    """Context manager for timing operations using an optional performance monitor."""
     if monitor is None:
         monitor = get_performance_monitor()
 
@@ -291,7 +318,7 @@ def operation_timer(operation: str, monitor: PerformanceMonitor | None = None):
 
 
 def build_string(*parts: str) -> str:
-    """Optimized string building from multiple parts"""
+    """Optimized string construction from multiple parts, handling empty and single-part cases."""
     if not parts:
         return ""
     if len(parts) == 1:
@@ -300,7 +327,7 @@ def build_string(*parts: str) -> str:
 
 
 def safe_string_join(parts: Iterable[Any | None], separator: str = "") -> str:
-    """Safely join strings, filtering out None values"""
+    """Safely join strings by filtering out None values and applying a separator."""
     filtered_parts = [str(part) for part in parts if part is not None]
     return separator.join(filtered_parts)
 
@@ -312,7 +339,9 @@ lazy_importer = LazyImporter()
 
 
 # Global object pools
+
 def _return_none() -> None:
+    """Placeholder factory function that returns None for object pools."""
     return None
 
 
@@ -333,7 +362,7 @@ class ComponentState(Enum):
 
 @dataclass
 class ComponentInfo:
-    """Information about a lazy-loaded component."""
+    """Information about a lazy-loaded component, including dependencies and state."""
 
     name: str
     factory_func: Callable[[], Any]
@@ -345,9 +374,10 @@ class ComponentInfo:
 
 
 class LazyComponentManager:
-    """Manages lazy initialization of components with dependency resolution."""
+    """Manages lazy initialization of components with dependency resolution and performance monitoring."""
 
     def __init__(self) -> None:
+        """Initialize the component manager with empty registry and performance monitor."""
         self._components: dict[str, ComponentInfo] = {}
         self._initialization_order: list[str] = []
         self._performance_monitor = get_performance_monitor()
@@ -358,13 +388,13 @@ class LazyComponentManager:
         factory_func: Callable[[], Any],
         dependencies: list[str] | None = None,
     ) -> None:
-        """Register a component for lazy initialization."""
+        """Register a component by name with its factory and optional dependencies."""
         self._components[name] = ComponentInfo(
             name=name, factory_func=factory_func, dependencies=dependencies or []
         )
 
     def get_component(self, name: str) -> Any:
-        """Get a component, initializing it if necessary."""
+        """Retrieve a component instance, initializing it and its dependencies if necessary."""
         if name not in self._components:
             raise KeyError(f"Component '{name}' not registered")
 
@@ -385,7 +415,7 @@ class LazyComponentManager:
         return self._initialize_component(component_info)
 
     def _initialize_component(self, component_info: ComponentInfo) -> Any:
-        """Initialize a single component."""
+        """Initialize a single component and record performance metrics."""
         operation_id = self._performance_monitor.start_operation(
             f"component_init_{component_info.name}"
         )
@@ -410,7 +440,7 @@ class LazyComponentManager:
 
     @staticmethod
     def _create_and_register_component(component_info: ComponentInfo) -> None:
-        """Create component instance and mark as initialized."""
+        """Create the component instance and mark it as initialized."""
         component_info.instance = component_info.factory_func()
         component_info.state = ComponentState.initialized
 
@@ -703,6 +733,11 @@ def execute_batch_updates() -> None:
 # Leading-edge only: first call within the window executes, subsequent calls
 # within the same window are ignored.
 # -----------------------------------------------------------------------------
+"""
+Module providing optimization utilities, including the debounce decorator
+for controlling the frequency of function calls.
+"""
+
 def debounce(wait_seconds: float):
     """
     Leading-edge debounce decorator.
@@ -712,10 +747,12 @@ def debounce(wait_seconds: float):
     from functools import wraps
 
     def decorator(func):
+        """Wraps a function to ensure calls are debounced within the specified wait period."""
         last_exec = {"t": 0.0}
 
         @wraps(func)
         def wrapper(*args, **kwargs):
+            """Execute func only if enough time has elapsed since the last execution."""
             now = time.monotonic()
             if now - last_exec["t"] >= float(wait_seconds):
                 last_exec["t"] = now
@@ -727,6 +764,13 @@ def debounce(wait_seconds: float):
     return decorator
 
 
+"""
+Utilities for function optimization.
+
+This module provides decorators and utilities to optimize function execution,
+such as throttling function calls to limit their frequency.
+"""
+
 def throttle(wait_seconds: float):
     """
     Leading-edge throttle decorator.
@@ -735,10 +779,17 @@ def throttle(wait_seconds: float):
     from functools import wraps
 
     def decorator(func):
+        """
+        Creates a decorator to throttle calls to the given function.
+        """
         last_exec = {"t": 0.0}
 
         @wraps(func)
         def wrapper(*args, **kwargs):
+            """
+            Wrapper that enforces the throttle by executing the function
+            only if the specified wait time has elapsed since the last call.
+            """
             now = time.monotonic()
             if now - last_exec["t"] >= float(wait_seconds):
                 last_exec["t"] = now
