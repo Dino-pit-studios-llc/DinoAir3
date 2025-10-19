@@ -94,7 +94,7 @@ class Logger:
         root = logging.getLogger()
         if getattr(root, "_dinoair_structured_logging_configured", False):
             # Structured logging already set up; just obtain a namespaced logger
-            self.logger = logging.getLogger("DinoAir")
+            self._logger = logging.getLogger("DinoAir")
             return
 
         # Fallback basic configuration (legacy)
@@ -118,21 +118,23 @@ class Logger:
             ],
         )
 
-        self.logger = logging.getLogger("DinoAir")
+        self._logger = logging.getLogger("DinoAir")
 
     @staticmethod
     def _sanitize_message(message: str) -> str:
-        """Basic sanitization of log messages to avoid exposing common secrets.
+        """Basic sanitization of log messages to avoid exposing common secrets
+        and prevent log injection attacks.
 
         Security Audit (PY-A6006): This provides basic protection against
-        accidental logging of sensitive information.
+        accidental logging of sensitive information and log injection.
 
         Note: This is basic protection. For comprehensive redaction,
         use utils.structured_logging which has proper redaction filters.
         """
-        # Basic pattern matching for common secret patterns
+        # First, prevent log injection by removing/replacing newlines and carriage returns
+        sanitized = message.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 
-        # Redact potential API keys, tokens, passwords
+        # Basic pattern matching for common secret patterns
         patterns = [
             (
                 r"\b[A-Za-z0-9]{32,}\b",
@@ -144,7 +146,6 @@ class Logger:
             (r"secret[=:]\s*[^\s]+", "secret=***REDACTED***"),  # secret fields
         ]
 
-        sanitized = message
         for pattern, replacement in patterns:
             sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
 
@@ -153,27 +154,27 @@ class Logger:
     def info(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log info message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self.logger.info(sanitized_message, *args, **kwargs)
+        self._logger.info(sanitized_message, *args, **kwargs)
 
     def warning(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log warning message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self.logger.warning(sanitized_message, *args, **kwargs)
+        self._logger.warning(sanitized_message, *args, **kwargs)
 
     def error(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log error message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self.logger.error(sanitized_message, *args, **kwargs)
+        self._logger.error(sanitized_message, *args, **kwargs)
 
     def debug(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log debug message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self.logger.debug(sanitized_message, *args, **kwargs)
+        self._logger.debug(sanitized_message, *args, **kwargs)
 
     def critical(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Log critical message with basic sanitization"""
         sanitized_message = Logger._sanitize_message(message)
-        self.logger.critical(sanitized_message, *args, **kwargs)
+        self._logger.critical(sanitized_message, *args, **kwargs)
 
     def __call__(self, name: str) -> logging.Logger:
         """Allow Logger()('component') usage by returning a named standard logger."""
