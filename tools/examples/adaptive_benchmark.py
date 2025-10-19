@@ -140,6 +140,7 @@ def simulate(flag: bool = True, seed: int = 1337) -> dict:
         "decisions": decisions,
     }
 
+
 if __name__ == "__main__":
     # Print two summaries for quick comparison: adaptive on vs. off
     res_on = simulate(flag=True, seed=1337)

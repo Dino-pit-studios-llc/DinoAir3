@@ -29,10 +29,8 @@ from .controllers.structured_flow import StructuredParsingController
 from .exceptions import AssemblyError, ErrorContext, TranslatorError
 from .execution.process_pool import ParseValidateExecutor
 from .integration.events import EventDispatcher, EventType
-
 # Import from models.py file (not the models directory)
 from .models import BlockType, CodeBlock
-
 # Import new model abstraction from models directory
 from .models.base_model import BaseTranslationModel, OutputLanguage
 from .models.base_model import TranslationConfig as ModelTranslationConfig
@@ -50,7 +48,8 @@ if TYPE_CHECKING:
 """Module providing utilities for pseudocode translation, including event dispatching, timing wrappers, and translation result handling."""
 
 try:
-    from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
+    from concurrent.futures.process import \
+        BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
     class _FallbackBrokenProcessPool(Exception):

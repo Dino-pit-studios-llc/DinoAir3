@@ -217,6 +217,7 @@ class TelemetryRecorder:
             # never raise; only defensive
             pass
 
+
 class NoOpTelemetryRecorder:
     """No-op recorder used when telemetry is disabled."""
 
@@ -241,6 +242,7 @@ class NoOpTelemetryRecorder:
         """Snapshot method."""
         # Explicitly empty dictionary to satisfy "empty when disabled" requirement
         return {}
+
 
 _recorder: TelemetryRecorder | NoOpTelemetryRecorder | None = None
 _lock = threading.Lock()
@@ -270,6 +272,7 @@ def get_recorder() -> TelemetryRecorder | NoOpTelemetryRecorder:
             get_recorder.recorder = _create_recorder()
     return get_recorder.recorder
 
+
 def _create_recorder() -> TelemetryRecorder | NoOpTelemetryRecorder:
     """Create and configure the appropriate recorder instance"""
     if not telemetry_enabled():
@@ -284,6 +287,7 @@ def _create_recorder() -> TelemetryRecorder | NoOpTelemetryRecorder:
 
     return rec
 
+
 def _get_sample_rate() -> int:
     """Get sampling rate from environment or default to 1"""
     sample_env = os.getenv("PSEUDOCODE_TELEMETRY_SAMPLE", "1").strip()
@@ -292,6 +296,7 @@ def _get_sample_rate() -> int:
         return max(sample_rate, 1)
     except (ValueError, TypeError):
         return 1
+
 
 def _apply_sampling_wrapper(rec: TelemetryRecorder, sample_rate: int) -> None:
     """Wrap record_event to apply deterministic sampling"""

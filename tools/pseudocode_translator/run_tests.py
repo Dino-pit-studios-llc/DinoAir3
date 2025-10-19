@@ -12,7 +12,7 @@ from pathlib import Path
 
 from utils.process import safe_run
 
-from .environment import change_to_project_dir, configure_environment, PYTHON_EXE
+from .environment import PYTHON_EXE, change_to_project_dir, configure_environment
 from .quality import run_quality_checks
 from .test_args import add_quality_args
 

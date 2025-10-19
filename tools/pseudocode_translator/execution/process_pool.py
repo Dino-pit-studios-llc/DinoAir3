@@ -29,6 +29,7 @@ except Exception:  # pragma: no cover
     class BrokenProcessPool(Exception):
         """Custom exception indicating the process pool is broken or unavailable."""
 
+
 logger = logging.getLogger(__name__)
 
 # Top-level worker functions for picklability
@@ -50,6 +51,7 @@ def worker_validate(ast_obj) -> ValidationResult:
     validator = Validator(cfg)
     return validator.validate_syntax(code)
 
+
 @dataclass
 class _TaskSpec:
     """Specifies the type, function, and arguments for a processing task."""
@@ -57,6 +59,7 @@ class _TaskSpec:
     kind: str  # "parse" | "validate"
     func: Callable[..., Any]
     args: tuple
+
 
 class _ImmediateFallback:
     """Small Future-like object to represent an immediate fallback instruction."""
@@ -67,6 +70,7 @@ class _ImmediateFallback:
     def result(self, timeout: float | None = None):
         """Result method."""
         raise RuntimeError(f"exec_pool_fallback:{self.reason}")
+
 
 class ParseValidateExecutor:
     """

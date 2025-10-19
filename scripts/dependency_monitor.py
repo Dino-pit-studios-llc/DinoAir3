@@ -28,6 +28,7 @@ import argparse
 import importlib
 import json
 import logging
+
 # removed: import subprocess
 import sys
 import time
@@ -840,6 +841,7 @@ def main() -> None:
     args = parse_args()
     validate_path(args.path)
     execute_command(args)
+
 
 if __name__ == "__main__":
     main()

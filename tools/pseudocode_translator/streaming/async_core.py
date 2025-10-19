@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from .events import TranslationUpdate
 
+
 class StreamingTranslatorProto(Protocol):
     """Protocol defining the interface for streaming translators.
 
