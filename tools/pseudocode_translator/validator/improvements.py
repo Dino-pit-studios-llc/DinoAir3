@@ -81,6 +81,7 @@ class ImprovementAnalyzer:
         if line.rstrip() != line and line.strip():
             return [f"Line {line_num} has trailing whitespace"]
         return []
+
     @staticmethod
     def _check_naming_conventions(line: str) -> list[str]:
         """Check function and class naming conventions."""

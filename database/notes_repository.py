@@ -136,6 +136,7 @@ class NotesRepository:
                     seen.add(tag_normalized)
 
         return normalized_tags
+
     def _has_json1_support(self) -> bool:
         """Check if SQLite installation supports JSON1 extension"""
         try:

@@ -187,7 +187,7 @@ class DocstringGenerator:
         elif name.startswith("parse_"):
             return f"Parse {self._humanize_name(name[6:])}."
         elif name.startswith("load_"):
-            return f"Load {self-_humanize_name(name[5:])}."
+            return f"Load {self - _humanize_name(name[5:])}."
         elif name.startswith("save_"):
             return f"Save {self._humanize_name(name[5:])}."
         elif name.startswith("update_"):
@@ -240,9 +240,9 @@ class DocstringGenerator:
             return f"Configuration for {self._humanize_name(name[:-suffix_len])}."
         elif name.endswith("Proto") or name.endswith("Protocol"):
             suffix_len = 5 if name.endswith("Proto") else 8
-            return f"Protocol defining {self-_humanize_name(name[:-suffix_len])} interface."
+            return f"Protocol defining {self - _humanize_name(name[:-suffix_len])} interface."
         else:
-            return f"{self-_humanize_name(name)} implementation."
+            return f"{self - _humanize_name(name)} implementation."
 
     def _generate_module_summary(self, module_name: str, module_info: ModuleInfo) -> str:
         """Generate a summary for a module."""
@@ -340,7 +340,7 @@ class DocstringGenerator:
         if "file" in name or any("file" in arg for arg in func_info.args):
             exceptions.append("FileNotFoundError")
         if "connect" in name or "network" in name:
-            exceptions.extend(["ConnectionError", "TimeoutError"]);
+            exceptions.extend(["ConnectionError", "TimeoutError"])
         return exceptions
 
     @staticmethod
