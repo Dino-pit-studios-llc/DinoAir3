@@ -59,7 +59,8 @@ class NamingFixer:
             "errors": [],
         }
 
-    def find_python_files(self, root_dir: Path) -> list[Path]:
+    @staticmethod
+    def find_python_files(root_dir: Path) -> list[Path]:
         """Find all Python source files."""
         py_files = list(root_dir.rglob("*.py"))
         # Exclude common directories

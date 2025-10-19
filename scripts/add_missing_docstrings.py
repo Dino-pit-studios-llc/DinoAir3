@@ -322,14 +322,16 @@ class DocstringGenerator:
         """Generate description for class attributes."""
         return f"{self._humanize_name(attr_name).capitalize()} attribute"
 
-    def _generate_class_example(self, class_info: ClassInfo) -> list[str]:
+    @staticmethod
+    def _generate_class_example(class_info: ClassInfo) -> list[str]:
         """Generate usage example for a class."""
         class_name = class_info.name
         instance_name = class_name.lower()
         lines = [f"{instance_name} = {class_name}()", f"result = {instance_name}.method()"]
         return lines
 
-    def _detect_potential_exceptions(self, func_info: FunctionInfo) -> list[str]:
+    @staticmethod
+    def _detect_potential_exceptions(func_info: FunctionInfo) -> list[str]:
         """Detect potential exceptions based on function patterns."""
         exceptions = []
         name = func_info.name
@@ -341,7 +343,8 @@ class DocstringGenerator:
             exceptions.extend(["ConnectionError", "TimeoutError"])
         return exceptions
 
-    def _detect_class_attributes(self, class_info: ClassInfo) -> list[str]:
+    @staticmethod
+    def _detect_class_attributes(class_info: ClassInfo) -> list[str]:
         """Detect likely class attributes from method names."""
         attributes = []
         for method in class_info.methods:
@@ -417,55 +420,6 @@ class DocstringAnalyzer:
             methods=methods,
             properties=properties,
         )
-
-    def _analyze_function(
-        self,
-        func_node: ast.FunctionDef | ast.AsyncFunctionDef,
-        parent_class: str | None = None,
-    ) -> FunctionInfo:
-        """Analyze a function definition."""
-        args = [arg.arg for arg in func_node.args.args]
-        return_type = None
-        if func_node.returns:
-            return_type = ast.unparse(func_node.returns)
-        decorators = [ast.unparse(d) for d in func_node.decorator_list]
-        is_property = any("property" in d for d in decorators)
-        is_classmethod = any("classmethod" in d for d in decorators)
-        is_staticmethod = any("staticmethod" in d for d in decorators)
-        return FunctionInfo(
-            name=func_node.name,
-            lineno=func_node.lineno,
-            col_offset=func_node.col_offset,
-            args=args,
-            return_type=return_type,
-            is_async=isinstance(func_node, ast.AsyncFunctionDef),
-            is_method=parent_class is not None,
-            is_property=is_property,
-            is_classmethod=is_classmethod,
-            is_staticmethod=is_staticmethod,
-            decorators=decorators,
-            parent_class=parent_class,
-        )
-
-    def _is_nested_function(self, func_node: ast.FunctionDef | ast.AsyncFunctionDef, tree: ast.AST) -> bool:
-        """Check if function is nested inside another function."""
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node != func_node:
-                for child in ast.walk(node):
-                    if child == func_node:
-                        return True
-        return False
-
-    def has_docstring(self, node: ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef) -> bool:
-        """Check if a node has a docstring."""
-        if (
-            len(node.body) > 0
-            and isinstance(node.body[0], ast.Expr)
-            and isinstance(node.body[0].value, ast.Constant)
-            and isinstance(node.body[0].value.value, str)
-        ):
-            return True
-        return False
 
 
 class DocstringFixer:
@@ -572,7 +526,8 @@ class DocstringFixer:
             print(f"  Error processing {filepath}: {e}")
             return False
 
-    def _has_docstring_at_line(self, lines: list[str], lineno: int) -> bool:
+    @staticmethod
+    def _has_docstring_at_line(lines: list[str], lineno: int) -> bool:
         """Check if there's already a docstring at the given line."""
         if lineno >= len(lines):
             return False
@@ -613,7 +568,7 @@ class DocstringFixer:
         elif item_type == "module":
             return self.generator.generate_module_docstring(module_info)
         else:
-            return '    """TODO: Add description."""'
+            return '    """TODO: Add description.""'
 
     def print_stats(self):
         """Print statistics about the fixing process."""

@@ -145,7 +145,8 @@ class SimpleDocstringFixer:
 
         return missing
 
-    def _has_docstring(self, node) -> bool:
+    @staticmethod
+    def _has_docstring(node) -> bool:
         """Check if a node has a docstring.
 
         Args:
@@ -161,7 +162,8 @@ class SimpleDocstringFixer:
             and isinstance(node.body[0].value.value, str)
         )
 
-    def _is_top_level(self, func_node, tree) -> bool:
+    @staticmethod
+    def _is_top_level(func_node, tree) -> bool:
         """Check if function is at module level (not nested).
 
         Args:
@@ -197,7 +199,8 @@ class SimpleDocstringFixer:
         else:
             return f'{indent_str}"""TODO: Add description."""'
 
-    def _make_readable(self, name: str) -> str:
+    @staticmethod
+    def _make_readable(name: str) -> str:
         """Convert name to readable format.
 
         Args:

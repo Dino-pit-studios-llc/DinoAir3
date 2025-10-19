@@ -377,7 +377,8 @@ class AsyncLogHandler(logging.Handler):
             logger = self._get_fallback_logger()
             logger.debug("%s: %s", error_type, error)
 
-    def _get_fallback_logger(self) -> logging.Logger:
+    @staticmethod
+    def _get_fallback_logger() -> logging.Logger:
         """Get a logger with fallback to standard logging."""
         try:
             return get_logger(__name__)

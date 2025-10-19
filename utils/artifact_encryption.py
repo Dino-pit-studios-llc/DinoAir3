@@ -70,7 +70,8 @@ class ArtifactEncryption:
         """Generate a random salt"""
         return secrets.token_bytes(self.salt_length)
 
-    def generate_nonce(self) -> bytes:
+    @staticmethod
+    def generate_nonce() -> bytes:
         """Generate a random 12-byte nonce for AES-GCM"""
         # GCM mode uses 12-byte nonces for optimal security
         return secrets.token_bytes(12)
