@@ -6,6 +6,7 @@ implement, along with supporting data structures for model capabilities and
 metadata.
 """
 
+import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from utils.shutdown_protocols import ShutdownMixin
+
+logger = logging.getLogger(__name__)
 
 
 class ModelFormat(Enum):
