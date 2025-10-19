@@ -1,19 +1,29 @@
-name: Build
+# ========================================================================
+# DEPRECATED - Consolidated into .github/workflows/ci.yml
+# ========================================================================
+# This workflow has been merged into the main CI pipeline.
+# 
+# Docker build and SonarQube analysis are now part of ci.yml:
+# - 'build' job: Builds Docker image (runs after lint, test, security, sonarcloud)
+# - 'sonarqube-selfhosted' job: Optional self-hosted SonarQube analysis
+#
+# To enable self-hosted SonarQube analysis, set GitHub variable:
+# - SONARQUBE_ENABLED = 'true'
+#
+# And configure these secrets:
+# - SONARQUBE_HOST_URL: Your SonarQube server URL (e.g., http://sonarqube.local:9000)
+# - SONARQUBE_TOKEN: Your SonarQube authentication token
+#
+# See: .github/workflows/ci.yml
+# ======================================================================== 
+
+name: DEPRECATED - Use ci.yml instead
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - __disabled__
 jobs:
-    sonarqube:
-        name: SonarQube
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-            - name: SonarQube Scan
-              uses: SonarSource/sonarqube-scan-action@v6
-              env:
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This workflow is deprecated. Use .github/workflows/ci.yml"

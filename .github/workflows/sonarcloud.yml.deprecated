@@ -1,0 +1,9 @@
+# DEPRECATED: This workflow has been consolidated into ci.yml
+# 
+# The SonarCloud analysis job is now part of the unified CI/CD pipeline.
+# To configure SonarCloud:
+# 1. Set SONAR_TOKEN secret in GitHub repository settings
+# 2. Verify sonar-project.properties has correct org and projectKey
+# 3. The analysis runs automatically on push and pull requests
+#
+# See: .github/workflows/ci.yml (sonarcloud job)
