@@ -29,6 +29,11 @@ except Exception:
 
 logger = get_logger("utils.safe_imports")
 
+def _sanitize_for_log(s: str) -> str:
+    """
+    Remove carriage returns and newlines from strings to mitigate log injection issues.
+    """
+    return s.replace('\r', '').replace('\n', '') if isinstance(s, str) else s
 
 # New specific exception for import hardening
 class SafeImportError(ImportError):
@@ -58,7 +63,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     """
     k = str(key or "").strip()
     if not k or k not in allowed:
-        logger.debug("safe_import rejected module key", extra={"key": k})
+        logger.debug("safe_import rejected module key", extra={"key": _sanitize_for_log(k)})
         raise SafeImportError(f"module not allowed: {k!r}")
 
     module_name = str(allowed[k]).strip()
@@ -67,7 +72,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     if not module_name or module_name.startswith((".", "/")) or ":" in module_name:
         logger.debug(
             "safe_import invalid module mapping",
-            extra={"key": k, "module": module_name},
+            extra={"key": _sanitize_for_log(k), "module": module_name},
         )
         raise SafeImportError(f"invalid module mapping for key: {k!r}")
 
@@ -78,7 +83,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     if not re.match(r"^[a-zA-Z0-9_.]+$", module_name):
         logger.debug(
             "safe_import unsafe characters in module name",
-            extra={"key": k, "module": module_name},
+            extra={"key": _sanitize_for_log(k), "module": module_name},
         )
         raise SafeImportError(f"unsafe module name for key: {k!r}")
 
@@ -92,7 +97,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     except Exception as exc:
         logger.debug(
             "safe_import import failed",
-            extra={"key": k, "module": module_name, "error": str(exc)},
+            extra={"key": _sanitize_for_log(k), "module": module_name, "error": str(exc)},
         )
         raise SafeImportError(f"import failed for allowed module: {module_name!r}") from exc
 
