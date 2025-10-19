@@ -11,21 +11,24 @@ import argparse
 import ast
 import sys
 from pathlib import Path
-
+import os
 
 class SimpleDocstringFixer:
     """Simple docstring fixer for Python files."""
 
-    def __init__(self, dry_run: bool = False):
+    def __init__(self, dry_run: bool = False, root_dir: Path = None):
         """Initialize the fixer.
 
         Args:
             dry_run: If True, only show what would be changed
+            root_dir: Base directory to constrain safe file access
         """
         self.dry_run = dry_run
         self.files_processed = 0
         self.docstrings_added = 0
-
+        # Use root_dir for path validation. Default to cwd if not given.
+        # Always use resolved absolute path
+        self.root_dir = Path(root_dir or Path.cwd()).resolve()
     def fix_file(self, filepath: Path) -> bool:
         """Fix missing docstrings in a Python file.
 
@@ -36,7 +39,16 @@ class SimpleDocstringFixer:
             True if changes were made, False otherwise
         """
         try:
-            with open(filepath, encoding="utf-8") as f:
+            # Restrict access to files only within self.root_dir
+            abs_filepath = filepath.resolve()
+            abs_root_dir = self.root_dir
+            # Use os.path.commonpath for robust directory check
+            # Both inputs must be strings
+            if os.path.commonpath([str(abs_filepath), str(abs_root_dir)]) != str(abs_root_dir):
+                print(f"Error: Unsafe file path {abs_filepath} is outside allowed directory {abs_root_dir}")
+                return False
+
+            with open(abs_filepath, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -277,7 +289,9 @@ def main():
         print(f"Error: Path {target_path} does not exist")
         return 1
 
-    fixer = SimpleDocstringFixer(dry_run=args.dry_run)
+    # Set the safe root directory as the fully resolved start path
+    safe_root = target_path.resolve() if target_path.exists() else Path.cwd().resolve()
+    fixer = SimpleDocstringFixer(dry_run=args.dry_run, root_dir=safe_root)
 
     if target_path.is_file():
         if target_path.suffix == ".py":
