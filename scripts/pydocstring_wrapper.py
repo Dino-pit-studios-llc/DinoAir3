@@ -101,9 +101,8 @@ class PydocstringWrapper:
                             content_lines.append(line)
                     return "\n".join(content_lines).strip()
                 return output
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
@@ -190,9 +189,8 @@ class PydocstringWrapper:
 
             if result.returncode == 0:
                 return result.stdout.strip()
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")

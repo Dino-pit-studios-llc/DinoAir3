@@ -120,11 +120,11 @@ def main():
             print(f"    Line {issue['unreachable_line']}: ...this except block")
             print()
         return 1
-    else:
-        print("✅ No unreachable except blocks found in the codebase!")
-        print()
-        print("All exception handlers are properly ordered.")
-        return 0
+
+    print("✅ No unreachable except blocks found in the codebase!")
+    print()
+    print("All exception handlers are properly ordered.")
+    return 0
 
 
 if __name__ == "__main__":
