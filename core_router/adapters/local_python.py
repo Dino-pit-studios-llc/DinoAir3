@@ -74,7 +74,7 @@ def _resolve_function(path: str) -> Callable[[dict[str, Any]], object]:
         )
 
     # Import module via safe helper (explicit key->module mapping)
-    allowed_map = {m: m for m in ALLOWED_LOCAL_MODULES.keys()}
+    allowed_map = {m: m for m in ALLOWED_LOCAL_MODULES}
     try:
         module = safe_import(module_name, allowed_map)
     except Exception as exc:
