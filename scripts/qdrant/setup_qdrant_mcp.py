@@ -417,9 +417,8 @@ def main():
     if success:
         print("\nSetup completed successfully!")
         return 0
-    else:
-        print("\nSetup failed!")
-        return 1
+    print("\nSetup failed!")
+    return 1
 
 
 if __name__ == "__main__":

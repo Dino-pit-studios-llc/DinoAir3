@@ -301,11 +301,11 @@ class LocalTransformerModel(BaseTranslationModel):
         model_name = self.config["model_name"].lower()
         if "350m" in model_name:
             return 1.4
-        elif "2b" in model_name or "1b" in model_name:
+        if "2b" in model_name or "1b" in model_name:
             return 4.0
-        elif "6b" in model_name:
+        if "6b" in model_name:
             return 12.0
-        elif "16b" in model_name or "15b" in model_name:
+        if "16b" in model_name or "15b" in model_name:
             return 32.0
         return 2.0
 

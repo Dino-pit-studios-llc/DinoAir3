@@ -271,8 +271,7 @@ class FileProcessor:
 
             if not recursive:
                 return self._find_files_non_recursive(root, normalized_exts)
-            else:
-                return self._find_files_recursive(root, normalized_exts)
+            return self._find_files_recursive(root, normalized_exts)
 
         except Exception as e:  # pragma: no cover - defensive
             self.logger.error("Error enumerating files under %s: %s", root, str(e))
