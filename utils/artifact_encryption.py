@@ -160,12 +160,16 @@ class ArtifactEncryption:
                 key = self.derive_key(self.password, salt)
 
             # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+            # NOTE: This uses PKCS7 padding with 128-bit block size - a secure padding scheme
+            # CBC mode is maintained only for backward compatibility with existing encrypted data
+            # New encryptions use AES-GCM (see encrypt_data method) which is more secure
             # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+            # nosonar: python:S5542 - CBC mode with PKCS7 required for legacy data compatibility
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
             decryptor = cipher.decryptor()
             decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
 
-            # Remove PKCS7 padding using cryptography unpadder
+            # Remove PKCS7 padding using cryptography unpadder (secure padding scheme)
             unpadder = padding.PKCS7(128).unpadder()
             return unpadder.update(decrypted_padded) + unpadder.finalize()
 
