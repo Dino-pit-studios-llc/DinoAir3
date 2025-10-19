@@ -84,7 +84,9 @@ class NamingFixer:
         trusted_base_dir_resolved = trusted_base_dir.resolve()
         # Ensure that the file is within trusted_base_dir
         try:
-            if not str(safe_path).startswith(str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")):
+            if not str(safe_path).startswith(
+                str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")
+            ):
                 return False, f"Access to '{safe_path}' is not permitted."
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
