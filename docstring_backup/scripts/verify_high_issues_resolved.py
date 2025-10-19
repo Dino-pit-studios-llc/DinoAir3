@@ -53,17 +53,16 @@ def main():
             print(f"    Rule: {issue['rule_name']}")
             print()
         return 1
-    else:
-        print("✅ SUCCESS: No HIGH-severity issues found!")
-        print()
-        print("All HIGH-tagged security issues have been successfully addressed.")
-        print()
-        print("Note: Issue #346 (unreachable except block) was resolved through")
-        print("      file refactoring. The affected file utils/network_security.py")
-        print("      was reduced from 357+ lines to 223 lines with proper exception")
-        print("      handling throughout.")
-        print()
-        return 0
+    print("✅ SUCCESS: No HIGH-severity issues found!")
+    print()
+    print("All HIGH-tagged security issues have been successfully addressed.")
+    print()
+    print("Note: Issue #346 (unreachable except block) was resolved through")
+    print("      file refactoring. The affected file utils/network_security.py")
+    print("      was reduced from 357+ lines to 223 lines with proper exception")
+    print("      handling throughout.")
+    print()
+    return 0
 
 
 if __name__ == "__main__":

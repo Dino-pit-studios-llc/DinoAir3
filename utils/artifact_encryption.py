@@ -148,27 +148,27 @@ class ArtifactEncryption:
             # Decrypt using AES-GCM
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
-        else:
-            # Legacy CBC format - maintain backward compatibility
-            from cryptography.hazmat.primitives import padding
 
-            encrypted = base64.b64decode(encrypted_data["data"])
-            salt = base64.b64decode(encrypted_data["salt"])
-            iv = base64.b64decode(encrypted_data["iv"])
+        # Legacy CBC format - maintain backward compatibility
+        from cryptography.hazmat.primitives import padding
 
-            # Derive key if not provided
-            if key is None:
-                key = self.derive_key(self.password, salt)
+        encrypted = base64.b64decode(encrypted_data["data"])
+        salt = base64.b64decode(encrypted_data["salt"])
+        iv = base64.b64decode(encrypted_data["iv"])
 
-            # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-            # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
-            decryptor = cipher.decryptor()
-            decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+        # Derive key if not provided
+        if key is None:
+            key = self.derive_key(self.password, salt)
 
-            # Remove PKCS7 padding using cryptography unpadder
-            unpadder = padding.PKCS7(128).unpadder()
-            return unpadder.update(decrypted_padded) + unpadder.finalize()
+        # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+        # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+        decryptor = cipher.decryptor()
+        decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+
+        # Remove PKCS7 padding using cryptography unpadder
+        unpadder = padding.PKCS7(128).unpadder()
+        return unpadder.update(decrypted_padded) + unpadder.finalize()
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """

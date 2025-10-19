@@ -374,7 +374,7 @@ class SyntaxValidator:
         """Process a quote character to track string state."""
         if not in_string:
             return True, char
-        elif char == quote_char:
+        if char == quote_char:
             return False, None
         return in_string, quote_char
 

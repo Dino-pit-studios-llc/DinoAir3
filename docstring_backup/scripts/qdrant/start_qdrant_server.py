@@ -188,9 +188,8 @@ def main():
         if test_qdrant_connection(api_key):
             print("Qdrant connection successful!")
             return 0
-        else:
-            print("Failed to connect to Qdrant")
-            return 1
+        print("Failed to connect to Qdrant")
+        return 1
 
     # Check Docker availability
     if not check_docker_available():
@@ -211,12 +210,10 @@ def main():
         if test_qdrant_connection(api_key):
             print("\nQdrant is ready for use with DinoAir3!")
             return 0
-        else:
-            print("\nQdrant started but connection test failed")
-            return 1
-    else:
-        print("Failed to start Qdrant server")
+        print("\nQdrant started but connection test failed")
         return 1
+    print("Failed to start Qdrant server")
+    return 1
 
 
 if __name__ == "__main__":

@@ -47,10 +47,9 @@ def check_all_python_files():
         for error in errors:
             print(f"  {error}")
         return 1
-    else:
-        print("✅ SUCCESS: All Python files have valid syntax!")
-        print()
-        return 0
+    print("✅ SUCCESS: All Python files have valid syntax!")
+    print()
+    return 0
 
 
 def verify_specific_fixes():
@@ -84,8 +83,7 @@ def verify_specific_fixes():
             ):
                 print(f"❌ {local_transformer_path}: Still contains malformed return statement")
                 return 1
-            else:
-                print(f"✅ {local_transformer_path}: Syntax is valid and fix applied")
+            print(f"✅ {local_transformer_path}: Syntax is valid and fix applied")
         except SyntaxError as e:
             print(f"❌ {local_transformer_path}: Syntax error - {e}")
             return 1
@@ -119,8 +117,7 @@ def main():
         print("All Python files now parse correctly.")
         print()
         return 0
-    else:
-        return 1
+    return 1
 
 
 if __name__ == "__main__":

@@ -485,11 +485,10 @@ class EnhancedLogger:
         """
         if self.config.formatter_config.format_type == "json":
             return EnhancedJsonFormatter(self.config.formatter_config)
-        else:
-            return logging.Formatter(
-                self.config.formatter_config.custom_format
-                or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+        return logging.Formatter(
+            self.config.formatter_config.custom_format
+            or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
     def _create_file_handler(self, log_dir: Path, formatter: logging.Formatter) -> logging.Handler:
         """Create and configure file handler with rotation.

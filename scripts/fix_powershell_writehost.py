@@ -93,8 +93,7 @@ class PowerShellFixer:
 
             if result.returncode == 0 and "VALID" in result.stdout:
                 return True, ""
-            else:
-                return False, result.stderr or result.stdout
+            return False, result.stderr or result.stdout
 
         except subprocess.TimeoutExpired:
             return False, "Validation timeout"

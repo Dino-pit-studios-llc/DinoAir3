@@ -17,9 +17,8 @@ def check_file_exists(filepath: str, description: str) -> bool:
     if Path(filepath).exists():
         print(f"✅ {description}: {filepath}")
         return True
-    else:
-        print(f"❌ {description}: {filepath} (missing)")
-        return False
+    print(f"❌ {description}: {filepath} (missing)")
+    return False
 
 
 def check_sonar_properties() -> bool:
@@ -47,9 +46,8 @@ def check_sonar_properties() -> bool:
     if missing_keys:
         print(f"❌ SonarQube configuration: Missing keys: {missing_keys}")
         return False
-    else:
-        print(f"✅ SonarQube configuration: {sonar_file}")
-        return True
+    print(f"✅ SonarQube configuration: {sonar_file}")
+    return True
 
 
 def check_github_workflows() -> bool:
@@ -148,9 +146,8 @@ def generate_test_coverage() -> bool:
             if Path("test-results.xml").exists():
                 print("✅ test-results.xml created")
             return True
-        else:
-            print(f"❌ Test execution failed: {result.stderr}")
-            return False
+        print(f"❌ Test execution failed: {result.stderr}")
+        return False
 
     except FileNotFoundError:
         print("❌ pytest not found - install with: pip install pytest pytest-cov")

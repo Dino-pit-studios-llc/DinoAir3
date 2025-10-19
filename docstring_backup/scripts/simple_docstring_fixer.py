@@ -182,14 +182,13 @@ class SimpleDocstringFixer:
 
         if item_type == "module":
             return f'"""{self._make_readable(name)} module."""'
-        elif item_type == "class":
+        if item_type == "class":
             return f'{indent_str}"""{self._make_readable(name)} class."""'
-        elif item_type == "function":
+        if item_type == "function":
             return f'{indent_str}"""{self._make_readable(name)} function."""'
-        elif item_type == "method":
+        if item_type == "method":
             return f'{indent_str}"""{self._make_readable(name)} method."""'
-        else:
-            return f'{indent_str}"""TODO: Add description."""'
+        return f'{indent_str}"""TODO: Add description."""'
 
     def _make_readable(self, name: str) -> str:
         """Convert name to readable format.
@@ -206,23 +205,22 @@ class SimpleDocstringFixer:
         # Handle common patterns
         if name.endswith("_manager"):
             return name.replace("_", " ").replace(" manager", " manager").title()
-        elif name.endswith("_handler"):
+        if name.endswith("_handler"):
             return name.replace("_", " ").replace(" handler", " handler").title()
-        elif name.startswith("get_"):
+        if name.startswith("get_"):
             return f"Get {name[4:].replace('_', ' ')}"
-        elif name.startswith("set_"):
+        if name.startswith("set_"):
             return f"Set {name[4:].replace('_', ' ')}"
-        elif name.startswith("create_"):
+        if name.startswith("create_"):
             return f"Create {name[7:].replace('_', ' ')}"
-        elif name.startswith("init_"):
+        if name.startswith("init_"):
             return f"Initialize {name[5:].replace('_', ' ')}"
-        elif name.startswith("process_"):
+        if name.startswith("process_"):
             return f"Process {name[8:].replace('_', ' ')}"
-        elif name.startswith("validate_"):
+        if name.startswith("validate_"):
             return f"Validate {name[9:].replace('_', ' ')}"
-        else:
-            # Convert snake_case to Title Case
-            return name.replace("_", " ").title()
+        # Convert snake_case to Title Case
+        return name.replace("_", " ").title()
 
     def process_directory(self, directory: Path) -> None:
         """Process all Python files in a directory.
