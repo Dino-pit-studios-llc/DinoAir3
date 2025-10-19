@@ -23,17 +23,17 @@ class PowerShellFixer:
 
     # Patterns for different Write-Host scenarios
     patterns = {
-        "error": re.compile(r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+Red', re.IGNORECASE),
+        "error": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red', re.IGNORECASE),
         "warning": re.compile(
-            r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+(Yellow|Orange)',
+            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)',
             re.IGNORECASE,
         ),
         "success": re.compile(
-            r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+Green',
+            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Green',
             re.IGNORECASE,
         ),
-        "info": re.compile(r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+\w+', re.IGNORECASE),
-        "simple": re.compile(r'Write-Host\s+(['"'][^"']*['"'])', re.IGNORECASE),
+        "info": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+', re.IGNORECASE),
+        "simple": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])', re.IGNORECASE),
         "variable": re.compile(r"Write-Host\s+(\$\w+)", re.IGNORECASE),
     }
 
