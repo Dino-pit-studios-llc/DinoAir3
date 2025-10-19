@@ -307,6 +307,7 @@ This module provides a decorator to retry operations on failure based on the pro
 RetryConfig parameters and specified exceptions.
 """
 
+
 def retry_on_failure(
     config: RetryConfig | None = None,
     exceptions: tuple[type[Exception], ...] | None = None,
@@ -325,6 +326,7 @@ def retry_on_failure(
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         """Creates a wrapper that retries the decorated function on specified exceptions."""
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             """Executes the function with retry logic on failure."""
@@ -462,6 +464,7 @@ def _log_all_attempts_failed(config: RetryConfig, func: Callable[..., Any], atte
 
 """Module providing a circuit breaker decorator to add resilience to function calls by preventing repeated failures."""
 
+
 def circuit_breaker(
     config: CircuitBreakerConfig | None = None, name: str = ""
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -541,6 +544,7 @@ def timeout_context(seconds: float) -> Generator[None, None, None]:
 """Error handling utilities for managing execution timeouts.
 """
 
+
 def with_timeout(
     timeout_seconds: float,
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -561,6 +565,7 @@ def with_timeout(
         Returns:
             Wrapped function that enforces a timeout.
         """
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             """Wrapper function that executes the decorated function within a timeout context.

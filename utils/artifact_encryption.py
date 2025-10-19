@@ -156,8 +156,9 @@ class ArtifactEncryption:
 
         # Create cipher and decrypt (legacy CBC mode for backward compatibility)
         # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
-        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
         from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
         decryptor = cipher.decryptor()
         decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
