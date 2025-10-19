@@ -154,7 +154,7 @@ class ArtifactEncryption:
             encrypted = base64.b64decode(encrypted_data["data"])
             salt = base64.b64decode(encrypted_data["salt"])
             iv = base64.b64decode(encrypted_data["iv"])
-            
+
             # Extract HMAC if present (for new CBC encryptions)
             stored_hmac = None
             if "hmac" in encrypted_data:

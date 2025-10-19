@@ -181,7 +181,7 @@ class ProjectsDatabase:
             allowed_tables = ["projects", "notes", "artifacts", "calendar_events", "timers"]
             if table not in allowed_tables:
                 raise ValueError(f"Invalid table name: {table}")
-            
+
             # Use parameterized query - table name validated above
             # Build query dynamically but safely after validation
             if table == "projects":
@@ -196,7 +196,7 @@ class ProjectsDatabase:
                 sql = "SELECT COUNT(*), MAX(updated_at) FROM timers WHERE project_id = ? AND updated_at >= ?"
             else:
                 raise ValueError(f"Unhandled table: {table}")
-                
+
             cursor.execute(sql, (project_id, cutoff_iso))
             row = cursor.fetchone()
 
@@ -248,7 +248,7 @@ class ProjectsDatabase:
         """
         Execute SELECT COUNT(*) FROM {table} WHERE {where} with params for allowed tables.
         Returns 0 for disallowed tables or on any exception.
-        
+
         Security: Uses parameterized queries with validated table names to prevent SQL injection.
         """
         try:
@@ -256,7 +256,7 @@ class ProjectsDatabase:
             allowed_tables = ["projects", "notes", "artifacts", "calendar_events"]
             if table not in allowed_tables:
                 return 0
-            
+
             # Build safe query using validated table name
             # The 'where' clause must use parameterized queries (? placeholders)
             if table == "projects":
@@ -269,7 +269,7 @@ class ProjectsDatabase:
                 sql = f"SELECT COUNT(*) FROM calendar_events WHERE {where}"
             else:
                 return 0
-            
+
             cursor.execute(sql, params)
             row = cursor.fetchone()
             if not row:

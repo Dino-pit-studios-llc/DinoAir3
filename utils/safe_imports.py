@@ -70,21 +70,22 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
             extra={"key": k, "module": module_name},
         )
         raise SafeImportError(f"invalid module mapping for key: {k!r}")
-    
+
     # Enhanced validation: ensure module name contains only safe characters
     # Allow: letters, numbers, dots, underscores (standard Python module names)
     import re
-    if not re.match(r'^[a-zA-Z0-9_.]+$', module_name):
+
+    if not re.match(r"^[a-zA-Z0-9_.]+$", module_name):
         logger.debug(
             "safe_import unsafe characters in module name",
             extra={"key": k, "module": module_name},
         )
         raise SafeImportError(f"unsafe module name for key: {k!r}")
-    
+
     # Additional check: module must be in the explicit allowlist already
     # This prevents dynamic module loading based on user input
     # The 'allowed' dict must be statically defined, not from user input
-    
+
     try:
         module = import_module(module_name)
         return module
