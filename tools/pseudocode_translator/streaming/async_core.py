@@ -25,25 +25,52 @@ class StreamingTranslatorProto(Protocol):
     and translate full documents in a streaming context.
     """
 
-    def _check_cancelled(self) -> bool: ...
+    def _check_cancelled(self) -> bool:
+        """Check if the translation process has been cancelled.
 
-    def _wait_if_paused(self) -> None: ...
+        Returns:
+            bool: True if the translation has been cancelled, False otherwise.
+        """
+        ...
 
-    def _is_complete_statement(self, text: str) -> bool: ...
+    def _wait_if_paused(self) -> None:
+        """Block execution while the translation process is paused."""
+        ...
+
+    def _is_complete_statement(self, text: str) -> bool:
+        """Determine if the provided text constitutes a complete statement.
+
+        Args:
+            text (str): The text fragment to evaluate.
+
+        Returns:
+            bool: True if the text ends with a complete statement, False otherwise.
+        """
+        ...
 
     def _translate_full_document(
         self,
         full_text: str,
         on_update: Callable[[TranslationUpdate], None] | None = None,
-    ) -> Iterator[str]: ...
+    ) -> Iterator[str]:
+        """Translate the entire document in a streaming manner.
+
+        Args:
+            full_text (str): The complete source text to translate.
+            on_update (Callable[[TranslationUpdate], None], optional): Callback for incremental translation updates.
+
+        Yields:
+            str: Chunks of translated text as they become available.
+        """
+        ...
 
 
 async def async_translate_line_by_line(
     translator: StreamingTranslatorProto,
-        """Async Translate Line By Line function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:
+    """Async Translate Line By Line function."""
     line_buffer: list[str] = []
     chunk_index = 0
     async for line in input_stream:
@@ -65,10 +92,10 @@ async def async_translate_line_by_line(
 
 async def async_translate_block_by_block(
     translator: StreamingTranslatorProto,
-        """Async Translate Block By Block function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:
+    """Async Translate Block By Block function."""
     accumulated_input: list[str] = []
     async for chunk in input_stream:
         if translator.check_cancelled():
@@ -96,6 +123,7 @@ async def async_translate_full_document(
     loop = asyncio.get_running_loop()
 
     def collect() -> list[str]:
+        """Collect translations by running translate_full_document and returning the results as a list."""
         return list(translator.translate_full_document(full_text, on_update))
 
     results = await loop.run_in_executor(None, collect)

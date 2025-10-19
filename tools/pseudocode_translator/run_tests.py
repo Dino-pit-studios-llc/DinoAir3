@@ -12,7 +12,7 @@ from pathlib import Path
 
 from utils.process import safe_run
 
-from .environment import change_to_project_dir, configure_environment
+from .environment import PYTHON_EXE, change_to_project_dir, configure_environment
 from .quality import run_quality_checks
 from .test_args import add_quality_args
 
@@ -26,7 +26,7 @@ def _is_safe_expr(val: str | None) -> bool:
 
 
 def build_pytest_cmd(args):
-        """Build Pytest Cmd function."""
+    """Build Pytest Cmd function."""
     cmd = [sys.executable, "-m", "pytest"]
     verbosity_map = {
         "very_verbose": "-vv",
@@ -143,7 +143,7 @@ def add_general_args(parser):
 
 
 def run_post_quality_format_check(args):
-        """Run Post Quality Format Check function."""
+    """Run Post Quality Format Check function."""
     if args.all_checks or args.format:
         return run_command(
             [
@@ -159,7 +159,7 @@ def run_post_quality_format_check(args):
 
 
 def run_pytest_based_on_args(args):
-        """Run Pytest Based On Args function."""
+    """Run Pytest Based On Args function."""
     cmd = build_pytest_cmd(args)
     if args.mark and _is_safe_expr(args.mark):
         cmd.extend(["-m", args.mark])

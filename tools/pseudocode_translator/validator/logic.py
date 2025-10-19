@@ -97,7 +97,8 @@ class LogicValidator:
 
         return issues
 
-    def _check_undefined_names(self, tree: ast.AST) -> list[str]:
+    @staticmethod
+    def _check_undefined_names(tree: ast.AST) -> list[str]:
         """Check for undefined variable names (instance method wrapper)."""
         return LogicValidator.check_undefined_names(tree)
 
@@ -250,15 +251,15 @@ class LogicValidator:
         """Find unreachable code after return statements."""
 
         class UnreachableCodeFinder(ast.NodeVisitor):
-        """Detects and reports unreachable code after return statements.
+            """Detects and reports unreachable code after return statements.
             Traverses function definitions and records statements that occur after a return.
-        """
+            """
 
             def __init__(self):
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
-        """Visit Functiondef method."""
+                """Visit FunctionDef method."""
                 found_return = False
                 for stmt in node.body:
                     if found_return and not isinstance(stmt, ast.Pass):
@@ -277,7 +278,7 @@ class LogicValidator:
         """Find variables that are assigned but never used."""
 
         class UnusedVariableFinder(ast.NodeVisitor):
-        """Visitor that tracks assigned variables and identifies unused ones in the AST."""
+            """Visitor that tracks assigned variables and identifies unused ones in the AST."""
 
             def __init__(self):
                 self.assigned = set()
@@ -285,14 +286,14 @@ class LogicValidator:
                 self.issues = []
 
             def visit_Assign(self, node: ast.Assign):
-        """Visit Assign method."""
+                """Visit Assign method."""
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         self.assigned.add(target.id)
                 self.generic_visit(node)
 
             def visit_Name(self, node: ast.Name):
-        """Visit Name method."""
+                """Visit Name method."""
                 if isinstance(node.ctx, ast.Load):
                     self.used.add(node.id)
 
@@ -307,13 +308,13 @@ class LogicValidator:
         """Detect potential infinite loops."""
 
         class InfiniteLoopDetector(ast.NodeVisitor):
-        """AST NodeVisitor that detects potential infinite loops by finding while True loops without break statements."""
+            """AST NodeVisitor that detects potential infinite loops by finding while True loops without break statements."""
 
             def __init__(self):
                 self.issues = []
 
             def visit_While(self, node: ast.While):
-        """Visit While method."""
+                """Visit While method."""
                 # Check for simple infinite loops
                 if isinstance(node.test, ast.Constant) and node.test.value is True:
                     # Check if there's a break statement
@@ -330,13 +331,13 @@ class LogicValidator:
         """Check for functions missing return statements."""
 
         class MissingReturnChecker(ast.NodeVisitor):
-        """Visitor that checks function definitions for missing return statements."""
+            """Visitor that checks function definitions for missing return statements."""
 
             def __init__(self):
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
-        """Visit Functiondef method."""
+                """Visit Functiondef method."""
                 if not node.body:
                     return
 
