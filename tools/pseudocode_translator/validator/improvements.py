@@ -198,7 +198,8 @@ class ImprovementAnalyzer:
         """Check readability for a single function."""
         if len(node.body) > 20:
             return [
-                f"Function '{node.name}' is quite long ({len(node.body)} statements). Consider breaking it into smaller functions."
+                f"Function '{node.name}' is quite long ({len(node.body)} statements). "
+                f"Consider breaking it into smaller functions."
             ]
         return []
 
@@ -220,7 +221,8 @@ class ImprovementAnalyzer:
                 depth = self._calculate_nesting_depth(node)
                 if depth > 3:
                     suggestions.append(
-                        f"Deeply nested if statement at line {node.lineno} (depth {depth}). Consider extracting to functions."
+                        f"Deeply nested if statement at line {node.lineno} (depth {depth}). "
+                        f"Consider extracting to functions."
                     )
 
         # Check for very long lines with complex expressions
@@ -263,7 +265,8 @@ class ImprovementAnalyzer:
         arg_count = ImprovementAnalyzer._count_function_arguments(node)
         if arg_count > 5:
             suggestions.append(
-                f"Function '{node.name}' has too many arguments ({arg_count}). Consider using a parameter object or reducing complexity."
+                f"Function '{node.name}' has too many arguments ({arg_count}). "
+                f"Consider using a parameter object or reducing complexity."
             )
 
         return suggestions

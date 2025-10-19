@@ -51,11 +51,11 @@ try:
     from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
-    class _FallbackBrokenProcessPool(Exception):
+    class _FallbackBrokenProcessPoolError(Exception):
         """Fallback exception used when the concurrent.futures BrokenProcessPool import fails."""
 
     # type: ignore[misc,assignment]
-    _BrokenProcessPool = _FallbackBrokenProcessPool
+    _BrokenProcessPool = _FallbackBrokenProcessPoolError
 BrokenProcessPool = _BrokenProcessPool
 
 # Logger
@@ -302,7 +302,7 @@ class TranslationManager(ShutdownMixin):
             error.add_suggestion("Check model configuration")
             error.add_suggestion("Verify API credentials if using external models")
             error.add_suggestion("Ensure model files are available for local models")
-            raise error
+            raise error from e
 
     def _initialize_model(self, model_name: str | None = None):
         """Initialize or switch to a different translation model based on configuration or provided name."""
@@ -1310,9 +1310,9 @@ class TranslationManager(ShutdownMixin):
             if _t_enabled():
                 rec_any: Any = _get_rec()
                 return cast(dict[str, Any], rec_any.snapshot())
-        except Exception:
+        except Exception as e:
             # Never raise from telemetry; keep behavior unchanged
-            pass
+            logger.debug("Telemetry snapshot failed (ignored): %s", e)
         return {}
 
     def set_target_language(self, language: OutputLanguage) -> None:

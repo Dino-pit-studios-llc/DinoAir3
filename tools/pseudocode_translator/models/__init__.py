@@ -23,7 +23,10 @@ class BlockType(Enum):
 
 @dataclass
 class CodeBlock:
-    """Data class representing a segment of code or text with type, content, line numbers, metadata, and optional context."""
+    """
+    Data class representing a segment of code or text with type, content,
+    line numbers, metadata, and optional context.
+    """
 
     type: BlockType
     content: str
@@ -34,7 +37,10 @@ class CodeBlock:
 
 @dataclass
 class ParseError:
-    """Data class representing an error encountered during parsing, including message, line number, block content, and suggestion."""
+    """
+    Data class representing an error encountered during parsing, including
+    message, line number, block content, and suggestion.
+    """
 
     message: str
     line_number: int | None = None

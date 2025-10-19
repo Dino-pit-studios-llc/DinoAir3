@@ -47,7 +47,8 @@ class GPT2Model(BaseModel):
             name="gpt2",
             display_name="GPT-2 Code",
             description=(
-                "GPT-2 is a transformer-based language model by OpenAI. This variant is fine-tuned for code generation tasks."
+                "GPT-2 is a transformer-based language model by OpenAI. "
+                "This variant is fine-tuned for code generation tasks."
             ),
             version="medium",
             author="OpenAI",

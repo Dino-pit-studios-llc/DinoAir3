@@ -304,7 +304,10 @@ class LogicValidator:
         """Detect potential infinite loops."""
 
         class InfiniteLoopDetector(ast.NodeVisitor):
-            """AST NodeVisitor that detects potential infinite loops by finding while True loops without break statements."""
+            """
+            AST NodeVisitor that detects potential infinite loops by finding
+            while True loops without break statements.
+            """
 
             def __init__(self):
                 self.issues = []
