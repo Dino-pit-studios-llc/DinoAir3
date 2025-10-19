@@ -45,6 +45,7 @@ def p95(values: list[float]) -> float:
 
 """Module to benchmark adaptive chunk sizing by simulating chunk processing latencies."""
 
+
 def simulate(flag: bool = True, seed: int = 1337) -> dict:
     """Simulate function."""
     rnd = random.Random(seed)  # nosec B311 - seeded for reproducibility

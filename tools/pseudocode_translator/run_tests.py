@@ -46,7 +46,6 @@ def build_pytest_cmd(args):
     return cmd
 
 
-
 def run_command(cmd, cwd=None, timeout: int = 900):
     """Run a command with hardened execution and return the exit code."""
     allowed = {Path(sys.executable).name, "python", PYTHON_EXE}

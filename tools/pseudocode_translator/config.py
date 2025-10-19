@@ -189,8 +189,7 @@ class LLMConfig:
             # Limit the number of errors surfaced in the exception message
             preview = "; ".join(errors[:3])
             # Local import to avoid circular dependency; keep in function scope.
-            from .exceptions import \
-                ConfigurationError  # local import to avoid cycles
+            from .exceptions import ConfigurationError  # local import to avoid cycles
 
             raise ConfigurationError(f"Invalid LLM configuration: {preview}")
 
@@ -1097,7 +1096,7 @@ class ConfigManager:
 
         def prompt_yes_no(prompt: str, default: bool) -> bool:
             """Prompt the user for a yes/no question, returning True for yes and
-                False for no, with a default.
+            False for no, with a default.
             """
             default_str = "y" if default else "n"
             raw = safe_input(f"{prompt} (y/n) [{default_str}]: ").strip().lower()

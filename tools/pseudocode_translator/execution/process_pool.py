@@ -11,7 +11,8 @@ import logging
 import multiprocessing as mp
 import os
 import time
-from concurrent.futures import Future, ProcessPoolExecutor, TimeoutError as FuturesTimeoutError
+from concurrent.futures import Future, ProcessPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 

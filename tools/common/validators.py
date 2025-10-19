@@ -92,6 +92,7 @@ This module provides decorators for validating named function arguments
 using user-supplied validator callables.
 """
 
+
 def validate_args(
     mapping: dict[str, tuple["Callable[..., None]", ...]],
 ) -> "Callable[[Callable[P, R]], Callable[P, R]]":
@@ -109,6 +110,7 @@ def validate_args(
         sig = inspect.signature(func)
 
         sig = _inspect.signature(func)
+
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             """
             Bind the provided arguments, run all validators on each named argument,

@@ -25,6 +25,7 @@ check cancellation, handle pausing, detect complete statements, and perform
 streaming translation of full documents.
 """
 
+
 class StreamingTranslatorProto(Protocol):
     """Protocol defining the interface for streaming translators.
 
