@@ -31,13 +31,13 @@ class ServiceAdapter(Protocol):
     def invoke(
         self,
         service_desc: Any,
-            """Invoke method."""
         payload: dict[str, Any],
     ) -> object:  # pragma: no cover - protocol signature
+        """Invoke method."""
         ...
 
     def ping(self) -> bool:  # pragma: no cover - protocol signature
-            """Ping method."""
+        """Ping method."""
         ...
 
 

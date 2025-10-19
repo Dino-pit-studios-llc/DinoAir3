@@ -148,7 +148,7 @@ class SafePDFProcessor:
                 self.start_time = time.time()
 
             def check_timeout(self) -> None:
-            """Check Timeout method."""
+                """Check Timeout method."""
                 if time.time() - self.start_time > self.timeout:
                     raise PDFProcessingTimeoutError(
                         TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)

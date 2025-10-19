@@ -600,30 +600,26 @@ class RequestResponseLoggerMiddleware:
             self._log_request_info(scope, start_ns, status_holder["status"])
 
     @staticmethod
-    """Logging utilities for API.
+    def _create_send_wrapper(send: Send, status_holder: dict[str, int | None]) -> Send:
+        """Create a send wrapper that captures status codes.
 
-    This module provides a wrapper for ASGI send callables to capture HTTP response status codes.
-    """
-        def _create_send_wrapper(send: Send, status_holder: dict[str, int | None]) -> Send:
-            """Create a send wrapper that captures status codes.
+        Args:
+            send: Original send callable
+            status_holder: Dictionary to store status code
+
+        Returns:
+            Wrapped send callable
+        """
+
+        async def send_wrapper(message: Message) -> None:
+            """Async send wrapper that intercepts HTTP response start messages and records the status code.
 
             Args:
-                send: Original send callable
-                status_holder: Dictionary to store status code
-
-            Returns:
-                Wrapped send callable
+                message: ASGI message dictionary.
             """
-
-            async def send_wrapper(message: Message) -> None:
-                """Async send wrapper that intercepts HTTP response start messages and records the status code.
-
-                Args:
-                    message: ASGI message dictionary.
-                """
-                if message.get("type") == "http.response.start":
-                    status_holder["status"] = int(message.get("status", 0))
-                await send(message)
+            if message.get("type") == "http.response.start":
+                status_holder["status"] = int(message.get("status", 0))
+            await send(message)
 
             return send_wrapper
 
