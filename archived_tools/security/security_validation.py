@@ -20,6 +20,7 @@ except Exception:  # pragma: no cover
     import logging as _logging
 
     def _get_logger(name: str):
+        """Fallback logger initializer: returns a standard library logger with the given name."""
         return _logging.getLogger(name)
 
 
@@ -85,7 +86,8 @@ def test_password_security():
                 print(f"   📝 Password '<REDACTED, length={len(pwd)}>' : {'✅' if result == should_pass else '❌'}")
         except Exception as e:
             print("   ⚠️  Password validation method not found")
-            logger.debug("password validation unavailable: %s", e)
+            # Use safe logging - don't log sensitive validation details
+            logger.debug("password validation check unavailable", extra={"error_type": type(e).__name__})
             validation_works = False
         print("   ✅ User Manager instantiated successfully")
 
@@ -93,7 +95,8 @@ def test_password_security():
 
     except Exception as e:
         print(f"   ❌ Password security test failed: {str(e)}")
-        logger.debug("password security failed: %s", e)
+        # Use safe logging - don't log "password" in the message
+        logger.debug("user security validation failed", extra={"error_type": type(e).__name__})
         return {"error": str(e)}
 
 
@@ -184,6 +187,8 @@ def test_audit_logging():
             if test_log_file.exists():
                 test_log_file.unlink()
 
+"""Security validation module providing functions to test various security aspects and generate reports."""
+
         return {
             "logger_created": True,
             "event_types": len(event_types),
@@ -213,7 +218,8 @@ def test_network_security():
 
         # Test if small team functions exist
         try:
-            from utils.network_security import create_small_team_security_config
+            from utils.network_security import \
+                create_small_team_security_config
 
             small_team_config = create_small_team_security_config()
             rate_limit = small_team_config.get("rate_limit_per_minute", 600)
@@ -236,7 +242,7 @@ def test_network_security():
 
 def test_security_configuration():
     """Test overall security configuration."""
-    print("\n⚙️  Testing Security Configuration...")
+    print("\n⚙️  Testing Security Configuration..." )
 
     try:
         from utils.security_config import SecurityConfig
@@ -290,6 +296,7 @@ def report_security_validation_results(
     total_tests,
     report_path: str = DEFAULT_REPORT_FILENAME,
 ):
+    """Generate and display security validation results, save report file, and provide recommendations."""
     score = validation_results.get("overall_score", 0)
     grade = validation_results.get("security_grade", "D (Needs Improvement)")
 
@@ -375,7 +382,6 @@ def run_security_validation():
     report_security_validation_results(validation_results, passed_tests, total_tests)
 
     return validation_results
-
 
 if __name__ == "__main__":
     try:
