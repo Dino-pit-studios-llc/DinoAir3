@@ -52,6 +52,7 @@ except ImportError:
             @property
             def timeout(self) -> Any:
                 """Timeout method."""
+
                 class _Signal:
                     """Signal interface to connect callbacks for DummyQTimer."""
 

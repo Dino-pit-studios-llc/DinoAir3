@@ -34,6 +34,7 @@ class DatabaseManager(Protocol):
 
 class ArtifactCreateResult(TypedDict):
     """Artifactcreateresult class."""
+
     id: str
     storage_uri: str | None
     checksum: str | None
@@ -45,6 +46,7 @@ class ArtifactCreateResult(TypedDict):
 
 class ArtifactStats(TypedDict):
     """Artifactstats class."""
+
     total_artifacts: int
     artifacts_by_type: dict[str, int]
     total_size_bytes: int
