@@ -81,7 +81,6 @@ class ImprovementAnalyzer:
         if line.rstrip() != line and line.strip():
             return [f"Line {line_num} has trailing whitespace"]
         return []
-
     @staticmethod
     def _check_naming_conventions(line: str) -> list[str]:
         """Check function and class naming conventions."""
@@ -181,7 +180,8 @@ class ImprovementAnalyzer:
         suggestions.extend(self._readability_misc_suggestions(tree, code))
         return suggestions
 
-    def _check_ast_readability(self, tree: ast.AST) -> list[str]:
+    @staticmethod
+    def _check_ast_readability(tree: ast.AST) -> list[str]:
         """Check AST-based readability issues."""
         suggestions = []
 
@@ -192,24 +192,6 @@ class ImprovementAnalyzer:
                 suggestions.extend(ImprovementAnalyzer._check_class_readability(node))
 
         return suggestions
-
-    @staticmethod
-    def _check_function_readability(node: ast.FunctionDef) -> list[str]:
-        """Check readability for a single function."""
-        if len(node.body) > 20:
-            return [
-                f"Function '{node.name}' is quite long ({len(node.body)} statements). "
-                f"Consider breaking it into smaller functions."
-            ]
-        return []
-
-    @staticmethod
-    def _check_class_readability(node: ast.ClassDef) -> list[str]:
-        """Check readability for a single class."""
-        method_count = sum(1 for n in node.body if isinstance(n, ast.FunctionDef))
-        if method_count > 15:
-            return [f"Class '{node.name}' has many methods ({method_count}). Consider splitting into smaller classes."]
-        return []
 
     def _readability_misc_suggestions(self, tree: ast.AST, code: str) -> list[str]:
         """Additional readability suggestions."""

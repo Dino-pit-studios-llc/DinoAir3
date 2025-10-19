@@ -22,7 +22,8 @@ class PydocstringWrapper:
         self.formatter = formatter
         self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
 
-    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
 
         Args:
@@ -138,7 +139,8 @@ class PydocstringWrapper:
             print(f"Error running pydocstring: {e}")
             return ""
 
-    def insert_docstring(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def insert_docstring(file_path: Path, line_number: int, docstring: str) -> bool:
         """Insert a docstring into a file at the specified location.
 
         Args:

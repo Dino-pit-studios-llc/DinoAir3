@@ -52,7 +52,8 @@ class ComprehensiveDocstringAutomation:
             print(f"✗ Failed to create backup: {e}")
             return False
 
-    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions that need docstrings."""
         try:
             with open(file_path, encoding="utf-8") as f:
@@ -127,7 +128,8 @@ class ComprehensiveDocstringAutomation:
         except Exception:
             return ""
 
-    def generate_simple_docstring(self, func_name: str) -> str:
+    @staticmethod
+    def generate_simple_docstring(func_name: str) -> str:
         """Generate a simple fallback docstring."""
         if func_name == "__init__":
             return "Initialize the instance."
@@ -140,7 +142,8 @@ class ComprehensiveDocstringAutomation:
         else:
             return f"TODO: Add docstring for {func_name}."
 
-    def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def add_docstring_to_file(file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
             with open(file_path, encoding="utf-8") as f:
