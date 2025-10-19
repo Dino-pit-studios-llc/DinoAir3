@@ -184,17 +184,15 @@ class ProjectsDatabase:
 
             # Use parameterized query - table name validated above
             # Build query dynamically but safely after validation
-            if table == "projects":
-                sql = "SELECT COUNT(*), MAX(updated_at) FROM projects WHERE project_id = ? AND updated_at >= ?"
-            elif table == "notes":
-                sql = "SELECT COUNT(*), MAX(updated_at) FROM notes WHERE project_id = ? AND updated_at >= ?"
-            elif table == "artifacts":
-                sql = "SELECT COUNT(*), MAX(updated_at) FROM artifacts WHERE project_id = ? AND updated_at >= ?"
-            elif table == "calendar_events":
-                sql = "SELECT COUNT(*), MAX(updated_at) FROM calendar_events WHERE project_id = ? AND updated_at >= ?"
-            elif table == "timers":
-                sql = "SELECT COUNT(*), MAX(updated_at) FROM timers WHERE project_id = ? AND updated_at >= ?"
-            else:
+            sql_queries = {
+                "projects": "SELECT COUNT(*), MAX(updated_at) FROM projects WHERE project_id = ? AND updated_at >= ?",
+                "notes": "SELECT COUNT(*), MAX(updated_at) FROM notes WHERE project_id = ? AND updated_at >= ?",
+                "artifacts": "SELECT COUNT(*), MAX(updated_at) FROM artifacts WHERE project_id = ? AND updated_at >= ?",
+                "calendar_events": "SELECT COUNT(*), MAX(updated_at) FROM calendar_events WHERE project_id = ? AND updated_at >= ?",
+                "timers": "SELECT COUNT(*), MAX(updated_at) FROM timers WHERE project_id = ? AND updated_at >= ?",
+            }
+            sql = sql_queries.get(table)
+            if sql is None:
                 raise ValueError(f"Unhandled table: {table}")
 
             cursor.execute(sql, (project_id, cutoff_iso))
