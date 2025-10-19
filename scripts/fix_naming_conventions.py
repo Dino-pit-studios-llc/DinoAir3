@@ -80,8 +80,12 @@ class NamingFixer:
         filename = file_path.name
         if filename not in allowed_files:
             return False, f"Filename '{filename}' is not permitted."
-        safe_path = trusted_base_dir / filename
+        safe_path = (trusted_base_dir / filename).resolve()
+        trusted_base_dir_resolved = trusted_base_dir.resolve()
+        # Ensure that the file is within trusted_base_dir
         try:
+            if not str(safe_path).startswith(str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")):
+                return False, f"Access to '{safe_path}' is not permitted."
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
