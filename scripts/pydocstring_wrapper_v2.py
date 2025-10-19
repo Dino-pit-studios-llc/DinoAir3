@@ -5,10 +5,11 @@ Processes Python files to add missing docstrings using the professional pydocstr
 """
 
 import ast
+import os
 import subprocess
 import sys
 from pathlib import Path
-import os
+
 
 class PydocstringWrapper:
     """Wrapper for the pydocstring tool to batch process files."""
