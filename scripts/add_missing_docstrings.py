@@ -189,7 +189,7 @@ class DocstringGenerator:
         if name.startswith("load_"):
             return f"Load {self._humanize_name(name[5:])}."
         if name.startswith("save_"):
-            return f"Save {self-_humanize_name(name[5:])}."
+            return f"Save {self - _humanize_name(name[5:])}."
         if name.startswith("update_"):
             return f"Update {self._humanize_name(name[7:])}."
         if name.startswith("delete_") or name.startswith("remove_"):
