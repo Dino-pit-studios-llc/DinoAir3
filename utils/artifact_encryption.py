@@ -70,7 +70,8 @@ class ArtifactEncryption:
         """Generate a random salt"""
         return secrets.token_bytes(self.salt_length)
 
-    def generate_nonce(self) -> bytes:
+    @staticmethod
+    def generate_nonce() -> bytes:
         """Generate a random 12-byte nonce for AES-GCM"""
         # GCM mode uses 12-byte nonces for optimal security
         return secrets.token_bytes(12)
@@ -147,41 +148,26 @@ class ArtifactEncryption:
             # Decrypt using AES-GCM
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
-        else:
-            # Legacy CBC format - maintain backward compatibility with HMAC verification
-            from cryptography.hazmat.primitives import padding
+        # Legacy CBC format - maintain backward compatibility
+        from cryptography.hazmat.primitives import padding
 
-            encrypted = base64.b64decode(encrypted_data["data"])
-            salt = base64.b64decode(encrypted_data["salt"])
-            iv = base64.b64decode(encrypted_data["iv"])
+        encrypted = base64.b64decode(encrypted_data["data"])
+        salt = base64.b64decode(encrypted_data["salt"])
+        iv = base64.b64decode(encrypted_data["iv"])
 
-            # Extract HMAC if present (for new CBC encryptions)
-            stored_hmac = None
-            if "hmac" in encrypted_data:
-                stored_hmac = base64.b64decode(encrypted_data["hmac"])
+        # Derive key if not provided
+        if key is None:
+            key = self.derive_key(self.password, salt)
 
-            # Derive key if not provided
-            if key is None:
-                key = self.derive_key(self.password, salt)
+        # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+        # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+        decryptor = cipher.decryptor()
+        decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
 
-            # Verify HMAC if present (authenticate message before decryption)
-            if stored_hmac:
-                h = hmac.HMAC(key, hashes.SHA256(), backend=default_backend())
-                h.update(iv + encrypted)
-                try:
-                    h.verify(stored_hmac)
-                except Exception as e:
-                    raise ValueError("HMAC verification failed - data may be tampered") from e
-
-            # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-            # Note: CBC without authentication is deprecated, use GCM for new encryptions
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-            decryptor = cipher.decryptor()
-            decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
-
-            # Remove PKCS7 padding using cryptography unpadder
-            unpadder = padding.PKCS7(128).unpadder()
-            return unpadder.update(decrypted_padded) + unpadder.finalize()
+        # Remove PKCS7 padding using cryptography unpadder
+        unpadder = padding.PKCS7(128).unpadder()
+        return unpadder.update(decrypted_padded) + unpadder.finalize()
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """

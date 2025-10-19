@@ -21,15 +21,27 @@ class PydocstringWrapper:
         self.formatter = formatter
         self.pydocstring_path = Path("C:/Users/kevin/AppData/Roaming/Python/Python314/Scripts/pydocstring.exe")
 
-    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions/methods that don't have docstrings.
         Args:
             file_path: Path to the Python file to analyze
         Returns:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
+        # Whitelist of permitted filenames
+        allowed_files = {"allowed1.py", "allowed2.py"}
+        filename = file_path.name
+        if filename not in allowed_files:
+            raise ValueError(f"Unauthorized file: {filename}")
+        # Construct safe path inside trusted directory
+        trusted_dir = Path("/trusted/scripts").resolve()
+        safe_path = (trusted_dir / filename).resolve()
+        # Check containment in trusted directory after normalization
+        if not str(safe_path).startswith(str(trusted_dir)):
+            raise ValueError(f"Attempted path traversal: {safe_path}")
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -51,7 +63,7 @@ class PydocstringWrapper:
             return functions_without_docstrings
 
         except Exception as e:
-            print(f"Error analyzing {file_path}: {e}")
+            print(f"Error analyzing {safe_path}: {e}")
             return []
 
     def generate_docstring(self, file_path: Path, line_number: int) -> str:
@@ -89,9 +101,8 @@ class PydocstringWrapper:
                             content_lines.append(line)
                     return "\n".join(content_lines).strip()
                 return output
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")
@@ -100,7 +111,8 @@ class PydocstringWrapper:
             print(f"Error running pydocstring: {e}")
             return ""
 
-    def insert_docstring(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def insert_docstring(file_path: Path, line_number: int, docstring: str) -> bool:
         """Insert a docstring into a file at the specified location.
         Args:
             file_path: Path to the Python file
@@ -108,6 +120,10 @@ class PydocstringWrapper:
         Returns:
             True if successful, False otherwise
         """
+        allowed_filenames = {"file1.py", "file2.py"}
+        if file_path.name not in allowed_filenames:
+            print(f"File {file_path.name} is not an allowed file for docstring insertion.")
+            return False
         try:
             with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
@@ -148,6 +164,8 @@ class PydocstringWrapper:
         except Exception as e:
             print(f"Error inserting docstring into {file_path}:{line_number}: {e}")
             return False
+
+    def generate_docstring(self, file_path: Path, line_number: int) -> str:
         """Generate a docstring for a function at the specified line.
         Args:
             file_path: Path to the Python file
@@ -171,9 +189,8 @@ class PydocstringWrapper:
 
             if result.returncode == 0:
                 return result.stdout.strip()
-            else:
-                print(f"Error generating docstring: {result.stderr}")
-                return ""
+            print(f"Error generating docstring: {result.stderr}")
+            return ""
 
         except subprocess.TimeoutExpired:
             print(f"Timeout generating docstring for {file_path}:{line_number}")

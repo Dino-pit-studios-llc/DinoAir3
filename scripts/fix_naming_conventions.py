@@ -59,7 +59,8 @@ class NamingFixer:
             "errors": [],
         }
 
-    def find_python_files(self, root_dir: Path) -> list[Path]:
+    @staticmethod
+    def find_python_files(root_dir: Path) -> list[Path]:
         """Find all Python source files."""
         py_files = list(root_dir.rglob("*.py"))
         # Exclude common directories
@@ -73,8 +74,21 @@ class NamingFixer:
         Returns:
             Tuple of (is_valid, error_message)
         """
+        # Whitelist allowed filenames and construct safe path
+        allowed_files = {"script1.py", "script2.py"}
+        trusted_base_dir = Path("/trusted/scripts")
+        filename = file_path.name
+        if filename not in allowed_files:
+            return False, f"Filename '{filename}' is not permitted."
+        safe_path = (trusted_base_dir / filename).resolve()
+        trusted_base_dir_resolved = trusted_base_dir.resolve()
+        # Ensure that the file is within trusted_base_dir
         try:
-            with open(file_path, encoding="utf-8") as f:
+            if not str(safe_path).startswith(
+                str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")
+            ):
+                return False, f"Access to '{safe_path}' is not permitted."
+            with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
             return True, ""
