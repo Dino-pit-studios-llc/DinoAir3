@@ -2,6 +2,7 @@
 RAG API router module defining endpoints for ingestion, embedding generation,
 context retrieval, and monitoring operations.
 """
+
 from __future__ import annotations
 
 from typing import Any

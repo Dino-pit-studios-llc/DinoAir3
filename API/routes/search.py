@@ -3,6 +3,7 @@ File search and index stats API routes module.
 
 Provides HTTP endpoints for keyword, vector, and hybrid file searches, and file index statistics.
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request

@@ -145,6 +145,7 @@ class _EnumSentinel(Enum):
 # Reference to avoid unused-class diagnostics
 _ENUM_SENTINEL_REF = _EnumSentinel.__unused__
 
+
 # Event/timing wrappers to eliminate Unknown types across boundaries
 def _dispatch_event(
     dispatcher: EventDispatcher,

@@ -4,6 +4,7 @@ Search service module.
 Provides SearchService class and facade functions for keyword, vector, and hybrid search operations,
 as well as utilities for request handling and routing.
 """
+
 from __future__ import annotations
 
 import logging
@@ -91,6 +92,7 @@ def _truncate_snippet(text: str, limit: int = SNIPPET_MAX_CHARS) -> str:
 
 def _to_hit(result: Any) -> VectorSearchHit:
     """Convert a raw search result mapping or object to a VectorSearchHit instance."""
+
     def _get(obj: Any, key: str) -> Any:
         """Retrieve attribute or mapping value for key from object or return None."""
         if hasattr(obj, key):

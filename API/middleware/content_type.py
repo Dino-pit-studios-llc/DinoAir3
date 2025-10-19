@@ -5,6 +5,7 @@ This module provides the ContentTypeJSONMiddleware that checks incoming HTTP POS
 requests to ensure the 'Content-Type' header is 'application/json'. If not, it
 returns a 415 Unsupported Media Type error response.
 """
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable

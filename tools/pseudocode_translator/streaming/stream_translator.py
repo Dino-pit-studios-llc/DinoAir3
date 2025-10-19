@@ -20,19 +20,17 @@ from ..translator import TranslationManager
 from .buffer import BufferConfig, ContextBuffer, StreamBuffer
 from .chunker import ChunkConfig, CodeChunker
 from .event_runtime import EventRuntime
-from .events import StreamingEvent, StreamingEventData, StreamingMode, TranslationUpdate
-from .interactive_core import interactive_translate, interactive_translate_async, process_interactive_input
+from .events import (StreamingEvent, StreamingEventData, StreamingMode,
+                     TranslationUpdate)
+from .interactive_core import (interactive_translate,
+                               interactive_translate_async,
+                               process_interactive_input)
 from .pipeline import StreamingProgress
 from .translation_invoker import TranslationInvoker
-from .translator_core import (
-    is_complete_statement,
-    parse_and_translate_blocks,
-    parse_success,
-    process_accumulated_blocks,
-    process_statement,
-    translate_block,
-    translate_chunk_blocks,
-)
+from .translator_core import (is_complete_statement,
+                              parse_and_translate_blocks, parse_success,
+                              process_accumulated_blocks, process_statement,
+                              translate_block, translate_chunk_blocks)
 
 logger = logging.getLogger(__name__)
 

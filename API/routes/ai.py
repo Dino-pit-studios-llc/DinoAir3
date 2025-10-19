@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 # ErrorResponse model may not exist in local test stubs; provide a safe pydantic fallback
 try:
-    from core_router.errors import ErrorResponse as ErrorResponseModel  # type: ignore[import-not-found,unused-ignore]
+    from core_router.errors import \
+        ErrorResponse as \
+        ErrorResponseModel  # type: ignore[import-not-found,unused-ignore]
 except ImportError:  # pragma: no cover
     from pydantic import BaseModel
 
