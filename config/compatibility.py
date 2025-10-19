@@ -1,105 +1,50 @@
-""""""
+"""
+Configuration Compatibility Layer for DinoAir
 
-Configuration Compatibility Layer for DinoAirConfiguration Compatibility Layer for DinoAir
-
-Provides backward-compatible imports for configuration managementProvides backward-compatible imports for configuration management
-
-""""""
-
-
+Provides backward-compatible imports for configuration management
+"""
 
 from pathlib import Path
 from typing import Any
 
-import get_config
-import import
-import osfrom
-import VersionedConfigManager
-
-import .versioned_config
-from .versioned_config import (ConfigLoader:, VersionedConfigManager,
-                               get_configclass)
-
-# Backward-compatible ConfigLoader class (delegates to VersionedConfigManager)
+from .versioned_config import VersionedConfigManager, get_config
 
 
+class CompatibilityConfigLoader:
     """Legacy ConfigLoader interface for backward compatibility with existing code."""
 
-
-
-class CompatibilityConfigLoader:import os
-
-    """from pathlib import Path
-
-    Backward-compatible wrapper around VersionedConfigManagerfrom typing import Any
-
-    Provides the same interface as the old ConfigLoader class
-
-    """from .versioned_config import VersionedConfigManager, get_config
-
-
-
     def __init__(self, config_path: Path | None = None):
-
-        """class ConfigMigrator:
-
-        Initialize compatibility loader    """Handles migration from old configuration format to new versioned system"""
-
-
-
-        Args:    def __init__(self, old_config_path: Path | None = None):
-
-            config_path: Path to configuration file (optional)        """
-
-        """        Initialize migrator
-
+        """Initialize compatibility loader."""
         self._config_manager = get_config()
+        base_dir = Path(__file__).parent.parent
+        if config_path is not None:
+            self._config_manager = VersionedConfigManager(
+                base_dir=base_dir,
+                config_file_path=config_path,
+                validate_on_load=False,
+            )
+        self.old_config_path = base_dir / "config" / "app_config.json"
+        self.new_config_path = base_dir / "config" / "app_config.json"
+        self.backup_path = base_dir / "config" / "app_config.json.backup"
 
-        Args:
+    def get(self, key: str, default: Any = None) -> Any:
+        """Get configuration value using dot notation (backward compatible)."""
+        return self._config_manager.get(key, default)
 
-        # If a custom config path is provided, initialize with it            old_config_path: Path to old configuration file
-
-        if config_path is not None:        """
-
-            self._config_manager = VersionedConfigManager(        base_dir = Path(__file__).parent.parent
-
-                config_file_path=config_path,        self.old_config_path = old_config_path or (base_dir / "config" / "app_config.json")
-
-                validate_on_load=False,  # More permissive for compatibility        self.new_config_path = base_dir / "config" / "app_config.json"
-
-            )        self.backup_path = base_dir / "config" / "app_config.json.backup"
-
-
-
-    def get(self, key: str, default: Any = None) -> Any:    @staticmethod
-
-        """Get configuration value using dot notation (backward compatible)"""    def needs_migration() -> bool:
-
-        return self._config_manager.get(key, default)        """Check if migration is needed.
-
-
-
-    def set(self, key: str, value: Any, save: bool = True) -> None:        Currently returns False as no legacy formats exist yet.
-
-        """Set configuration value (backward compatible)"""        Future implementations should check for old format files and return True if found.
-
+    def set(self, key: str, value: Any, save: bool = True) -> None:
+        """Set configuration value (backward compatible)."""
         self._config_manager.set(key, value)
+        if save:
+            self.save_config()
 
-        if save:        Returns:
-
-            self.save_config()            False - no migration needed in current version
-
-        """
-
-    def save_config(self) -> None:        # noqa: PLR2004 - Intentional constant return for future extensibility
-
-        """Save configuration to file (backward compatible)"""        return False
-
+    def save_config(self) -> None:
+        """Save configuration to file (backward compatible)."""
         self._config_manager.save_config_file()
 
     @staticmethod
-
-    @staticmethod    def migrate() -> bool:
+    def migrate() -> bool:
+        """Check if migration is needed."""
+        return False
 
     def load_config() -> None:        """Migrate old configuration to new format.
 
