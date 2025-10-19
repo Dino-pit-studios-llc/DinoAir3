@@ -140,14 +140,22 @@ class SafePDFProcessor:
     def _timeout_handler(self) -> Generator[Any, None, None]:
         """Context manager that implements timeout for PDF processing"""
 
+        """Safe PDF extractor utilities.
+
+        This module provides TimeoutThread to monitor processing
+        time and raises an exception if the specified timeout is exceeded.
+        """
+
         class TimeoutThread:
             """Monitors processing time and raises PDFProcessingTimeoutError if the specified timeout is exceeded."""
 
             def __init__(self, timeout: int) -> None:
+                """Initialize TimeoutThread with the given timeout and record the start time."""
                 self.timeout = timeout
                 self.start_time = time.time()
 
             def check_timeout(self) -> None:
+                """Check if elapsed time has exceeded the timeout and raise PDFProcessingTimeoutError if so."""
                 if time.time() - self.start_time > self.timeout:
                     raise PDFProcessingTimeoutError(
                         TIMEOUT_ERROR_MESSAGE_TEMPLATE.format(timeout=self.timeout)

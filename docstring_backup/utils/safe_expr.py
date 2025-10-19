@@ -86,6 +86,12 @@ _ALLOWED_CMP_OPS = (
 _COMPREHENSIONS_NOT_ALLOWED = "Comprehensions are not allowed"
 
 
+"""
+Module for validating AST expressions ensuring only a restricted set of safe expressions are used.
+This module defines a NodeVisitor that enforces limitations on expressions to
+prevent unsafe or disallowed constructs.
+"""
+
 class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
     """AST validator to enforce a restricted expression subset."""
 
@@ -100,12 +106,14 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
     # Literals
     @staticmethod
     def visit_Constant(node: ast.Constant) -> Any:
+        """Validate constant literals of allowed primitive types."""
         if isinstance(node.value, bool | int | float | str | type(None)):
             return
         raise ValidationError(f"Unsupported constant type: {type(node.value).__name__}")
 
     # Names must come from variables
     def visit_Name(self, node: ast.Name) -> Any:
+        """Validate that variable names are known and not callable."""
         if node.id not in self.variables:
             raise ValidationError(f"Unknown variable: {node.id}")
         if callable(self.variables[node.id]):
@@ -113,6 +121,7 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
 
     # BoolOp: and/or
     def visit_BoolOp(self, node: ast.BoolOp) -> Any:
+        """Validate boolean operations using allowed operators."""
         if not isinstance(node.op, _ALLOWED_BOOL_OPS):
             raise ValidationError(f"Boolean operator not allowed: {type(node.op).__name__}")
         for v in node.values:
@@ -120,12 +129,14 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
 
     # Unary: not
     def visit_UnaryOp(self, node: ast.UnaryOp) -> Any:
+        """Validate unary operations using allowed operators."""
         if not isinstance(node.op, _ALLOWED_UNARY_OPS):
             raise ValidationError(f"Unary operator not allowed: {type(node.op).__name__}")
         self.visit(node.operand)
 
     # Binary arithmetic (+ - * / % //)
     def visit_BinOp(self, node: ast.BinOp) -> Any:
+        """Validate binary arithmetic operations using allowed operators."""
         if not isinstance(node.op, _ALLOWED_BINOPS):
             raise ValidationError(f"Binary operator not allowed: {type(node.op).__name__}")
         self.visit(node.left)
@@ -133,6 +144,7 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
 
     # Comparisons with allowed operators
     def visit_Compare(self, node: ast.Compare) -> Any:
+        """Validate comparison operations using allowed comparison operators."""
         self.visit(node.left)
         for op in node.ops:
             if not isinstance(op, _ALLOWED_CMP_OPS):
@@ -143,35 +155,43 @@ class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
     # Disallowed nodes
     @staticmethod
     def visit_Call(node: ast.Call) -> Any:
+        """Disallow function calls and attribute-based calls."""
         if isinstance(node.func, ast.Attribute):
             raise ValidationError("Attribute access is not allowed")
         raise ValidationError("Function calls are not allowed")
 
     @staticmethod
     def visit_Attribute(node: ast.Attribute) -> Any:
+        """Disallow attribute access."""
         raise ValidationError("Attribute access is not allowed")
 
     @staticmethod
     def visit_Subscript(node: ast.Subscript) -> Any:
+        """Disallow subscript access."""
         raise ValidationError("Subscript access is not allowed")
 
     @staticmethod
     def visit_ListComp(node: ast.ListComp) -> Any:
+        """Disallow list comprehensions."""
         raise ValidationError(_COMPREHENSIONS_NOT_ALLOWED)
 
     @staticmethod
     def visit_SetComp(node: ast.SetComp) -> Any:
+        """Disallow set comprehensions."""
         raise ValidationError(_COMPREHENSIONS_NOT_ALLOWED)
 
     @staticmethod
     def visit_DictComp(node: ast.DictComp) -> Any:
+        """Disallow dict comprehensions."""
         raise ValidationError(_COMPREHENSIONS_NOT_ALLOWED)
 
     @staticmethod
     def visit_GeneratorExp(node: ast.GeneratorExp) -> Any:
+        """Disallow generator expressions."""
         raise ValidationError(_COMPREHENSIONS_NOT_ALLOWED)
 
     def generic_visit(self, node: ast.AST) -> Any:
+        """Fallback visitor to allow certain literal containers and whitelist benign nodes; reject all others."""
         # Permit tuples and lists/sets/dicts as literal containers of allowed elements
         if isinstance(node, ast.Tuple | ast.List | ast.Set):
             for elt in getattr(node, "elts", []):
@@ -227,12 +247,15 @@ class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
 
     @staticmethod
     def visit_Constant(node: ast.Constant) -> Any:
+        """Return the constant value represented by the AST node."""
         return node.value
 
     def visit_Name(self, node: ast.Name) -> Any:
+        """Retrieve the value of a variable from the provided mapping."""
         return self.variables[node.id]
 
     def visit_BoolOp(self, node: ast.BoolOp) -> Any:
+        """Evaluate boolean operations (and/or) over the given values."""
         if isinstance(node.op, ast.And):
             return all(self.visit(v) for v in node.values)
         if isinstance(node.op, ast.Or):
@@ -240,12 +263,14 @@ class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
         raise ValidationError(f"Unsupported boolean operator: {type(node.op).__name__}")
 
     def visit_UnaryOp(self, node: ast.UnaryOp) -> Any:
+        """Evaluate a unary operation (not) on the operand."""
         operand = self.visit(node.operand)
         if isinstance(node.op, ast.Not):
             return not operand
         raise ValidationError(f"Unsupported unary operator: {type(node.op).__name__}")
 
     def visit_BinOp(self, node: ast.BinOp) -> Any:
+        """Evaluate a binary operation (+, -, *, /, %, //) on two operands."""
         left = self.visit(node.left)
         right = self.visit(node.right)
 
@@ -264,6 +289,7 @@ class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
         raise ValidationError(f"Unsupported binary operator: {type(node.op).__name__}")
 
     def visit_Compare(self, node: ast.Compare) -> Any:
+        """Evaluate chained comparison operations between operands."""
         left = self.visit(node.left)
 
         for op, comparator in zip(node.ops, node.comparators, strict=False):
@@ -295,12 +321,15 @@ class _SafeExprEvaluator(ast.NodeVisitor):  # pylint: disable=invalid-name, miss
         return True
 
     def visit_Tuple(self, node: ast.Tuple) -> Any:
+        """Construct a tuple from evaluated elements of the Tuple AST node."""
         return tuple(self.visit(elt) for elt in node.elts)
 
     def visit_List(self, node: ast.List) -> Any:
+        """Construct a list from evaluated elements of the List AST node."""
         return [self.visit(elt) for elt in node.elts]
 
     def visit_Set(self, node: ast.Set) -> Any:
+        """Construct a set from evaluated elements of the Set AST node."""
         return {self.visit(elt) for elt in node.elts}
 
     def visit_Dict(self, node: ast.Dict) -> Any:

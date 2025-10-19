@@ -313,31 +313,6 @@ class CircuitBreakerOpenError(Exception):
     """Exception raised when circuit breaker is open."""
 
 
-def retry_on_failure(
-    config: RetryConfig | None = None,
-    exceptions: tuple[type[Exception], ...] | None = None,
-) -> Callable[[Callable[..., T]], Callable[..., T]]:
-    """Decorator for retrying operations on failure.
-
-    Args:
-        config: Retry configuration (uses defaults if None)
-        exceptions: Tuple of exceptions to retry on (uses config if None)
-
-    Returns:
-        Decorated function
-    """
-    if config is None:
-        config = RetryConfig()
-
-    def decorator(func: Callable[..., T]) -> Callable[..., T]:
-        @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> T:
-            retry_exceptions = exceptions or config.retryable_exceptions
-            return _execute_with_retry(func, config, retry_exceptions, args, kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 def _execute_with_retry(
@@ -470,6 +445,10 @@ def _log_all_attempts_failed(
         )
 
 
+"""
+Utilities for handling errors and providing circuit breaker decorator support.
+"""
+
 def circuit_breaker(
     config: CircuitBreakerConfig | None = None, name: str = ""
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -489,10 +468,12 @@ def circuit_breaker(
     local = threading.local()
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        """Create and manage a circuit breaker for the given function."""
         breaker_name = name or func.__name__
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
+            """Invoke the circuit breaker before calling the target function."""
             # Get or create circuit breaker for this function
             if not hasattr(local, "breakers"):
                 local.breakers = {}
@@ -545,6 +526,10 @@ def timeout_context(seconds: float) -> Generator[None, None, None]:
             timer.join(timeout=0.1)
 
 
+"""
+Module for error handling utilities providing a timeout decorator to enforce execution time limits on functions.
+"""
+
 def with_timeout(
     timeout_seconds: float,
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
@@ -558,8 +543,10 @@ def with_timeout(
     """
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        """Creates a decorator that applies a timeout to the decorated function."""
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
+            """Wrapper function that enforces the timeout context for the original function call."""
             with timeout_context(timeout_seconds):
                 return func(*args, **kwargs)
 

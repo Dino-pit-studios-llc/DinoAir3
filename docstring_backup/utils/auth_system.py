@@ -646,12 +646,23 @@ class AuthenticationMiddleware:
 
         return current_user
 
+    """Utilities for authentication and permission checking.
+
+    This module provides decorators to enforce user permissions
+    in API endpoints, raising an HTTPException on insufficient permissions.
+    """
+
     def require_permission(self, permission: Permission):
         """Decorator to require specific permission."""
 
         def permission_checker(
             current_user: User = Depends(self.get_current_user),
         ) -> User:
+            """Ensure the current user has the specified permission.
+
+            Raises HTTPException with 403 status code if the user lacks
+            the required permission, otherwise returns the user.
+            """
             if not current_user.has_permission(permission):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -665,6 +676,7 @@ class AuthenticationMiddleware:
         """Decorator to require specific role."""
 
         def role_checker(current_user: User = Depends(self.get_current_user)) -> User:
+            """Ensure that the current user possesses the required role, or raise HTTPException if not."""
             if role not in current_user.roles:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role"

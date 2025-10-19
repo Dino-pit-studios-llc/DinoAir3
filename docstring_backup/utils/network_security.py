@@ -96,16 +96,22 @@ except ImportError as e:
             self.status_code = status_code
             self.headers = headers or {}
 
+    """
+    Utilities for network security, including fallback HTTP middleware.
+    """
+
     class FallbackBaseHTTPMiddleware:  # noqa: D401
         """Fallback BaseHTTPMiddleware."""
 
         def __init__(self, app: Any) -> None:
+            """Initialize the middleware with the given ASGI app."""
             self.app = app
 
         @staticmethod
         async def dispatch(
             request: Any, call_next: Callable[[Any], Awaitable[Response]]
         ) -> Response:
+            """Process the request by calling the next app in the chain."""
             return await call_next(request)
 
     class _FallbackMockStatus:  # noqa: N801
@@ -117,6 +123,8 @@ except ImportError as e:
 
     status = _FallbackMockStatus()
 
+    """Utilities for network security, including a mock URL class for fallback Request objects."""
+
     class _MockURL:
         """Minimal URL mock class representing scheme and path for fallback Request objects."""
 
@@ -125,6 +133,7 @@ except ImportError as e:
             self.path = path
 
         def replace(self, scheme: str):
+            """Return a new _MockURL instance with the updated scheme."""
             return _MockURL(scheme=scheme, path=self.path)
 
     class Request:  # noqa: D401

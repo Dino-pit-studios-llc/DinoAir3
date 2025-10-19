@@ -10,10 +10,12 @@ from dataclasses import dataclass, field
 
 # Typed default factories to satisfy static type checkers (e.g., Pylance)
 def _new_str_list() -> list[str]:
+    """Create and return a new list of strings for use as a default factory."""
     return []
 
 
 def _new_int_list() -> list[int]:
+    """Create and return a new list of integers for use as a default factory."""
     return []
 
 
