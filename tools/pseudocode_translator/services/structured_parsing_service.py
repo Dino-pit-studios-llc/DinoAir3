@@ -51,7 +51,7 @@ class StructuredParsingService(ShutdownMixin):
         logger.debug("StructuredParsingService initialized")
 
     def classify_block(self, block):
-            """Classify Block method."""
+        """Classify Block method."""
         return self.parser.classify_block(block)
 
     def translate(self, context: TranslationContext) -> TranslationResult:

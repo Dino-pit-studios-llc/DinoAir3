@@ -25,7 +25,7 @@ class StreamEmitter:
         self._source = source
 
     def translation_started(self, translation_id: int, mode: str):
-            """Translation Started method."""
+        """Translation Started method."""
         # TRANSLATION_STARTED payload keys: mode, id
         with contextlib.suppress(AttributeError, TypeError, ValueError):
             self._d.dispatch_event(
@@ -36,7 +36,7 @@ class StreamEmitter:
             )
 
     def translation_completed(self, translation_id: int, approach: str):
-            """Translation Completed method."""
+        """Translation Completed method."""
         # TRANSLATION_COMPLETED payload keys: success=True, id, approach
         with contextlib.suppress(AttributeError, TypeError, ValueError):
             self._d.dispatch_event(
@@ -48,7 +48,7 @@ class StreamEmitter:
             )
 
     def translation_failed(self, translation_id: int, error_summary: str):
-            """Translation Failed method."""
+        """Translation Failed method."""
         # TRANSLATION_FAILED payload keys: success=False, id, error
         with contextlib.suppress(Exception):
             self._d.dispatch_event(
@@ -60,7 +60,7 @@ class StreamEmitter:
             )
 
     def stream_started(self, reason: str | None = None):
-            """Stream Started method."""
+        """Stream Started method."""
         # STREAM_STARTED payload keys: reason
         with contextlib.suppress(Exception):
             if reason is not None:
@@ -76,7 +76,7 @@ class StreamEmitter:
                 )
 
     def stream_chunk_processed(self, chunk_index: int, processing_time: float, success: bool):
-            """Stream Chunk Processed method."""
+        """Stream Chunk Processed method."""
         # STREAM_CHUNK_PROCESSED payload keys: index, success, duration_ms
         with contextlib.suppress(Exception):
             duration_ms = int(processing_time * 1000.0)
@@ -89,7 +89,7 @@ class StreamEmitter:
             )
 
     def stream_completed(self, total_chunks: int):
-            """Stream Completed method."""
+        """Stream Completed method."""
         # STREAM_COMPLETED payload keys: chunks
         with contextlib.suppress(Exception):
             self._d.dispatch_event(
@@ -99,7 +99,7 @@ class StreamEmitter:
             )
 
     def exec_pool_fallback(self, kind: str, reason: str):
-            """Exec Pool Fallback method."""
+        """Exec Pool Fallback method."""
         # EXEC_POOL_FALLBACK payload keys: kind, reason
         with contextlib.suppress(Exception):
             self._d.dispatch_event(

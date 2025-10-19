@@ -168,7 +168,7 @@ class QwenModel(BaseModel):
     def generate(
         self,
         prompt: str,
-            """Generate method."""
+        """Generate method."""
         max_tokens: int = 512,
         temperature: float = 0.3,
         top_p: float = 0.9,

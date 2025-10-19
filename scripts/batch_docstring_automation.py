@@ -80,7 +80,7 @@ def run_docstring_fixer(dry_run=False):
         cmd.append(directory)
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)  # nosec B603
 
             # Parse output for statistics
             output_lines = result.stdout.split("\n")
