@@ -11,7 +11,12 @@ Scope:
 
 Exports:
 - validate_input(desc, payload)
-- validate_output(desc, payload)
+"""
+Module for schema-based validation and dynamic pydantic model building.
+
+This module provides functions to map JSON Schema definitions to Python types,
+construct field definitions, and validate input/output payloads against
+service descriptors using dynamic pydantic models.
 """
 
 from __future__ import annotations
@@ -20,9 +25,10 @@ import contextlib
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Union, cast
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 from pydantic import Field as PydField
 from pydantic import ValidationError as PydanticValidationError
+from pydantic import create_model
 from pydantic.config import ConfigDict
 
 from .errors import ValidationError
@@ -111,11 +117,12 @@ def _map_json_type(
 
 
 def _is_required(required: list[str] | None, key: str) -> bool:
+    """Check if a given key is listed as required in the JSON schema."""
     return isinstance(required, list) and key in required
 
 
 def _coerce_nonneg_int(raw: JSONValue) -> int | None:
-    """Best-effort coerce to non-negative int; None on failure."""
+    """Best-effort coerce to non-negative int; return None on failure."""
     val: int | None = None
     try:
         if isinstance(raw, int | float | str) and (
@@ -128,12 +135,14 @@ def _coerce_nonneg_int(raw: JSONValue) -> int | None:
 
 
 def _array_type_from_prop(prop: Mapping[str, JSONValue]) -> type[object]:
+    """Determine the Python list type for an array schema property based on its items definition."""
     items_raw = prop.get("items")
     items = items_raw if isinstance(items_raw, Mapping) else None
     return _map_json_type("array", items)
 
 
 def _string_field_def(key: str, prop: Mapping[str, JSONValue], required: list[str] | None) -> FieldDefinition:
+    """Build a field definition for string properties, applying min_length and optional default."""
     min_len = _coerce_nonneg_int(prop.get("minLength"))
     if min_len is not None:
         if _is_required(required, key):
@@ -144,6 +153,7 @@ def _string_field_def(key: str, prop: Mapping[str, JSONValue], required: list[st
 
 
 def _array_field_def(key: str, prop: Mapping[str, JSONValue], required: list[str] | None) -> FieldDefinition:
+    """Construct field definition for an array property, including min_items constraint."""
     array_type = _array_type_from_prop(prop)
     min_items = _coerce_nonneg_int(prop.get("minItems"))
     if min_items is not None:
@@ -157,6 +167,7 @@ def _array_field_def(key: str, prop: Mapping[str, JSONValue], required: list[str
 
 
 def _generic_field_def(ptype: JSONValue, required: list[str] | None, key: str) -> FieldDefinition:
+    """Construct a generic field definition when property type is not string or array."""
     py_type = _map_json_type(ptype if isinstance(ptype, str) else None)
     if _is_required(required, key):
         return (py_type, ...)
@@ -164,6 +175,7 @@ def _generic_field_def(ptype: JSONValue, required: list[str] | None, key: str) -
 
 
 def _build_field_def(key: str, prop: JSONValue, required: list[str] | None) -> FieldDefinition:
+    """Determine the appropriate field definition for a schema property based on its type."""
     if isinstance(prop, Mapping):
         typed_prop = cast(_MAPPING_STR_JSONVALUE, prop)
         ptype = typed_prop.get("type")
@@ -261,12 +273,11 @@ def validate_input(
 
 def validate_output(
     desc: DescriptorType,
-    payload: dict[str, JSONValue] | object,
+    payload: Mapping[str, JSONValue] | object,
 ) -> dict[str, JSONValue] | object:
     """
     Validate output payload using descriptor's output_schema.
     - If no schema: return payload unchanged.
-    - Accept Mapping or objects convertible to dict via model_dump()/dict().
     - On success: return validated dict (exclude None).
     - On failure: raise core_router.errors.ValidationError with details.
     """
@@ -294,7 +305,8 @@ def validate_output(
     try:
         model_class = _build_model_from_schema(schema, model_name)
         inst = model_class.model_validate(candidate)
-        return inst.model_dump(by_alias=False, exclude_none=True)
+        result = inst.model_dump(by_alias=False, exclude_none=True)
+        return result if isinstance(payload, dict) else result.get("value")
     except PydanticValidationError as e:
         raise ValidationError(
             f"output validation failed for '{name}'",

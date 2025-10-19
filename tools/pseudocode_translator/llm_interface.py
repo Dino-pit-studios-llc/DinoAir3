@@ -35,9 +35,7 @@ try:
     from .models.manager import ModelManager as _ImportedModelManager
 except ImportError:
     try:
-        from .models import (
-            ModelManager as _ImportedModelManager,
-        )  # fallback if models/__init__.py exposes it
+        from .models import ModelManager as _ImportedModelManager  # fallback if models/__init__.py exposes it
     except ImportError:
         _ImportedModelManager = None  # type: ignore[assignment]
 
@@ -287,7 +285,7 @@ class LLMInterface(ShutdownMixin):
 
         except Exception as e:
             logger.error("Translation failed: %s", str(e))
-            raise RuntimeError(f"Failed to translate instruction: {str(e)}")
+            raise RuntimeError(f"Failed to translate instruction: {str(e)}") from e
 
     def batch_translate(self, instructions: list[str]) -> list[str]:
         """

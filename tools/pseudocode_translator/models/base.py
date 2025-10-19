@@ -6,6 +6,7 @@ implement, along with supporting data structures for model capabilities and
 metadata.
 """
 
+import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from utils.shutdown_protocols import ShutdownMixin
+
+logger = logging.getLogger(__name__)
 
 
 class ModelFormat(Enum):
@@ -196,7 +199,11 @@ class BaseModel(ABC, ShutdownMixin):
             Refined code
         """
         # Default implementation - can be overridden
-        refinement_prompt = f"Fix the following Python code based on the error:\n\nCode:\n```python\n{code}\n```\n\nError:\n{error_context}\n\nFixed code:"
+        refinement_prompt = (
+            f"Fix the following Python code based on the error:\n\n"
+            f"Code:\n```python\n{code}\n```\n\n"
+            f"Error:\n{error_context}\n\nFixed code:"
+        )
 
         return self.generate(
             refinement_prompt,
@@ -280,8 +287,9 @@ class BaseModel(ABC, ShutdownMixin):
 
         try:
             self.generate("# Hello world", max_tokens=10)
-        except Exception:
-            pass  # Warmup failures are non-critical
+        except Exception as e:
+            # Warmup failures are non-critical
+            logger.debug("Warmup failed (non-critical): %s", e)
 
     def supports_streaming(self) -> bool:
         """Check if model supports streaming generation"""

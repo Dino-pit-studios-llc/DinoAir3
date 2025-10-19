@@ -183,7 +183,7 @@ class QwenModel(BaseTranslationModel):
             logger.info("Qwen model loaded successfully")
 
         except Exception as e:
-            raise RuntimeError(f"Failed to load Qwen model: {str(e)}")
+            raise RuntimeError(f"Failed to load Qwen model: {str(e)}") from e
 
     def translate(
         self,

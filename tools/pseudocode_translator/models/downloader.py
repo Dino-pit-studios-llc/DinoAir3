@@ -16,9 +16,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from tqdm import tqdm
-
 from pseudocode_translator.exceptions import ConfigurationError
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +149,7 @@ class ModelDownloader:
             # Clean up temp file on error
             if temp_path.exists():
                 temp_path.unlink()
-            raise DownloadError(f"Failed to download model: {str(e)}")
+            raise DownloadError(f"Failed to download model: {str(e)}") from e
 
     def download_from_huggingface(self, repo_id: str, filename: str, revision: str = "main", **kwargs) -> Path:
         """

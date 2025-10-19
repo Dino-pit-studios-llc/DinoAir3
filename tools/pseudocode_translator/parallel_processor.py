@@ -114,13 +114,13 @@ class ResourcePool:
         try:
             # Try to get from pool
             return self._pool.get(timeout=timeout)
-        except queue.Empty:
+        except queue.Empty as qe:
             # Create new resource if under limit
             with self._lock:
                 if self._created_count < self.max_size:
                     self._create_resource()
                     return self._pool.get(timeout=0.1)
-            raise TimeoutError("No resources available")
+            raise TimeoutError("No resources available") from qe
 
     def release(self, resource):
         """Release resource back to pool"""

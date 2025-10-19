@@ -1,3 +1,10 @@
+"""
+Search service module.
+
+Provides SearchService class and facade functions for keyword, vector, and hybrid search operations,
+as well as utilities for request handling and routing.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -6,10 +13,11 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, cast
 
-from database.file_search_db import FileSearchDB
 from fastapi import HTTPException
 from pydantic import ValidationError
 from starlette import status
+
+from database.file_search_db import FileSearchDB
 
 from ..schemas import (
     DirectorySettingsResponse,
@@ -30,6 +38,7 @@ _engine_error: Exception | None = None
 
 
 def _get_engine(engine_singleton, engine_error):
+    """Get or initialize the search engine singleton, handling import errors."""
     if engine_singleton is None and engine_error is None:
         try:
             # Resolve engine via factory (optimized with safe fallback)
@@ -44,6 +53,7 @@ def _get_engine(engine_singleton, engine_error):
 
 
 def _require_engine():
+    """Ensure the search engine is available or raise HTTPException if not installed or available."""
     engine, _ = _get_engine(engine_singleton=None, engine_error=None)
     if engine is None:
         raise HTTPException(
@@ -61,6 +71,7 @@ SNIPPET_MAX_CHARS = 500
 
 
 def _sanitize_file_types(file_types: list[str] | None) -> list[str] | None:
+    """Filter and normalize file type extensions to allowed whitelist or return None if none remain."""
     if not file_types:
         return None
     # Whitelist common safe extensions; intentionally exclude 'js' per spec/tests
@@ -75,11 +86,15 @@ def _sanitize_file_types(file_types: list[str] | None) -> list[str] | None:
 
 
 def _truncate_snippet(text: str, limit: int = SNIPPET_MAX_CHARS) -> str:
+    """Truncate text to the snippet character limit, adding ellipsis if truncated."""
     return text if len(text) <= limit else f"{text[: limit - 1]}…"
 
 
 def _to_hit(result: Any) -> VectorSearchHit:
+    """Convert a raw search result mapping or object to a VectorSearchHit instance."""
+
     def _get(obj: Any, key: str) -> Any:
+        """Retrieve attribute or mapping value for key from object or return None."""
         if hasattr(obj, key):
             return getattr(obj, key)
         if isinstance(obj, Mapping):
@@ -130,6 +145,7 @@ class SearchService:
 
     # -------- Keyword --------
     def search_keyword(self, req: KeywordSearchRequest) -> KeywordSearchResponse:
+        """Perform keyword search in the database and return typed hits."""
         top_k = min(MAX_TOP_K, max(1, req.top_k))
         file_types = _sanitize_file_types(req.file_types)
 
@@ -184,6 +200,7 @@ class SearchService:
             ) from e
 
     def search_vector(self, req: VectorSearchRequest) -> VectorSearchResponse:
+        """Perform vector search using the ML engine and return typed hits."""
         # Check availability first
         self._ensure_vector_index_available()
 
@@ -212,6 +229,7 @@ class SearchService:
 
     # -------- Hybrid --------
     def search_hybrid(self, req: HybridSearchRequest) -> HybridSearchResponse:
+        """Perform hybrid search combining vector and keyword results and return typed hits."""
         # Check availability first (hybrid depends on vector)
         self._ensure_vector_index_available()
 
@@ -246,6 +264,7 @@ class SearchService:
 
     # -------- Index stats --------
     def get_index_stats(self) -> FileIndexStatsResponse:
+        """Retrieve indexed file statistics and return a validated response or defaults on error."""
         data = self._db.get_indexed_files_stats() or {}
         try:
             return FileIndexStatsResponse(
@@ -278,6 +297,7 @@ class SearchService:
 
     # -------- Directory settings --------
     def get_directory_settings(self) -> DirectorySettingsResponse:
+        """Retrieve directory settings and return a validated response or raise on backend error."""
         data = self._db.get_directory_settings() or {}
         if (err := data.get("error")) and not data.get("success", True):
             # If backend reported error, surface as 501 for now (read-only metadata not available)
@@ -315,31 +335,38 @@ _search_service_singleton: SearchService = None
 
 @lru_cache
 def get_search_service() -> SearchService:
+    """Return a cached singleton instance of SearchService."""
     return SearchService()
 
 
 # Facade functions
 def keyword(req: KeywordSearchRequest) -> KeywordSearchResponse:
+    """Facade function to perform keyword search."""
     return get_search_service().search_keyword(req)
 
 
 def vector(req: VectorSearchRequest) -> VectorSearchResponse:
+    """Facade function to perform vector search."""
     return get_search_service().search_vector(req)
 
 
 def hybrid(req: HybridSearchRequest) -> HybridSearchResponse:
+    """Facade function to perform hybrid search."""
     return get_search_service().search_hybrid(req)
 
 
 def index_stats() -> FileIndexStatsResponse:
+    """Facade function to retrieve index statistics."""
     return get_search_service().get_index_stats()
 
 
 def directory_settings() -> DirectorySettingsResponse:
+    """Facade function to retrieve directory settings."""
     return get_search_service().get_directory_settings()
 
 
 def _infer_search_op(payload: dict[str, Any]) -> str:
+    """Infer the search operation type from payload keys."""
     if op := str(payload.get("op") or payload.get("_op") or "").strip().lower():
         return op
     keys = payload.keys()
@@ -351,10 +378,12 @@ def _infer_search_op(payload: dict[str, Any]) -> str:
 
 
 def _extract_kwargs(payload: dict[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
+    """Extract specified keys from payload into a new dictionary."""
     return {k: payload[k] for k in keys if k in payload}
 
 
 def _handle_hybrid(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle hybrid search payload and return response dictionary."""
     req_kwargs: dict[str, Any] = {"query": payload["query"]}
     req_kwargs |= _extract_kwargs(
         payload,
@@ -373,6 +402,7 @@ def _handle_hybrid(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _handle_vector(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle vector search payload and return response dictionary."""
     req_kwargs: dict[str, Any] = {"query": payload["query"]}
     req_kwargs |= _extract_kwargs(payload, ("top_k", "similarity_threshold", "file_types"))
     if "distance_metric" in payload:
@@ -383,6 +413,7 @@ def _handle_vector(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _handle_keyword(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle keyword search payload and return response dictionary."""
     req_kwargs: dict[str, Any] = {"query": payload["query"]}
     req_kwargs |= _extract_kwargs(payload, ("top_k", "file_types"))
     req = KeywordSearchRequest(**req_kwargs)
@@ -391,39 +422,7 @@ def _handle_keyword(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def router_search(input_data: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter entry point for core_router.adapters.local_python.
-
-    Input:
-        input_data: dict for keyword/vector/hybrid search:
-
-          keyword:
-            {{ "query": str, "top_k"?: int, "file_types"?: list[str] }}
-
-          vector:
-            {{ "query": str, "top_k"?: int,
-               "similarity_threshold"?: float,
-               "file_types"?: list[str],
-               "distance_metric"?: str }}
-
-          hybrid:
-            {{ "query": str, "top_k"?: int,
-               "vector_weight"?: float,
-               "keyword_weight"?: float,
-               "similarity_threshold"?: float,
-               "file_types"?: list[str],
-               "rerank"?: bool }}
-
-        Optionally 'op' or '_op' may be provided with one of
-        'keyword' | 'vector' | 'hybrid'. If absent, dispatch is
-        inferred by present keys.
-
-    Behavior:
-        Builds the appropriate request model and calls the
-        corresponding facade. Returns a plain dict with the
-        same shape as the response model. On unexpected errors,
-        logs and returns a minimal valid response (e.g., {"hits": []}).
-    """
+    """Adapter entry point for core_router.adapters.local_python, dispatching to keyword, vector, or hybrid search."""
     payload: dict[str, Any] = dict(input_data or {})
     op = _infer_search_op(payload)
 

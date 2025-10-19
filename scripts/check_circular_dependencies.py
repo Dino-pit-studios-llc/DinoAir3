@@ -93,11 +93,9 @@ class CircularDependencyDetector:
             "dist",
             "site-packages",
         }
-        
+
         python_files = [
-            f
-            for f in python_files
-            if not any(part in excluded_parts for part in f.relative_to(self.root_path).parts)
+            f for f in python_files if not any(part in excluded_parts for part in f.relative_to(self.root_path).parts)
         ]
 
         if self.verbose:
@@ -130,6 +128,14 @@ class CircularDependencyDetector:
         path = []
 
         def dfs(node: str) -> bool:
+            """Perform a depth-first search from the given node to detect cycles.
+
+            Args:
+                node (str): The module name to start DFS from.
+
+            Returns:
+                bool: True if a cycle is found including the node, False otherwise.
+            """
             if node in rec_stack:
                 # Found cycle - extract it
                 cycle_start = path.index(node)

@@ -15,8 +15,9 @@ from .registry import register_model
 
 try:
     from llama_cpp import Llama
-except ImportError:
-    raise ImportError("llama-cpp-python is required for Qwen model support. Install with: pip install llama-cpp-python")
+except ImportError as e:
+    msg = "llama-cpp-python is required for Qwen model support. Install with: pip install llama-cpp-python"
+    raise ImportError(msg) from e
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +141,8 @@ class QwenModel(BaseModel):
         """
         if not model_path.exists():
             raise FileNotFoundError(
-                f"Model file not found: {model_path}\nPlease download the Qwen 7B GGUF model from:\n{QwenModel.metadata.download_url}"
+                f"Model file not found: {model_path}\n"
+                f"Please download the Qwen 7B GGUF model from:\n{QwenModel.metadata.download_url}"
             )
 
         logger.info("Loading Qwen model from: %s", model_path)
@@ -159,7 +161,7 @@ class QwenModel(BaseModel):
             logger.info("Qwen model loaded successfully")
 
         except Exception as e:
-            raise RuntimeError(f"Failed to load Qwen model: {str(e)}")
+            raise RuntimeError(f"Failed to load Qwen model: {str(e)}") from e
 
     def generate(
         self,
@@ -203,7 +205,7 @@ class QwenModel(BaseModel):
             return response["choices"][0]["text"]
         except Exception as e:
             logger.error("Generation failed: %s", str(e))
-            raise RuntimeError(f"Failed to generate text: {str(e)}")
+            raise RuntimeError(f"Failed to generate text: {str(e)}") from e
 
     def translate_instruction(self, instruction: str, context: dict[str, Any] | None = None) -> str:
         """

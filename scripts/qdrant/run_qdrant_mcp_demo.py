@@ -22,6 +22,7 @@ from typing import Any
 
 import requests
 from qdrant_client.http.exceptions import UnexpectedStatus
+
 from utils.process import PYTHON_EXE, safe_popen, safe_run
 
 # Constants
@@ -254,10 +255,9 @@ class QdrantMCPDemoRunner:
                 print("Sample data populated successfully")
                 print(result.stdout)
                 return True
-            else:
-                print("Failed to populate sample data:")
-                print(result.stderr)
-                return False
+            print("Failed to populate sample data:")
+            print(result.stderr)
+            return False
 
         except Exception as e:
             print(f"Error running populate script: {e}")

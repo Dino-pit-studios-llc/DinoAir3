@@ -47,17 +47,15 @@ from .validator import ValidationResult, Validator
 if TYPE_CHECKING:
     from .config import TranslatorConfig
 
-"""Module providing utilities for pseudocode translation, including event dispatching, timing wrappers, and translation result handling."""
-
 try:
     from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
-    class _FallbackBrokenProcessPool(Exception):
+    class _FallbackBrokenProcessPoolError(Exception):
         """Fallback exception used when the concurrent.futures BrokenProcessPool import fails."""
 
     # type: ignore[misc,assignment]
-    _BrokenProcessPool = _FallbackBrokenProcessPool
+    _BrokenProcessPool = _FallbackBrokenProcessPoolError
 BrokenProcessPool = _BrokenProcessPool
 
 # Logger
@@ -304,7 +302,7 @@ class TranslationManager(ShutdownMixin):
             error.add_suggestion("Check model configuration")
             error.add_suggestion("Verify API credentials if using external models")
             error.add_suggestion("Ensure model files are available for local models")
-            raise error
+            raise error from e
 
     def _initialize_model(self, model_name: str | None = None):
         """Initialize or switch to a different translation model based on configuration or provided name."""
@@ -389,7 +387,8 @@ class TranslationManager(ShutdownMixin):
 
     def _ensure_exec_pool(self) -> ParseValidateExecutor:
         """Ensure an execution pool is available for parsing and validation tasks.
-        If not present, create one using the execution configuration or raise RuntimeError."""
+        If not present, create one using the execution configuration or raise RuntimeError.
+        """
         if self._exec_pool is None:
             try:
                 exec_cfg = getattr(self.config, "execution", None)
@@ -1206,9 +1205,7 @@ class TranslationManager(ShutdownMixin):
         # Build compact error summary (parity is enforced in support helper too)
         try:
             # Local import to avoid cycles; support module must not import translator.py
-            from .translator_support.fix_refiner import (
-                attempt_fixes as _support_attempt_fixes,  # type: ignore
-            )
+            from .translator_support.fix_refiner import attempt_fixes as _support_attempt_fixes  # type: ignore
         except Exception:
             # Preserve previous error/warning logging semantics on failure
             logger.error("Failed to fix code: import error in fix_refiner")
@@ -1313,9 +1310,9 @@ class TranslationManager(ShutdownMixin):
             if _t_enabled():
                 rec_any: Any = _get_rec()
                 return cast(dict[str, Any], rec_any.snapshot())
-        except Exception:
+        except Exception as e:
             # Never raise from telemetry; keep behavior unchanged
-            pass
+            logger.debug("Telemetry snapshot failed (ignored): %s", e)
         return {}
 
     def set_target_language(self, language: OutputLanguage) -> None:

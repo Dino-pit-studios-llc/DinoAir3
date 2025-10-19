@@ -13,6 +13,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import Mock, patch
 
 import pytest
+from fastapi import HTTPException
+from starlette import status
+
 from API.services.search import (
     DirectorySettingsResponse,
     FileIndexStatsResponse,
@@ -33,8 +36,6 @@ from API.services.search import (
     router_search,
     vector,
 )
-from fastapi import HTTPException
-from starlette import status
 
 
 class TestSearchService:

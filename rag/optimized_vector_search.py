@@ -18,10 +18,8 @@ import numpy as np
 # Import DinoAir components
 from utils import Logger
 
-from .search_common import (
-    compute_cosine_scores,  # shared utilities
-    text_similarity,
-)
+from .search_common import compute_cosine_scores  # shared utilities
+from .search_common import text_similarity
 
 # Import RAG components
 from .vector_search import SearchResult, VectorSearchEngine

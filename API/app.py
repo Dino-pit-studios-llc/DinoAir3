@@ -51,8 +51,9 @@ class TimeoutMiddleware:
     @staticmethod
     async def _send_timeout(scope: Scope, receive: Receive, send: Send):
         """Send a 504 Gateway Timeout response indicating the request timed out."""
-        from core_router.errors import error_response as core_error_response
         from starlette import status
+
+        from core_router.errors import error_response as core_error_response
 
         trace_id = scope.get("trace_id", "")
         method = scope.get("method", "GET")
@@ -66,8 +67,8 @@ class TimeoutMiddleware:
             error="Timeout",
             details=None,
             endpoint=endpoint,
-            operationId=None,
-            requestId=str(trace_id) if isinstance(trace_id, str) and trace_id else None,
+            operation_id=None,
+            trace_id=str(trace_id) if isinstance(trace_id, str) and trace_id else None,
         )
         if trace_id:
             from contextlib import suppress

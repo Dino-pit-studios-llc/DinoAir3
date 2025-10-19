@@ -119,7 +119,8 @@ class LocalTransformerModel(BaseTranslationModel):
             version=self.config["model_name"].split("/")[-1],
             supported_languages=list(OutputLanguage),
             description=(
-                "Local transformer model using HuggingFace Transformers. Supports various code generation models for offline use."
+                "Local transformer model using HuggingFace Transformers. "
+                "Supports various code generation models for offline use."
             ),
             author="HuggingFace/Community",
             license="Various (model-dependent)",
@@ -201,7 +202,7 @@ class LocalTransformerModel(BaseTranslationModel):
             logger.info("Transformer model loaded successfully")
 
         except Exception as e:
-            raise RuntimeError(f"Failed to load transformer model: {str(e)}")
+            raise RuntimeError(f"Failed to load transformer model: {str(e)}") from e
 
     def translate(
         self,
@@ -270,7 +271,7 @@ class LocalTransformerModel(BaseTranslationModel):
                 },
             )
         except Exception as e:
-            raise RuntimeError(f"Failed to translate instruction: {str(e)}")
+            raise RuntimeError(f"Failed to translate instruction: {str(e)}") from e
 
     @staticmethod
     def _build_prompt(

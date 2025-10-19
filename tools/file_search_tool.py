@@ -16,11 +16,7 @@ from typing import Any
 
 from tools.common.db import get_file_search_db
 from tools.common.logging_utils import log_exception
-from tools.common.validators import (
-    validate_list_non_empty,
-    validate_non_empty_str,
-    validate_path_exists,
-)
+from tools.common.validators import validate_list_non_empty, validate_non_empty_str, validate_path_exists
 
 logger = logging.getLogger(__name__)
 
