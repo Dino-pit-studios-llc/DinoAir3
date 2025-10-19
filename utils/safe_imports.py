@@ -29,11 +29,13 @@ except Exception:
 
 logger = get_logger("utils.safe_imports")
 
+
 def _sanitize_for_log(s: str) -> str:
     """
     Remove carriage returns and newlines from strings to mitigate log injection issues.
     """
-    return s.replace('\r', '').replace('\n', '') if isinstance(s, str) else s
+    return s.replace("\r", "").replace("\n", "") if isinstance(s, str) else s
+
 
 # New specific exception for import hardening
 class SafeImportError(ImportError):
