@@ -292,8 +292,10 @@ python mcp_qdrant_server.py --qdrant-url "$QDRANT_URL" --api-key "$QDRANT_API_KE
         try:
             _secure_write_text(str(script_file), script_content)  # restrict file permissions to 0o600
 
-            # Make executable
-            os.chmod(script_file, 0o700)
+            # Make executable with restrictive permissions
+            # 0o700 = Owner: read/write/execute (7), Group: none (0), Others: none (0)
+            # This is the most restrictive permission for executable scripts
+            os.chmod(script_file, 0o700)  # nosec: B103 - Owner-only access is secure
 
             print(f"OK: Startup script created: {script_file}")
             print("   Run with: ./start_qdrant_mcp.sh")

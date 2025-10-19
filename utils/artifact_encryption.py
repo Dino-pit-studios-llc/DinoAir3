@@ -18,7 +18,7 @@ import secrets
 from typing import Any
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -148,20 +148,34 @@ class ArtifactEncryption:
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
         else:
-            # Legacy CBC format - maintain backward compatibility
+            # Legacy CBC format - maintain backward compatibility with HMAC verification
             from cryptography.hazmat.primitives import padding
 
             encrypted = base64.b64decode(encrypted_data["data"])
             salt = base64.b64decode(encrypted_data["salt"])
             iv = base64.b64decode(encrypted_data["iv"])
+            
+            # Extract HMAC if present (for new CBC encryptions)
+            stored_hmac = None
+            if "hmac" in encrypted_data:
+                stored_hmac = base64.b64decode(encrypted_data["hmac"])
 
             # Derive key if not provided
             if key is None:
                 key = self.derive_key(self.password, salt)
 
+            # Verify HMAC if present (authenticate message before decryption)
+            if stored_hmac:
+                h = hmac.HMAC(key, hashes.SHA256(), backend=default_backend())
+                h.update(iv + encrypted)
+                try:
+                    h.verify(stored_hmac)
+                except Exception as e:
+                    raise ValueError("HMAC verification failed - data may be tampered") from e
+
             # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-            # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+            # Note: CBC without authentication is deprecated, use GCM for new encryptions
+            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
             decryptor = cipher.decryptor()
             decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
 

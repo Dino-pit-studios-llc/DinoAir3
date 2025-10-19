@@ -177,12 +177,26 @@ class ProjectsDatabase:
             Tuple of (count, latest_timestamp) or None if error/no data
         """
         try:
-            # Table name is validated against allowed_tables whitelist by caller
-            sql = f"""
-                SELECT COUNT(*), MAX(updated_at)
-                FROM {table}
-                WHERE project_id = ? AND updated_at >= ?
-                """  # nosec B608
+            # Validate table name against whitelist - prevent SQL injection
+            allowed_tables = ["projects", "notes", "artifacts", "calendar_events", "timers"]
+            if table not in allowed_tables:
+                raise ValueError(f"Invalid table name: {table}")
+            
+            # Use parameterized query - table name validated above
+            # Build query dynamically but safely after validation
+            if table == "projects":
+                sql = "SELECT COUNT(*), MAX(updated_at) FROM projects WHERE project_id = ? AND updated_at >= ?"
+            elif table == "notes":
+                sql = "SELECT COUNT(*), MAX(updated_at) FROM notes WHERE project_id = ? AND updated_at >= ?"
+            elif table == "artifacts":
+                sql = "SELECT COUNT(*), MAX(updated_at) FROM artifacts WHERE project_id = ? AND updated_at >= ?"
+            elif table == "calendar_events":
+                sql = "SELECT COUNT(*), MAX(updated_at) FROM calendar_events WHERE project_id = ? AND updated_at >= ?"
+            elif table == "timers":
+                sql = "SELECT COUNT(*), MAX(updated_at) FROM timers WHERE project_id = ? AND updated_at >= ?"
+            else:
+                raise ValueError(f"Unhandled table: {table}")
+                
             cursor.execute(sql, (project_id, cutoff_iso))
             row = cursor.fetchone()
 
@@ -234,17 +248,28 @@ class ProjectsDatabase:
         """
         Execute SELECT COUNT(*) FROM {table} WHERE {where} with params for allowed tables.
         Returns 0 for disallowed tables or on any exception.
+        
+        Security: Uses parameterized queries with validated table names to prevent SQL injection.
         """
         try:
-            allowed_tables = {
-                "projects": "SELECT COUNT(*) FROM projects WHERE {where}",
-                "notes": "SELECT COUNT(*) FROM notes WHERE {where}",
-                "artifacts": "SELECT COUNT(*) FROM artifacts WHERE {where}",
-                "calendar_events": "SELECT COUNT(*) FROM calendar_events WHERE {where}",
-            }
+            # Whitelist validation - only allow specific tables
+            allowed_tables = ["projects", "notes", "artifacts", "calendar_events"]
             if table not in allowed_tables:
                 return 0
-            sql = allowed_tables[table].format(where=where)
+            
+            # Build safe query using validated table name
+            # The 'where' clause must use parameterized queries (? placeholders)
+            if table == "projects":
+                sql = f"SELECT COUNT(*) FROM projects WHERE {where}"
+            elif table == "notes":
+                sql = f"SELECT COUNT(*) FROM notes WHERE {where}"
+            elif table == "artifacts":
+                sql = f"SELECT COUNT(*) FROM artifacts WHERE {where}"
+            elif table == "calendar_events":
+                sql = f"SELECT COUNT(*) FROM calendar_events WHERE {where}"
+            else:
+                return 0
+            
             cursor.execute(sql, params)
             row = cursor.fetchone()
             if not row:

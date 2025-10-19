@@ -305,12 +305,14 @@ if __name__ == "__main__":
         _secure_write_text(str(script_file), script_content)
 
         # Make executable on Unix systems with secure permissions
+        # 0o700 = Owner: read/write/execute (7), Group: none (0), Others: none (0)
+        # This is the MOST restrictive permission for an executable file
         if OS.name != "nt":
-            OS.chmod(script_file, 0o700)  # Owner: read/write/execute, Group: none, Others: none
+            OS.chmod(script_file, 0o700)  # nosec: B103 - This is intentionally restrictive
 
         # Make executable on Unix systems with secure permissions (best-effort on Windows, but they are already 0o700)
         try:
-            OS.chmod(script_file, 0o700)
+            OS.chmod(script_file, 0o700)  # nosec: B103 - Owner-only access is secure
         except Exception:
             pass
 

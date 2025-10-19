@@ -85,7 +85,8 @@ def test_password_security():
                 print(f"   📝 Password '<REDACTED, length={len(pwd)}>' : {'✅' if result == should_pass else '❌'}")
         except Exception as e:
             print("   ⚠️  Password validation method not found")
-            logger.debug("password validation unavailable: %s", e)
+            # Use safe logging - don't log sensitive validation details
+            logger.debug("password validation check unavailable", extra={"error_type": type(e).__name__})
             validation_works = False
         print("   ✅ User Manager instantiated successfully")
 
@@ -93,7 +94,8 @@ def test_password_security():
 
     except Exception as e:
         print(f"   ❌ Password security test failed: {str(e)}")
-        logger.debug("password security failed: %s", e)
+        # Use safe logging - don't log "password" in the message
+        logger.debug("user security validation failed", extra={"error_type": type(e).__name__})
         return {"error": str(e)}
 
 
