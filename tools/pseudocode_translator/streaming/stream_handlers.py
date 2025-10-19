@@ -781,32 +781,32 @@ def create_stream_handler(
     if hasattr(source, "read") or hasattr(source, "write"):
         # It's already a file-like object
         class WrapperStreamHandler(StreamHandler):
-        """Wraps a file-like object to conform to the StreamHandler interface."""
+            """Wraps a file-like object to conform to the StreamHandler interface."""
 
             def __init__(self, file_obj, config):
                 super().__init__(config)
                 self.file_obj = file_obj
 
             def read(self, size=-1):
-        """Read method."""
+                """Read method."""
                 return self.file_obj.read(size)
 
             def write(self, data):
-        """Write method."""
+                """Write method."""
                 return self.file_obj.write(data)
 
             def close(self):
-        """Close method."""
+                """Close method."""
                 if hasattr(self.file_obj, "close"):
                     self.file_obj.close()
                 self.is_closed = True
 
             def is_readable(self):
-        """Is Readable method."""
+                """Is Readable method."""
                 return _has_method_and_open(self, "read")
 
             def is_writable(self):
-        """Is Writable method."""
+                """Is Writable method."""
                 return _has_method_and_open(self, "write")
 
         return WrapperStreamHandler(source, config)

@@ -250,15 +250,15 @@ class LogicValidator:
         """Find unreachable code after return statements."""
 
         class UnreachableCodeFinder(ast.NodeVisitor):
-        """Detects and reports unreachable code after return statements.
+            """Detects and reports unreachable code after return statements.
             Traverses function definitions and records statements that occur after a return.
-        """
+            """
 
             def __init__(self):
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
-        """Visit Functiondef method."""
+                """Visit FunctionDef method."""
                 found_return = False
                 for stmt in node.body:
                     if found_return and not isinstance(stmt, ast.Pass):

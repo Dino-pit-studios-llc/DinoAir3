@@ -76,7 +76,7 @@ class Validator:
 
     @staticmethod
     def classify_path_error(exc: Exception) -> str:
-            """Classify Path Error method."""
+        """Classify Path Error method."""
         msg = str(exc)
         if msg.startswith("Path does not exist:"):
             return "not_found"

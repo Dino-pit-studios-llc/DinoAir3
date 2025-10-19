@@ -662,10 +662,10 @@ class Config:
 
         # Helpers to preserve original warning messages
         def _try_float(val: str, warn_msg: str) -> tuple[bool, Any]:
-        """Try to convert a string to a float.
+            """Try to convert a string to a float.
             Returns (True, float) on success.
             Logs warning and returns (False, None) on failure.
-        """
+            """
             try:
                 return True, float(val)
             except ValueError:
@@ -673,12 +673,12 @@ class Config:
                 return False, None
 
         def _try_int(val: str, warn_msg: str) -> tuple[bool, Any]:
-        """
+            """
             Try to convert a string to an integer.
 
             Returns (True, int) on success; logs warning and
             returns (False, None) on failure.
-        """
+            """
             try:
                 return True, int(val)
             except ValueError:

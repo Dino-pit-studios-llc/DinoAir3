@@ -683,7 +683,7 @@ if __name__ == "__main__":
 
 
 def handle_monitor(monitor: DependencyMonitor, continuous: bool, interval: int) -> None:
-        """Handle Monitor function."""
+    """Handle Monitor function."""
     if continuous:
         print(f"Starting continuous monitoring (interval: {interval}s)")
         try:
@@ -700,7 +700,7 @@ def handle_monitor(monitor: DependencyMonitor, continuous: bool, interval: int) 
 
 
 def parse_args() -> argparse.Namespace:
-        """Parse Args function."""
+    """Parse Args function."""
     parser = argparse.ArgumentParser(
         description="Dependency monitoring for DinoAir",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -737,13 +737,13 @@ def parse_args() -> argparse.Namespace:
 
 
 def validate_path(path: Path) -> None:
-        """Validate path function."""
+    """Validate path function."""
     if not path.exists():
         raise FileNotFoundError(f"Path not found: {path}")
 
 
 def execute_monitor(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
-        """Execute Monitor function."""
+    """Execute Monitor function."""
     if args.continuous:
         handle_monitor(monitor, args.continuous, args.interval)
     else:
@@ -781,7 +781,7 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
 
 
 def execute_alert(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
-        """Execute Alert function."""
+    """Execute Alert function."""
     # Placeholder for alert implementation
     pass
 

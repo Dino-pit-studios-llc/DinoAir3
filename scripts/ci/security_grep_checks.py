@@ -63,12 +63,12 @@ def is_utils_process(p: Path) -> bool:
 
 
 def is_in_database(p: Path) -> bool:
-        """Is In Database function."""
+    """Is In Database function."""
     return "database" in p.parts
 
 
 def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
-        """Line And Col For function."""
+    """Line And Col For function."""
     # Compute line (1-based) and column (0-based)
     line = text.count("\n", 0, idx) + 1
     last_nl = text.rfind("\n", 0, idx)
@@ -77,7 +77,7 @@ def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
 
 
 def has_nosec_on_line(text: str, line_no: int) -> bool:
-        """Has Nosec On Line function."""
+    """Has Nosec On Line function."""
     lines = text.splitlines()
     if 1 <= line_no <= len(lines):
         line = lines[line_no - 1]
@@ -98,7 +98,7 @@ def is_safe_import_wrapper(p: Path) -> bool:
 
 
 def report(file: Path, line: int, col: int, rule: str, message: str):
-        """Report function."""
+    """Report function."""
     # Standard "path:line:col: message" format for pre-commit CI consumption
     print(f"{file.as_posix()}:{line}:{col}: {rule}: {message}")
 

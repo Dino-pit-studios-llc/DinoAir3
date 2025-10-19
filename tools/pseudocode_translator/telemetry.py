@@ -324,10 +324,12 @@ class NoOpTelemetryRecorder:
     @staticmethod
     def record_event(
         name: str,
-        """Record Event method."""
         duration_ms: float | None = None,
         extra: dict | None = None,
         counters: dict[str, int] | None = None,
+    ):
+        """Record Event method."""
+        pass
     ) -> None:  # noqa: D401
         return None
 

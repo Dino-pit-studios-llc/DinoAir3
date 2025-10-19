@@ -122,8 +122,9 @@ class Block(Protocol):
     metadata: dict[str, Any]
     context: Any
 
-    def to_source(self) -> str: ...:
-                """To Source method."""
+    def to_source(self) -> str:
+        """To Source method."""
+        ...
 
 
 # Validation result adapter alias

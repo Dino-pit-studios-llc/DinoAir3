@@ -28,23 +28,21 @@ from pseudocode_translator.streaming.adaptive import AdaptiveChunkSizer
 
 
 def p50(values: list[float]) -> float:
-        """P50 function."""
+    """P50 function."""
     if not values:
         return 0.0
     return statistics.median(sorted(values))
 
-
 def p95(values: list[float]) -> float:
-        """P95 function."""
+    """P95 function."""
     if not values:
         return 0.0
     vals = sorted(values)
     idx = int(round(0.95 * (len(vals) - 1)))
     return float(vals[idx])
 
-
 def simulate(flag: bool = True, seed: int = 1337) -> dict:
-        """Simulate function."""
+    """Simulate function."""
     rnd = random.Random(seed)  # nosec B311 - seeded for reproducibility
 
     # Controller configuration

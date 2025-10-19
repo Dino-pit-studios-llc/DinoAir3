@@ -152,10 +152,10 @@ def _translate_english_block(translator: StreamingTranslator, block, context: di
 
 def interactive_translate(
     translator: StreamingTranslator,
-        """Interactive Translate function."""
     input_stream: Iterator[str],
     on_update=None,
 ):
+    """Interactive Translate function."""
     session_context: list[str] = []
     interaction_count = 0
     for user_input in input_stream:
@@ -174,10 +174,10 @@ def interactive_translate(
 
 async def interactive_translate_async(
     translator: StreamingTranslator,
-        """Interactive Translate Async function."""
     input_stream: AsyncIterator[str],
     on_update=None,
 ):
+    """Interactive Translate Async function."""
     session_context: list[str] = []
     interaction_count = 0
     async for user_input in input_stream:

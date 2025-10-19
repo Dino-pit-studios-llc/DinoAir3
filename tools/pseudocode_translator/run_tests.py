@@ -26,7 +26,7 @@ def _is_safe_expr(val: str | None) -> bool:
 
 
 def build_pytest_cmd(args):
-        """Build Pytest Cmd function."""
+    """Build Pytest Cmd function."""
     cmd = [sys.executable, "-m", "pytest"]
     verbosity_map = {
         "very_verbose": "-vv",

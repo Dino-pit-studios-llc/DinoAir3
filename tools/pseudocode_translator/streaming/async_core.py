@@ -40,10 +40,10 @@ class StreamingTranslatorProto(Protocol):
 
 async def async_translate_line_by_line(
     translator: StreamingTranslatorProto,
-        """Async Translate Line By Line function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:
+    """Async Translate Line By Line function."""
     line_buffer: list[str] = []
     chunk_index = 0
     async for line in input_stream:
@@ -65,10 +65,10 @@ async def async_translate_line_by_line(
 
 async def async_translate_block_by_block(
     translator: StreamingTranslatorProto,
-        """Async Translate Block By Block function."""
     input_stream: AsyncIterator[str],
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> AsyncIterator[str]:
+    """Async Translate Block By Block function."""
     accumulated_input: list[str] = []
     async for chunk in input_stream:
         if translator.check_cancelled():

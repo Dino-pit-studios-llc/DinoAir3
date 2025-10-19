@@ -231,7 +231,7 @@ class ParseValidateExecutor:
             return ms / 1000.0
 
         def result(self, timeout: float | None = None):
-        """Result method."""
+            """Result method."""
             timeout_sec = timeout if timeout is not None else self._timeout_seconds()
             max_attempts = 5  # Fixed DoS: limit retry attempts
             attempt = 0
@@ -247,7 +247,7 @@ class ParseValidateExecutor:
                     self._emit_unexpected_fallback_and_raise()
 
         def _get_result_with_telemetry(self, timeout_sec: float):
-        """Get result and record telemetry on success"""
+            """Get result and record telemetry on success"""
             res = self._fut.result(timeout=timeout_sec)
             dur_ms = (time.perf_counter() - self._t0) * 1000.0
 
@@ -261,7 +261,7 @@ class ParseValidateExecutor:
             return res
 
         def _try_retry_on_timeout(self, timeout_sec: float) -> bool:
-        """Try to retry on timeout, return True if retry initiated"""
+            """Try to retry on timeout, return True if retry initiated"""
             self._emit_timeout_telemetry(timeout_sec)
 
             do_retry = bool(self._p.config.process_pool_retry_on_timeout)
@@ -274,7 +274,7 @@ class ParseValidateExecutor:
             return self._try_restart_and_resubmit()
 
         def _emit_timeout_telemetry(self, timeout_sec: float) -> None:
-        """Emit telemetry for timeout event"""
+            """Emit telemetry for timeout event"""
             self._p.emit(
                 EventType.EXEC_POOL_TIMEOUT,
                 kind=self._spec.kind,
@@ -284,7 +284,7 @@ class ParseValidateExecutor:
             self._p.record_event("exec_pool.timeout", counters={"exec_pool.timeout": 1})
 
         def _try_restart_and_resubmit(self) -> bool:
-        """Try to restart pool and resubmit task"""
+            """Try to restart pool and resubmit task"""
             try:
                 self._p.restart_pool()
                 self._fut = self._p.submit(self._spec.func, *self._spec.args)  # type: ignore
@@ -294,7 +294,7 @@ class ParseValidateExecutor:
                 return False
 
         def _emit_fallback_and_raise(self, exc: Exception) -> None:
-        """Emit fallback telemetry and re-raise exception"""
+            """Emit fallback telemetry and re-raise exception"""
             reason = "timeout" if isinstance(exc, TimeoutError) else "broken_pool"
             self._p.emit_event(
                 EventType.EXEC_POOL_FALLBACK,
@@ -305,7 +305,7 @@ class ParseValidateExecutor:
             raise ValueError("Failed to emit fallback telemetry")
 
         def _emit_unexpected_fallback_and_raise(self) -> None:
-        """Emit fallback telemetry for unexpected errors and re-raise"""
+            """Emit fallback telemetry for unexpected errors and re-raise"""
             self._p.emit_event(
                 EventType.EXEC_POOL_FALLBACK,
                 kind=self._spec.kind,
