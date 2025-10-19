@@ -365,9 +365,15 @@ class DocstringAnalyzer:
     def analyze_file(self, filepath: Path) -> ModuleInfo:
         """Analyze a Python file for missing docstrings."""
         try:
-            with open(filepath, encoding="utf-8") as f:
+            base_dir = Path.cwd().resolve()
+            allowed_filenames = {p.name for p in base_dir.glob("*.py")}
+            filename = filepath.name
+            if filename not in allowed_filenames:
+                raise ValueError(f"Invalid filename: {filename}")
+            safe_path = base_dir / filename
+            with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
-            tree = ast.parse(content, filename=str(filepath))
+            tree = ast.parse(content, filename=str(safe_path))
             # Check for module docstring
             has_module_docstring = (
                 len(tree.body) > 0

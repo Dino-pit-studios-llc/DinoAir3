@@ -55,6 +55,10 @@ class ComprehensiveDocstringAutomation:
     @staticmethod
     def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions that need docstrings."""
+        allowed_filenames = {"script1.py", "script2.py"}
+        if file_path.name not in allowed_filenames:
+            print(f"Error: Unauthorized file {file_path}")
+            return []
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
@@ -146,7 +150,13 @@ class ComprehensiveDocstringAutomation:
     def add_docstring_to_file(file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
-            with open(file_path, encoding="utf-8") as f:
+            allowed_files = {"file1.py", "file2.py"}
+            if file_path.name not in allowed_files:
+                print(f"Unauthorized file access attempt: {file_path}")
+                return False
+            base_dir = Path("/trusted/dir")
+            safe_path = base_dir / file_path.name
+            with open(safe_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             func_line_idx = line_number - 1
@@ -162,13 +172,13 @@ class ComprehensiveDocstringAutomation:
             lines.insert(insert_line_idx, docstring_line)
 
             # Write back
-            with open(file_path, "w", encoding="utf-8") as f:
+            with open(safe_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
 
             return True
 
         except Exception as e:
-            print(f"Error adding docstring to {file_path}:{line_number}: {e}")
+            print(f"Error adding docstring to {safe_path}:{line_number}: {e}")
             return False
 
     def process_file(self, file_path: Path) -> dict:
