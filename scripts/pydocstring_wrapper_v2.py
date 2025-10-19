@@ -8,7 +8,7 @@ import ast
 import subprocess
 import sys
 from pathlib import Path
-
+import os
 
 class PydocstringWrapper:
     """Wrapper for the pydocstring tool to batch process files."""
@@ -39,9 +39,14 @@ class PydocstringWrapper:
         filename = file_path.name
         if filename not in allowed_filenames:
             raise ValueError(f"Disallowed file: {filename}")
+        # Normalize and ensure path is within base_dir
+        resolved_base = base_dir.resolve()
+        resolved_safe_path = safe_path.resolve()
+        if not str(resolved_safe_path).startswith(str(resolved_base) + os.sep):
+            raise ValueError(f"Attempt to access file outside of base directory: {resolved_safe_path}")
         safe_path = base_dir / filename
         try:
-            with open(safe_path, encoding="utf-8") as f:
+            with open(resolved_safe_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
