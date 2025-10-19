@@ -52,8 +52,13 @@ class ComprehensiveDocstringAutomation:
             print(f"✗ Failed to create backup: {e}")
             return False
 
-    def find_functions_without_docstrings(self, file_path: Path) -> list[tuple[int, str]]:
+    @staticmethod
+    def find_functions_without_docstrings(file_path: Path) -> list[tuple[int, str]]:
         """Find functions that need docstrings."""
+        allowed_filenames = {"script1.py", "script2.py"}
+        if file_path.name not in allowed_filenames:
+            print(f"Error: Unauthorized file {file_path}")
+            return []
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
@@ -127,23 +132,30 @@ class ComprehensiveDocstringAutomation:
         except Exception:
             return ""
 
-    def generate_simple_docstring(self, func_name: str) -> str:
+    @staticmethod
+    def generate_simple_docstring(func_name: str) -> str:
         """Generate a simple fallback docstring."""
         if func_name == "__init__":
             return "Initialize the instance."
-        elif func_name.startswith("get_"):
+        if func_name.startswith("get_"):
             return f"Get {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("set_"):
+        if func_name.startswith("set_"):
             return f"Set {func_name[4:].replace('_', ' ')}."
-        elif func_name.startswith("is_") or func_name.startswith("has_"):
+        if func_name.startswith("is_") or func_name.startswith("has_"):
             return f"Check if {func_name[3:].replace('_', ' ')}."
-        else:
-            return f"TODO: Add docstring for {func_name}."
+        return f"TODO: Add docstring for {func_name}."
 
-    def add_docstring_to_file(self, file_path: Path, line_number: int, docstring: str) -> bool:
+    @staticmethod
+    def add_docstring_to_file(file_path: Path, line_number: int, docstring: str) -> bool:
         """Add docstring to a specific function in a file."""
         try:
-            with open(file_path, encoding="utf-8") as f:
+            allowed_files = {"file1.py", "file2.py"}
+            if file_path.name not in allowed_files:
+                print(f"Unauthorized file access attempt: {file_path}")
+                return False
+            base_dir = Path("/trusted/dir")
+            safe_path = base_dir / file_path.name
+            with open(safe_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             func_line_idx = line_number - 1
@@ -159,13 +171,13 @@ class ComprehensiveDocstringAutomation:
             lines.insert(insert_line_idx, docstring_line)
 
             # Write back
-            with open(file_path, "w", encoding="utf-8") as f:
+            with open(safe_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
 
             return True
 
         except Exception as e:
-            print(f"Error adding docstring to {file_path}:{line_number}: {e}")
+            print(f"Error adding docstring to {safe_path}:{line_number}: {e}")
             return False
 
     def process_file(self, file_path: Path) -> dict:

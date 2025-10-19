@@ -70,7 +70,8 @@ class ArtifactEncryption:
         """Generate a random salt"""
         return secrets.token_bytes(self.salt_length)
 
-    def generate_nonce(self) -> bytes:
+    @staticmethod
+    def generate_nonce() -> bytes:
         """Generate a random 12-byte nonce for AES-GCM"""
         # GCM mode uses 12-byte nonces for optimal security
         return secrets.token_bytes(12)
@@ -147,31 +148,26 @@ class ArtifactEncryption:
             # Decrypt using AES-GCM
             aesgcm = AESGCM(key)
             return aesgcm.decrypt(nonce, encrypted, None)
-        else:
-            # Legacy CBC format - maintain backward compatibility
-            from cryptography.hazmat.primitives import padding
+        # Legacy CBC format - maintain backward compatibility
+        from cryptography.hazmat.primitives import padding
 
-            encrypted = base64.b64decode(encrypted_data["data"])
-            salt = base64.b64decode(encrypted_data["salt"])
-            iv = base64.b64decode(encrypted_data["iv"])
+        encrypted = base64.b64decode(encrypted_data["data"])
+        salt = base64.b64decode(encrypted_data["salt"])
+        iv = base64.b64decode(encrypted_data["iv"])
 
-            # Derive key if not provided
-            if key is None:
-                key = self.derive_key(self.password, salt)
+        # Derive key if not provided
+        if key is None:
+            key = self.derive_key(self.password, salt)
 
-            # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-            # NOTE: This uses PKCS7 padding with 128-bit block size - a secure padding scheme
-            # CBC mode is maintained only for backward compatibility with existing encrypted data
-            # New encryptions use AES-GCM (see encrypt_data method) which is more secure
-            # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
-            # nosonar: python:S5542 - CBC mode with PKCS7 required for legacy data compatibility
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
-            decryptor = cipher.decryptor()
-            decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
+        # Create cipher and decrypt (legacy CBC mode for backward compatibility)
+        # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+        decryptor = cipher.decryptor()
+        decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
 
-            # Remove PKCS7 padding using cryptography unpadder (secure padding scheme)
-            unpadder = padding.PKCS7(128).unpadder()
-            return unpadder.update(decrypted_padded) + unpadder.finalize()
+        # Remove PKCS7 padding using cryptography unpadder
+        unpadder = padding.PKCS7(128).unpadder()
+        return unpadder.update(decrypted_padded) + unpadder.finalize()
 
     def encrypt_fields(self, data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         """
