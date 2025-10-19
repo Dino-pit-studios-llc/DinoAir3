@@ -92,6 +92,7 @@ This module defines a NodeVisitor that enforces limitations on expressions to
 prevent unsafe or disallowed constructs.
 """
 
+
 class _SafeExprValidator(ast.NodeVisitor):  # pylint: disable=invalid-name, missing-function-docstring
     """AST validator to enforce a restricted expression subset."""
 
