@@ -131,7 +131,7 @@ def translate_block(
 
 
 def is_complete_statement(text: str) -> bool:
-        """Is Complete Statement function."""
+    """Is Complete Statement function."""
     t = text.strip()
     if not t:
         return False
@@ -148,11 +148,11 @@ def is_complete_statement(text: str) -> bool:
 
 def process_statement(
     translator: StreamingTranslator,
-        """Process statement function."""
     statement: str,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None,
 ) -> str | None:
+    """Process statement function."""
     translations = parse_and_translate_blocks(translator, statement, chunk_index, on_update)
     return ("\n".join(translations) + "\n") if translations else None
 
@@ -160,9 +160,9 @@ def process_statement(
 def process_accumulated_blocks(
     translator,
     accumulated_input: list[str],
-        """Process accumulated blocks function."""
-    on_update: Callable[[TranslationUpdate], None] | None,
+    on_update: Callable[[TranslationUpdate], None],
 ):
+    """Process accumulated blocks function."""
     current_input = "".join(accumulated_input)
     try:
         blocks = translator.identify_blocks(current_input)

@@ -36,18 +36,19 @@ class StreamConfig:
 
 # Small private, module-level helpers to reduce intra-file duplication
 def _is_open_attr(obj, attr: str) -> bool:
+    """Check that the specified attribute exists and the object is not closed."""
     return getattr(obj, attr) is not None and not obj.is_closed
 
-
 def _delegate_is_readable(inner):
+    """Delegate is_readable call to the inner stream object."""
     return inner.is_readable()
 
-
 def _delegate_is_writable(inner):
+    """Delegate is_writable call to the inner stream object."""
     return inner.is_writable()
 
-
 def _has_method_and_open(wrapper, method: str) -> bool:
+    """Check if the wrapper's file object has the specified method and is not closed."""
     return hasattr(wrapper.file_obj, method) and not wrapper.is_closed
 
 
@@ -643,7 +644,7 @@ class AsyncStreamHandler(ABC):
             if not char or char == "\n":
                 break
             line.append(char)
-            if size > 0 and len(line) >= size:
+            if 0 < size <= len(line):
                 break
         return "".join(line) + (char if char == "\n" else "")
 

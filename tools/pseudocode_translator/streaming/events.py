@@ -6,7 +6,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    """Module module."""
     from .pipeline import StreamingProgress
 
 

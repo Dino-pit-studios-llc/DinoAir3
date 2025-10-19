@@ -46,6 +46,7 @@ def build_pytest_cmd(args):
     return cmd
 
 
+
 def run_command(cmd, cwd=None, timeout: int = 900):
     """Run a command with hardened execution and return the exit code."""
     allowed = {Path(sys.executable).name, "python", PYTHON_EXE}
@@ -143,7 +144,7 @@ def add_general_args(parser):
 
 
 def run_post_quality_format_check(args):
-        """Run Post Quality Format Check function."""
+    """Run Post Quality Format Check function."""
     if args.all_checks or args.format:
         return run_command(
             [
@@ -159,7 +160,7 @@ def run_post_quality_format_check(args):
 
 
 def run_pytest_based_on_args(args):
-        """Run Pytest Based On Args function."""
+    """Run Pytest Based On Args function."""
     cmd = build_pytest_cmd(args)
     if args.mark and _is_safe_expr(args.mark):
         cmd.extend(["-m", args.mark])

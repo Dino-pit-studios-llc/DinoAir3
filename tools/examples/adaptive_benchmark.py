@@ -43,6 +43,8 @@ def p95(values: list[float]) -> float:
     return float(vals[idx])
 
 
+"""Module to benchmark adaptive chunk sizing by simulating chunk processing latencies."""
+
 def simulate(flag: bool = True, seed: int = 1337) -> dict:
     """Simulate function."""
     rnd = random.Random(seed)  # nosec B311 - seeded for reproducibility
@@ -67,6 +69,7 @@ def simulate(flag: bool = True, seed: int = 1337) -> dict:
     spike_max = 2.0
 
     def latency_model(size: int) -> float:
+        """Compute simulated latency based on chunk size, with noise and potential spikes."""
         if size <= 0:
             return 5.0
         base = 350.0 * (size / 500.0) ** 0.5

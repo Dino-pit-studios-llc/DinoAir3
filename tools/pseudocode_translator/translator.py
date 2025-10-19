@@ -156,7 +156,7 @@ def _dispatch_event(
 
 
 def timed_section(name: str, extra: dict[str, Any] | None = None) -> AbstractContextManager[None]:
-        """Timed Section function."""
+    """Timed Section function."""
     rec_any: Any = get_recorder()
     return cast("AbstractContextManager[None]", rec_any.timed_section(name, extra))
 

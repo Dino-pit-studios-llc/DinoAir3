@@ -1051,7 +1051,7 @@ class ConfigManager:
         """Interactive configuration wizard with validation and non-interactive safe defaults."""
 
         def safe_input(prompt: str) -> str:
-        """Read user input safely, returning an empty string on EOF or error."""
+            """Read user input safely, returning an empty string on EOF or error."""
             with suppress(EOFError):
                 return input(prompt)
             return ""
@@ -1063,7 +1063,7 @@ class ConfigManager:
             min_val: float | int | None = None,
             max_val: float | int | None = None,
         ):
-        """Prompt the user for a number using default on invalid input and enforce optional bounds."""
+            """Prompt the user for a number using default on invalid input and enforce optional bounds."""
             raw = safe_input(prompt).strip()
             if not raw:
                 return default
@@ -1083,7 +1083,7 @@ class ConfigManager:
             min_val: int | None = None,
             max_val: int | None = None,
         ) -> int:
-        """Prompt the user for an integer, using default on invalid input and enforcing optional bounds."""
+            """Prompt the user for an integer, using default on invalid input and enforcing optional bounds."""
             return _prompt_number(prompt, default, int, min_val, max_val)
 
         def prompt_float(
@@ -1092,13 +1092,13 @@ class ConfigManager:
             min_val: float | None = None,
             max_val: float | None = None,
         ) -> float:
-        """Prompt the user for a float, using default on invalid input and enforcing optional bounds."""
+            """Prompt the user for a float, using default on invalid input and enforcing optional bounds."""
             return _prompt_number(prompt, default, float, min_val, max_val)
 
         def prompt_yes_no(prompt: str, default: bool) -> bool:
-        """Prompt the user for a yes/no question, returning True for yes and
-            False for no, with a default.
-        """
+            """Prompt the user for a yes/no question, returning True for yes and
+                False for no, with a default.
+            """
             default_str = "y" if default else "n"
             raw = safe_input(f"{prompt} (y/n) [{default_str}]: ").strip().lower()
             return (raw or default_str).startswith("y")

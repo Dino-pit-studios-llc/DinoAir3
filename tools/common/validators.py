@@ -85,6 +85,13 @@ class Validator:
         return "not_dir" if msg.startswith("Path is not a directory:") else "other"
 
 
+"""
+Validators Module
+
+This module provides decorators for validating named function arguments
+using user-supplied validator callables.
+"""
+
 def validate_args(
     mapping: dict[str, tuple["Callable[..., None]", ...]],
 ) -> "Callable[[Callable[P, R]], Callable[P, R]]":
@@ -95,10 +102,18 @@ def validate_args(
     """
 
     def decorator(func: "Callable[P, R]") -> "Callable[P, R]":
+        """
+        Create and return a wrapper that applies the specified validators
+        to the function's named arguments before calling the function.
+        """
         sig = inspect.signature(func)
 
-        @wraps(func)
+        sig = _inspect.signature(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            """
+            Bind the provided arguments, run all validators on each named argument,
+            and then call the original function.
+            """
             bound = sig.bind_partial(*args, **kwargs)
             arguments = bound.arguments
             _validate_all_arguments(mapping, arguments)

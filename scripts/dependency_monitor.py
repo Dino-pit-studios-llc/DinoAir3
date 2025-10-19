@@ -704,7 +704,6 @@ def parse_args() -> argparse.Namespace:
         description="Dependency monitoring for DinoAir",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
-    )
     parser.add_argument(
         "command",
         choices=["monitor", "analyze", "alert", "visualize", "performance"],
@@ -802,13 +801,13 @@ def execute_visualize(monitor: DependencyMonitor, args: argparse.Namespace) -> N
 
 
 def execute_performance(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
-        """Execute Performance function."""
+    """Execute Performance function."""
     # Placeholder for performance implementation
     pass
 
 
 def execute_command(args: argparse.Namespace) -> None:
-        """Execute Command function."""
+    """Execute Command function."""
     monitor = DependencyMonitor(args.path)
     commands = {
         "monitor": execute_monitor,
@@ -825,7 +824,7 @@ def execute_command(args: argparse.Namespace) -> None:
 
 
 def format_output(report: Any, fmt: str) -> str:
-        """Format Output function."""
+    """Format Output function."""
     if fmt == "json":
         return json.dumps(report, indent=2)
     if fmt == "html":
@@ -840,7 +839,6 @@ def main() -> None:
     args = parse_args()
     validate_path(args.path)
     execute_command(args)
-
 
 if __name__ == "__main__":
     main()

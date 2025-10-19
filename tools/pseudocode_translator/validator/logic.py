@@ -277,7 +277,7 @@ class LogicValidator:
         """Find variables that are assigned but never used."""
 
         class UnusedVariableFinder(ast.NodeVisitor):
-        """Visitor that tracks assigned variables and identifies unused ones in the AST."""
+            """Visitor that tracks assigned variables and identifies unused ones in the AST."""
 
             def __init__(self):
                 self.assigned = set()
@@ -285,14 +285,14 @@ class LogicValidator:
                 self.issues = []
 
             def visit_Assign(self, node: ast.Assign):
-        """Visit Assign method."""
+                """Visit Assign method."""
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         self.assigned.add(target.id)
                 self.generic_visit(node)
 
             def visit_Name(self, node: ast.Name):
-        """Visit Name method."""
+                """Visit Name method."""
                 if isinstance(node.ctx, ast.Load):
                     self.used.add(node.id)
 

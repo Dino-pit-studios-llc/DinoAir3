@@ -175,6 +175,24 @@ class QwenModel(BaseModel):
         stop_sequences: list[str] | None = None,
         **kwargs,
     ):
+        """
+        Generate text from a prompt using the loaded model.
+
+        Args:
+            prompt: The input text prompt for generation.
+            max_tokens: Maximum number of tokens to generate.
+            temperature: Sampling temperature.
+            top_p: Nucleus sampling probability.
+            top_k: Top-k sampling parameter.
+            stop_sequences: Optional list of stop sequences.
+            **kwargs: Additional generation parameters.
+
+        Returns:
+            Generated text as a string.
+
+        Raises:
+            RuntimeError: If generation fails.
+        """
         generation_params = {
             "max_tokens": max_tokens,
             "temperature": temperature,
