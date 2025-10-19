@@ -397,7 +397,7 @@ class StreamMessageFormatter:
 
         if isinstance(message, TranslationUpdateMessage):
             status = "partial" if message.is_partial else "complete"
-            content = message.translated_content or 'pending'
+            content = message.translated_content or "pending"
             return (
                 f"[{timestamp}] Translation {status} "
                 f"(chunk {message.chunk_index}, block {message.block_index}): {content}"
