@@ -13,6 +13,7 @@ Features:
 - Health metrics and alerting
 - Historical trend analysis
 
+
 Usage:
     python scripts/dependency_monitor.py [command] [options]
 
@@ -223,7 +224,9 @@ class DependencyMonitor:
             Path(temp_path).unlink(missing_ok=True)
         return self._fallback_time(file_path)
 
-    def _build_measurement_script(self, file_path: Path, module_name: str) -> str:
+    @staticmethod
+    def _build_measurement_script(file_path: Path, module_name: str) -> str:
+        """Constructs and returns a standalone script to measure import time of a module."""
         import textwrap
 
         return textwrap.dedent(
@@ -234,23 +237,23 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-def measure_import():
-    """Measure import time safely."""
-    module_path = Path(r"{file_path}")
-    module_name = "{module_name}"
-    if module_name in _script_sys.modules:
-        del _script_sys.modules[module_name]
-    spec = importlib.util.spec_from_file_location(module_name, module_path)
-    if spec is None:
-        return 0.001  # Default fallback time
-    start_time = time.perf_counter()
-    module = importlib.util.module_from_spec(spec)
-    _script_sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    end_time = time.perf_counter()
-    if module_name in _script_sys.modules:
-        del _script_sys.modules[module_name]
-    return end_time - start_time
+ def measure_import():
+     """Measure import time safely."""
+     module_path = Path(r"{file_path}")
+     module_name = "{module_name}"
+     if module_name in _script_sys.modules:
+         del _script_sys.modules[module_name]
+     spec = importlib.util.spec_from_file_location(module_name, module_path)
+     if spec is None:
+         return 0.001  # Default fallback time
+     start_time = time.perf_counter()
+     module = importlib.util.module_from_spec(spec)
+     _script_sys.modules[module_name] = module
+     spec.loader.exec_module(module)
+     end_time = time.perf_counter()
+     if module_name in _script_sys.modules:
+         del _script_sys.modules[module_name]
+     return end_time - start_time
 
 if __name__ == "__main__":
     print(measure_import())
@@ -259,16 +262,21 @@ if __name__ == "__main__":
 
     def _write_temp_script(self, script: str) -> str:
         import tempfile
-
+    def _write_temp_script(self, script: str):
+        """Write the provided script string to a temporary Python file and return its file path."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_file:
             temp_file.write(script)
             temp_file.flush()
             return temp_file.name
 
     def _run_script(self, script_path: str):
-        import sys
-        from pathlib import Path
+        """Execute the Python script at the specified path and return its output or result."""
+        """
+        Run an external script safely using safe_run with specified allowed binaries.
 
+        script_path: path to the script to execute.
+        Returns the CompletedProcess result of running the script.
+        """
         return safe_run(
             [sys.executable, script_path],
             allowed_binaries={
@@ -282,6 +290,13 @@ if __name__ == "__main__":
         )
 
     def _parse_result(self, result, module_name: str) -> float | None:
+        """
+        Parse the CompletedProcess result to extract a float value for the given module.
+
+        result: The CompletedProcess returned by safe_run.
+        module_name: The name of the module to parse the result for.
+        Returns a float if the module value is found, otherwise None.
+        """
         if result.returncode != 0 or not result.stdout.strip():
             self.logger.debug(
                 "Measurement script failed for %s: returncode %s",
@@ -295,7 +310,10 @@ if __name__ == "__main__":
             self.logger.debug("Failed to parse import time for %s: %s", module_name, e)
             return None
 
-    def _fallback_time(self, module_path: Path) -> float:
+    @staticmethod
+    def _fallback_time(module_path: Path) -> float:
+        """Estimate fallback import time based on module file size."""
+
         try:
             file_size = module_path.stat().st_size
             return max(0.001, (file_size / 1000000) * 0.001)
@@ -507,7 +525,7 @@ if __name__ == "__main__":
                     "--format",
                     "json",
                 ],
-                allowed_binaries={Path(sys.executable).name, "python", PYTHON_EXE},
+                allowed_binaries={Path(sys.executable).name, "python"},
                 text=True,
                 timeout=30,
                 check=False,
@@ -783,7 +801,6 @@ def execute_analyze(monitor: DependencyMonitor, args: argparse.Namespace) -> Non
 def execute_alert(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
     """Execute Alert function."""
     # Placeholder for alert implementation
-    pass
 
 
 def execute_visualize(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
@@ -804,8 +821,6 @@ def execute_visualize(monitor: DependencyMonitor, args: argparse.Namespace) -> N
 
 def execute_performance(monitor: DependencyMonitor, args: argparse.Namespace) -> None:
     """Execute Performance function."""
-    # Placeholder for performance implementation
-    pass
 
 
 def execute_command(args: argparse.Namespace) -> None:

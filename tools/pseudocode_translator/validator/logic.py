@@ -330,13 +330,13 @@ class LogicValidator:
         """Check for functions missing return statements."""
 
         class MissingReturnChecker(ast.NodeVisitor):
-        """Visitor that checks function definitions for missing return statements."""
+            """Visitor that checks function definitions for missing return statements."""
 
             def __init__(self):
                 self.issues = []
 
             def visit_FunctionDef(self, node: ast.FunctionDef):
-        """Visit Functiondef method."""
+                """Visit Functiondef method."""
                 if not node.body:
                     return
 

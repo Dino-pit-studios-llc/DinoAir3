@@ -48,7 +48,6 @@ Duration histogram buckets:
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import threading
@@ -185,7 +184,8 @@ class TelemetryRecorder:
     @staticmethod
     def _bucket_label(duration_ms: float) -> str:
         """Return the histogram bucket label for a given duration in milliseconds.
-        Iterates through predefined bucket edges and returns the string label corresponding to the smallest edge greater than or equal to the duration."""
+        Iterates through predefined bucket edges and returns the string label corresponding to the smallest edge greater than or equal to the duration.
+        """
         for edge in _BUCKET_EDGES_MS:
             if duration_ms <= edge:
                 # Ensure "inf" string for infinity and clean integer-like edges
@@ -198,7 +198,8 @@ class TelemetryRecorder:
     @staticmethod
     def _self_check_basic() -> None:
         """Perform basic self-checks on bucket labeling and counter aggregation logic.
-        Non-raising sanity checks to ensure bucket labels and counter math behave as expected."""
+        Non-raising sanity checks to ensure bucket labels and counter math behave as expected.
+        """
         # Minimal, non-raising sanity checks on bucket labeling and counters math
         try:
             if TelemetryRecorder._bucket_label(0.4) not in {"0.5"}:
@@ -309,7 +310,8 @@ def _apply_sampling_wrapper(rec: TelemetryRecorder, sample_rate: int) -> None:
         counters: dict[str, int] | None = None,
     ) -> None:
         """Wrapper for record_event that applies deterministic sampling.
-        Increments sequence counter and only forwards the call to the original record_event when the sequence number meets the sampling criterion."""
+        Increments sequence counter and only forwards the call to the original record_event when the sequence number meets the sampling criterion.
+        """
         seq = rec.increment_seq()
         if seq % sample_rate != 0:
             return None

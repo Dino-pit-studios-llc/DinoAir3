@@ -1376,7 +1376,7 @@ class TranslationManager(ShutdownMixin):
             return config
 
         # Build default config
-        """Construct a ModelTranslationConfig for text block translation and apply any overrides."""
+        # Construct a ModelTranslationConfig for text block translation and apply any overrides.
         translation_config = ModelTranslationConfig(
             target_language=self._target_language,
             temperature=self.config.llm.temperature,
