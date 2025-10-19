@@ -118,7 +118,7 @@ class StreamHandler(ABC):
                 break
             line.append(char)
             chars_read += 1
-            if size > 0 and len(line) >= size:
+            if 0 < size <= len(line):
                 break
         return "".join(line) + (char if char == "\n" else "")
 

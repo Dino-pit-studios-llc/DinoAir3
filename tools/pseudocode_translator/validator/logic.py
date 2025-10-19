@@ -307,13 +307,13 @@ class LogicValidator:
         """Detect potential infinite loops."""
 
         class InfiniteLoopDetector(ast.NodeVisitor):
-        """AST NodeVisitor that detects potential infinite loops by finding while True loops without break statements."""
+            """AST NodeVisitor that detects potential infinite loops by finding while True loops without break statements."""
 
             def __init__(self):
                 self.issues = []
 
             def visit_While(self, node: ast.While):
-        """Visit While method."""
+                """Visit While method."""
                 # Check for simple infinite loops
                 if isinstance(node.test, ast.Constant) and node.test.value is True:
                     # Check if there's a break statement

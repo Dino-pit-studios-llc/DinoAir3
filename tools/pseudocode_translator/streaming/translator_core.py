@@ -118,7 +118,6 @@ def translate_block(
         if block.type == BlockType.COMMENT:
             return block.content
     except Exception as e:
-        pass
         logger.error("Error translating block: %s", e)
         translator.emit_event(
             StreamingEventData(
@@ -128,6 +127,7 @@ def translate_block(
             )
         )
         return None
+    return None
 
 
 def is_complete_statement(text: str) -> bool:

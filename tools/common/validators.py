@@ -6,7 +6,6 @@ All validation logic is grouped in the Validator class for clarity and maintaina
 """
 
 import inspect as _inspect
-from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 
@@ -85,14 +84,6 @@ class Validator:
         return "not_dir" if msg.startswith("Path is not a directory:") else "other"
 
 
-"""
-Validators Module
-
-This module provides decorators for validating named function arguments
-using user-supplied validator callables.
-"""
-
-
 def validate_args(
     mapping: dict[str, tuple["Callable[..., None]", ...]],
 ) -> "Callable[[Callable[P, R]], Callable[P, R]]":
@@ -107,7 +98,7 @@ def validate_args(
         Create and return a wrapper that applies the specified validators
         to the function's named arguments before calling the function.
         """
-        sig = inspect.signature(func)
+        sig = _inspect.signature(func)
 
         sig = _inspect.signature(func)
 

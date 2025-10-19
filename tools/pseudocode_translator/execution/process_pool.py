@@ -1,10 +1,8 @@
-"""Module module."""
-
-from __future__ import annotations
-
 """This module provides an executor for parsing and validating pseudocode using a process pool.
 It manages worker processes, records telemetry events, and falls back to immediate execution when necessary.
 """
+
+from __future__ import annotations
 
 import contextlib
 import logging
@@ -12,21 +10,17 @@ import multiprocessing as mp
 import os
 import time
 from concurrent.futures import Future, ProcessPoolExecutor
-from concurrent.futures import TimeoutError as FuturesTimeoutError
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from pseudocode_translator.config import ExecutionConfig, TranslatorConfig
 from pseudocode_translator.integration.events import EventDispatcher, EventType
 from pseudocode_translator.parser import ParserModule
 from pseudocode_translator.telemetry import get_recorder
 from pseudocode_translator.validator import ValidationResult, Validator
-
-logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 
 try:
     from concurrent.futures.process import BrokenProcessPool  # type: ignore
@@ -35,6 +29,7 @@ except Exception:  # pragma: no cover
     class BrokenProcessPool(Exception):
         """Custom exception indicating the process pool is broken or unavailable."""
 
+logger = logging.getLogger(__name__)
 
 # Top-level worker functions for picklability
 
@@ -55,7 +50,6 @@ def worker_validate(ast_obj) -> ValidationResult:
     validator = Validator(cfg)
     return validator.validate_syntax(code)
 
-
 @dataclass
 class _TaskSpec:
     """Specifies the type, function, and arguments for a processing task."""
@@ -63,7 +57,6 @@ class _TaskSpec:
     kind: str  # "parse" | "validate"
     func: Callable[..., Any]
     args: tuple
-
 
 class _ImmediateFallback:
     """Small Future-like object to represent an immediate fallback instruction."""
@@ -74,7 +67,6 @@ class _ImmediateFallback:
     def result(self, timeout: float | None = None):
         """Result method."""
         raise RuntimeError(f"exec_pool_fallback:{self.reason}")
-
 
 class ParseValidateExecutor:
     """

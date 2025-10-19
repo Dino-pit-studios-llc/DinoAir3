@@ -157,21 +157,21 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
 
 
  def _check_xml_etree_usage(p: Path, text: str):
-    findings = []
-    for m in PATTERNS["xml_etree_usage"].finditer(text):
-        line, col = line_and_col_for(text, m.start())
-        if has_nosec_on_line(text, line):
-            continue
-        findings.append(
-            (
-                p,
-                line,
-                col,
-                "xml_etree_usage",
-                "xml.etree usage is banned; prefer defusedxml alternatives.",
-            )
-        )
-    return findings
+     findings = []
+     for m in PATTERNS["xml_etree_usage"].finditer(text):
+         line, col = line_and_col_for(text, m.start())
+         if has_nosec_on_line(text, line):
+             continue
+         findings.append(
+             (
+                 p,
+                 line,
+                 col,
+                 "xml_etree_usage",
+                 "xml.etree usage is banned; prefer defusedxml alternatives.",
+             )
+         )
+     return findings
 
 
  def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int, int]]):

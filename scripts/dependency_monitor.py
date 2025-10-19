@@ -704,6 +704,7 @@ def parse_args() -> argparse.Namespace:
         description="Dependency monitoring for DinoAir",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
+    )
     parser.add_argument(
         "command",
         choices=["monitor", "analyze", "alert", "visualize", "performance"],
