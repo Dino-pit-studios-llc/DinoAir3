@@ -16,9 +16,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from tqdm import tqdm
-
 from pseudocode_translator.exceptions import ConfigurationError
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 

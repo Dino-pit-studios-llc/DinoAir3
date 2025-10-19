@@ -20,23 +20,17 @@ from ..translator import TranslationManager
 from .buffer import BufferConfig, ContextBuffer, StreamBuffer
 from .chunker import ChunkConfig, CodeChunker
 from .event_runtime import EventRuntime
-from .events import StreamingEvent, StreamingEventData, StreamingMode, TranslationUpdate
-from .interactive_core import (
-    interactive_translate,
-    interactive_translate_async,
-    process_interactive_input,
-)
+from .events import (StreamingEvent, StreamingEventData, StreamingMode,
+                     TranslationUpdate)
+from .interactive_core import (interactive_translate,
+                               interactive_translate_async,
+                               process_interactive_input)
 from .pipeline import StreamingProgress
 from .translation_invoker import TranslationInvoker
-from .translator_core import (
-    is_complete_statement,
-    parse_and_translate_blocks,
-    parse_success,
-    process_accumulated_blocks,
-    process_statement,
-    translate_block,
-    translate_chunk_blocks,
-)
+from .translator_core import (is_complete_statement,
+                              parse_and_translate_blocks, parse_success,
+                              process_accumulated_blocks, process_statement,
+                              translate_block, translate_chunk_blocks)
 
 logger = logging.getLogger(__name__)
 
@@ -164,205 +158,206 @@ class StreamingTranslator:
             if strategy:
                 async for translated in self._execute_async_strategy(strategy, mode, input_stream, on_update):
                     yield translated
-
         except Exception as e:
             self._emit_event(StreamingEventData(event=StreamingEvent.ERROR, error=str(e)))
             raise StreamingError(f"Streaming translation failed: {e}")
 
-        finally:
-            self._stop_streaming()
-            if self.translation_manager:
-                self.translation_manager.shutdown()
+            finally:
+                self._stop_streaming()
+                if self.translation_manager:
+                    self.translation_manager.shutdown()
 
-    def _get_async_strategy(self, mode: StreamingMode) -> Callable | None:
-        """Get async translation strategy for mode"""
-        async_strategies = {
-            StreamingMode.LINE_BY_LINE: self._translate_line_by_line_async,
-            StreamingMode.BLOCK_BY_BLOCK: self._translate_block_by_block_async,
-            StreamingMode.FULL_DOCUMENT: self._translate_full_document_async,
-            StreamingMode.INTERACTIVE: self._translate_interactive_async,
-        }
-        return async_strategies.get(mode)
-
-    async def _execute_async_strategy(
-        self,
-        strategy: Callable,
-        mode: StreamingMode,
-        input_stream: AsyncIterator[str],
-        on_update: Callable[[TranslationUpdate], None] | None,
-    ) -> AsyncIterator[str]:
-        """Execute async translation strategy"""
-        if mode == StreamingMode.FULL_DOCUMENT:
-            # Collect all input first
-            full_text = await self._collect_full_input_async(input_stream)
-            async for translated in strategy(full_text, on_update):
-                yield translated
-        else:
-            async for translated in strategy(input_stream, on_update):
-                yield translated
-
-    async def _collect_full_input_async(self, input_stream: AsyncIterator[str]) -> str:
-        """Collect all input chunks into full text"""
-        full_input = []
-        async for chunk in input_stream:
-            full_input.append(chunk)
-            if self._check_cancelled():
-                return ""
-        return "".join(full_input)
-
-    def translate_stream(
-        self,
-        input_stream: Iterator[str],
-        mode: StreamingMode = StreamingMode.BLOCK_BY_BLOCK,
-        on_update: Callable[[TranslationUpdate], None] | None = None,
-    ) -> Iterator[str]:
-        """
-        Synchronously translate a stream of input
-
-        Args:
-            input_stream: Iterator of input text
-            mode: Streaming mode to use
-            on_update: Callback for translation updates
-
-        Yields:
-            Translated code chunks
-        """
-        self._start_streaming()
-
-        try:
-            # Initialize translation manager
-            self.translation_manager = TranslationManager(self.config)
-
-            # Strategy map for sync dispatch
-            sync_strategies = {
-                StreamingMode.LINE_BY_LINE: self._translate_line_by_line,
-                StreamingMode.BLOCK_BY_BLOCK: self._translate_block_by_block,
-                StreamingMode.FULL_DOCUMENT: self._translate_full_document,
-                StreamingMode.INTERACTIVE: self._translate_interactive,
+        def _get_async_strategy(self, mode: StreamingMode) -> Callable | None:
+            """Get async translation strategy for mode"""
+            async_strategies = {
+                StreamingMode.LINE_BY_LINE: self._translate_line_by_line_async,
+                StreamingMode.BLOCK_BY_BLOCK: self._translate_block_by_block_async,
+                StreamingMode.FULL_DOCUMENT: self._translate_full_document_async,
+                StreamingMode.INTERACTIVE: self._translate_interactive_async,
             }
-            strategy = sync_strategies.get(mode)
-            if strategy:
-                if mode == StreamingMode.FULL_DOCUMENT:
-                    # Collect all input first
-                    full_text = "".join(input_stream)
-                    yield from strategy(full_text, on_update)
-                else:
-                    yield from strategy(input_stream, on_update)
+            return async_strategies.get(mode)
 
-        except Exception as e:
-            self._emit_event(StreamingEventData(event=StreamingEvent.ERROR, error=str(e)))
-            raise StreamingError(f"Streaming translation failed: {e}")
-
-        finally:
-            self._stop_streaming()
-            if self.translation_manager:
-                self.translation_manager.shutdown()
-
-    def _translate_interactive(self, input_stream, on_update=None):
-        # Thin wrapper delegating to extracted generator
-        yield from interactive_translate(self, input_stream, on_update)
-
-    async def _translate_interactive_async(self, input_stream, on_update=None):
-        async for out in interactive_translate_async(self, input_stream, on_update):
-            yield out
-
-    def _translate_line_by_line(self, input_stream, on_update=None):
-        """Translate incrementally when a complete statement is detected (sync)."""
-        line_buffer: list[str] = []
-        chunk_index = 0
-        for line in input_stream:
-            if self._check_cancelled():
-                break
-            self._wait_if_paused()
-            line_buffer.append(line)
-            if self._is_complete_statement("".join(line_buffer)):
-                statement = "".join(line_buffer)
-                line_buffer.clear()
-                translated = self._process_statement(statement, chunk_index, on_update)
-                if translated:
+        async def _execute_async_strategy(
+            self,
+            strategy: Callable,
+            mode: StreamingMode,
+            input_stream: AsyncIterator[str],
+            on_update: Callable[[TranslationUpdate], None] | None,
+        ) -> AsyncIterator[str]:
+            """Execute async translation strategy"""
+            if mode == StreamingMode.FULL_DOCUMENT:
+                # Collect all input first
+                full_text = await self._collect_full_input_async(input_stream)
+                async for translated in strategy(full_text, on_update):
                     yield translated
-                chunk_index += 1
+            else:
+                async for translated in strategy(input_stream, on_update):
+                    yield translated
 
-    def _translate_block_by_block(self, input_stream, on_update=None):
-        """Translate whenever parser identifies a complete block boundary (sync)."""
-        accumulated_input: list[str] = []
-        for chunk in input_stream:
-            if self._check_cancelled():
-                break
-            self._wait_if_paused()
-            accumulated_input.append(chunk)
-            result = self._process_accumulated_blocks(accumulated_input, on_update)
-            if result:
-                translated_chunks, remaining = result
-                if translated_chunks:
-                    yield from translated_chunks
-                accumulated_input = remaining
+        async def _collect_full_input_async(self, input_stream: AsyncIterator[str]) -> str:
+            """Collect all input chunks into full text"""
+            full_input = []
+            async for chunk in input_stream:
+                full_input.append(chunk)
+                if self._check_cancelled():
+                    return ""
+            return "".join(full_input)
 
-    def _translate_full_document(self, full_text: str, on_update=None):
-        """Translate an entire document as a single unit (sync)."""
-        # Emit chunk lifecycle for full-document path
-        self._emit_event(StreamingEventData(event=StreamingEvent.CHUNK_STARTED, chunk_index=0))
-        try:
-            for t in self._parse_and_translate_blocks(full_text, 0, on_update):
-                # Ensure full-document outputs are chunk-like and end with double newline
-                yield f"{t}\n\n"
-        finally:
-            self._emit_event(StreamingEventData(event=StreamingEvent.CHUNK_COMPLETED, chunk_index=0))
+        def translate_stream(
+            self,
+            input_stream: Iterator[str],
+            mode: StreamingMode = StreamingMode.BLOCK_BY_BLOCK,
+            on_update: Callable[[TranslationUpdate], None] | None = None,
+        ) -> Iterator[str]:
+            """
+            Synchronously translate a stream of input
 
-    def cancel(self):
-        """Cancel the streaming translation"""
-        # Preserve legacy flags for API/behavioral stability
-        self.is_cancelled = True
-        self._cancel_event.set()
-        # Delegate to runtime
-        self._rt.cancel()
-        # Emit cancellation event via runtime
-        self._emit_event(StreamingEventData(event=StreamingEvent.CANCELLED))
+            Args:
+                input_stream: Iterator of input text
+                mode: Streaming mode to use
+                on_update: Callback for translation updates
 
-    def pause(self):
-        """Pause the streaming translation"""
-        # Delegate to runtime
-        self._rt.pause()
-        # Maintain legacy flag semantics
-        self._pause_event.clear()
+            Yields:
+                Translated code chunks
+            """
+            self._start_streaming()
 
-    def resume(self):
-        """Resume the streaming translation"""
-        # Delegate to runtime
-        self._rt.resume()
-        # Maintain legacy flag semantics
-        self._pause_event.set()
+            try:
+                # Initialize translation manager
+                self.translation_manager = TranslationManager(self.config)
 
-    def _rt_check_cancelled(self) -> bool:
-        """Check if translation is cancelled"""
-        return self._rt.check_cancelled()
+                # Strategy map for sync dispatch
+                sync_strategies = {
+                    StreamingMode.LINE_BY_LINE: self._translate_line_by_line,
+                    StreamingMode.BLOCK_BY_BLOCK: self._translate_block_by_block,
+                    StreamingMode.FULL_DOCUMENT: self._translate_full_document,
+                    StreamingMode.INTERACTIVE: self._translate_interactive,
+                }
+                strategy = sync_strategies.get(mode)
+                if strategy:
+                    if mode == StreamingMode.FULL_DOCUMENT:
+                        # Collect all input first
+                        full_text = "".join(input_stream)
+                        yield from strategy(full_text, on_update)
+                    else:
+                        yield from strategy(input_stream, on_update)
 
-    def _rt_wait_if_paused(self):
-        """Wait if translation is paused"""
-        self._rt.wait_if_paused()
+            except Exception as e:
+                self._emit_event(StreamingEventData(event=StreamingEvent.ERROR, error=str(e)))
+                raise StreamingError(f"Streaming translation failed: {e}")
 
-    def _rt_start_streaming(self):
-        """Initialize streaming state"""
-        # Maintain legacy flags
-        self.is_streaming = True
-        self.is_cancelled = False
-        self._cancel_event.clear()
-        self._pause_event.set()
-        self.current_progress = StreamingProgress()
+            finally:
+                self._stop_streaming()
+                if self.translation_manager:
+                    self.translation_manager.shutdown()
 
-        # Delegate lifecycle to runtime (worker managed internally)
-        self._rt.start(self.current_progress)
+        def _translate_interactive(self, input_stream, on_update=None):
+            """Translate interactively in synchronous mode."""
+            # Thin wrapper delegating to extracted generator
+            yield from interactive_translate(self, input_stream, on_update)
 
-        # Emit started via runtime
-        self._emit_event(StreamingEventData(event=StreamingEvent.STARTED))
+        async def _translate_interactive_async(self, input_stream, on_update=None):
+            """Translate interactively in asynchronous mode."""
+            async for out in interactive_translate_async(self, input_stream, on_update):
+                yield out
 
-    def _stop_streaming(self):
-        """Clean up streaming state"""
-        self.is_streaming = False
+        def _translate_line_by_line(self, input_stream, on_update=None):
+            """Translate incrementally when a complete statement is detected (sync)."""
+            line_buffer: list[str] = []
+            chunk_index = 0
+            for line in input_stream:
+                if self._check_cancelled():
+                    break
+                self._wait_if_paused()
+                line_buffer.append(line)
+                if self._is_complete_statement("".join(line_buffer)):
+                    statement = "".join(line_buffer)
+                    line_buffer.clear()
+                    translated = self._process_statement(statement, chunk_index, on_update)
+                    if translated:
+                        yield translated
+                    chunk_index += 1
 
-        cancelled = self._rt.check_cancelled() or self.is_cancelled
-        if not cancelled:
-            self._emit_event(StreamingEventData(event=StreamingEvent.COMPLETED, progress=self.current_progress))
+        def _translate_block_by_block(self, input_stream, on_update=None):
+            """Translate whenever parser identifies a complete block boundary (sync)."""
+            accumulated_input: list[str] = []
+            for chunk in input_stream:
+                if self._check_cancelled():
+                    break
+                self._wait_if_paused()
+                accumulated_input.append(chunk)
+                result = self._process_accumulated_blocks(accumulated_input, on_update)
+                if result:
+                    translated_chunks, remaining = result
+                    if translated_chunks:
+                        yield from translated_chunks
+                    accumulated_input = remaining
+
+        def _translate_full_document(self, full_text: str, on_update=None):
+            """Translate an entire document as a single unit (sync)."""
+            # Emit chunk lifecycle for full-document path
+            self._emit_event(StreamingEventData(event=StreamingEvent.CHUNK_STARTED, chunk_index=0))
+            try:
+                for t in self._parse_and_translate_blocks(full_text, 0, on_update):
+                    # Ensure full-document outputs are chunk-like and end with double newline
+                    yield f"{t}\n\n"
+            finally:
+                self._emit_event(StreamingEventData(event=StreamingEvent.CHUNK_COMPLETED, chunk_index=0))
+
+        def cancel(self):
+            """Cancel the streaming translation"""
+            # Preserve legacy flags for API/behavioral stability
+            self.is_cancelled = True
+            self._cancel_event.set()
+            # Delegate to runtime
+            self._rt.cancel()
+            # Emit cancellation event via runtime
+            self._emit_event(StreamingEventData(event=StreamingEvent.CANCELLED))
+
+        def pause(self):
+            """Pause the streaming translation"""
+            # Delegate to runtime
+            self._rt.pause()
+            # Maintain legacy flag semantics
+            self._pause_event.clear()
+
+        def resume(self):
+            """Resume the streaming translation"""
+            # Delegate to runtime
+            self._rt.resume()
+            # Maintain legacy flag semantics
+            self._pause_event.set()
+
+        def _rt_check_cancelled(self) -> bool:
+            """Check if translation is cancelled"""
+            return self._rt.check_cancelled()
+
+        def _rt_wait_if_paused(self):
+            """Wait if translation is paused"""
+            self._rt.wait_if_paused()
+
+        def _rt_start_streaming(self):
+            """Initialize streaming state"""
+            # Maintain legacy flags
+            self.is_streaming = True
+            self.is_cancelled = False
+            self._cancel_event.clear()
+            self._pause_event.set()
+            self.current_progress = StreamingProgress()
+
+            # Delegate lifecycle to runtime (worker managed internally)
+            self._rt.start(self.current_progress)
+
+            # Emit started via runtime
+            self._emit_event(StreamingEventData(event=StreamingEvent.STARTED))
+
+        def _stop_streaming(self):
+            """Clean up streaming state"""
+            self.is_streaming = False
+
+            cancelled = self._rt.check_cancelled() or self.is_cancelled
+            if not cancelled:
+                self._emit_event(StreamingEventData(event=StreamingEvent.COMPLETED, progress=self.current_progress))
 
         # Delegate shutdown to runtime
         self._rt.stop(self.current_progress, cancelled)
@@ -372,133 +367,137 @@ class StreamingTranslator:
         self._rt.emit(event_data)
 
     @staticmethod
-    def _handle_events_deprecated(self):
+    def _handle_events_deprecated(origin):
         """Process events (delegated to EventRuntime worker)."""
         # The runtime owns the worker loop; this method remains for backward references.
         return
 
     def _translate_single_block(self, block: CodeBlock, chunk_index: int, block_index: int) -> str | None:
-        """Translate a single block (delegated to core helper)."""
-        return translate_block(self, block, chunk_index, block_index)
+    """Streaming translator module: provides asynchronous and synchronous methods for streaming translation operations."""
 
-    def _build_translation_context(self) -> dict[str, Any]:
-        """Build translation context from buffer"""
-        return {
-            "code": self.context_buffer.get_context(),
-            "streaming": True,
-            "mode": "real-time",
-        }
+            """Translate a single block (delegated to core helper)."""
+            return translate_block(self, block, chunk_index, block_index)
 
-    # Async versions of translation methods
-    async def _translate_line_by_line_async(
-        self,
-        input_stream: AsyncIterator[str],
-        on_update: Callable[[TranslationUpdate], None] | None = None,
-    ) -> AsyncIterator[str]:
-        """Async version of line-by-line translation"""
-        line_buffer = []
-        chunk_index = 0
+        def _build_translation_context(self) -> dict[str, Any]:
+            """Build translation context from buffer."""
+            return {
+                "code": self.context_buffer.get_context(),
+                "streaming": True,
+                "mode": "real-time",
+            }
 
-        async for line in input_stream:
-            if self._rt_check_cancelled():
-                break
+        # Async versions of translation methods
+        async def _do_translate_line_by_line_async(
+            self,
+            input_stream: AsyncIterator[str],
+            on_update: Callable[[TranslationUpdate], None] | None = None,
+        ) -> AsyncIterator[str]:
+            """Async version of line-by-line translation."""
+            line_buffer = []
+            chunk_index = 0
 
-            self._rt_wait_if_paused()
+            async for line in input_stream:
+                if self._rt_check_cancelled():
+                    break
 
-            line_buffer.append(line)
+                self._rt_wait_if_paused()
 
-            if self._is_complete_statement("".join(line_buffer)):
-                statement = "".join(line_buffer)
-                line_buffer.clear()
+                line_buffer.append(line)
 
-                # Process in thread pool to avoid blocking
+                if self._is_complete_statement("".join(line_buffer)):
+                    statement = "".join(line_buffer)
+                    line_buffer.clear()
+
+                    # Process in thread pool to avoid blocking
+                    loop = asyncio.get_event_loop()
+                    translated = await loop.run_in_executor(
+                        None, self._process_statement, statement, chunk_index, on_update
+                    )
+
+                    if translated:
+                        yield translated
+
+                    chunk_index += 1
+
+        async def _do_translate_block_by_block_async(
+            self,
+            input_stream: AsyncIterator[str],
+            on_update: Callable[[TranslationUpdate], None] | None = None,
+        ) -> AsyncIterator[str]:
+            """Async version of block-by-block translation."""
+            accumulated_input = []
+
+            async for chunk in input_stream:
+                if self._rt_check_cancelled():
+                    break
+
+                self._rt_wait_if_paused()
+                accumulated_input.append(chunk)
+
+                # Process in thread pool
                 loop = asyncio.get_event_loop()
-                translated = await loop.run_in_executor(
-                    None, self._process_statement, statement, chunk_index, on_update
-                )
+                result = await loop.run_in_executor(None, self._process_accumulated_blocks, accumulated_input, on_update)
 
-                if translated:
-                    yield translated
+                if result:
+                    translated, remaining = result
+                    if translated:
+                        for t in translated:
+                            yield t
+                    accumulated_input = remaining
 
-                chunk_index += 1
-
-    async def _translate_block_by_block_async(
-        self,
-        input_stream: AsyncIterator[str],
-        on_update: Callable[[TranslationUpdate], None] | None = None,
-    ) -> AsyncIterator[str]:
-        """Async version of block-by-block translation"""
-        accumulated_input = []
-
-        async for chunk in input_stream:
-            if self._rt_check_cancelled():
-                break
-
-            self._rt_wait_if_paused()
-            accumulated_input.append(chunk)
-
+        async def _translate_full_document_async(
+            self,
+            full_text: str,
+            on_update: Callable[[TranslationUpdate], None] | None = None,
+        ) -> AsyncIterator[str]:
+            """Async version of full document translation."""
             # Process in thread pool
             loop = asyncio.get_event_loop()
-            result = await loop.run_in_executor(None, self._process_accumulated_blocks, accumulated_input, on_update)
 
-            if result:
-                translated, remaining = result
-                if translated:
-                    for t in translated:
-                        yield t
-                accumulated_input = remaining
+            # Use sync generator in thread
+            def generate():
+                """Generate translations for the full document synchronously in an executor."""
+                return list(self._translate_full_document(full_text, on_update))
 
-    async def _translate_full_document_async(
-        self,
-        full_text: str,
-        on_update: Callable[[TranslationUpdate], None] | None = None,
-    ) -> AsyncIterator[str]:
-        """Async version of full document translation"""
-        # Process in thread pool
-        loop = asyncio.get_event_loop()
+            results = await loop.run_in_executor(None, generate)
 
-        # Use sync generator in thread
-        def generate():
-            return list(self._translate_full_document(full_text, on_update))
+            for result in results:
+                if self._rt_check_cancelled():
+                    break
+                yield result
 
-        results = await loop.run_in_executor(None, generate)
+        def _process_statement(
+            self,
+            statement: str,
+            chunk_index: int,
+            on_update: Callable[[TranslationUpdate], None] | None,
+        ) -> str | None:
+            """Process a single statement (refactored)."""
+            translations = self._parse_and_translate_blocks(statement, chunk_index, on_update)
+            return ("\n".join(translations) + "\n") if translations else None
 
-        for result in results:
-            if self._rt_check_cancelled():
-                break
-            yield result
+        def _identify_blocks(self, current_input: str) -> list[str]:
+            """Identify logical blocks in the current input using the parser."""
+            return self.parser.identify_blocks(current_input)
 
-    def _process_statement(
-        self,
-        statement: str,
-        chunk_index: int,
-        on_update: Callable[[TranslationUpdate], None] | None,
-    ) -> str | None:
-        """Process a single statement (refactored)."""
-        translations = self._parse_and_translate_blocks(statement, chunk_index, on_update)
-        return ("\n".join(translations) + "\n") if translations else None
-
-    def _identify_blocks(self, current_input: str) -> list[str]:
-        return self.parser.identify_blocks(current_input)
-
-    def _process_accumulated_blocks(
-        self,
-        accumulated_input: list[str],
-        on_update: Callable[[TranslationUpdate], None] | None,
-    ) -> tuple | None:
-        """Process accumulated blocks and return (translated_list, remaining_list) (refactored)."""
-        current_input = "".join(accumulated_input)
-        try:
-            blocks = self._identify_blocks(current_input)
-            if len(blocks) > 1:
-                translated_chunks: list[str] = []
-                for i, block_text in enumerate(blocks[:-1]):
-                    if not block_text.strip():
-                        continue
-                    translations = self._parse_and_translate_blocks(block_text, i, on_update)
-                    if translations:
-                        translated_chunks.append("\n".join(translations) + "\n\n")
-                return translated_chunks, [blocks[-1]]
-        except Exception as e:
-            logger.warning("Error processing blocks: %s", e)
-        return None
+        def _process_accumulated_blocks(
+            self,
+            accumulated_input: list[str],
+            on_update: Callable[[TranslationUpdate], None] | None,
+        ) -> tuple | None:
+            """Process accumulated blocks and return (translated_list, remaining_list) (refactored)."""
+            current_input = "".join(accumulated_input)
+            try:
+                blocks = self._identify_blocks(current_input)
+                if len(blocks) > 1:
+                    translated_chunks: list[str] = []
+                    for i, block_text in enumerate(blocks[:-1]):
+                        if not block_text.strip():
+                            continue
+                        translations = self._parse_and_translate_blocks(block_text, i, on_update)
+                        if translations:
+                            translated_chunks.append("\n".join(translations) + "\n\n")
+                    return translated_chunks, [blocks[-1]]
+            except Exception as e:
+                logger.warning("Error processing blocks: %s", e)
+            return None

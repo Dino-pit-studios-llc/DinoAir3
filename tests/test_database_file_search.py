@@ -10,6 +10,7 @@ import sqlite3
 import tempfile
 
 import pytest
+
 from database.file_search_db import FileSearchDB
 from database.initialize_db import DatabaseManager
 
@@ -272,6 +273,7 @@ class TestFileSearchDB:
         errors = []
 
         def add_files(start_id):
+            """Add files concurrently to the database, including delays to test race conditions."""
             try:
                 for i in range(5):
                     file_search_db.add_indexed_file(

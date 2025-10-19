@@ -12,11 +12,12 @@ from collections.abc import Iterable
 from contextlib import suppress
 from typing import TYPE_CHECKING, cast
 
-from core_router.errors import error_response as core_error_response
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from starlette import status
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from core_router.errors import error_response as core_error_response
 
 from .metrics_state import inc_counter
 
@@ -141,7 +142,7 @@ def _json_error_response(
         error=error,
         details=details,
         endpoint=endpoint,
-        operationId=operation_id,
+        operation_id=operation_id,
         requestId=rid or None,
     )
 

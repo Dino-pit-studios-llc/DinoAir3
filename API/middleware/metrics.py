@@ -8,6 +8,7 @@ from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+
 from utils.metrics import get_metrics_client, track_api_request, track_security_event
 
 

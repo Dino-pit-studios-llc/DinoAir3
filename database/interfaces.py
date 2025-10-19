@@ -6,12 +6,11 @@ Protocol-based interfaces for breaking circular dependencies using dependency in
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from models.note import Note
-
 # Import existing result types to maintain compatibility
 from database.notes_repository import QueryResult
 from database.notes_service import OperationResult
 from database.notes_validator import ValidationResult
+from models.note import Note
 
 
 @dataclass

@@ -1,3 +1,11 @@
+"""
+Middleware to enforce JSON Content-Type for POST requests.
+
+This module provides the ContentTypeJSONMiddleware that checks incoming HTTP POST
+requests to ensure the 'Content-Type' header is 'application/json'. If not, it
+returns a 415 Unsupported Media Type error response.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
@@ -5,6 +13,7 @@ from contextlib import suppress
 
 from starlette import status
 from starlette.types import Receive, Scope, Send
+
 from utils.asgi import get_header
 
 try:
@@ -24,6 +33,7 @@ except ImportError:  # pragma: no cover
         _operationId: str | None,
         _requestId: str | None,
     ) -> _JSONResponse:
+        """Generate a JSON error response with the given status code, error code, and message."""
         payload = {
             "detail": message,
             "code": code,
@@ -44,6 +54,7 @@ class ContentTypeJSONMiddleware:
     """
 
     def __init__(self, app: ASGIApp) -> None:
+        """Initialize the middleware with the given ASGI application."""
         self.app = app
 
     async def __call__(
@@ -52,6 +63,7 @@ class ContentTypeJSONMiddleware:
         receive: Receive,
         send: Send,
     ) -> None:
+        """Handle ASGI requests, enforcing JSON Content-Type for POST requests."""
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
             return

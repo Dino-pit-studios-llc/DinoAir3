@@ -15,9 +15,9 @@ try:
     from .models import BlockType, CodeBlock, ParseError, ParseResult
 except ImportError:
     # Fallback for when run as a script
-    from models import BlockType, CodeBlock, ParseError, ParseResult
-
     from exceptions import ErrorContext, ParsingError
+
+    from models import BlockType, CodeBlock, ParseError, ParseResult
 
 
 class ParserModule:

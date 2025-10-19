@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from fastapi.responses import JSONResponse
 from starlette import status
 from starlette.types import Message, Receive, Scope, Send
+
 from utils.asgi import get_header
 
 if TYPE_CHECKING:
@@ -35,9 +36,7 @@ except ImportError:  # pragma: no cover
         _operationId: str | None,
         _requestId: str | None,
     ) -> JSONResponse:
-        """
-        Generate a standardized JSONResponse for an error with given parameters.
-        """
+        """Generate a standardized JSONResponse for an error with given parameters."""
         payload = {
             "detail": message,
             "code": code,
@@ -66,23 +65,17 @@ class BodySizeLimitMiddleware:
 
     @staticmethod
     def _is_http_scope(scope: Scope) -> bool:
-        """
-        Determine if the ASGI scope represents an HTTP connection.
-        """
+        """Determine if the ASGI scope represents an HTTP connection."""
         return scope.get("type") == "http"
 
     @staticmethod
     def _method_allows_body(scope: Scope) -> bool:
-        """
-        Check if the HTTP method allows a message body (e.g., POST, PUT, PATCH).
-        """
+        """Check if the HTTP method allows a message body (e.g., POST, PUT, PATCH)."""
         method = (scope.get("method") or "GET").upper()
         return method in ("POST", "PUT", "PATCH")
 
     def _max_bytes(self) -> int:
-        """
-        Retrieve the maximum allowed request body size from settings.
-        """
+        """Retrieve the maximum allowed request body size from settings."""
         return int(self.settings.max_request_body_bytes)
 
     @staticmethod
@@ -96,9 +89,7 @@ class BodySizeLimitMiddleware:
             return None
 
     def _too_large_response(self, scope: Scope) -> JSONResponse:
-        """
-        Generate a 413 Payload Too Large response for the given scope.
-        """
+        """Generate a 413 Payload Too Large response for the given scope."""
         trace_id = scope.get("trace_id", "")
         method = scope.get("method") or "GET"
         path = scope.get("path", "")

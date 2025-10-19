@@ -6,9 +6,10 @@ from collections.abc import Awaitable, Callable
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
-from core_router.errors import error_response as core_error_response
 from starlette import status
 from starlette.types import Receive, Scope, Send
+
+from core_router.errors import error_response as core_error_response
 from utils.asgi import get_header
 from utils.log_sanitizer import sanitize_for_log
 
@@ -122,7 +123,7 @@ class AuthMiddleware:
                 error="Unauthorized",
                 details=None,
                 endpoint=endpoint,
-                operationId=None,
+                operation_id=None,
                 requestId=(str(trace_id) if isinstance(trace_id, str) and trace_id else None),
             )
             if trace_id:

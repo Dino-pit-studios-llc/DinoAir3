@@ -19,6 +19,7 @@ import time
 from pathlib import Path
 
 import requests
+
 from utils.process import PYTHON_EXE, safe_popen, safe_run
 
 # Constants
@@ -231,10 +232,9 @@ class QdrantSetupManager:
             if result.returncode == 0:
                 print("Sample data populated successfully")
                 return True
-            else:
-                print("Failed to populate sample data:")
-                print(result.stderr)
-                return False
+            print("Failed to populate sample data:")
+            print(result.stderr)
+            return False
 
         except Exception as e:
             print(f"Error running populate script: {e}")
@@ -372,9 +372,8 @@ def main():
         setup.show_success_message()
         print("\nSetup completed successfully! Ready to use Qdrant with DinoAir3!")
         return 0
-    else:
-        print("\nSetup failed!")
-        return 1
+    print("\nSetup failed!")
+    return 1
 
 
 if __name__ == "__main__":
