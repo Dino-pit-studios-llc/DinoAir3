@@ -392,15 +392,15 @@ class UndefinedVariableChecker(ast.NodeVisitor):
             self._inside_comprehension -= 1
 
     def visit_ListComp(self, node: ast.ListComp):
-            """Visit Listcomp method."""
+        """Visit Listcomp method."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_SetComp(self, node: ast.SetComp):
-            """Visit Setcomp method."""
+        """Visit Setcomp method."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_DictComp(self, node: ast.DictComp):
-            """Visit Dictcomp method."""
+        """Visit Dictcomp method."""
         self._visit_comprehension(
             node.generators,
             lambda: (self.visit(node.key), self.visit(node.value)),
@@ -408,7 +408,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         )
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp):
-            """Visit Generatorexp method."""
+        """Visit Generatorexp method."""
         self._visit_comprehension(node.generators, lambda: self.visit(node.elt), node.lineno)
 
     def visit_NamedExpr(self, node: ast.NamedExpr):
@@ -417,17 +417,17 @@ class UndefinedVariableChecker(ast.NodeVisitor):
         self._define_names(node.target, node.lineno)
 
     def visit_Global(self, node: ast.Global):
-            """Visit Global method."""
+        """Visit Global method."""
         for name in node.names:
             self.current_scope.global_vars.add(name)
 
     def visit_Nonlocal(self, node: ast.Nonlocal):
-            """Visit Nonlocal method."""
+        """Visit Nonlocal method."""
         for name in node.names:
             self.current_scope.nonlocal_vars.add(name)
 
     def visit_Delete(self, node: ast.Delete):
-            """Visit Delete method."""
+        """Visit Delete method."""
         for target in node.targets:
             for name in self._iter_delete_names(target):
                 self.current_scope.mark_deleted(name, node.lineno)
@@ -462,7 +462,7 @@ class UndefinedVariableChecker(ast.NodeVisitor):
 
     # Structural pattern matching (Python 3.10+)
     def visit_Match(self, node: ast.Match):
-            """Visit Match method."""
+        """Visit Match method."""
         self.visit(node.subject)
         for case in node.cases:
             bound = self._collect_pattern_binds(case.pattern)

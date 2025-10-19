@@ -48,7 +48,6 @@ Duration histogram buckets:
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import threading
@@ -126,7 +125,7 @@ class TelemetryRecorder:
     @staticmethod
     @contextmanager
     def timed_section(name: str, extra: dict | None = None):
-            """Timed Section method."""
+        """Timed Section method."""
         start = time.perf_counter()
         try:
             yield
@@ -182,106 +181,11 @@ class TelemetryRecorder:
             self._events[name] = agg
         return agg
 
-    def _update_duration_metrics(self, agg: dict, duration_ms: float) -> None:
-        """Update duration aggregates and histogram buckets"""
-        d = float(duration_ms)
-        agg["total_ms"] = float(agg.get("total_ms", 0.0)) + d
-
-        prev_min = agg.get("min_ms")
-        prev_max = agg.get("max_ms")
-        agg["min_ms"] = d if prev_min is None else float(min(float(prev_min), d))
-        agg["max_ms"] = d if prev_max is None else float(max(float(prev_max), d))
-
-        # histogram bucket
-        bucket_key = TelemetryRecorder._bucket_label(d)
-        buckets: dict = agg.get("buckets") or {}
-        buckets[bucket_key] = int(buckets.get(bucket_key, 0)) + 1
-        agg["buckets"] = buckets
-
-    def _update_counter_metrics(self, agg: dict, counters: dict[str, int]) -> None:
-        """Update counter aggregates"""
-        ctrs: dict[str, int] = agg.get("counters") or {}
-        for k, v in counters.items():
-            try:
-                ctrs[k] = int(ctrs.get(k, 0)) + int(v)
-            except (ValueError, TypeError):
-                # best-effort coercion; ignore bad values
-                pass
-        agg["counters"] = ctrs
-
-    def _log_event_json(
-        self,
-        name: str,
-        duration_ms: float | None,
-        extra: dict | None,
-        counters: dict[str, int] | None,
-    ) -> None:
-        """Log event as JSON line"""
-        try:
-            line = {
-                "event": name,
-                "ts": datetime.now(UTC).isoformat(),
-                "duration_ms": (float(duration_ms) if duration_ms is not None else None),
-                "extra": extra,
-                "counters": counters,
-                "pid": self._pid,
-                "sample_rate": self._sample_rate,
-            }
-            self._logger.info(json.dumps(line, separators=(",", ":")))
-        except (OSError, ValueError, TypeError):
-            # Never raise from telemetry logging
-            pass
-
-    def snapshot(self) -> dict:
-            """Snapshot method."""
-        # Return safe copy to avoid concurrent mutation issues
-        with self._lock:
-            events_copy: dict[str, dict[str, Any]] = {}
-            for name, agg in self._events.items():
-                item: dict[str, Any] = {
-                    "count": int(agg.get("count", 0)),
-                    "total_ms": float(agg.get("total_ms", 0.0)),
-                    "min_ms": agg.get("min_ms", None),
-                    "max_ms": agg.get("max_ms", None),
-                }
-                if "buckets" in agg and agg["buckets"]:
-                    item["buckets"] = dict(agg["buckets"])
-                if "counters" in agg and agg["counters"]:
-                    item["counters"] = dict(agg["counters"])
-                events_copy[name] = item
-
-        return {
-            "telemetry_enabled": True,
-            "pid": self._pid,
-            "start_time": self._start_time_iso,
-            "sample_rate": self._sample_rate,
-            "events": events_copy,
-        }
-
-    def set_sample_rate(self, sample_rate: int) -> None:
-        """Set the sample rate for telemetry recording.
-
-        Args:
-            sample_rate: Sample rate (must be >= 1)
-        """
-        if not isinstance(sample_rate, int) or sample_rate < 1:
-            raise ValueError(f"Sample rate must be an integer >= 1, got {sample_rate}")
-        self._sample_rate = sample_rate
-
-    def increment_seq(self) -> int:
-        """Atomically increment and return the sequence counter.
-
-        Returns:
-            The new sequence number
-        """
-        with self._lock:
-            self._seq += 1
-            return self._seq
-
-    # -------- internal helpers --------
-
     @staticmethod
     def _bucket_label(duration_ms: float) -> str:
+        """Return the histogram bucket label for a given duration in milliseconds.
+        Iterates through predefined bucket edges and returns the string label corresponding to the smallest edge greater than or equal to the duration.
+        """
         for edge in _BUCKET_EDGES_MS:
             if duration_ms <= edge:
                 # Ensure "inf" string for infinity and clean integer-like edges
@@ -293,6 +197,9 @@ class TelemetryRecorder:
 
     @staticmethod
     def _self_check_basic() -> None:
+        """Perform basic self-checks on bucket labeling and counter aggregation logic.
+        Non-raising sanity checks to ensure bucket labels and counter math behave as expected.
+        """
         # Minimal, non-raising sanity checks on bucket labeling and counters math
         try:
             if TelemetryRecorder._bucket_label(0.4) not in {"0.5"}:
@@ -318,22 +225,22 @@ class NoOpTelemetryRecorder:
     @staticmethod
     @contextmanager
     def timed_section(name: str, extra: dict | None = None):
-            """Timed Section method."""
+        """Timed Section method."""
         yield
 
     @staticmethod
     def record_event(
         name: str,
-            """Record Event method."""
         duration_ms: float | None = None,
         extra: dict | None = None,
         counters: dict[str, int] | None = None,
     ) -> None:  # noqa: D401
+        """Record Event method."""
         return None
 
     @staticmethod
     def snapshot() -> dict:
-            """Snapshot method."""
+        """Snapshot method."""
         # Explicitly empty dictionary to satisfy "empty when disabled" requirement
         return {}
 
@@ -402,6 +309,9 @@ def _apply_sampling_wrapper(rec: TelemetryRecorder, sample_rate: int) -> None:
         extra: dict | None = None,
         counters: dict[str, int] | None = None,
     ) -> None:
+        """Wrapper for record_event that applies deterministic sampling.
+        Increments sequence counter and only forwards the call to the original record_event when the sequence number meets the sampling criterion.
+        """
         seq = rec.increment_seq()
         if seq % sample_rate != 0:
             return None

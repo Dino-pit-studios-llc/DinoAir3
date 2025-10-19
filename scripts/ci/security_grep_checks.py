@@ -34,7 +34,7 @@ PATTERNS = {
 
 
 def read_text(p: Path) -> str:
-        """Read Text function."""
+    """Read Text function."""
     try:
         return p.read_text(encoding="utf-8", errors="replace")
     except Exception:
@@ -42,18 +42,18 @@ def read_text(p: Path) -> str:
 
 
 def is_python_file(p: Path) -> bool:
-        """Is Python File function."""
+    """Is Python File function."""
     return p.suffix == ".py"
 
 
 def is_in_tests(p: Path) -> bool:
-        """Is In Tests function."""
+    """Is In Tests function."""
     parts = p.parts
     return "tests" in parts
 
 
 def is_utils_process(p: Path) -> bool:
-        """Is Utils Process function."""
+    """Is Utils Process function."""
     # Only the wrapper module is allowed to use subprocess directly or with shell=True.
     try:
         rel = p.relative_to(REPO_ROOT).as_posix()
@@ -63,12 +63,12 @@ def is_utils_process(p: Path) -> bool:
 
 
 def is_in_database(p: Path) -> bool:
-        """Is In Database function."""
+    """Is In Database function."""
     return "database" in p.parts
 
 
 def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
-        """Line And Col For function."""
+    """Line And Col For function."""
     # Compute line (1-based) and column (0-based)
     line = text.count("\n", 0, idx) + 1
     last_nl = text.rfind("\n", 0, idx)
@@ -77,7 +77,7 @@ def line_and_col_for(text: str, idx: int) -> tuple[int, int]:
 
 
 def has_nosec_on_line(text: str, line_no: int) -> bool:
-        """Has Nosec On Line function."""
+    """Has Nosec On Line function."""
     lines = text.splitlines()
     if 1 <= line_no <= len(lines):
         line = lines[line_no - 1]
@@ -98,7 +98,7 @@ def is_safe_import_wrapper(p: Path) -> bool:
 
 
 def report(file: Path, line: int, col: int, rule: str, message: str):
-        """Report function."""
+    """Report function."""
     # Standard "path:line:col: message" format for pre-commit CI consumption
     print(f"{file.as_posix()}:{line}:{col}: {rule}: {message}")
 
@@ -156,25 +156,25 @@ def _check_dynamic_import_non_literal(p: Path, text: str):
     return findings
 
 
-def _check_xml_etree_usage(p: Path, text: str):
-    findings = []
-    for m in PATTERNS["xml_etree_usage"].finditer(text):
-        line, col = line_and_col_for(text, m.start())
-        if has_nosec_on_line(text, line):
-            continue
-        findings.append(
-            (
-                p,
-                line,
-                col,
-                "xml_etree_usage",
-                "xml.etree usage is banned; prefer defusedxml alternatives.",
-            )
-        )
-    return findings
+ def _check_xml_etree_usage(p: Path, text: str):
+     findings = []
+     for m in PATTERNS["xml_etree_usage"].finditer(text):
+         line, col = line_and_col_for(text, m.start())
+         if has_nosec_on_line(text, line):
+             continue
+         findings.append(
+             (
+                 p,
+                 line,
+                 col,
+                 "xml_etree_usage",
+                 "xml.etree usage is banned; prefer defusedxml alternatives.",
+             )
+         )
+     return findings
 
 
-def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int, int]]):
+ def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int, int]]):
     findings = []
     if not is_in_tests(p) and not is_utils_process(p):
         for m in PATTERNS["direct_subprocess"].finditer(text):
@@ -195,7 +195,7 @@ def _check_direct_subprocess(p: Path, text: str, shell_locations: set[tuple[int,
     return findings
 
 
-def _check_interpolated_sql(p: Path, text: str):
+ def _check_interpolated_sql(p: Path, text: str):
     findings = []
     for m in PATTERNS["interpolated_sql"].finditer(text):
         line, col = line_and_col_for(text, m.start())
@@ -213,7 +213,7 @@ def _check_interpolated_sql(p: Path, text: str):
     return findings
 
 
-def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
+ def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
     """
     Returns list of findings as tuples:
       (path, line, col, rule_id, message)
@@ -234,8 +234,8 @@ def check_file(p: Path) -> list[tuple[Path, int, int, str, str]]:
     return findings
 
 
-def main() -> int:
-        """Main function."""
+ def main() -> int:
+    """Main function."""
     args = _parse_args()
     warn_sql = bool(getattr(args, "warn_sql", False))
     all_findings = []
@@ -267,5 +267,5 @@ def main() -> int:
     return 1 if fatal_findings else 0
 
 
-if __name__ == "__main__":
+ if __name__ == "__main__":
     sys.exit(main())

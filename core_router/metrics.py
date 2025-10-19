@@ -66,14 +66,14 @@ class _ServiceStats:
         self.last_ms: int | None = None
 
     def add_success(self, ms: int) -> None:
-            """Add Success method."""
+        """Add Success method."""
         ms = max(ms, 0)
         self.calls += 1
         self.last_ms = int(ms)
         self.durations.append(int(ms))
 
     def add_error(self) -> None:
-            """Add Error method."""
+        """Add Error method."""
         self.errors += 1
 
     def calc_stats(
@@ -139,7 +139,7 @@ class _Metrics:
         self._total_errors: int = 0
 
     def record_success(self, service_name: str, duration_ms: int) -> None:
-            """Record Success method."""
+        """Record Success method."""
         with self._lock:
             stats = self._services.get(service_name)
             if stats is None:
@@ -151,10 +151,10 @@ class _Metrics:
     def record_error(
         self,
         service_name: str,
-            """Record Error method."""
         duration_ms: int | None = None,
         msg: str | None = None,
     ) -> None:
+        """Record Error method."""
         # duration_ms and msg are accepted for backward compatibility.
         with self._lock:
             stats = self._services.get(service_name)
@@ -166,7 +166,7 @@ class _Metrics:
             # We intentionally do not record error durations in the window.
 
     def snapshot(self) -> dict[str, Any]:
-            """Snapshot method."""
+        """Snapshot method."""
         with self._lock:
             # Build new-structure snapshot
             services_block: dict[str, dict[str, Any]] = {}

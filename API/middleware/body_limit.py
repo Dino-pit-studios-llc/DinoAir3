@@ -36,6 +36,9 @@ except ImportError:  # pragma: no cover
         _operationId: str | None,
         _requestId: str | None,
     ) -> JSONResponse:
+        """
+        Generate a standardized JSONResponse for an error with given parameters.
+        """
         payload = {
             "detail": message,
             "code": code,
@@ -64,24 +67,39 @@ class BodySizeLimitMiddleware:
 
     @staticmethod
     def _is_http_scope(scope: Scope) -> bool:
+        """
+        Determine if the ASGI scope represents an HTTP connection.
+        """
         return scope.get("type") == "http"
 
     @staticmethod
     def _method_allows_body(scope: Scope) -> bool:
+        """
+        Check if the HTTP method allows a message body (e.g., POST, PUT, PATCH).
+        """
         method = (scope.get("method") or "GET").upper()
         return method in ("POST", "PUT", "PATCH")
 
     def _max_bytes(self) -> int:
+        """
+        Retrieve the maximum allowed request body size from settings.
+        """
         return int(self.settings.max_request_body_bytes)
 
     @staticmethod
     def _parse_content_length(value: str) -> int | None:
+        """
+        Parse the Content-Length header value as an integer, or return None if invalid.
+        """
         try:
             return int(value)
         except ValueError:
             return None
 
     def _too_large_response(self, scope: Scope) -> JSONResponse:
+        """
+        Generate a 413 Payload Too Large response for the given scope.
+        """
         trace_id = scope.get("trace_id", "")
         method = scope.get("method") or "GET"
         path = scope.get("path", "")
@@ -116,7 +134,7 @@ class BodySizeLimitMiddleware:
         return new_total, False
 
     async def _drain_body(self, receive: Receive) -> tuple[list[bytes], Message | None, int]:
-        """Drain request body into memory up to limit."""
+        """Drain request body into memory up to the configured limit."""
         max_bytes = self._max_bytes()
         total = 0
         parts: list[bytes] = []
@@ -145,7 +163,7 @@ class BodySizeLimitMiddleware:
     def _create_replay_queue(
         body_parts: list[bytes], extra_message: Message | None
     ) -> list[Message]:
-        """Create a replay queue for the request body."""
+        """Create a replay queue for the request body messages."""
         replay_queue: list[Message] = []
 
         if body_parts:
@@ -176,6 +194,10 @@ class BodySizeLimitMiddleware:
         return replay_queue
 
     async def _drain_and_forward(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        Drain the request body up to the limit and forward to the downstream app,
+        returning a 413 response if the size limit is exceeded.
+        """
         body_parts, extra_message, total = await self._drain_body(receive)
         if total > self._max_bytes():
             response = self._too_large_response(scope)
@@ -186,6 +208,7 @@ class BodySizeLimitMiddleware:
         replay_queue = BodySizeLimitMiddleware._create_replay_queue(body_parts, extra_message)
 
         async def replay_receive() -> Message:
+            """Replay drained body parts before delegating to the original receive."""
             return replay_queue.pop(0) if replay_queue else await receive()
 
         return await self.app(scope, replay_receive, send)
@@ -193,7 +216,7 @@ class BodySizeLimitMiddleware:
     async def _handle_request_with_content_length(
         self, scope: Scope, receive: Receive, send: Send, content_length_str: str
     ) -> None:
-        """Handle requests that have a Content-Length header."""
+        """Handle requests that include a Content-Length header by checking limit and forwarding."""
         length = BodySizeLimitMiddleware._parse_content_length(content_length_str)
         if length is not None and length > self._max_bytes():
             response = self._too_large_response(scope)

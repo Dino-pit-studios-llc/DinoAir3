@@ -52,6 +52,7 @@ if _ImportedModelManager is None:
 
         def __init__(self, *args, **kwargs):
             """No-op initialization for fallback manager."""
+            # intentionally left blank (no-op)
 
         @staticmethod
         def get_model(*args, **kwargs):
@@ -71,10 +72,12 @@ if _ImportedModelManager is None:
         @staticmethod
         def shutdown(*args, **kwargs):
             """No-op shutdown for fallback manager."""
+            # intentionally left blank (no-op)
 
         @staticmethod
         def close(*args, **kwargs):
             """No-op close for fallback manager."""
+            # intentionally left blank (no-op)
 
         @staticmethod
         def get_memory_usage(*args, **kwargs):

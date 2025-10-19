@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_success(parse_result) -> bool:
-        """Parse Success function."""
+    """Parse Success function."""
     success_attr = getattr(parse_result, "success", None)
     if isinstance(success_attr, bool):
         return success_attr
@@ -25,11 +25,11 @@ def parse_success(parse_result) -> bool:
 
 def parse_and_translate_blocks(
     translator: StreamingTranslator,
-        """Parse And Translate Blocks function."""
     text: str,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None = None,
 ) -> list[str]:
+    """Parse And Translate Blocks function."""
     try:
         parse_result = translator.parser.get_parse_result(text)
         if not parse_success(parse_result):
@@ -64,11 +64,11 @@ def parse_and_translate_blocks(
 
 def translate_chunk_blocks(
     translator: StreamingTranslator,
-        """Translate Chunk Blocks function."""
     parse_result,
     chunk_index: int,
-    on_update: Callable[[TranslationUpdate], None] | None,
+    on_update: Callable[[TranslationUpdate], None],
 ) -> list[str]:
+    """Translate Chunk Blocks function."""
     results: list[str] = []
     for block_index, block in enumerate(parse_result.blocks):
         translated = translate_block(translator, block, chunk_index, block_index)
@@ -89,11 +89,11 @@ def translate_chunk_blocks(
 
 def translate_block(
     translator: StreamingTranslator,
-        """Translate Block function."""
     block: CodeBlock,
     chunk_index: int,
     _block_index: int,
 ) -> str | None:
+    """Translate Block function."""
     try:
         translator.emit_event(
             StreamingEventData(
@@ -127,10 +127,11 @@ def translate_block(
             )
         )
         return None
+    return None
 
 
 def is_complete_statement(text: str) -> bool:
-        """Is Complete Statement function."""
+    """Is Complete Statement function."""
     t = text.strip()
     if not t:
         return False
@@ -147,11 +148,11 @@ def is_complete_statement(text: str) -> bool:
 
 def process_statement(
     translator: StreamingTranslator,
-        """Process statement function."""
     statement: str,
     chunk_index: int,
     on_update: Callable[[TranslationUpdate], None] | None,
 ) -> str | None:
+    """Process statement function."""
     translations = parse_and_translate_blocks(translator, statement, chunk_index, on_update)
     return ("\n".join(translations) + "\n") if translations else None
 
@@ -159,9 +160,9 @@ def process_statement(
 def process_accumulated_blocks(
     translator,
     accumulated_input: list[str],
-        """Process accumulated blocks function."""
-    on_update: Callable[[TranslationUpdate], None] | None,
+    on_update: Callable[[TranslationUpdate], None],
 ):
+    """Process accumulated blocks function."""
     current_input = "".join(accumulated_input)
     try:
         blocks = translator.identify_blocks(current_input)

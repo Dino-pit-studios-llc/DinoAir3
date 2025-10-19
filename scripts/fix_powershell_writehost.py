@@ -87,7 +87,7 @@ class PowerShellFixer:
             ]
 
             # Command is safe: hardcoded executable and sanitized file path
-            result = subprocess.run(  # noqa: S603
+            result = subprocess.run(  # noqa: S603  # nosec B603
                 cmd, capture_output=True, text=True, timeout=10
             )
 

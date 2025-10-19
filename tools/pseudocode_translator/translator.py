@@ -29,10 +29,8 @@ from .controllers.structured_flow import StructuredParsingController
 from .exceptions import AssemblyError, ErrorContext, TranslatorError
 from .execution.process_pool import ParseValidateExecutor
 from .integration.events import EventDispatcher, EventType
-
 # Import from models.py file (not the models directory)
 from .models import BlockType, CodeBlock
-
 # Import new model abstraction from models directory
 from .models.base_model import BaseTranslationModel, OutputLanguage
 from .models.base_model import TranslationConfig as ModelTranslationConfig
@@ -47,8 +45,11 @@ from .validator import ValidationResult, Validator
 if TYPE_CHECKING:
     from .config import TranslatorConfig
 
+"""Module providing utilities for pseudocode translation, including event dispatching, timing wrappers, and translation result handling."""
+
 try:
-    from concurrent.futures.process import BrokenProcessPool as _BrokenProcessPool  # type: ignore
+    from concurrent.futures.process import \
+        BrokenProcessPool as _BrokenProcessPool  # type: ignore
 except Exception:  # pragma: no cover
 
     class _FallbackBrokenProcessPool(Exception):
@@ -123,8 +124,9 @@ class Block(Protocol):
     metadata: dict[str, Any]
     context: Any
 
-    def to_source(self) -> str: ...
-            """To Source method."""
+    def to_source(self) -> str:
+        """To Source method."""
+        ...
 
 
 # Validation result adapter alias
@@ -152,11 +154,18 @@ def _dispatch_event(
     source: str | None = None,
     **data: Any,
 ) -> None:
+    """Dispatch an event through the provided EventDispatcher.
+
+    Args:
+        dispatcher: the event dispatcher instance.
+        event_type: the type of event to dispatch.
+        source: optional source identifier for the event.
+        **data: additional event-specific data.
+    """
     cast("Any", dispatcher).dispatch_event(event_type, source=source, **data)
 
-
 def timed_section(name: str, extra: dict[str, Any] | None = None) -> AbstractContextManager[None]:
-        """Timed Section function."""
+    """Timed Section function."""
     rec_any: Any = get_recorder()
     return cast("AbstractContextManager[None]", rec_any.timed_section(name, extra))
 
@@ -246,7 +255,7 @@ class TranslationManager(ShutdownMixin):
     """Main controller that coordinates the translation pipeline"""
 
     def __init__(self, config: TranslatorConfig):
-        """
+        
         Initialize the Translation Manager
 
         Args:
@@ -296,7 +305,7 @@ class TranslationManager(ShutdownMixin):
             raise error
 
     def _initialize_model(self, model_name: str | None = None):
-        """Initialize or switch to a different model"""
+        """Initialize or switch to a different translation model based on configuration or provided name."""
         # Determine model name from config or parameter
         if model_name is None:
             model_name = getattr(
@@ -377,6 +386,8 @@ class TranslationManager(ShutdownMixin):
         )
 
     def _ensure_exec_pool(self) -> ParseValidateExecutor:
+        """Ensure an execution pool is available for parsing and validation tasks.
+        If not present, create one using the execution configuration or raise RuntimeError."""
         if self._exec_pool is None:
             try:
                 exec_cfg = getattr(self.config, "execution", None)
@@ -1177,6 +1188,15 @@ class TranslationManager(ShutdownMixin):
         segment_start = block.line_numbers[0]
 
         def flush(is_final: bool = False) -> None:
+            """
+            Flush the current buffer into a sub-block.
+
+            If the buffer is non-empty, this function creates a CodeBlock
+            instance using the buffered lines, assigns the appropriate type
+            (defaulting to English if unspecified), calculates the correct
+            line number range (considering whether this is the final flush),
+            and appends it to the sub_blocks list.
+            """
             if not buffer:
                 return
             end_line = block.line_numbers[1] if is_final else (segment_start + len(buffer) - 1)
@@ -1332,7 +1352,7 @@ class TranslationManager(ShutdownMixin):
 
             if _t_enabled():
                 rec_any: Any = _get_rec()
-                return cast("dict[str, Any]", rec_any.snapshot())
+                return cast(dict[str, Any], rec_any.snapshot())
         except Exception:
             # Never raise from telemetry; keep behavior unchanged
             pass
@@ -1356,6 +1376,7 @@ class TranslationManager(ShutdownMixin):
             return config
 
         # Build default config
+        # Construct a ModelTranslationConfig for text block translation and apply any overrides.
         translation_config = ModelTranslationConfig(
             target_language=self._target_language,
             temperature=self.config.llm.temperature,
@@ -1425,7 +1446,7 @@ class TranslationManager(ShutdownMixin):
         progress_callback: Any | None = None,
     ) -> Iterator[TranslationResult]:
         """
-        Translate pseudocode using streaming for memory efficiency
+        Translate pseudocode using streaming for memory efficiency.
 
         Args:
             input_text: Mixed English/Python pseudocode
@@ -1459,6 +1480,7 @@ class TranslationManager(ShutdownMixin):
     def _execute_streaming_pipeline(
         self, input_text: str, start_time: float, progress_callback: Any, emitter: Any
     ) -> Iterator[TranslationResult]:
+        """Execute the streaming translation pipeline, yielding chunk results and a final result."""
         from .streaming.pipeline import StreamingPipeline
 
         pipeline = StreamingPipeline(self.config)

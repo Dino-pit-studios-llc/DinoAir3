@@ -612,11 +612,16 @@ class RequestResponseLoggerMiddleware:
         """
 
         async def send_wrapper(message: Message) -> None:
+            """Async send wrapper that intercepts HTTP response start messages and records the status code.
+
+            Args:
+                message: ASGI message dictionary.
+            """
             if message.get("type") == "http.response.start":
                 status_holder["status"] = int(message.get("status", 0))
             await send(message)
 
-        return send_wrapper
+            return send_wrapper
 
     def _log_request_info(self, scope: Scope, start_ns: int, status: int | None) -> None:
         """Log request information.

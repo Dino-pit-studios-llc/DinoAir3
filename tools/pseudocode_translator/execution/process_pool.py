@@ -1,4 +1,7 @@
-"""Module module."""
+"""This module provides an executor for parsing and validating pseudocode using a process pool.
+It manages worker processes, records telemetry events, and falls back to immediate execution when necessary.
+"""
+
 from __future__ import annotations
 
 import contextlib
@@ -6,21 +9,18 @@ import logging
 import multiprocessing as mp
 import os
 import time
-from concurrent.futures import Future, ProcessPoolExecutor, TimeoutError
+from concurrent.futures import Future, ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from pseudocode_translator.config import ExecutionConfig, TranslatorConfig
 from pseudocode_translator.integration.events import EventDispatcher, EventType
 from pseudocode_translator.parser import ParserModule
 from pseudocode_translator.telemetry import get_recorder
 from pseudocode_translator.validator import ValidationResult, Validator
-
-logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 
 try:
     from concurrent.futures.process import BrokenProcessPool  # type: ignore
@@ -29,6 +29,8 @@ except Exception:  # pragma: no cover
     class BrokenProcessPool(Exception):
         """Custom exception indicating the process pool is broken or unavailable."""
 
+
+logger = logging.getLogger(__name__)
 
 # Top-level worker functions for picklability
 
@@ -66,7 +68,7 @@ class _ImmediateFallback:
         self.reason = reason
 
     def result(self, timeout: float | None = None):
-            """Result method."""
+        """Result method."""
         raise RuntimeError(f"exec_pool_fallback:{self.reason}")
 
 
@@ -102,12 +104,14 @@ class ParseValidateExecutor:
     # ----- lifecycle -----
 
     def _resolve_workers(self) -> int:
+        """Resolve the number of worker processes based on configuration, defaulting to CPU count."""
         if self._config.process_pool_max_workers is None:
             cpu = os.cpu_count() or 2
             return max(2, cpu)
         return max(1, int(self._config.process_pool_max_workers))
 
     def _resolve_start_method(self) -> str | None:
+        """Determine multiprocessing start method from configuration or platform defaults."""
         method = (
             self._start_method
             if self._start_method is not None
@@ -121,11 +125,13 @@ class ParseValidateExecutor:
         return None  # platform default
 
     def _emit(self, et: EventType, **data) -> None:
+        """Emit an event through the dispatcher with provided event type and data, suppressing errors."""
         if self._dispatcher:
             with contextlib.suppress(Exception):
                 self._dispatcher.dispatch_event(et, source=self.__class__.__name__, **data)
 
     def _ensure_pool(self) -> None:
+        """Lazy-initialize the process pool executor and record telemetry events upon startup."""
         if self._pool is not None:
             return
 
@@ -157,6 +163,7 @@ class ParseValidateExecutor:
         )
 
     def _restart_pool(self) -> None:
+        """Restart the process pool by shutting down the existing pool and creating a new one."""
         try:
             if self._pool:
                 self._pool.shutdown(cancel_futures=True)
@@ -166,7 +173,7 @@ class ParseValidateExecutor:
         self._ensure_pool()
 
     def shutdown(self, wait: bool = True) -> None:
-            """Shutdown method."""
+        """Shutdown method."""
         if self._pool:
             with contextlib.suppress(Exception):
                 self._pool.shutdown(wait=wait, cancel_futures=True)
@@ -175,10 +182,10 @@ class ParseValidateExecutor:
     # ----- submission -----
 
     def submit_parse(self, text: str):
-            """Submit Parse method."""
+        """Submit Parse method."""
         # job size guardrail
         cap = int(self._config.process_pool_job_max_chars)
-        if cap > 0 and len(text) > cap:
+        if 0 < cap < len(text):
             self._emit(EventType.EXEC_POOL_FALLBACK, kind="parse", reason="job_too_large")
             self._rec.record_event("exec_pool.fallback", counters={"exec_pool.fallback": 1})
             return _ImmediateFallback("job_too_large")
@@ -197,7 +204,7 @@ class ParseValidateExecutor:
         return self._TaskHandle(self, spec, fut)
 
     def submit_validate(self, ast_obj):
-            """Submit Validate method."""
+        """Submit Validate method."""
         # respect target
         if self._config.process_pool_target not in {"parse_validate", "validate_only"}:
             return _ImmediateFallback("target_disabled")
@@ -227,6 +234,7 @@ class ParseValidateExecutor:
             self._t0 = time.perf_counter()
 
         def _timeout_seconds(self) -> float:
+            """Compute the task timeout in seconds based on configuration (process_pool_task_timeout_ms)."""
             ms = max(1, int(self._p.config.process_pool_task_timeout_ms))
             return ms / 1000.0
 
@@ -245,6 +253,7 @@ class ParseValidateExecutor:
                     self._emit_fallback_and_raise(e)
                 except Exception:
                     self._emit_unexpected_fallback_and_raise()
+            return None
 
         def _get_result_with_telemetry(self, timeout_sec: float):
             """Get result and record telemetry on success"""

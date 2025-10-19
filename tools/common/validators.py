@@ -6,7 +6,6 @@ All validation logic is grouped in the Validator class for clarity and maintaina
 """
 
 import inspect as _inspect
-from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 
@@ -45,27 +44,27 @@ class Validator:
 
     @staticmethod
     def check_exists(p: Path, raw_value: Any) -> None:
-            """Check Exists method."""
+        """Check Exists method."""
         if not p.exists():
             raise ValueError(f"Path does not exist: {raw_value}")
 
     @staticmethod
     def check_file(p: Path, raw_value: Any) -> None:
-            """Check File method."""
+        """Check File method."""
         if not p.is_file():
             raise ValueError(f"Path is not a file: {raw_value}")
 
     @staticmethod
     def check_dir(p: Path, raw_value: Any) -> None:
-            """Check Dir method."""
+        """Check Dir method."""
         if not p.is_dir():
             raise ValueError(f"Path is not a directory: {raw_value}")
 
     @staticmethod
     def validate_path_exists(
         path: str, must_be_file: bool | None = None, must_be_dir: bool | None = None
-            """Validate path exists method."""
     ) -> Path:
+        """Validate path exists method."""
         p = Validator.normalize_to_path(path)
         Validator.check_exists(p, path)
         if must_be_file:
@@ -76,7 +75,7 @@ class Validator:
 
     @staticmethod
     def classify_path_error(exc: Exception) -> str:
-            """Classify Path Error method."""
+        """Classify Path Error method."""
         msg = str(exc)
         if msg.startswith("Path does not exist:"):
             return "not_found"
@@ -95,10 +94,19 @@ def validate_args(
     """
 
     def decorator(func: "Callable[P, R]") -> "Callable[P, R]":
-        sig = inspect.signature(func)
+        """
+        Create and return a wrapper that applies the specified validators
+        to the function's named arguments before calling the function.
+        """
+        sig = _inspect.signature(func)
 
-        @wraps(func)
+        sig = _inspect.signature(func)
+
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            """
+            Bind the provided arguments, run all validators on each named argument,
+            and then call the original function.
+            """
             bound = sig.bind_partial(*args, **kwargs)
             arguments = bound.arguments
             _validate_all_arguments(mapping, arguments)

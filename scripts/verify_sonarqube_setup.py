@@ -82,7 +82,7 @@ def check_python_dependencies() -> bool:
     missing_packages = []
     for package, import_name in required_packages:
         try:
-            subprocess.run(
+            subprocess.run(  # nosec B603
                 [sys.executable, "-c", f"import {import_name}"], check=True, capture_output=True
             )
             print(f"✅ Python package: {package}")
@@ -127,7 +127,7 @@ def generate_test_coverage() -> bool:
 
     try:
         # Run pytest with coverage
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603
             [
                 sys.executable,
                 "-m",
