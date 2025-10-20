@@ -155,11 +155,12 @@ class ArtifactEncryption:
             key = self.derive_key(self.password, salt)
 
         # Create cipher and decrypt (legacy CBC mode for backward compatibility)
-        # nosemgrep: python.cryptography.security.insecure-cipher-algorithm-blowfish
+        # Using CBC with PKCS7 padding is acceptable for legacy compatibility
         from cryptography.hazmat.backends import default_backend
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # nosec: B413
+        # nosec: B305,B413 - CBC mode with PKCS7 padding is used for legacy compatibility
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  # noqa: S5542
         decryptor = cipher.decryptor()
         decrypted_padded = decryptor.update(encrypted) + decryptor.finalize()
 

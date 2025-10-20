@@ -22,7 +22,14 @@ from typing import Any, NoReturn, cast
 
 from .adapters import make_adapter
 from .adapters.base import ServiceAdapter
-from .errors import NoHealthyService, ServiceNotFound, ValidationError, not_implemented
+from .errors import (
+    HealthCheckError,
+    NoHealthyService,
+    ServiceExecutionError,
+    ServiceNotFound,
+    ValidationError,
+    not_implemented,
+)
 
 # Import HealthState for runtime use
 from .health import HealthState
@@ -225,7 +232,7 @@ class ServiceRouter:
             ok=False,
             error=str(exc),
         )
-        raise exc
+        raise ServiceExecutionError(f"Service execution failed for '{desc.name}': {exc}") from exc
 
     def ping_service_health(self, service_name: str) -> dict[str, Any]:
         """
@@ -281,7 +288,7 @@ class ServiceRouter:
             ok=False,
             error=str(exc),
         )
-        raise exc
+        raise HealthCheckError(f"Health check failed for service '{service_name}': {exc}") from exc
 
     def execute_by(
         self,

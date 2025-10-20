@@ -71,6 +71,22 @@ class AdapterError(Exception):
         self.reason: str | None = reason
 
 
+class ServiceExecutionError(Exception):
+    """
+    Raised when service execution fails.
+
+    Preserves the original exception context for proper error handling.
+    """
+
+
+class HealthCheckError(Exception):
+    """
+    Raised when a health check operation fails.
+
+    Preserves the original exception context for proper error handling.
+    """
+
+
 class RetryableError(Exception):
     """
     Raised by adapters to signal that an operation should be retried.

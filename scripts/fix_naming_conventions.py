@@ -21,6 +21,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+# Regex patterns for naming detection
+CAMEL_CASE_PATTERN = r"^[a-z]+[A-Z]"
+PASCAL_CASE_PATTERN = r"^[A-Z][a-z]+[A-Z]"
+
 
 class NamingFixer:
     """Fixes Python naming convention issues."""
@@ -113,16 +117,16 @@ class NamingFixer:
         """
         if context == "auto":
             # Auto-detect: rename if PascalCase or camelCase
-            return bool(re.match(r"^[a-z]+[A-Z]", name) or re.match(r"^[A-Z][a-z]+[A-Z]", name))
+            return bool(re.match(CAMEL_CASE_PATTERN, name) or re.match(PASCAL_CASE_PATTERN, name))
 
         if context == "field":
             return name in self.field_renames or bool(re.match(r"^[A-Z]", name))
 
         if context == "method":
-            return name in self.method_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
+            return name in self.method_renames or bool(re.match(CAMEL_CASE_PATTERN, name))
 
         if context == "param":
-            return name in self.param_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
+            return name in self.param_renames or bool(re.match(CAMEL_CASE_PATTERN, name))
 
         return False
 
@@ -137,6 +141,30 @@ class NamingFixer:
 
         # Auto-convert using camel_to_snake
         return self.camel_to_snake(name)
+
+    @staticmethod
+    def _get_field_names(item: ast.AST) -> list[str]:
+        """Get field names from an AST assignment or annotated assignment node."""
+        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+            return [item.target.id]
+        if isinstance(item, ast.Assign):
+            return [target.id for target in item.targets if isinstance(target, ast.Name)]
+        return []
+
+    def _process_class(self, node: ast.ClassDef, renames: dict[str, str]) -> None:
+        """Process a class AST node to collect field renames into the renames dict."""
+        for item in node.body:
+            for name in self._get_field_names(item):
+                if self.should_rename(name, "field"):
+                    renames[name] = self.get_renamed_name(name, "field")
+
+    def _process_function(self, node: ast.AST, renames: dict[str, str]) -> None:
+        """Process a function AST node to collect method and parameter renames into the renames dict."""
+        if self.should_rename(node.name, "method"):
+            renames[node.name] = self.get_renamed_name(node.name, "method")
+        for arg in node.args.args:
+            if self.should_rename(arg.arg, "param"):
+                renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
 
     def find_identifiers_to_rename(self, content: str) -> dict[str, str]:
         """
@@ -160,32 +188,8 @@ class NamingFixer:
 
         return renames
 
-        @staticmethod
-        def _get_field_names(item: ast.AST) -> list[str]:
-            """Get field names from an AST assignment or annotated assignment node."""
-            if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
-                return [item.target.id]
-            if isinstance(item, ast.Assign):
-                return [target.id for target in item.targets if isinstance(target, ast.Name)]
-            return []
-
-        def _process_class(self, node: ast.ClassDef, renames: dict[str, str]) -> None:
-            """Process a class AST node to collect field renames into the renames dict."""
-            for item in node.body:
-                for name in self._get_field_names(item):
-                    if self.should_rename(name, "field"):
-                        renames[name] = self.get_renamed_name(name, "field")
-
-        def _process_function(self, node: ast.AST, renames: dict[str, str]) -> None:
-            """Process a function AST node to collect method and parameter renames into the renames dict."""
-            if self.should_rename(node.name, "method"):
-                renames[node.name] = self.get_renamed_name(node.name, "method")
-            for arg in node.args.args:
-                if self.should_rename(arg.arg, "param"):
-                    renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
-
-        @staticmethod
-        def apply_renames(content: str, renames: dict[str, str]) -> tuple[str, int]:
+    @staticmethod
+    def apply_renames(content: str, renames: dict[str, str]) -> tuple[str, int]:
             """
             Apply renames to content using word boundaries.
 
@@ -206,12 +210,12 @@ class NamingFixer:
 
             return content, count
 
-        @staticmethod
-        def _sanitize_path_for_logging(file_path: Path) -> str:
-            """Sanitize file path for logging by returning only the filename or 'unknown'."""
-            return file_path.name if file_path else "unknown"
+    @staticmethod
+    def _sanitize_path_for_logging(file_path: Path) -> str:
+        """Sanitize file path for logging by returning only the filename or 'unknown'."""
+        return file_path.name if file_path else "unknown"
 
-        def process_file(self, file_path: Path) -> bool:
+    def process_file(self, file_path: Path) -> bool:
             """
             Process a single Python file to apply naming convention fixes.
 
