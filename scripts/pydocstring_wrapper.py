@@ -274,19 +274,34 @@ def main():
     target = Path(sys.argv[1])
     dry_run = "--no-dry-run" not in sys.argv
 
+    # Restrict input to a safe base directory (current working directory)
+    base_dir = Path.cwd().resolve()
+    try:
+        target_resolved = target.resolve()
+    except Exception as e:
+        print(f"Error resolving path: {sys.argv[1]} - {e}")
+        return
+
+    # Check that the resolved target is within the base_dir (prevent traversal)
+    try:
+        target_resolved.relative_to(base_dir)
+    except ValueError:
+        print(f"Error: The path {target_resolved} is outside the allowed directory ({base_dir})")
+        return
+
     wrapper = PydocstringWrapper()
 
-    if target.is_file():
-        result = wrapper.process_file(target, dry_run)
+    if target_resolved.is_file():
+        result = wrapper.process_file(target_resolved, dry_run)
         print(f"\nProcessed {result['functions_processed']} functions")
-    elif target.is_dir():
-        result = wrapper.process_directory(target, dry_run=dry_run)
+    elif target_resolved.is_dir():
+        result = wrapper.process_directory(target_resolved, dry_run=dry_run)
         print("\nSummary:")
         print(f"  Files processed: {result['total_files']}")
         print(f"  Functions needing docstrings: {result['total_functions']}")
         print(f"  Mode: {'DRY RUN' if dry_run else 'ACTUAL PROCESSING'}")
     else:
-        print(f"Error: {target} is not a valid file or directory")
+        print(f"Error: {target_resolved} is not a valid file or directory")
 
 
 if __name__ == "__main__":
