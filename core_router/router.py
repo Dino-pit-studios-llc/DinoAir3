@@ -88,6 +88,7 @@ def set_router(router: ServiceRouter | None) -> None:
     with _router_singleton_lock:
         _router_singleton = router
 
+
 __all__ = [
     "ServiceRouter",
     "create_router",
@@ -543,8 +544,10 @@ def _ni(method: str, path: str, operation_id: str) -> Any:
 
 # In-file helpers to reduce duplicate endpoint wrappers
 
+
 def _make_ni_noargs(method: str, path: str, operation_id: str) -> Callable[[], Any]:
     """Create a no-arguments handler that returns a not implemented response for the specified method, path, and operation ID."""
+
     def _f() -> Any:
         """Invoke the not-implemented response for the configured method and operation without arguments."""
         return _ni(method, path, operation_id)
@@ -554,6 +557,7 @@ def _make_ni_noargs(method: str, path: str, operation_id: str) -> Callable[[], A
 
 def _make_ni_body(method: str, path: str, operation_id: str) -> Callable[[Any], Any]:
     """Create a single-argument handler that returns not implemented response for the specified method, path, and operation ID."""
+
     def _f(_body: Any) -> Any:  # noqa: ARG001 - arg is part of public signature
         """Handler that returns a not-implemented response, ignoring the request body."""
         return _ni(method, path, operation_id)
@@ -596,6 +600,7 @@ def _metrics_impl() -> Any:
 
     return minimal_snapshot()
 
+
 # -------------------------
 # HTTP endpoint placeholders (per OpenAPI spec)
 # -------------------------
@@ -609,6 +614,7 @@ def health_get() -> Any:
 def version_get() -> Any:
     """GET /version — operationId: version_version_get"""
     return _safe_call("GET /version", "version_version_get", _version_impl)
+
 
 translate_post = _make_ni_body("POST", "/translate", "translate_translate_post")
 translate_post.__name__ = "translate_post"
@@ -638,6 +644,7 @@ config_dirs_get.__doc__ = "GET /config/dirs — operationId: get_config_dirs_con
 def metrics_get() -> Any:
     """GET /metrics — operationId: metrics_metrics_get"""
     return _safe_call("GET /metrics", "metrics_metrics_get", _metrics_impl)
+
 
 ai_chat_post = _make_ni_body("POST", "/ai/chat", "ai_chat_ai_chat_post")
 ai_chat_post.__name__ = "ai_chat_post"

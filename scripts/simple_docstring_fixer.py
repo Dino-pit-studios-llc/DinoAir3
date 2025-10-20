@@ -6,6 +6,7 @@ Fixes PY-D0003 warnings by adding missing docstrings to Python files.
 Usage:
     python scripts/simple_docstring_fixer.py [directory_or_file]
 """
+
 import argparse
 import ast
 import os
