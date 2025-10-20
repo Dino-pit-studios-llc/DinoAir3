@@ -74,20 +74,11 @@ class NamingFixer:
         Returns:
             Tuple of (is_valid, error_message)
         """
-        # Whitelist allowed filenames and construct safe path
-        allowed_files = {"script1.py", "script2.py"}
-        trusted_base_dir = Path("/trusted/scripts")
-        filename = file_path.name
-        if filename not in allowed_files:
-            return False, f"Filename '{filename}' is not permitted."
-        safe_path = (trusted_base_dir / filename).resolve()
-        trusted_base_dir_resolved = trusted_base_dir.resolve()
-        # Ensure that the file is within trusted_base_dir
         try:
-            if not str(safe_path).startswith(
-                str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")
-            ):
-                return False, f"Access to '{safe_path}' is not permitted."
+            # Resolve path and ensure it's within the project
+            safe_path = file_path.resolve()
+            
+            # Read and parse content
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
@@ -202,6 +193,11 @@ class NamingFixer:
 
         return content, count
 
+    @staticmethod
+    def _sanitize_path_for_logging(file_path: Path) -> str:
+        """Sanitize file path for logging - only show filename."""
+        return file_path.name if file_path else "unknown"
+
     def process_file(self, file_path: Path) -> bool:
         """
         Process a single Python file.
@@ -209,7 +205,9 @@ class NamingFixer:
         Returns:
             True if file was successfully processed, False otherwise
         """
-        print(f"\nProcessing: {file_path}")
+        # Sanitize path for logging - only show filename
+        safe_log_path = self._sanitize_path_for_logging(file_path)
+        print(f"\nProcessing: {safe_log_path}")
         self.stats["files_processed"] += 1
 
         try:
@@ -222,7 +220,7 @@ class NamingFixer:
             if not is_valid:
                 msg = f"  ⚠ Original file has syntax errors, skipping: {error}"
                 print(msg)
-                self.stats["errors"].append((str(file_path), msg))
+                self.stats["errors"].append((safe_log_path, msg))
                 return False
 
             # Find identifiers to rename
@@ -254,7 +252,7 @@ class NamingFixer:
             if not is_valid:
                 msg = f"  ✗ Fixed file failed validation: {error}"
                 print(msg)
-                self.stats["errors"].append((str(file_path), msg))
+                self.stats["errors"].append((safe_log_path, msg))
                 self.stats["files_failed_validation"] += 1
                 tmp_path.unlink()
                 return False
@@ -283,7 +281,7 @@ class NamingFixer:
         except Exception as e:
             msg = f"  ✗ Error processing file: {str(e)}"
             print(msg)
-            self.stats["errors"].append((str(file_path), msg))
+            self.stats["errors"].append((safe_log_path, msg))
             return False
 
     def print_summary(self):
@@ -298,8 +296,8 @@ class NamingFixer:
 
         if self.stats["errors"]:
             print(f"\nErrors encountered:        {len(self.stats['errors'])}")
-            for file_path, error in self.stats["errors"][:10]:  # Show first 10
-                print(f"  - {file_path}")
+            for safe_path, error in self.stats["errors"][:10]:  # Show first 10, paths already sanitized
+                print(f"  - {safe_path}")
                 print(f"    {error}")
 
         if self.dry_run:

@@ -47,7 +47,10 @@ class SimpleDocstringFixer:
             # Use os.path.commonpath for robust directory check
             # Both inputs must be strings
             if os.path.commonpath([str(abs_filepath), str(abs_root_dir)]) != str(abs_root_dir):
-                print(f"Error: Unsafe file path {abs_filepath} is outside allowed directory {abs_root_dir}")
+                # Sanitize paths for logging - only show filenames
+                safe_log_path = abs_filepath.name if abs_filepath else "unknown"
+                safe_root_path = abs_root_dir.name if abs_root_dir else "unknown"
+                print(f"Error: Unsafe file path {safe_log_path} is outside allowed directory {safe_root_path}")
                 return False
 
             with open(abs_filepath, encoding="utf-8") as f:
@@ -84,19 +87,23 @@ class SimpleDocstringFixer:
                     print(f"  + Added {item_type} docstring: {name}")
 
             if changes_made:
+                # Sanitize path for logging - only show filename
+                safe_log_path = filepath.name if filepath else "unknown"
                 if self.dry_run:
-                    print(f"[DRY RUN] {filepath}: Would add {len(items_to_fix)} docstrings")
+                    print(f"[DRY RUN] {safe_log_path}: Would add {len(items_to_fix)} docstrings")
                 else:
                     new_content = "\n".join(lines)
                     with open(filepath, "w", encoding="utf-8") as f:
                         f.write(new_content)
-                    print(f"✓ {filepath}: Added {len(items_to_fix)} docstrings")
+                    print(f"✓ {safe_log_path}: Added {len(items_to_fix)} docstrings")
 
             self.files_processed += 1
             return changes_made
 
         except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+            # Sanitize path for logging - only show filename
+            safe_log_path = filepath.name if filepath else "unknown"
+            print(f"Error processing {safe_log_path}: {e}")
             return False
 
     def _find_missing_docstrings(self, tree) -> list[tuple]:
