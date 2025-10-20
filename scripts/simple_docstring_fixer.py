@@ -47,7 +47,10 @@ class SimpleDocstringFixer:
             # Use os.path.commonpath for robust directory check
             # Both inputs must be strings
             if os.path.commonpath([str(abs_filepath), str(abs_root_dir)]) != str(abs_root_dir):
-                print(f"Error: Unsafe file path {abs_filepath} is outside allowed directory {abs_root_dir}")
+                # Sanitize paths for logging - only show filenames
+                safe_log_path = abs_filepath.name if abs_filepath else "unknown"
+                safe_root_path = abs_root_dir.name if abs_root_dir else "unknown"
+                print(f"Error: Unsafe file path {safe_log_path} is outside allowed directory {safe_root_path}")
                 return False
 
             with open(abs_filepath, encoding="utf-8") as f:
@@ -84,19 +87,23 @@ class SimpleDocstringFixer:
                     print(f"  + Added {item_type} docstring: {name}")
 
             if changes_made:
+                # Sanitize path for logging - only show filename
+                safe_log_path = filepath.name if filepath else "unknown"
                 if self.dry_run:
-                    print(f"[DRY RUN] {filepath}: Would add {len(items_to_fix)} docstrings")
+                    print(f"[DRY RUN] {safe_log_path}: Would add {len(items_to_fix)} docstrings")
                 else:
                     new_content = "\n".join(lines)
                     with open(filepath, "w", encoding="utf-8") as f:
                         f.write(new_content)
-                    print(f"✓ {filepath}: Added {len(items_to_fix)} docstrings")
+                    print(f"✓ {safe_log_path}: Added {len(items_to_fix)} docstrings")
 
             self.files_processed += 1
             return changes_made
 
         except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+            # Sanitize path for logging - only show filename
+            safe_log_path = filepath.name if filepath else "unknown"
+            print(f"Error processing {safe_log_path}: {e}")
             return False
 
     def _find_missing_docstrings(self, tree) -> list[tuple]:
@@ -110,39 +117,15 @@ class SimpleDocstringFixer:
         """
         missing = []
 
-        # Check module level
-        has_module_docstring = (
-            len(tree.body) > 0
-            and isinstance(tree.body[0], ast.Expr)
-            and isinstance(tree.body[0].value, ast.Constant)
-            and isinstance(tree.body[0].value.value, str)
-        )
-
-        if not has_module_docstring:
+        if not self._has_module_docstring(tree):
             missing.append(("module", 0, "module", 0))
 
-        # Walk the AST to find classes and functions
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if not self._has_docstring(node):
-                    missing.append(("class", node.lineno, node.name, 8))  # 8 spaces for class docstring
-
-                # Check methods within the class
-                for child in node.body:
-                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if not self._has_docstring(child) and not child.name.startswith("_"):
-                            missing.append(("method", child.lineno, child.name, 12))  # 12 spaces for method docstring
-
+                missing.extend(self._find_missing_for_class(node))
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Only top-level functions (not nested or methods)
-                if (
-                    not self._has_docstring(node)
-                    and not node.name.startswith("_")
-                    and not node.name.startswith("test_")
-                    and self._is_top_level(node, tree)
-                ):
-                    missing.append(("function", node.lineno, node.name, 8))  # 8 spaces for function docstring
-
+                if self._should_add_for_function(node, tree):
+                    missing.append(("function", node.lineno, node.name, 8))
         return missing
 
     @staticmethod
@@ -175,6 +158,39 @@ class SimpleDocstringFixer:
         """
         return func_node in tree.body
 
+    @staticmethod
+    def _has_module_docstring(tree) -> bool:
+        """Check if module has a docstring."""
+        return (
+            len(tree.body) > 0
+            and isinstance(tree.body[0], ast.Expr)
+            and isinstance(tree.body[0].value, ast.Constant)
+            and isinstance(tree.body[0].value.value, str)
+        )
+
+    def _find_missing_for_class(self, node) -> list[tuple]:
+        """Find missing docstrings in a class and its methods."""
+        missing = []
+        if not self._has_docstring(node):
+            missing.append(("class", node.lineno, node.name, 8))
+        for child in node.body:
+            if (
+                isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and not self._has_docstring(child)
+                and not child.name.startswith("_")
+            ):
+                missing.append(("method", child.lineno, child.name, 12))
+        return missing
+
+    def _should_add_for_function(self, node, tree) -> bool:
+        """Determine if a top-level function is missing a docstring."""
+        return (
+            not self._has_docstring(node)
+            and not node.name.startswith("_")
+            and not node.name.startswith("test_")
+            and self._is_top_level(node, tree)
+        )
+
     def _generate_simple_docstring(self, item_type: str, name: str, indent: int) -> str:
         """Generate a simple docstring.
 
@@ -189,14 +205,14 @@ class SimpleDocstringFixer:
         indent_str = " " * indent
 
         if item_type == "module":
-            return f'"""{self._make_readable(name)} module.""'
+            return f'"""{self._make_readable(name)} module."""'
         if item_type == "class":
-            return f'{indent_str}"""{self._make_readable(name)} class.""'
+            return f'{indent_str}"""{self._make_readable(name)} class."""'
         if item_type == "function":
-            return f'{indent_str}"""{self._make_readable(name)} function.""'
+            return f'{indent_str}"""{self._make_readable(name)} function."""'
         if item_type == "method":
-            return f'{indent_str}"""{self._make_readable(name)} method.""'
-        return f'{indent_str}"""TODO: Add description.""'
+            return f'{indent_str}"""{self._make_readable(name)} method."""'
+        return f'{indent_str}"""TODO: Add description."""'
 
     @staticmethod
     def _make_readable(name: str) -> str:

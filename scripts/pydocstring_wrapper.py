@@ -29,18 +29,10 @@ class PydocstringWrapper:
         Returns:
             List of tuples containing (line_number, function_name) for functions without docstrings
         """
-        # Whitelist of permitted filenames
-        allowed_files = {"allowed1.py", "allowed2.py"}
-        filename = file_path.name
-        if filename not in allowed_files:
-            raise ValueError(f"Unauthorized file: {filename}")
-        # Construct safe path inside trusted directory
-        trusted_dir = Path("/trusted/scripts").resolve()
-        safe_path = (trusted_dir / filename).resolve()
-        # Check containment in trusted directory after normalization
-        if not str(safe_path).startswith(str(trusted_dir)):
-            raise ValueError(f"Attempted path traversal: {safe_path}")
         try:
+            # Resolve path to prevent traversal
+            safe_path = file_path.resolve()
+
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
 
@@ -63,7 +55,9 @@ class PydocstringWrapper:
             return functions_without_docstrings
 
         except Exception as e:
-            print(f"Error analyzing {safe_path}: {e}")
+            # Sanitize path for logging - only show filename
+            safe_log_path = file_path.name if file_path else "unknown"
+            print(f"Error analyzing {safe_log_path}: {e}")
             return []
 
     def generate_docstring(self, file_path: Path, line_number: int) -> str:
@@ -86,6 +80,7 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:
@@ -165,7 +160,7 @@ class PydocstringWrapper:
             print(f"Error inserting docstring into {file_path}:{line_number}: {e}")
             return False
 
-    def generate_docstring(self, file_path: Path, line_number: int) -> str:
+    def generate_docstring_simple(self, file_path: Path, line_number: int) -> str:
         """Generate a docstring for a function at the specified line.
         Args:
             file_path: Path to the Python file
@@ -185,6 +180,7 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:
@@ -278,19 +274,34 @@ def main():
     target = Path(sys.argv[1])
     dry_run = "--no-dry-run" not in sys.argv
 
+    # Restrict input to a safe base directory (current working directory)
+    base_dir = Path.cwd().resolve()
+    try:
+        target_resolved = target.resolve()
+    except Exception as e:
+        print(f"Error resolving path: {sys.argv[1]} - {e}")
+        return
+
+    # Check that the resolved target is within the base_dir (prevent traversal)
+    try:
+        target_resolved.relative_to(base_dir)
+    except ValueError:
+        print(f"Error: The path {target_resolved} is outside the allowed directory ({base_dir})")
+        return
+
     wrapper = PydocstringWrapper()
 
-    if target.is_file():
-        result = wrapper.process_file(target, dry_run)
+    if target_resolved.is_file():
+        result = wrapper.process_file(target_resolved, dry_run)
         print(f"\nProcessed {result['functions_processed']} functions")
-    elif target.is_dir():
-        result = wrapper.process_directory(target, dry_run=dry_run)
+    elif target_resolved.is_dir():
+        result = wrapper.process_directory(target_resolved, dry_run=dry_run)
         print("\nSummary:")
         print(f"  Files processed: {result['total_files']}")
         print(f"  Functions needing docstrings: {result['total_functions']}")
         print(f"  Mode: {'DRY RUN' if dry_run else 'ACTUAL PROCESSING'}")
     else:
-        print(f"Error: {target} is not a valid file or directory")
+        print(f"Error: {target_resolved} is not a valid file or directory")
 
 
 if __name__ == "__main__":

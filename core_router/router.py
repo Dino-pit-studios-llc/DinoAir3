@@ -27,7 +27,7 @@ from .errors import NoHealthyService, ServiceNotFound, ValidationError, not_impl
 # Import HealthState for runtime use
 from .health import HealthState
 from .metrics import record_error, record_success
-from .registry_base import ServiceDescriptor, ServiceRegistry
+from .registry import ServiceDescriptor, ServiceRegistry
 from .schemas import validate_input, validate_output
 
 # Type alias for adapter factory to keep signatures short
@@ -35,6 +35,7 @@ AdapterFactory = Callable[[ServiceDescriptor], ServiceAdapter]
 
 
 def _typed_make_adapter(kind: str, cfg: dict[str, Any]) -> ServiceAdapter:
+    """Return a ServiceAdapter instance using the specified kind and configuration."""
     return make_adapter(kind, cfg)
 
 
@@ -58,8 +59,8 @@ def create_router(services_file: str | None = None) -> ServiceRouter:
     # Local imports to avoid cycles
     import os  # local to keep import-time surface minimal
 
-    from .registry_base import ServiceRegistry as LocalServiceRegistry  # noqa: WPS433
-    from .registry_base import auto_register_from_config_and_env
+    from .registry import ServiceRegistry as LocalServiceRegistry  # noqa: WPS433
+    from .registry import auto_register_from_config_and_env
 
     if services_file is not None:
         file_path: str = services_file
@@ -205,6 +206,7 @@ class ServiceRouter:
             return None
         except Exception as exc:
             self._extracted_from_execute_77(started, desc, exc)
+            return None
 
     def _extracted_from_execute_77(
         self,
@@ -212,6 +214,7 @@ class ServiceRouter:
         desc: ServiceDescriptor,
         exc: Exception,
     ) -> NoReturn:
+        """Handle execution errors: record error, update health to DOWN, log event, and re-raise the exception."""
         result = int(round((time.monotonic() - started) * 1000))
         record_error(desc.name, result, str(exc))
         self._registry.update_health(desc.name, HealthState.DOWN, latency_ms=result, error=str(exc))
@@ -224,8 +227,7 @@ class ServiceRouter:
         )
         raise exc
 
-    # TODO: Rename method 'check_health' to 'ping_service_health' and update all references in codebase (e.g., calls in execute and monitoring logic).
-    def check_health(self, service_name: str) -> dict[str, Any]:
+    def ping_service_health(self, service_name: str) -> dict[str, Any]:
         """
         Check health of a service by pinging its adapter and update registry.
 
@@ -234,39 +236,43 @@ class ServiceRouter:
         from .health_utils import ping_with_timing  # Import from decoupled module
 
         started = time.monotonic()
-        desc = self._lookup_desc_or_log_raise(started, service_name, "check_health")
-        kind = self._resolve_kind_or_raise(desc)
+        try:
+            desc = self._lookup_desc_or_log_raise(started, service_name, "ping_service_health")
+            kind = self._resolve_kind_or_raise(desc)
 
-        adapter = self._adapter_for(desc, kind)
+            adapter = self._adapter_for(desc, kind)
 
-        state_str, adapter_ms = ping_with_timing(adapter)
+            state_str, adapter_ms = ping_with_timing(adapter)
 
-        # Convert string state to HealthState enum for registry update
-        state = HealthState(state_str)
+            # Convert string state to HealthState enum for registry update
+            state = HealthState(state_str)
 
-        # Update registry with adapter-reported state and latency
-        self._registry.update_health(desc.name, state, latency_ms=adapter_ms)
+            # Update registry with adapter-reported state and latency
+            self._registry.update_health(desc.name, state, latency_ms=adapter_ms)
 
-        # Event duration includes lookup + construction + ping
-        duration_ms = int(round((time.monotonic() - started) * 1000))
-        self._log_event(
-            service=desc.name,
-            event="check_health",
-            duration_ms=duration_ms,
-            ok=(state == HealthState.HEALTHY),
-        )
+            # Event duration includes lookup + construction + ping
+            duration_ms = int(round((time.monotonic() - started) * 1000))
+            self._log_event(
+                service=desc.name,
+                event="ping_service_health",
+                duration_ms=duration_ms,
+                ok=(state == HealthState.HEALTHY),
+            )
 
-        # Return latest snapshot (defensive copy via dict())
-        return dict(self._registry.get_by_name(service_name).health or {})
+            # Return latest snapshot (defensive copy via dict())
+            return dict(self._registry.get_by_name(service_name).health or {})
+        except Exception as exc:
+            self.handle_check_health_error(started, service_name, "ping_service_health", exc)
+            return None
 
-    # TODO: Rename helper '_extracted_from_check_health_19' to 'handle_check_health_error', wire up its usage in 'check_health' and update callers accordingly.
-    def _extracted_from_check_health_19(
+    def handle_check_health_error(
         self,
         started: float,
         service_name: str,
         event: str,
         exc: Exception,
     ) -> NoReturn:
+        """Log a failed health check event and re-raise the exception."""
         result = int(round((time.monotonic() - started) * 1000))
         self._log_event(
             service=service_name,
@@ -340,12 +346,12 @@ class ServiceRouter:
     def _lookup_desc_or_log_raise(self, started: float, service_name: str, event: str) -> ServiceDescriptor:
         """
         Lookup a service descriptor by name; on ServiceNotFound, log and
-        re-raise via _extracted_from_check_health_19.
+        re-raise via handle_check_health_error.
         """
         try:
             return self._registry.get_by_name(service_name)
         except ServiceNotFound as exc:
-            self._extracted_from_check_health_19(started, service_name, event, exc)
+            self.handle_check_health_error(started, service_name, event, exc)
             return None
 
     @staticmethod
@@ -409,6 +415,7 @@ class ServiceRouter:
 
     @staticmethod
     def _to_positive_int(v: Any) -> int | None:
+        """Attempt to convert the input to a positive integer, returning None for non-positive or invalid values."""
         try:
             if v is None:
                 return None
@@ -469,6 +476,7 @@ class ServiceRouter:
         """
 
         def _lat(d: ServiceDescriptor) -> float:
+            """Extract the latency in milliseconds from a ServiceDescriptor's health info, or return infinity on error."""
             h = getattr(d, "health", None)
             if isinstance(h, dict):
                 md = cast("dict[str, Any]", h)
@@ -516,6 +524,7 @@ class ServiceRouter:
 
 
 def _internal_error_response(exc: Exception, endpoint: str, operation_id: str) -> Any:
+    """Return a standardized internal error response for the given exception and endpoint."""
     from .errors import error_response  # local import to avoid hard dep at import time
 
     return error_response(
@@ -525,25 +534,34 @@ def _internal_error_response(exc: Exception, endpoint: str, operation_id: str) -
         error="Internal Error",
         details=None,
         endpoint=endpoint,
-        operationId=operation_id,
+        operation_id=operation_id,
         requestId=None,
     )
 
 
 def _ni(method: str, path: str, operation_id: str) -> Any:
+    """Return a not implemented response for the given HTTP method, path, and operation ID."""
     return not_implemented(method, path, operation_id)
 
 
 # In-file helpers to reduce duplicate endpoint wrappers
+
+
 def _make_ni_noargs(method: str, path: str, operation_id: str) -> Callable[[], Any]:
+    """Create a no-arguments handler that returns a not implemented response for the specified method, path, and operation ID."""
+
     def _f() -> Any:
+        """Invoke the not-implemented response for the configured method and operation without arguments."""
         return _ni(method, path, operation_id)
 
     return _f
 
 
 def _make_ni_body(method: str, path: str, operation_id: str) -> Callable[[Any], Any]:
+    """Create a single-argument handler that returns not implemented response for the specified method, path, and operation ID."""
+
     def _f(_body: Any) -> Any:  # noqa: ARG001 - arg is part of public signature
+        """Handler that returns a not-implemented response, ignoring the request body."""
         return _ni(method, path, operation_id)
 
     return _f
@@ -561,6 +579,7 @@ def _safe_call(endpoint: str, operation_id: str, f: Callable[[], Any]) -> Any:
 
 
 def _health_impl() -> Any:
+    """Perform health checks and return an HTTP JSON response with the health status."""
     # local imports to minimize import-time surface
     from fastapi.responses import JSONResponse
 
@@ -571,12 +590,14 @@ def _health_impl() -> Any:
 
 
 def _version_impl() -> Any:
+    """Return the version information for the service."""
     from .health import version_info
 
     return version_info()
 
 
 def _metrics_impl() -> Any:
+    """Return the metrics snapshot for monitoring."""
     from .metrics import minimal_snapshot
 
     return minimal_snapshot()
@@ -601,26 +622,21 @@ translate_post = _make_ni_body("POST", "/translate", "translate_translate_post")
 translate_post.__name__ = "translate_post"
 translate_post.__doc__ = "POST /translate — operationId: translate_translate_post"
 
-
 file_search_keyword_post = _make_ni_body("POST", "/file-search/keyword", "keyword_search_file_search_keyword_post")
 file_search_keyword_post.__name__ = "file_search_keyword_post"
 file_search_keyword_post.__doc__ = "POST /file-search/keyword — operationId: keyword_search_file_search_keyword_post"
-
 
 file_search_vector_post = _make_ni_body("POST", "/file-search/vector", "vector_search_file_search_vector_post")
 file_search_vector_post.__name__ = "file_search_vector_post"
 file_search_vector_post.__doc__ = "POST /file-search/vector — operationId: vector_search_file_search_vector_post"
 
-
 file_search_hybrid_post = _make_ni_body("POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post")
 file_search_hybrid_post.__name__ = "file_search_hybrid_post"
 file_search_hybrid_post.__doc__ = "POST /file-search/hybrid — operationId: hybrid_search_file_search_hybrid_post"
 
-
 file_index_stats_get = _make_ni_noargs("GET", "/file-index/stats", "file_index_stats_file_index_stats_get")
 file_index_stats_get.__name__ = "file_index_stats_get"
 file_index_stats_get.__doc__ = "GET /file-index/stats — operationId: file_index_stats_file_index_stats_get"
-
 
 config_dirs_get = _make_ni_noargs("GET", "/config/dirs", "get_config_dirs_config_dirs_get")
 config_dirs_get.__name__ = "config_dirs_get"
@@ -636,16 +652,13 @@ ai_chat_post = _make_ni_body("POST", "/ai/chat", "ai_chat_ai_chat_post")
 ai_chat_post.__name__ = "ai_chat_post"
 ai_chat_post.__doc__ = "POST /ai/chat — operationId: ai_chat_ai_chat_post"
 
-
 router_execute_post = _make_ni_body("POST", "/router/execute", "router_execute_router_execute_post")
 router_execute_post.__name__ = "router_execute_post"
 router_execute_post.__doc__ = "POST /router/execute — operationId: router_execute_router_execute_post"
 
-
 router_execute_by_post = _make_ni_body("POST", "/router/executeBy", "router_execute_by_router_executeBy_post")
 router_execute_by_post.__name__ = "router_execute_by_post"
 router_execute_by_post.__doc__ = "POST /router/executeBy — operationId: router_execute_by_router_executeBy_post"
-
 
 router_metrics_get = _make_ni_noargs("GET", "/router/metrics", "router_metrics_router_metrics_get")
 router_metrics_get.__name__ = "router_metrics_get"

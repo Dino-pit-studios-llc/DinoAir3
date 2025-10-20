@@ -49,8 +49,9 @@ class NamingFixer:
         "SD": "sd",
     }
 
-    def __init__(self, dry_run: bool = False):
+    def __init__(self, dry_run: bool = False, project_root: Path | None = None):
         self.dry_run = dry_run
+        self.project_root = (project_root or Path.cwd()).resolve()
         self.stats = {
             "files_processed": 0,
             "files_modified": 0,
@@ -61,7 +62,7 @@ class NamingFixer:
 
     @staticmethod
     def find_python_files(root_dir: Path) -> list[Path]:
-        """Find all Python source files."""
+        """Find all Python source files in the given root directory, excluding common build and virtual environment folders."""
         py_files = list(root_dir.rglob("*.py"))
         # Exclude common directories
         excluded = {"__pycache__", ".venv", "venv", "env", ".tox", "build", "dist"}
@@ -69,25 +70,23 @@ class NamingFixer:
 
     def validate_python_syntax(self, file_path: Path) -> tuple[bool, str]:
         """
-        Validate Python syntax.
+        Validate Python syntax and ensure file is within project bounds.
 
         Returns:
             Tuple of (is_valid, error_message)
         """
-        # Whitelist allowed filenames and construct safe path
-        allowed_files = {"script1.py", "script2.py"}
-        trusted_base_dir = Path("/trusted/scripts")
-        filename = file_path.name
-        if filename not in allowed_files:
-            return False, f"Filename '{filename}' is not permitted."
-        safe_path = (trusted_base_dir / filename).resolve()
-        trusted_base_dir_resolved = trusted_base_dir.resolve()
-        # Ensure that the file is within trusted_base_dir
         try:
-            if not str(safe_path).startswith(
-                str(trusted_base_dir_resolved) + str(safe_path.anchor if trusted_base_dir_resolved.anchor else "")
-            ):
-                return False, f"Access to '{safe_path}' is not permitted."
+            # Resolve path to absolute, canonical form
+            safe_path = file_path.resolve()
+
+            # Verify the file is within the project root to prevent path traversal
+            try:
+                # This will raise ValueError if safe_path is not relative to project_root
+                safe_path.relative_to(self.project_root)
+            except ValueError:
+                return False, f"File is outside project bounds: {safe_path.name}"
+
+            # Read and parse content
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
             ast.parse(content)
@@ -97,7 +96,8 @@ class NamingFixer:
         except Exception as e:
             return False, str(e)
 
-    def camel_to_snake(self, name: str) -> str:
+    @staticmethod
+    def camel_to_snake(name: str) -> str:
         """Convert camelCase or PascalCase to snake_case."""
         # Insert underscore before uppercase letters
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
@@ -127,7 +127,7 @@ class NamingFixer:
         return False
 
     def get_renamed_name(self, name: str, context: str) -> str:
-        """Get the renamed version of a name."""
+        """Get the renamed version of a name based on context mappings or auto-conversion."""
         if context == "field" and name in self.field_renames:
             return self.field_renames[name]
         if context == "method" and name in self.method_renames:
@@ -140,7 +140,7 @@ class NamingFixer:
 
     def find_identifiers_to_rename(self, content: str) -> dict[str, str]:
         """
-        Find all identifiers that need renaming.
+        Find all identifiers that need renaming in the provided Python source content.
 
         Returns:
             Dict mapping old_name -> new_name
@@ -151,122 +151,133 @@ class NamingFixer:
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
-                # Check class attributes
                 if isinstance(node, ast.ClassDef):
-                    for item in node.body:
-                        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
-                            name = item.target.id
-                            if self.should_rename(name, "field"):
-                                renames[name] = self.get_renamed_name(name, "field")
-                        elif isinstance(item, ast.Assign):
-                            for target in item.targets:
-                                if isinstance(target, ast.Name):
-                                    name = target.id
-                                    if self.should_rename(name, "field"):
-                                        renames[name] = self.get_renamed_name(name, "field")
-
-                # Check function/method definitions
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    # Method names
-                    if self.should_rename(node.name, "method"):
-                        renames[node.name] = self.get_renamed_name(node.name, "method")
-
-                    # Parameters
-                    for arg in node.args.args:
-                        if self.should_rename(arg.arg, "param"):
-                            renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
-
+                    self._process_class(node, renames)
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    self._process_function(node, renames)
         except SyntaxError:
             pass  # File may have syntax errors, skip AST analysis
 
         return renames
 
-    def apply_renames(self, content: str, renames: dict[str, str]) -> tuple[str, int]:
-        """
-        Apply renames to content using word boundaries.
+        @staticmethod
+        def _get_field_names(item: ast.AST) -> list[str]:
+            """Get field names from an AST assignment or annotated assignment node."""
+            if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                return [item.target.id]
+            if isinstance(item, ast.Assign):
+                return [target.id for target in item.targets if isinstance(target, ast.Name)]
+            return []
 
-        Returns:
-            Tuple of (new_content, replacement_count)
-        """
-        if not renames:
-            return content, 0
+        def _process_class(self, node: ast.ClassDef, renames: dict[str, str]) -> None:
+            """Process a class AST node to collect field renames into the renames dict."""
+            for item in node.body:
+                for name in self._get_field_names(item):
+                    if self.should_rename(name, "field"):
+                        renames[name] = self.get_renamed_name(name, "field")
 
-        count = 0
-        for old_name, new_name in renames.items():
-            # Use word boundaries to avoid partial matches
-            pattern = r"\b" + re.escape(old_name) + r"\b"
-            new_content, num_replacements = re.subn(pattern, new_name, content)
-            if num_replacements > 0:
-                content = new_content
-                count += num_replacements
+        def _process_function(self, node: ast.AST, renames: dict[str, str]) -> None:
+            """Process a function AST node to collect method and parameter renames into the renames dict."""
+            if self.should_rename(node.name, "method"):
+                renames[node.name] = self.get_renamed_name(node.name, "method")
+            for arg in node.args.args:
+                if self.should_rename(arg.arg, "param"):
+                    renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
 
-        return content, count
+        @staticmethod
+        def apply_renames(content: str, renames: dict[str, str]) -> tuple[str, int]:
+            """
+            Apply renames to content using word boundaries.
 
-    def process_file(self, file_path: Path) -> bool:
-        """
-        Process a single Python file.
-
-        Returns:
-            True if file was successfully processed, False otherwise
-        """
-        print(f"\nProcessing: {file_path}")
-        self.stats["files_processed"] += 1
-
-        try:
-            # Read original content
-            with open(file_path, encoding="utf-8") as f:
-                original_content = f.read()
-
-            # Validate original file first
-            is_valid, error = self.validate_python_syntax(file_path)
-            if not is_valid:
-                msg = f"  ⚠ Original file has syntax errors, skipping: {error}"
-                print(msg)
-                self.stats["errors"].append((str(file_path), msg))
-                return False
-
-            # Find identifiers to rename
-            renames = self.find_identifiers_to_rename(original_content)
-
+            Returns:
+                Tuple of (new_content, replacement_count)
+            """
             if not renames:
-                print("  ✓ No naming issues found")
-                return True
+                return content, 0
 
-            print(f"  Found {len(renames)} identifier(s) to rename:")
-            for old, new in renames.items():
-                print(f"    {old} -> {new}")
+            count = 0
+            for old_name, new_name in renames.items():
+                # Use word boundaries to avoid partial matches
+                pattern = r"\b" + re.escape(old_name) + r"\b"
+                new_content, num_replacements = re.subn(pattern, new_name, content)
+                if num_replacements > 0:
+                    content = new_content
+                    count += num_replacements
 
-            # Apply renames
-            new_content, total_replacements = self.apply_renames(original_content, renames)
+            return content, count
 
-            if total_replacements == 0:
-                print("  ✓ No changes needed")
-                return True
+        @staticmethod
+        def _sanitize_path_for_logging(file_path: Path) -> str:
+            """Sanitize file path for logging by returning only the filename or 'unknown'."""
+            return file_path.name if file_path else "unknown"
 
-            # Create temporary file with fixed content
-            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".py", delete=False) as tmp_file:
-                tmp_path = Path(tmp_file.name)
-                tmp_file.write(new_content)
+        def process_file(self, file_path: Path) -> bool:
+            """
+            Process a single Python file to apply naming convention fixes.
 
-            # Validate fixed content
-            is_valid, error = self.validate_python_syntax(tmp_path)
+            Returns:
+                True if file was successfully processed, False otherwise
+            """
+            # Sanitize path for logging - only show filename
+            safe_log_path = self._sanitize_path_for_logging(file_path)
+            print(f"\nProcessing: {safe_log_path}")
+            self.stats["files_processed"] += 1
 
-            if not is_valid:
-                msg = f"  ✗ Fixed file failed validation: {error}"
-                print(msg)
-                self.stats["errors"].append((str(file_path), msg))
-                self.stats["files_failed_validation"] += 1
-                tmp_path.unlink()
-                return False
+            try:
+                # Read original content
+                with open(file_path, encoding="utf-8") as f:
+                    original_content = f.read()
 
-            # Apply changes if not dry-run
-            if self.dry_run:
-                print(f"  ✓ [DRY RUN] Would make {total_replacements} replacement(s)")
-                tmp_path.unlink()
-            else:
-                # Backup original file
-                backup_path = file_path.with_suffix(file_path.suffix + ".bak")
-                shutil.copy2(file_path, backup_path)
+                # Validate original file first
+                is_valid, error = self.validate_python_syntax(file_path)
+                if not is_valid:
+                    msg = f"  ⚠ Original file has syntax errors, skipping: {error}"
+                    print(msg)
+                    self.stats["errors"].append((safe_log_path, msg))
+                    return False
+
+                # Find identifiers to rename
+                renames = self.find_identifiers_to_rename(original_content)
+
+                if not renames:
+                    print("  ✓ No naming issues found")
+                    return True
+
+                print(f"  Found {len(renames)} identifier(s) to rename:")
+                for old, new in renames.items():
+                    print(f"    {old} -> {new}")
+
+                # Apply renames
+                new_content, total_replacements = self.apply_renames(original_content, renames)
+
+                if total_replacements == 0:
+                    print("  ✓ No changes needed")
+                    return True
+
+                # Create temporary file with fixed content
+                with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".py", delete=False) as tmp_file:
+                    tmp_path = Path(tmp_file.name)
+                    tmp_file.write(new_content)
+
+                # Validate fixed content
+                is_valid, error = self.validate_python_syntax(tmp_path)
+
+                if not is_valid:
+                    msg = f"  ✗ Fixed file failed validation: {error}"
+                    print(msg)
+                    self.stats["errors"].append((safe_log_path, msg))
+                    self.stats["files_failed_validation"] += 1
+                    tmp_path.unlink()
+                    return False
+
+                # Apply changes if not dry-run
+                if self.dry_run:
+                    print(f"  ✓ [DRY RUN] Would make {total_replacements} replacement(s)")
+                    tmp_path.unlink()
+                else:
+                    # Backup original file
+                    backup_path = file_path.with_suffix(file_path.suffix + ".bak")
+                    shutil.copy2(file_path, backup_path)
 
                 # Apply changes
                 shutil.copy2(tmp_path, file_path)
@@ -278,13 +289,13 @@ class NamingFixer:
                 self.stats["files_modified"] += 1
                 self.stats["replacements"] += total_replacements
 
-            return True
+                return True
 
-        except Exception as e:
-            msg = f"  ✗ Error processing file: {str(e)}"
-            print(msg)
-            self.stats["errors"].append((str(file_path), msg))
-            return False
+            except Exception as e:
+                msg = f"  ✗ Error processing file: {str(e)}"
+                print(msg)
+                self.stats["errors"].append((safe_log_path, msg))
+                return False
 
     def print_summary(self):
         """Print summary statistics."""
@@ -298,8 +309,8 @@ class NamingFixer:
 
         if self.stats["errors"]:
             print(f"\nErrors encountered:        {len(self.stats['errors'])}")
-            for file_path, error in self.stats["errors"][:10]:  # Show first 10
-                print(f"  - {file_path}")
+            for safe_path, error in self.stats["errors"][:10]:  # Show first 10, paths already sanitized
+                print(f"  - {safe_path}")
                 print(f"    {error}")
 
         if self.dry_run:
@@ -330,7 +341,10 @@ def main():
 
     args = parser.parse_args()
 
-    fixer = NamingFixer(dry_run=args.dry_run)
+    # Determine project root
+    root_dir = args.root.resolve()
+
+    fixer = NamingFixer(dry_run=args.dry_run, project_root=root_dir)
 
     if args.file:
         # Process single file
@@ -344,7 +358,6 @@ def main():
 
     else:
         # Scan and process all Python files
-        root_dir = args.root.resolve()
         print(f"Scanning for Python files in: {root_dir}")
 
         py_files = fixer.find_python_files(root_dir)
