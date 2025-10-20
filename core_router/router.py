@@ -227,7 +227,8 @@ class ServiceRouter:
         )
         raise exc
 
-    # TODO: Rename method 'check_health' to 'ping_service_health' and update all references in codebase (e.g., calls in execute and monitoring logic).
+    # TODO (refactor): Rename method 'check_health' to 'ping_service_health',
+    # and update all references including event names, execute calls, and monitoring logic.
     def check_health(self, service_name: str) -> dict[str, Any]:
         """
         Check health of a service by pinging its adapter and update registry.
@@ -262,7 +263,8 @@ class ServiceRouter:
         # Return latest snapshot (defensive copy via dict())
         return dict(self._registry.get_by_name(service_name).health or {})
 
-    # TODO: Rename helper '_extracted_from_check_health_19' to 'handle_check_health_error', wire up its usage in 'check_health' and update callers accordingly.
+    # TODO (refactor): Rename helper '_extracted_from_check_health_19' to 'handle_check_health_error',
+    # integrate it into check_health exception flow, and update all callers accordingly.
     def _extracted_from_check_health_19(
         self,
         started: float,
