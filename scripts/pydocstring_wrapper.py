@@ -32,7 +32,7 @@ class PydocstringWrapper:
         try:
             # Resolve path to prevent traversal
             safe_path = file_path.resolve()
-            
+
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
 

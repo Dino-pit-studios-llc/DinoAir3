@@ -78,14 +78,14 @@ class NamingFixer:
         try:
             # Resolve path to absolute, canonical form
             safe_path = file_path.resolve()
-            
+
             # Verify the file is within the project root to prevent path traversal
             try:
                 # This will raise ValueError if safe_path is not relative to project_root
                 safe_path.relative_to(self.project_root)
             except ValueError:
                 return False, f"File is outside project bounds: {safe_path.name}"
-            
+
             # Read and parse content
             with open(safe_path, encoding="utf-8") as f:
                 content = f.read()
@@ -338,7 +338,7 @@ def main():
 
     # Determine project root
     root_dir = args.root.resolve()
-    
+
     fixer = NamingFixer(dry_run=args.dry_run, project_root=root_dir)
 
     if args.file:

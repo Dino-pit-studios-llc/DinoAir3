@@ -219,8 +219,7 @@ def test_network_security():
 
         # Test if small team functions exist
         try:
-            from utils.network_security import \
-                create_small_team_security_config
+            from utils.network_security import create_small_team_security_config
 
             small_team_config = create_small_team_security_config()
             rate_limit = small_team_config.get("rate_limit_per_minute", 600)
@@ -243,7 +242,7 @@ def test_network_security():
 
 def test_security_configuration():
     """Test overall security configuration."""
-    print("\n⚙️  Testing Security Configuration..." )
+    print("\n⚙️  Testing Security Configuration...")
 
     try:
         from utils.security_config import SecurityConfig
@@ -383,6 +382,7 @@ def run_security_validation():
     report_security_validation_results(validation_results, passed_tests, total_tests)
 
     return validation_results
+
 
 if __name__ == "__main__":
     try:

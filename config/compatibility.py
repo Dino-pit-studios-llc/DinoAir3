@@ -1,4 +1,4 @@
-﻿"""
+"""
 Configuration Compatibility Layer for DinoAir
 
 Provides backward-compatible imports for configuration management
@@ -14,7 +14,7 @@ from .versioned_config import VersionedConfigManager, get_config
 class CompatibilityConfigLoader:
     """
     Backward-compatible wrapper around VersionedConfigManager.
-    
+
     Provides the same interface as the old ConfigLoader class.
     """
 
@@ -26,7 +26,7 @@ class CompatibilityConfigLoader:
             config_path: Path to configuration file (optional)
         """
         self._config_manager = get_config()
-        
+
         # If a custom config path is provided, initialize with it
         if config_path is not None:
             base_dir = Path(__file__).parent.parent
