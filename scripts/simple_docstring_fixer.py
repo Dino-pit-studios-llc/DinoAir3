@@ -6,7 +6,6 @@ Fixes PY-D0003 warnings by adding missing docstrings to Python files.
 Usage:
     python scripts/simple_docstring_fixer.py [directory_or_file]
 """
-
 import argparse
 import ast
 import os
@@ -117,39 +116,15 @@ class SimpleDocstringFixer:
         """
         missing = []
 
-        # Check module level
-        has_module_docstring = (
-            len(tree.body) > 0
-            and isinstance(tree.body[0], ast.Expr)
-            and isinstance(tree.body[0].value, ast.Constant)
-            and isinstance(tree.body[0].value.value, str)
-        )
-
-        if not has_module_docstring:
+        if not self._has_module_docstring(tree):
             missing.append(("module", 0, "module", 0))
 
-        # Walk the AST to find classes and functions
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if not self._has_docstring(node):
-                    missing.append(("class", node.lineno, node.name, 8))  # 8 spaces for class docstring
-
-                # Check methods within the class
-                for child in node.body:
-                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if not self._has_docstring(child) and not child.name.startswith("_"):
-                            missing.append(("method", child.lineno, child.name, 12))  # 12 spaces for method docstring
-
+                missing.extend(self._find_missing_for_class(node))
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Only top-level functions (not nested or methods)
-                if (
-                    not self._has_docstring(node)
-                    and not node.name.startswith("_")
-                    and not node.name.startswith("test_")
-                    and self._is_top_level(node, tree)
-                ):
-                    missing.append(("function", node.lineno, node.name, 8))  # 8 spaces for function docstring
-
+                if self._should_add_for_function(node, tree):
+                    missing.append(("function", node.lineno, node.name, 8))
         return missing
 
     @staticmethod
@@ -181,6 +156,35 @@ class SimpleDocstringFixer:
             True if function is at module level
         """
         return func_node in tree.body
+
+    def _has_module_docstring(self, tree) -> bool:
+        """Check if module has a docstring."""
+        return (
+            len(tree.body) > 0
+            and isinstance(tree.body[0], ast.Expr)
+            and isinstance(tree.body[0].value, ast.Constant)
+            and isinstance(tree.body[0].value.value, str)
+        )
+
+    def _find_missing_for_class(self, node) -> list[tuple]:
+        """Find missing docstrings in a class and its methods."""
+        missing = []
+        if not self._has_docstring(node):
+            missing.append(("class", node.lineno, node.name, 8))
+        for child in node.body:
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if not self._has_docstring(child) and not child.name.startswith("_"):
+                    missing.append(("method", child.lineno, child.name, 12))
+        return missing
+
+    def _should_add_for_function(self, node, tree) -> bool:
+        """Determine if a top-level function is missing a docstring."""
+        return (
+            not self._has_docstring(node)
+            and not node.name.startswith("_")
+            and not node.name.startswith("test_")
+            and self._is_top_level(node, tree)
+        )
 
     def _generate_simple_docstring(self, item_type: str, name: str, indent: int) -> str:
         """Generate a simple docstring.

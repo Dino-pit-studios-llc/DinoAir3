@@ -80,6 +80,7 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:
@@ -159,7 +160,7 @@ class PydocstringWrapper:
             print(f"Error inserting docstring into {file_path}:{line_number}: {e}")
             return False
 
-    def generate_docstring(self, file_path: Path, line_number: int) -> str:
+    def generate_docstring_simple(self, file_path: Path, line_number: int) -> str:
         """Generate a docstring for a function at the specified line.
         Args:
             file_path: Path to the Python file
@@ -179,6 +180,7 @@ class PydocstringWrapper:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                check=True,
             )
 
             if result.returncode == 0:

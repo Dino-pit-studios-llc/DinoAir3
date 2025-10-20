@@ -150,37 +150,37 @@ class NamingFixer:
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
-                # Check class attributes
                 if isinstance(node, ast.ClassDef):
-                    for item in node.body:
-                        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
-                            name = item.target.id
-                            if self.should_rename(name, "field"):
-                                renames[name] = self.get_renamed_name(name, "field")
-                        elif isinstance(item, ast.Assign):
-                            for target in item.targets:
-                                if isinstance(target, ast.Name):
-                                    name = target.id
-                                    if self.should_rename(name, "field"):
-                                        renames[name] = self.get_renamed_name(name, "field")
-
-                # Check function/method definitions
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    # Method names
-                    if self.should_rename(node.name, "method"):
-                        renames[node.name] = self.get_renamed_name(node.name, "method")
-
-                    # Parameters
-                    for arg in node.args.args:
-                        if self.should_rename(arg.arg, "param"):
-                            renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
-
+                    self._process_class(node, renames)
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    self._process_function(node, renames)
         except SyntaxError:
             pass  # File may have syntax errors, skip AST analysis
 
         return renames
 
-    def apply_renames(self, content: str, renames: dict[str, str]) -> tuple[str, int]:
+    def _get_field_names(self, item: ast.AST) -> list[str]:
+        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+            return [item.target.id]
+        if isinstance(item, ast.Assign):
+            return [target.id for target in item.targets if isinstance(target, ast.Name)]
+        return []
+
+    def _process_class(self, node: ast.ClassDef, renames: dict[str, str]) -> None:
+        for item in node.body:
+            for name in self._get_field_names(item):
+                if self.should_rename(name, "field"):
+                    renames[name] = self.get_renamed_name(name, "field")
+
+    def _process_function(self, node: ast.AST, renames: dict[str, str]) -> None:
+        if self.should_rename(node.name, "method"):
+            renames[node.name] = self.get_renamed_name(node.name, "method")
+        for arg in node.args.args:
+            if self.should_rename(arg.arg, "param"):
+                renames[arg.arg] = self.get_renamed_name(arg.arg, "param")
+
+    @staticmethod
+    def apply_renames(content: str, renames: dict[str, str]) -> tuple[str, int]:
         """
         Apply renames to content using word boundaries.
 

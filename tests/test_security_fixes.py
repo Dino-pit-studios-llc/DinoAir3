@@ -51,12 +51,12 @@ def test_path_sanitization():
 
     # Verify no full paths in output
     if "kevin" in output.lower() or "users" in output.lower():
-        print(f"✗ FAILED: Full path found in output:")
+        print("✗ FAILED: Full path found in output:")
         print(output)
         return False
 
     if "sample.py" in output:
-        print(f"✓ Only filename appears in output (no full path)")
+        print("✓ Only filename appears in output (no full path)")
 
     print("\n✓ All path sanitization tests passed!")
     return True
@@ -73,7 +73,7 @@ def test_path_validation():
     is_valid, error = fixer.validate_python_syntax(test_file)
 
     if is_valid:
-        print(f"✓ Valid Python file correctly validated")
+        print("✓ Valid Python file correctly validated")
     else:
         print(f"✗ FAILED: Valid file rejected: {error}")
         return False
@@ -97,9 +97,8 @@ def main():
         if test1 and test2:
             print("✓ ALL TESTS PASSED - Security fixes verified!")
             return 0
-        else:
-            print("✗ SOME TESTS FAILED - Review output above")
-            return 1
+        print("✗ SOME TESTS FAILED - Review output above")
+        return 1
     except Exception as e:
         print(f"\n✗ TEST ERROR: {e}")
         import traceback

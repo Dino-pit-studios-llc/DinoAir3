@@ -35,6 +35,7 @@ AdapterFactory = Callable[[ServiceDescriptor], ServiceAdapter]
 
 
 def _typed_make_adapter(kind: str, cfg: dict[str, Any]) -> ServiceAdapter:
+    """Return a ServiceAdapter instance using the specified kind and configuration."""
     return make_adapter(kind, cfg)
 
 
@@ -86,7 +87,6 @@ def set_router(router: ServiceRouter | None) -> None:
     """Set or reset the process-wide ServiceRouter singleton (allow None for tests)."""
     with _router_singleton_lock:
         _router_singleton = router
-
 
 __all__ = [
     "ServiceRouter",
@@ -205,6 +205,7 @@ class ServiceRouter:
             return None
         except Exception as exc:
             self._extracted_from_execute_77(started, desc, exc)
+            return None
 
     def _extracted_from_execute_77(
         self,
@@ -212,6 +213,7 @@ class ServiceRouter:
         desc: ServiceDescriptor,
         exc: Exception,
     ) -> NoReturn:
+        """Handle execution errors: record error, update health to DOWN, log event, and re-raise the exception."""
         result = int(round((time.monotonic() - started) * 1000))
         record_error(desc.name, result, str(exc))
         self._registry.update_health(desc.name, HealthState.DOWN, latency_ms=result, error=str(exc))
@@ -267,6 +269,7 @@ class ServiceRouter:
         event: str,
         exc: Exception,
     ) -> NoReturn:
+        """Log a failed health check event and re-raise the exception."""
         result = int(round((time.monotonic() - started) * 1000))
         self._log_event(
             service=service_name,
@@ -409,6 +412,7 @@ class ServiceRouter:
 
     @staticmethod
     def _to_positive_int(v: Any) -> int | None:
+        """Attempt to convert the input to a positive integer, returning None for non-positive or invalid values."""
         try:
             if v is None:
                 return None
@@ -469,6 +473,7 @@ class ServiceRouter:
         """
 
         def _lat(d: ServiceDescriptor) -> float:
+            """Extract the latency in milliseconds from a ServiceDescriptor's health info, or return infinity on error."""
             h = getattr(d, "health", None)
             if isinstance(h, dict):
                 md = cast("dict[str, Any]", h)
@@ -516,6 +521,7 @@ class ServiceRouter:
 
 
 def _internal_error_response(exc: Exception, endpoint: str, operation_id: str) -> Any:
+    """Return a standardized internal error response for the given exception and endpoint."""
     from .errors import error_response  # local import to avoid hard dep at import time
 
     return error_response(
@@ -525,25 +531,31 @@ def _internal_error_response(exc: Exception, endpoint: str, operation_id: str) -
         error="Internal Error",
         details=None,
         endpoint=endpoint,
-        operationId=operation_id,
+        operation_id=operation_id,
         requestId=None,
     )
 
 
 def _ni(method: str, path: str, operation_id: str) -> Any:
+    """Return a not implemented response for the given HTTP method, path, and operation ID."""
     return not_implemented(method, path, operation_id)
 
 
 # In-file helpers to reduce duplicate endpoint wrappers
+
 def _make_ni_noargs(method: str, path: str, operation_id: str) -> Callable[[], Any]:
+    """Create a no-arguments handler that returns a not implemented response for the specified method, path, and operation ID."""
     def _f() -> Any:
+        """Invoke the not-implemented response for the configured method and operation without arguments."""
         return _ni(method, path, operation_id)
 
     return _f
 
 
 def _make_ni_body(method: str, path: str, operation_id: str) -> Callable[[Any], Any]:
+    """Create a single-argument handler that returns not implemented response for the specified method, path, and operation ID."""
     def _f(_body: Any) -> Any:  # noqa: ARG001 - arg is part of public signature
+        """Handler that returns a not-implemented response, ignoring the request body."""
         return _ni(method, path, operation_id)
 
     return _f
@@ -561,6 +573,7 @@ def _safe_call(endpoint: str, operation_id: str, f: Callable[[], Any]) -> Any:
 
 
 def _health_impl() -> Any:
+    """Perform health checks and return an HTTP JSON response with the health status."""
     # local imports to minimize import-time surface
     from fastapi.responses import JSONResponse
 
@@ -571,16 +584,17 @@ def _health_impl() -> Any:
 
 
 def _version_impl() -> Any:
+    """Return the version information for the service."""
     from .health import version_info
 
     return version_info()
 
 
 def _metrics_impl() -> Any:
+    """Return the metrics snapshot for monitoring."""
     from .metrics import minimal_snapshot
 
     return minimal_snapshot()
-
 
 # -------------------------
 # HTTP endpoint placeholders (per OpenAPI spec)
@@ -596,31 +610,25 @@ def version_get() -> Any:
     """GET /version — operationId: version_version_get"""
     return _safe_call("GET /version", "version_version_get", _version_impl)
 
-
 translate_post = _make_ni_body("POST", "/translate", "translate_translate_post")
 translate_post.__name__ = "translate_post"
 translate_post.__doc__ = "POST /translate — operationId: translate_translate_post"
-
 
 file_search_keyword_post = _make_ni_body("POST", "/file-search/keyword", "keyword_search_file_search_keyword_post")
 file_search_keyword_post.__name__ = "file_search_keyword_post"
 file_search_keyword_post.__doc__ = "POST /file-search/keyword — operationId: keyword_search_file_search_keyword_post"
 
-
 file_search_vector_post = _make_ni_body("POST", "/file-search/vector", "vector_search_file_search_vector_post")
 file_search_vector_post.__name__ = "file_search_vector_post"
 file_search_vector_post.__doc__ = "POST /file-search/vector — operationId: vector_search_file_search_vector_post"
-
 
 file_search_hybrid_post = _make_ni_body("POST", "/file-search/hybrid", "hybrid_search_file_search_hybrid_post")
 file_search_hybrid_post.__name__ = "file_search_hybrid_post"
 file_search_hybrid_post.__doc__ = "POST /file-search/hybrid — operationId: hybrid_search_file_search_hybrid_post"
 
-
 file_index_stats_get = _make_ni_noargs("GET", "/file-index/stats", "file_index_stats_file_index_stats_get")
 file_index_stats_get.__name__ = "file_index_stats_get"
 file_index_stats_get.__doc__ = "GET /file-index/stats — operationId: file_index_stats_file_index_stats_get"
-
 
 config_dirs_get = _make_ni_noargs("GET", "/config/dirs", "get_config_dirs_config_dirs_get")
 config_dirs_get.__name__ = "config_dirs_get"
@@ -631,21 +639,17 @@ def metrics_get() -> Any:
     """GET /metrics — operationId: metrics_metrics_get"""
     return _safe_call("GET /metrics", "metrics_metrics_get", _metrics_impl)
 
-
 ai_chat_post = _make_ni_body("POST", "/ai/chat", "ai_chat_ai_chat_post")
 ai_chat_post.__name__ = "ai_chat_post"
 ai_chat_post.__doc__ = "POST /ai/chat — operationId: ai_chat_ai_chat_post"
-
 
 router_execute_post = _make_ni_body("POST", "/router/execute", "router_execute_router_execute_post")
 router_execute_post.__name__ = "router_execute_post"
 router_execute_post.__doc__ = "POST /router/execute — operationId: router_execute_router_execute_post"
 
-
 router_execute_by_post = _make_ni_body("POST", "/router/executeBy", "router_execute_by_router_executeBy_post")
 router_execute_by_post.__name__ = "router_execute_by_post"
 router_execute_by_post.__doc__ = "POST /router/executeBy — operationId: router_execute_by_router_executeBy_post"
-
 
 router_metrics_get = _make_ni_noargs("GET", "/router/metrics", "router_metrics_router_metrics_get")
 router_metrics_get.__name__ = "router_metrics_get"
