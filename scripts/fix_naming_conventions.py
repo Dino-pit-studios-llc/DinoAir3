@@ -352,6 +352,16 @@ def main():
 
     if args.file:
         # Process single file
+        file_path_resolved = args.file.resolve()
+        try:
+            # Python 3.9+: is_relative_to
+            is_within_root = file_path_resolved.is_relative_to(root_dir)
+        except AttributeError:
+            # For Python <3.9, use manual comparison
+            is_within_root = str(file_path_resolved).startswith(str(root_dir))
+        if not is_within_root:
+            print(f"Error: File {file_path_resolved} is outside the root directory {root_dir}")
+            sys.exit(1)
         if not args.file.exists():
             print(f"Error: File not found: {args.file}")
             sys.exit(1)
