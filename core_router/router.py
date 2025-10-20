@@ -227,9 +227,7 @@ class ServiceRouter:
         )
         raise exc
 
-    # TODO (refactor): Rename method 'check_health' to 'ping_service_health',
-    # and update all references including event names, execute calls, and monitoring logic.
-    def check_health(self, service_name: str) -> dict[str, Any]:
+    def ping_service_health(self, service_name: str) -> dict[str, Any]:
         """
         Check health of a service by pinging its adapter and update registry.
 
@@ -238,34 +236,35 @@ class ServiceRouter:
         from .health_utils import ping_with_timing  # Import from decoupled module
 
         started = time.monotonic()
-        desc = self._lookup_desc_or_log_raise(started, service_name, "check_health")
-        kind = self._resolve_kind_or_raise(desc)
+        try:
+            desc = self._lookup_desc_or_log_raise(started, service_name, "ping_service_health")
+            kind = self._resolve_kind_or_raise(desc)
 
-        adapter = self._adapter_for(desc, kind)
+            adapter = self._adapter_for(desc, kind)
 
-        state_str, adapter_ms = ping_with_timing(adapter)
+            state_str, adapter_ms = ping_with_timing(adapter)
 
-        # Convert string state to HealthState enum for registry update
-        state = HealthState(state_str)
+            # Convert string state to HealthState enum for registry update
+            state = HealthState(state_str)
 
-        # Update registry with adapter-reported state and latency
-        self._registry.update_health(desc.name, state, latency_ms=adapter_ms)
+            # Update registry with adapter-reported state and latency
+            self._registry.update_health(desc.name, state, latency_ms=adapter_ms)
 
-        # Event duration includes lookup + construction + ping
-        duration_ms = int(round((time.monotonic() - started) * 1000))
-        self._log_event(
-            service=desc.name,
-            event="check_health",
-            duration_ms=duration_ms,
-            ok=(state == HealthState.HEALTHY),
-        )
+            # Event duration includes lookup + construction + ping
+            duration_ms = int(round((time.monotonic() - started) * 1000))
+            self._log_event(
+                service=desc.name,
+                event="ping_service_health",
+                duration_ms=duration_ms,
+                ok=(state == HealthState.HEALTHY),
+            )
 
-        # Return latest snapshot (defensive copy via dict())
-        return dict(self._registry.get_by_name(service_name).health or {})
+            # Return latest snapshot (defensive copy via dict())
+            return dict(self._registry.get_by_name(service_name).health or {})
+        except Exception as exc:
+            self.handle_check_health_error(started, service_name, "ping_service_health", exc)
 
-    # TODO (refactor): Rename helper '_extracted_from_check_health_19' to 'handle_check_health_error',
-    # integrate it into check_health exception flow, and update all callers accordingly.
-    def _extracted_from_check_health_19(
+    def handle_check_health_error(
         self,
         started: float,
         service_name: str,
@@ -346,12 +345,12 @@ class ServiceRouter:
     def _lookup_desc_or_log_raise(self, started: float, service_name: str, event: str) -> ServiceDescriptor:
         """
         Lookup a service descriptor by name; on ServiceNotFound, log and
-        re-raise via _extracted_from_check_health_19.
+        re-raise via handle_check_health_error.
         """
         try:
             return self._registry.get_by_name(service_name)
         except ServiceNotFound as exc:
-            self._extracted_from_check_health_19(started, service_name, event, exc)
+            self.handle_check_health_error(started, service_name, event, exc)
             return None
 
     @staticmethod

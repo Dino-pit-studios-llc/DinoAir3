@@ -61,106 +61,104 @@ class NamingFixer:
         }
 
     @staticmethod
-    """Module for renaming Python identifiers to snake_case based on specified conventions."""
+    def find_python_files(root_dir: Path) -> list[Path]:
+        """Find all Python source files in the given root directory, excluding common build and virtual environment folders."""
+        py_files = list(root_dir.rglob("*.py"))
+        # Exclude common directories
+        excluded = {"__pycache__", ".venv", "venv", "env", ".tox", "build", "dist"}
+        return [f for f in py_files if not any(ex in f.parts for ex in excluded)]
 
-        def find_python_files(root_dir: Path) -> list[Path]:
-            """Find all Python source files in the given root directory, excluding common build and virtual environment folders."""
-            py_files = list(root_dir.rglob("*.py"))
-            # Exclude common directories
-            excluded = {"__pycache__", ".venv", "venv", "env", ".tox", "build", "dist"}
-            return [f for f in py_files if not any(ex in f.parts for ex in excluded)]
+    def validate_python_syntax(self, file_path: Path) -> tuple[bool, str]:
+        """
+        Validate Python syntax and ensure file is within project bounds.
 
-        def validate_python_syntax(self, file_path: Path) -> tuple[bool, str]:
-            """
-            Validate Python syntax and ensure file is within project bounds.
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
+        try:
+            # Resolve path to absolute, canonical form
+            safe_path = file_path.resolve()
 
-            Returns:
-                Tuple of (is_valid, error_message)
-            """
+            # Verify the file is within the project root to prevent path traversal
             try:
-                # Resolve path to absolute, canonical form
-                safe_path = file_path.resolve()
+                # This will raise ValueError if safe_path is not relative to project_root
+                safe_path.relative_to(self.project_root)
+            except ValueError:
+                return False, f"File is outside project bounds: {safe_path.name}"
 
-                # Verify the file is within the project root to prevent path traversal
-                try:
-                    # This will raise ValueError if safe_path is not relative to project_root
-                    safe_path.relative_to(self.project_root)
-                except ValueError:
-                    return False, f"File is outside project bounds: {safe_path.name}"
+            # Read and parse content
+            with open(safe_path, encoding="utf-8") as f:
+                content = f.read()
+            ast.parse(content)
+            return True, ""
+        except SyntaxError as e:
+            return False, f"Syntax error at line {e.lineno}: {e.msg}"
+        except Exception as e:
+            return False, str(e)
 
-                # Read and parse content
-                with open(safe_path, encoding="utf-8") as f:
-                    content = f.read()
-                ast.parse(content)
-                return True, ""
-            except SyntaxError as e:
-                return False, f"Syntax error at line {e.lineno}: {e.msg}"
-            except Exception as e:
-                return False, str(e)
+    @staticmethod
+    def camel_to_snake(name: str) -> str:
+        """Convert camelCase or PascalCase to snake_case."""
+        # Insert underscore before uppercase letters
+        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
-        @staticmethod
-        def camel_to_snake(name: str) -> str:
-            """Convert camelCase or PascalCase to snake_case."""
-            # Insert underscore before uppercase letters
-            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-            return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+    def should_rename(self, name: str, context: str) -> bool:
+        """
+        Determine if a name should be renamed based on context.
 
-        def should_rename(self, name: str, context: str) -> bool:
-            """
-            Determine if a name should be renamed based on context.
+        Args:
+            name: The identifier name
+            context: 'field', 'method', 'param', 'auto'
+        """
+        if context == "auto":
+            # Auto-detect: rename if PascalCase or camelCase
+            return bool(re.match(r"^[a-z]+[A-Z]", name) or re.match(r"^[A-Z][a-z]+[A-Z]", name))
 
-            Args:
-                name: The identifier name
-                context: 'field', 'method', 'param', 'auto'
-            """
-            if context == "auto":
-                # Auto-detect: rename if PascalCase or camelCase
-                return bool(re.match(r"^[a-z]+[A-Z]", name) or re.match(r"^[A-Z][a-z]+[A-Z]", name))
+        if context == "field":
+            return name in self.field_renames or bool(re.match(r"^[A-Z]", name))
 
-            if context == "field":
-                return name in self.field_renames or bool(re.match(r"^[A-Z]", name))
+        if context == "method":
+            return name in self.method_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
 
-            if context == "method":
-                return name in self.method_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
+        if context == "param":
+            return name in self.param_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
 
-            if context == "param":
-                return name in self.param_renames or bool(re.match(r"^[a-z]+[A-Z]", name))
+        return False
 
-            return False
+    def get_renamed_name(self, name: str, context: str) -> str:
+        """Get the renamed version of a name based on context mappings or auto-conversion."""
+        if context == "field" and name in self.field_renames:
+            return self.field_renames[name]
+        if context == "method" and name in self.method_renames:
+            return self.method_renames[name]
+        if context == "param" and name in self.param_renames:
+            return self.param_renames[name]
 
-        def get_renamed_name(self, name: str, context: str) -> str:
-            """Get the renamed version of a name based on context mappings or auto-conversion."""
-            if context == "field" and name in self.field_renames:
-                return self.field_renames[name]
-            if context == "method" and name in self.method_renames:
-                return self.method_renames[name]
-            if context == "param" and name in self.param_renames:
-                return self.param_renames[name]
+        # Auto-convert using camel_to_snake
+        return self.camel_to_snake(name)
 
-            # Auto-convert using camel_to_snake
-            return self.camel_to_snake(name)
+    def find_identifiers_to_rename(self, content: str) -> dict[str, str]:
+        """
+        Find all identifiers that need renaming in the provided Python source content.
 
-        def find_identifiers_to_rename(self, content: str) -> dict[str, str]:
-            """
-            Find all identifiers that need renaming in the provided Python source content.
+        Returns:
+            Dict mapping old_name -> new_name
+        """
+        renames = {}
 
-            Returns:
-                Dict mapping old_name -> new_name
-            """
-            renames = {}
+        try:
+            tree = ast.parse(content)
 
-            try:
-                tree = ast.parse(content)
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    self._process_class(node, renames)
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    self._process_function(node, renames)
+        except SyntaxError:
+            pass  # File may have syntax errors, skip AST analysis
 
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        self._process_class(node, renames)
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        self._process_function(node, renames)
-            except SyntaxError:
-                pass  # File may have syntax errors, skip AST analysis
-
-            return renames
+        return renames
 
         @staticmethod
         def _get_field_names(item: ast.AST) -> list[str]:

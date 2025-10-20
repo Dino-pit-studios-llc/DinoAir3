@@ -31,7 +31,7 @@ class CompatibilityConfigLoader:
         if config_path is not None:
             base_dir = Path(__file__).parent.parent
             self._config_manager = VersionedConfigManager(
-                config_dir=base_dir,
+                base_dir=base_dir,
                 config_file_path=config_path,
                 validate_on_load=False,
             )
