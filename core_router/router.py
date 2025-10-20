@@ -27,7 +27,7 @@ from .errors import NoHealthyService, ServiceNotFound, ValidationError, not_impl
 # Import HealthState for runtime use
 from .health import HealthState
 from .metrics import record_error, record_success
-from .registry_base import ServiceDescriptor, ServiceRegistry
+from .registry import ServiceDescriptor, ServiceRegistry
 from .schemas import validate_input, validate_output
 
 # Type alias for adapter factory to keep signatures short
@@ -58,8 +58,8 @@ def create_router(services_file: str | None = None) -> ServiceRouter:
     # Local imports to avoid cycles
     import os  # local to keep import-time surface minimal
 
-    from .registry_base import ServiceRegistry as LocalServiceRegistry  # noqa: WPS433
-    from .registry_base import auto_register_from_config_and_env
+    from .registry import ServiceRegistry as LocalServiceRegistry  # noqa: WPS433
+    from .registry import auto_register_from_config_and_env
 
     if services_file is not None:
         file_path: str = services_file
