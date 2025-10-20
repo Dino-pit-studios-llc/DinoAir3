@@ -4,9 +4,6 @@ DinoAir Security Validation Script
 Tests all implemented security components to ensure they're working correctly.
 """
 
-# Constants
-DEFAULT_GRADE_POOR = "D (Needs Improvement)"
-
 import json
 import os
 import secrets
@@ -15,6 +12,9 @@ import traceback
 from contextlib import suppress
 from datetime import datetime
 from pathlib import Path
+
+# Constants
+DEFAULT_GRADE_POOR = "D (Needs Improvement)"
 
 # Preferred enhanced logger; fallback to stdlib logging
 try:
@@ -189,8 +189,6 @@ def test_audit_logging():
         with suppress(FileNotFoundError, PermissionError, OSError):
             if test_log_file.exists():
                 test_log_file.unlink()
-
-"""Security validation module providing functions to test various security aspects and generate reports."""
 
         return {
             "logger_created": True,

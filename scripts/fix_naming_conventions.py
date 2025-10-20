@@ -49,8 +49,9 @@ class NamingFixer:
         "SD": "sd",
     }
 
-    def __init__(self, dry_run: bool = False):
+    def __init__(self, dry_run: bool = False, project_root: Path | None = None):
         self.dry_run = dry_run
+        self.project_root = (project_root or Path.cwd()).resolve()
         self.stats = {
             "files_processed": 0,
             "files_modified": 0,
@@ -69,14 +70,21 @@ class NamingFixer:
 
     def validate_python_syntax(self, file_path: Path) -> tuple[bool, str]:
         """
-        Validate Python syntax.
+        Validate Python syntax and ensure file is within project bounds.
 
         Returns:
             Tuple of (is_valid, error_message)
         """
         try:
-            # Resolve path and ensure it's within the project
+            # Resolve path to absolute, canonical form
             safe_path = file_path.resolve()
+            
+            # Verify the file is within the project root to prevent path traversal
+            try:
+                # This will raise ValueError if safe_path is not relative to project_root
+                safe_path.relative_to(self.project_root)
+            except ValueError:
+                return False, f"File is outside project bounds: {safe_path.name}"
             
             # Read and parse content
             with open(safe_path, encoding="utf-8") as f:
@@ -328,7 +336,10 @@ def main():
 
     args = parser.parse_args()
 
-    fixer = NamingFixer(dry_run=args.dry_run)
+    # Determine project root
+    root_dir = args.root.resolve()
+    
+    fixer = NamingFixer(dry_run=args.dry_run, project_root=root_dir)
 
     if args.file:
         # Process single file
@@ -342,7 +353,6 @@ def main():
 
     else:
         # Scan and process all Python files
-        root_dir = args.root.resolve()
         print(f"Scanning for Python files in: {root_dir}")
 
         py_files = fixer.find_python_files(root_dir)
