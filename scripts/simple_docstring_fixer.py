@@ -174,7 +174,11 @@ class SimpleDocstringFixer:
         if not self._has_docstring(node):
             missing.append(("class", node.lineno, node.name, 8))
         for child in node.body:
-            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)) and not self._has_docstring(child) and not child.name.startswith("_"):
+            if (
+                isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and not self._has_docstring(child)
+                and not child.name.startswith("_")
+            ):
                 missing.append(("method", child.lineno, child.name, 12))
         return missing
 
