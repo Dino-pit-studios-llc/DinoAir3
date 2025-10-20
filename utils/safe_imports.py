@@ -30,11 +30,16 @@ except Exception:
 logger = get_logger("utils.safe_imports")
 
 
+def _sanitize_for_log(s: str) -> str:
+    """
+    Remove carriage returns and newlines from strings to mitigate log injection issues.
+    """
+    return s.replace("\r", "").replace("\n", "") if isinstance(s, str) else s
+
+
 # New specific exception for import hardening
 class SafeImportError(ImportError):
     """Raised when a safe import or attribute load is rejected by policy."""
-
-    pass
 
 
 def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
@@ -58,17 +63,33 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     """
     k = str(key or "").strip()
     if not k or k not in allowed:
-        logger.debug("safe_import rejected module key", extra={"key": k})
+        logger.debug("safe_import rejected module key", extra={"key": _sanitize_for_log(k)})
         raise SafeImportError(f"module not allowed: {k!r}")
 
     module_name = str(allowed[k]).strip()
     # Disallow oddities; only dotted absolute module names are permitted.
+    # Additional security: prevent path traversal and ensure alphanumeric + dots + underscores only
     if not module_name or module_name.startswith((".", "/")) or ":" in module_name:
         logger.debug(
             "safe_import invalid module mapping",
-            extra={"key": k, "module": module_name},
+            extra={"key": _sanitize_for_log(k), "module": module_name},
         )
         raise SafeImportError(f"invalid module mapping for key: {k!r}")
+
+    # Enhanced validation: ensure module name contains only safe characters
+    # Allow: letters, numbers, dots, underscores (standard Python module names)
+    import re
+
+    if not re.match(r"^[a-zA-Z0-9_.]+$", module_name):
+        logger.debug(
+            "safe_import unsafe characters in module name",
+            extra={"key": _sanitize_for_log(k), "module": module_name},
+        )
+        raise SafeImportError(f"unsafe module name for key: {k!r}")
+
+    # Additional check: module must be in the explicit allowlist already
+    # This prevents dynamic module loading based on user input
+    # The 'allowed' dict must be statically defined, not from user input
 
     try:
         module = import_module(module_name)
@@ -76,7 +97,7 @@ def safe_import(key: str, allowed: dict[str, str]) -> ModuleType:
     except Exception as exc:
         logger.debug(
             "safe_import import failed",
-            extra={"key": k, "module": module_name, "error": str(exc)},
+            extra={"key": _sanitize_for_log(k), "module": module_name, "error": str(exc)},
         )
         raise SafeImportError(f"import failed for allowed module: {module_name!r}") from exc
 

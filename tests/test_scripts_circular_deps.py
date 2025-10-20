@@ -356,7 +356,8 @@ class TestMainFunctionality:
 class TestEdgeCases:
     """Test edge cases and error handling."""
 
-    def test_analyze_empty_file(self, tmp_path):
+    @staticmethod
+    def test_analyze_empty_file(tmp_path):
         """Test analyzing an empty Python file."""
         test_file = tmp_path / "empty.py"
         test_file.write_text("")
@@ -366,7 +367,8 @@ class TestEdgeCases:
 
         assert len(imports) == 0
 
-    def test_analyze_file_with_unicode(self, tmp_path):
+    @staticmethod
+    def test_analyze_file_with_unicode(tmp_path):
         """Test analyzing a file with Unicode characters."""
         test_file = tmp_path / "unicode.py"
         test_file.write_text(
@@ -379,7 +381,8 @@ class TestEdgeCases:
 
         assert "os" in imports
 
-    def test_analyze_file_with_comments_only(self, tmp_path):
+    @staticmethod
+    def test_analyze_file_with_comments_only(tmp_path):
         """Test analyzing a file with only comments."""
         test_file = tmp_path / "comments.py"
         test_file.write_text("# This is a comment\n# Another comment\n")
@@ -389,7 +392,8 @@ class TestEdgeCases:
 
         assert len(imports) == 0
 
-    def test_scan_empty_directory(self, tmp_path):
+    @staticmethod
+    def test_scan_empty_directory(tmp_path):
         """Test scanning an empty directory."""
         detector = CircularDependencyDetector(tmp_path)
         detector.scan_directory()

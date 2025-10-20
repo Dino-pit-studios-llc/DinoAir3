@@ -206,10 +206,9 @@ class CodeChunker:
         """Create boundary information from an AST node"""
         if CodeChunker._is_definition_or_import(node):
             return CodeChunker._create_definition_boundary(node, lines)
-        elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
             return CodeChunker._create_docstring_boundary(node, lines)
-        else:
-            return CodeChunker._create_toplevel_boundary(node, lines)
+        return CodeChunker._create_toplevel_boundary(node, lines)
 
     @staticmethod
     def _is_definition_or_import(node: ast.AST) -> bool:

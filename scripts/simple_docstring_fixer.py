@@ -9,6 +9,7 @@ Usage:
 
 import argparse
 import ast
+import os
 import sys
 from pathlib import Path
 
@@ -16,15 +17,19 @@ from pathlib import Path
 class SimpleDocstringFixer:
     """Simple docstring fixer for Python files."""
 
-    def __init__(self, dry_run: bool = False):
+    def __init__(self, dry_run: bool = False, root_dir: Path = None):
         """Initialize the fixer.
 
         Args:
             dry_run: If True, only show what would be changed
+            root_dir: Base directory to constrain safe file access
         """
         self.dry_run = dry_run
         self.files_processed = 0
         self.docstrings_added = 0
+        # Use root_dir for path validation. Default to cwd if not given.
+        # Always use resolved absolute path
+        self.root_dir = Path(root_dir or Path.cwd()).resolve()
 
     def fix_file(self, filepath: Path) -> bool:
         """Fix missing docstrings in a Python file.
@@ -36,7 +41,16 @@ class SimpleDocstringFixer:
             True if changes were made, False otherwise
         """
         try:
-            with open(filepath, encoding="utf-8") as f:
+            # Restrict access to files only within self.root_dir
+            abs_filepath = filepath.resolve()
+            abs_root_dir = self.root_dir
+            # Use os.path.commonpath for robust directory check
+            # Both inputs must be strings
+            if os.path.commonpath([str(abs_filepath), str(abs_root_dir)]) != str(abs_root_dir):
+                print(f"Error: Unsafe file path {abs_filepath} is outside allowed directory {abs_root_dir}")
+                return False
+
+            with open(abs_filepath, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -131,7 +145,8 @@ class SimpleDocstringFixer:
 
         return missing
 
-    def _has_docstring(self, node) -> bool:
+    @staticmethod
+    def _has_docstring(node) -> bool:
         """Check if a node has a docstring.
 
         Args:
@@ -147,7 +162,8 @@ class SimpleDocstringFixer:
             and isinstance(node.body[0].value.value, str)
         )
 
-    def _is_top_level(self, func_node, tree) -> bool:
+    @staticmethod
+    def _is_top_level(func_node, tree) -> bool:
         """Check if function is at module level (not nested).
 
         Args:
@@ -173,17 +189,17 @@ class SimpleDocstringFixer:
         indent_str = " " * indent
 
         if item_type == "module":
-            return f'"""{self._make_readable(name)} module."""'
-        elif item_type == "class":
-            return f'{indent_str}"""{self._make_readable(name)} class."""'
-        elif item_type == "function":
-            return f'{indent_str}"""{self._make_readable(name)} function."""'
-        elif item_type == "method":
-            return f'{indent_str}"""{self._make_readable(name)} method."""'
-        else:
-            return f'{indent_str}"""TODO: Add description."""'
+            return f'"""{self._make_readable(name)} module.""'
+        if item_type == "class":
+            return f'{indent_str}"""{self._make_readable(name)} class.""'
+        if item_type == "function":
+            return f'{indent_str}"""{self._make_readable(name)} function.""'
+        if item_type == "method":
+            return f'{indent_str}"""{self._make_readable(name)} method.""'
+        return f'{indent_str}"""TODO: Add description.""'
 
-    def _make_readable(self, name: str) -> str:
+    @staticmethod
+    def _make_readable(name: str) -> str:
         """Convert name to readable format.
 
         Args:
@@ -198,23 +214,23 @@ class SimpleDocstringFixer:
         # Handle common patterns
         if name.endswith("_manager"):
             return name.replace("_", " ").replace(" manager", " manager").title()
-        elif name.endswith("_handler"):
+        if name.endswith("_handler"):
             return name.replace("_", " ").replace(" handler", " handler").title()
-        elif name.startswith("get_"):
+        if name.startswith("get_"):
             return f"Get {name[4:].replace('_', ' ')}"
-        elif name.startswith("set_"):
+        if name.startswith("set_"):
             return f"Set {name[4:].replace('_', ' ')}"
-        elif name.startswith("create_"):
+        if name.startswith("create_"):
             return f"Create {name[7:].replace('_', ' ')}"
-        elif name.startswith("init_"):
+        if name.startswith("init_"):
             return f"Initialize {name[5:].replace('_', ' ')}"
-        elif name.startswith("process_"):
+        if name.startswith("process_"):
             return f"Process {name[8:].replace('_', ' ')}"
-        elif name.startswith("validate_"):
+        if name.startswith("validate_"):
             return f"Validate {name[9:].replace('_', ' ')}"
-        else:
-            # Convert snake_case to Title Case
-            return name.replace("_", " ").title()
+
+        # Convert snake_case to Title Case
+        return name.replace("_", " ").title()
 
     def process_directory(self, directory: Path) -> None:
         """Process all Python files in a directory.
@@ -277,7 +293,9 @@ def main():
         print(f"Error: Path {target_path} does not exist")
         return 1
 
-    fixer = SimpleDocstringFixer(dry_run=args.dry_run)
+    # Set the safe root directory as the fully resolved start path
+    safe_root = target_path.resolve() if target_path.exists() else Path.cwd().resolve()
+    fixer = SimpleDocstringFixer(dry_run=args.dry_run, root_dir=safe_root)
 
     if target_path.is_file():
         if target_path.suffix == ".py":

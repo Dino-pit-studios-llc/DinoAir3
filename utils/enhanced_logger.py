@@ -165,16 +165,12 @@ class EnhancedLogFilter(logging.Filter):
         message = record.getMessage()
 
         # Check exclude patterns
-        for pattern in self.config.exclude_patterns:
-            if pattern in message:
-                return False
+        if any(pattern in message for pattern in self.config.exclude_patterns):
+            return False
 
         # Check include patterns (if specified, only include matching)
         if self.config.include_patterns:
-            for pattern in self.config.include_patterns:
-                if pattern in message:
-                    return True
-            return False
+            return any(pattern in message for pattern in self.config.include_patterns)
 
         return True
 
@@ -377,7 +373,8 @@ class AsyncLogHandler(logging.Handler):
             logger = self._get_fallback_logger()
             logger.debug("%s: %s", error_type, error)
 
-    def _get_fallback_logger(self) -> logging.Logger:
+    @staticmethod
+    def _get_fallback_logger() -> logging.Logger:
         """Get a logger with fallback to standard logging."""
         try:
             return get_logger(__name__)
@@ -485,10 +482,9 @@ class EnhancedLogger:
         """
         if self.config.formatter_config.format_type == "json":
             return EnhancedJsonFormatter(self.config.formatter_config)
-        else:
-            return logging.Formatter(
-                self.config.formatter_config.custom_format or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+        return logging.Formatter(
+            self.config.formatter_config.custom_format or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
     def _create_file_handler(self, log_dir: Path, formatter: logging.Formatter) -> logging.Handler:
         """Create and configure file handler with rotation.
