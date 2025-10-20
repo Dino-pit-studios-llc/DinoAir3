@@ -289,13 +289,13 @@ class NamingFixer:
                 self.stats["files_modified"] += 1
                 self.stats["replacements"] += total_replacements
 
-            return True
+                return True
 
-        except Exception as e:
-            msg = f"  ✗ Error processing file: {str(e)}"
-            print(msg)
-            self.stats["errors"].append((safe_log_path, msg))
-            return False
+            except Exception as e:
+                msg = f"  ✗ Error processing file: {str(e)}"
+                print(msg)
+                self.stats["errors"].append((safe_log_path, msg))
+                return False
 
     def print_summary(self):
         """Print summary statistics."""

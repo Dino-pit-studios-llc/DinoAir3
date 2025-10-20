@@ -263,6 +263,7 @@ class ServiceRouter:
             return dict(self._registry.get_by_name(service_name).health or {})
         except Exception as exc:
             self.handle_check_health_error(started, service_name, "ping_service_health", exc)
+            return None
 
     def handle_check_health_error(
         self,
