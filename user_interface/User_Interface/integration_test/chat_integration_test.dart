@@ -65,9 +65,9 @@ void main() {
               await tester.pump(const Duration(milliseconds: 500));
               waitedMs += 500;
 
-              // Look for any message bubble that's not our sent message
-              final messageBubbles = find.byType(ListTile);
-              if (messageBubbles.evaluate().length > 1) {
+              // Look for specific AI response widget (keyed or by semantic label)
+              final aiResponse = find.byKey(const Key('ai_response_message'));
+              if (aiResponse.evaluate().isNotEmpty) {
                 responseFound = true;
                 break;
               }
@@ -75,8 +75,8 @@ void main() {
 
             if (responseFound) {
               debugPrint('✓ Chat response received successfully');
-              expect(find.byType(ListTile), findsWidgets,
-                  reason: 'Chat messages should be displayed');
+              expect(find.byKey(const Key('ai_response_message')), findsOneWidget,
+                  reason: 'AI response message should be displayed');
             } else {
               debugPrint(
                   '⚠ Chat response not received within ${maxWaitMs}ms');

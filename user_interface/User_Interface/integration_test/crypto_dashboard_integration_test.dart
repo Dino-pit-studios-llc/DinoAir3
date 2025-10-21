@@ -8,6 +8,11 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Crypto Dashboard Integration Tests', () {
+    setUp(() {
+      // Each test needs to launch the app independently
+      // This is handled in each test to ensure proper isolation
+    });
+
     testWidgets(
       'User can view market data and portfolio summary',
       (WidgetTester tester) async {
@@ -27,10 +32,8 @@ void main() {
 
         // Navigate to Crypto Dashboard
         final cryptoTile = find.text('Crypto Dashboard');
-        if (cryptoTile.evaluate().isEmpty) {
-          debugPrint('Crypto Dashboard not available in drawer');
-          return;
-        }
+        expect(cryptoTile, findsOneWidget,
+            reason: 'Crypto Dashboard should be available in drawer - feature missing or renamed');
         await tester.tap(cryptoTile.first);
         await tester.pumpAndSettle(const Duration(seconds: 3));
 
@@ -50,25 +53,15 @@ void main() {
           waitedMs += 500;
         }
 
-        // Check if portfolio summary card exists
+        // Check portfolio summary card exists with assertion
         final portfolioCard = find.textContaining('Portfolio');
-        if (portfolioCard.evaluate().isNotEmpty) {
-          expect(portfolioCard, findsWidgets,
-              reason: 'Portfolio summary should be visible');
-          debugPrint('✓ Portfolio summary displayed');
-        } else {
-          debugPrint('⚠ Portfolio summary not found');
-        }
+        expect(portfolioCard, findsWidgets,
+            reason: 'Portfolio summary should be visible');
 
-        // Check if market data is displayed
+        // Check market data is displayed with assertion
         final marketSection = find.textContaining('Market');
-        if (marketSection.evaluate().isNotEmpty) {
-          expect(marketSection, findsWidgets,
-              reason: 'Market section should be visible');
-          debugPrint('✓ Market data section displayed');
-        } else {
-          debugPrint('⚠ Market section not found');
-        }
+        expect(marketSection, findsWidgets,
+            reason: 'Market section should be visible');
       },
     );
 
@@ -88,27 +81,22 @@ void main() {
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
         final cryptoTile = find.text('Crypto Dashboard');
-        if (cryptoTile.evaluate().isEmpty) {
-          debugPrint('Crypto Dashboard not available');
-          return;
-        }
+        expect(cryptoTile, findsOneWidget,
+            reason: 'Crypto Dashboard should be available - feature missing or renamed');
         await tester.tap(cryptoTile.first);
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
-        // Try to navigate to full market view
+        // Navigate to full market view
         final viewMarketButton = find.textContaining('View Market');
-        if (viewMarketButton.evaluate().isNotEmpty) {
-          await tester.tap(viewMarketButton.first);
-          await tester.pumpAndSettle(const Duration(seconds: 2));
+        expect(viewMarketButton, findsOneWidget,
+            reason: 'View Market button should be present');
+        await tester.tap(viewMarketButton.first);
+        await tester.pumpAndSettle(const Duration(seconds: 2));
 
-          // Verify market screen loaded
-          final marketScreen = find.textContaining('Market');
-          expect(marketScreen, findsWidgets,
-              reason: 'Market screen should be visible');
-          debugPrint('✓ Navigated to Market screen successfully');
-        } else {
-          debugPrint('⚠ View Market button not found');
-        }
+        // Verify market screen loaded
+        final marketScreen = find.textContaining('Market');
+        expect(marketScreen, findsWidgets,
+            reason: 'Market screen should be visible');
       },
     );
 
@@ -128,53 +116,54 @@ void main() {
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
         final cryptoTile = find.text('Crypto Dashboard');
-        if (cryptoTile.evaluate().isEmpty) {
-          debugPrint('Crypto Dashboard not available');
-          return;
-        }
+        expect(cryptoTile, findsOneWidget,
+            reason: 'Crypto Dashboard should be available - feature missing or renamed');
         await tester.tap(cryptoTile.first);
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
-        // Try to add holding
+        // Add holding
         final addButton = find.byKey(const Key('add_holding_button'));
-        if (addButton.evaluate().isNotEmpty) {
-          await tester.tap(addButton);
-          await tester.pumpAndSettle(const Duration(milliseconds: 500));
+        expect(addButton, findsOneWidget,
+            reason: 'Add holding button should be present');
+        await tester.tap(addButton);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
-          // Look for add holding dialog/sheet
-          final coinIdField = find.byKey(const Key('holding_coin_id_field'));
-          if (coinIdField.evaluate().isNotEmpty) {
-            // Enter test data
-            await tester.enterText(coinIdField, 'btc');
-            await tester.pumpAndSettle(const Duration(milliseconds: 200));
+        // Verify add holding dialog/sheet
+        final coinIdField = find.byKey(const Key('holding_coin_id_field'));
+        expect(coinIdField, findsOneWidget,
+            reason: 'Add holding form should be displayed');
 
-            final amountField = find.byKey(const Key('holding_amount_field'));
-            if (amountField.evaluate().isNotEmpty) {
-              await tester.enterText(amountField, '0.5');
-              await tester.pumpAndSettle(const Duration(milliseconds: 200));
-            }
+        // Enter test data
+        await tester.enterText(coinIdField, 'btc');
+        await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-            final priceField =
-                find.byKey(const Key('holding_avg_price_field'));
-            if (priceField.evaluate().isNotEmpty) {
-              await tester.enterText(priceField, '30000');
-              await tester.pumpAndSettle(const Duration(milliseconds: 200));
-            }
+        final amountField = find.byKey(const Key('holding_amount_field'));
+        expect(amountField, findsOneWidget,
+            reason: 'Amount field should be present');
+        await tester.enterText(amountField, '0.5');
+        await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-            // Save holding
-            final saveButton = find.byKey(const Key('save_holding_button'));
-            if (saveButton.evaluate().isNotEmpty) {
-              await tester.tap(saveButton);
-              await tester.pumpAndSettle(const Duration(milliseconds: 500));
-              debugPrint('✓ Portfolio holding added successfully');
-            }
-          } else {
-            debugPrint('⚠ Add holding form not found');
-          }
-        } else {
-          debugPrint(
-              '⚠ Add holding button not found - feature may not be implemented');
-        }
+        final priceField = find.byKey(const Key('holding_avg_price_field'));
+        expect(priceField, findsOneWidget,
+            reason: 'Average price field should be present');
+        await tester.enterText(priceField, '30000');
+        await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+        // Save holding
+        final saveButton = find.byKey(const Key('save_holding_button'));
+        expect(saveButton, findsOneWidget,
+            reason: 'Save button should be present');
+        await tester.tap(saveButton);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+
+        // Verify holding was added (dialog closed)
+        expect(find.byKey(const Key('holding_coin_id_field')), findsNothing,
+            reason: 'Add holding dialog should close after save');
+
+        // Verify holding appears in portfolio list
+        final btcHolding = find.textContaining('BTC');
+        expect(btcHolding, findsWidgets,
+            reason: 'Added BTC holding should be visible in portfolio');
       },
     );
   });

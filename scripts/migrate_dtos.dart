@@ -44,6 +44,13 @@ void main(List<String> arguments) {
   final checkOnly = arguments.contains('--check');
   final autoFix = arguments.contains('--fix');
 
+  // Validate that only one flag is specified
+  if (checkOnly && autoFix) {
+    print('❌ Error: Specify only one of --check or --fix');
+    print('Run with --help for usage information');
+    exit(1);
+  }
+
   if (!checkOnly && !autoFix) {
     print('Please specify --check or --fix');
     print('Run with --help for more information');
@@ -107,29 +114,47 @@ List<DuplicateAnnotationIssue> scanForIssues() {
     final lines = file.readAsLinesSync();
     bool hasFreezed = false;
     int? freezedLine;
+    bool hasJsonSerializable = false;
+    int? jsonLine;
 
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i].trim();
+      final lowerLine = line.toLowerCase();
 
-      if (line.startsWith('@freezed') || line.startsWith('@Freezed')) {
+      // Check for @freezed (case-insensitive)
+      if (lowerLine.startsWith('@freezed')) {
         hasFreezed = true;
         freezedLine = i + 1;
       }
 
-      if (hasFreezed && line.startsWith('@JsonSerializable')) {
+      // Check for @JsonSerializable (case-insensitive)
+      if (lowerLine.startsWith('@jsonserializable')) {
+        hasJsonSerializable = true;
+        jsonLine = i + 1;
+      }
+
+      // If both annotations found, record the issue
+      if (hasFreezed && hasJsonSerializable && freezedLine != null && jsonLine != null) {
         issues.add(DuplicateAnnotationIssue(
           filePath: file.path,
           relativePath: file.path.replaceAll('\\', '/').split('lib/').last,
-          line: i + 1,
-          annotation: line,
-          freezedLine: freezedLine!,
+          line: jsonLine,
+          annotation: lines[jsonLine - 1].trim(),
+          freezedLine: freezedLine,
         ));
+        // Reset to avoid duplicate reporting
+        hasFreezed = false;
+        hasJsonSerializable = false;
+        freezedLine = null;
+        jsonLine = null;
       }
 
       // Reset when we hit a class declaration
       if (line.startsWith('class ')) {
         hasFreezed = false;
+        hasJsonSerializable = false;
         freezedLine = null;
+        jsonLine = null;
       }
     }
   }
@@ -139,14 +164,44 @@ List<DuplicateAnnotationIssue> scanForIssues() {
 
 void fixIssue(DuplicateAnnotationIssue issue) {
   final file = File(issue.filePath);
-  final lines = file.readAsLinesSync();
-
-  // Remove the @JsonSerializable line
-  lines.removeAt(issue.line - 1);
-
-  file.writeAsStringSync(lines.join('\n') + '\n');
-
-  print('✅ Fixed: ${issue.relativePath}');
+  
+  try {
+    // Detect line ending style
+    final content = file.readAsStringSync();
+    final lineEnding = content.contains('\r\n') ? '\r\n' : '\n';
+    
+    final lines = file.readAsLinesSync();
+    final startLine = issue.line - 1;
+    
+    // Find the extent of the @JsonSerializable annotation
+    // It may span multiple lines if it has parameters
+    int endLine = startLine;
+    
+    // Check if annotation has opening parenthesis
+    if (lines[startLine].contains('(')) {
+      // Find closing parenthesis
+      int parenCount = lines[startLine].split('(').length - lines[startLine].split(')').length;
+      
+      while (parenCount > 0 && endLine < lines.length - 1) {
+        endLine++;
+        parenCount += lines[endLine].split('(').length - lines[endLine].split(')').length;
+      }
+    }
+    
+    // Remove all lines from startLine to endLine (inclusive)
+    final linesToRemove = endLine - startLine + 1;
+    for (int i = 0; i < linesToRemove; i++) {
+      lines.removeAt(startLine);
+    }
+    
+    // Write back with original line ending style
+    file.writeAsStringSync(lines.join(lineEnding) + lineEnding);
+    
+    print('✅ Fixed: ${issue.relativePath}');
+  } catch (e) {
+    print('❌ Error fixing ${issue.relativePath}: $e');
+    rethrow;
+  }
 }
 
 void printHelp() {
