@@ -7,20 +7,22 @@ dependency issues with other modules.
 """
 
 import base64
+import json
+import secrets
 import sys
 from pathlib import Path
 from typing import Any
 
-from encryption import ArtifactEncryption, DecryptionError, check_encryption_format
-
 # Direct imports to avoid utils.__init__ dependency issues
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from encryption import ArtifactEncryption, DecryptionError
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 
 # Import the actual module code directly
-from utils import artifact_encryption
-from utils.artifact_encryption import ArtifactEncryption, DecryptionError, check_encryption_format
+exec(open("utils/artifact_encryption.py").read())
 
 
 def test_decryption_error_wrapper():
@@ -205,7 +207,7 @@ def test_full_encryption_decryption_cycle():
     """Test complete encryption/decryption cycle"""
     print("Testing full encryption/decryption cycle...")
 
-    encryptor = ArtifactEncryptor("my_secure_password")
+    encryptor = ArtifactEncryption("my_secure_password")
 
     original_data = {"public_field": "visible", "sensitive_field": "secret_data", "another_secret": {"nested": "data"}}
 

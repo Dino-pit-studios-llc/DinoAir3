@@ -201,7 +201,7 @@ class TestBackwardCompatibility:
         """decrypt_fields should handle both nonce and iv formats"""
         encryptor = ArtifactEncryption("password")
 
-        # Test GCM format (nonce)
+        # Test GCM format (nonce) - should attempt decryption and fail on invalid data
         gcm_data = {
             "field1": "encrypted_data",
             "_encryption_info": {
@@ -212,14 +212,11 @@ class TestBackwardCompatibility:
             },
         }
 
-        # Should not raise for GCM format
-        # (actual decryption will fail due to fake data, but format detection works)
-        try:
+        # Should raise DecryptionError (not KeyError or other exceptions)
+        with pytest.raises(DecryptionError):
             encryptor.decrypt_fields(gcm_data, ["field1"])
-        except DecryptionError:
-            pass  # Expected - fake encrypted data
 
-        # Test CBC format (iv)
+        # Test CBC format (iv) - should attempt decryption and fail on invalid data
         cbc_data = {
             "field1": "encrypted_data",
             "_encryption_info": {
@@ -230,11 +227,9 @@ class TestBackwardCompatibility:
             },
         }
 
-        # Should not raise for CBC format
-        try:
+        # Should raise DecryptionError (not KeyError or other exceptions)
+        with pytest.raises(DecryptionError):
             encryptor.decrypt_fields(cbc_data, ["field1"])
-        except DecryptionError:
-            pass  # Expected - fake encrypted data
 
     @staticmethod
     def test_missing_nonce_and_iv_raises_error():
