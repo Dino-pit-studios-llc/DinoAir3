@@ -6,14 +6,95 @@ RULE_UNUSED_LOCAL_VARIABLE = "unused-local-variable"
 RULE_UNUSED_GLOBAL_VARIABLE = "unused-global-variable"
 TITLE_UNUSED_LOCAL_VARIABLE = "Unused local variable"
 TITLE_UNUSED_GLOBAL_VARIABLE = "Unused global variable"
-HELP_TEXT_UNUSED_LOCAL_VARIABLE = ""
-HELP_TEXT_UNUSED_GLOBAL_VARIABLE = ""
 CWE_563 = "CWE-563"
 FILE_INPUT_SANITIZER = "input_processing/sanitizer.py"
 
-# Duplicate string literals converted to constants
-MSG_LOCAL_VAR_UNUSED = "A local variable is defined (by an assignment) but never used.\n"
-MSG_GLOBAL_VAR_UNUSED = "A global (module-level) variable is defined (by an assignment) but never used and "
+# Shared help text for unused variable rules
+# This eliminates ~500 lines of duplication across 13 security issues
+_UNUSED_VARIABLE_HELP_BASE = """It is sometimes necessary to have a variable which is not used. These unused variables should have distinctive names, to make it clear to readers of the code that they are deliberately not used. The most common conventions for indicating this are to name the variable `_` or to start the name of the variable with `unused` or `_unused`.
+
+The query accepts the following names for variables that are intended to be unused:
+
+* Any name consisting entirely of underscores.
+* Any name containing `unused`.
+* The names `dummy` or `empty`.
+* Any "special" name of the form `__xxx__`.
+Variables that are defined in a group, for example `x, y = func()` are handled collectively. If they are all unused, then this is reported. Otherwise they are all treated as used.
+
+
+## Recommendation
+If the variable is included for documentation purposes or is otherwise intentionally unused, then change its name to indicate that it is unused, otherwise delete the assignment (taking care not to delete right hand side if it has side effects).
+
+
+## Example
+In this example, the `random_no` variable is never read but its assignment has a side effect. Because of this it is important to remove only the left hand side of the assignment in line 10.
+
+
+```python
+import random
+
+def write_random_to_file():
+    no = random.randint(1, 10)
+    with open("random.txt", "w") as file:
+        file.write(str(no))
+    return no
+
+def write_random():
+    random_no = write_random_to_file()
+    print "A random number was written to random.txt"
+```
+
+## References
+* Python: [Assignment statements](https://docs.python.org/2/reference/simple_stmts.html#assignment-statements).
+* Common Weakness Enumeration: [CWE-563](https://cwe.mitre.org/data/definitions/563.html).
+"""
+
+_UNUSED_GLOBAL_HELP_BASE = """is not explicitly made public by inclusion in the `__all__` list.
+
+It is sometimes necessary to have a variable which is not used. These unused variables should have distinctive names, to make it clear to readers of the code that they are deliberately not used. The most common conventions for indicating this are to name the variable `_` or to start the name of the variable with `unused` or `_unused`.
+
+The query accepts the following names for variables that are intended to be unused:
+
+* Any name consisting entirely of underscores.
+* Any name containing `unused`.
+* The names `dummy` or `empty`.
+* Any "special" name of the form `__xxx__`.
+Variables that are defined in a group, for example `x, y = func()` are handled collectively. If they are all unused, then this is reported. Otherwise they are all treated as used.
+
+
+## Recommendation
+If the variable is included for documentation purposes or is otherwise intentionally unused, then change its name to indicate that it is unused, otherwise delete the assignment (taking care not to delete right hand side if it has side effects).
+
+
+## Example
+In this example, the `random_no` variable is never read but its assignment has a side effect. Because of this it is important to only remove the left hand side of the assignment in line 9.
+
+
+```python
+import random
+
+def write_random_to_file():
+    no = random.randint(1, 10)
+    with open("random.txt", "w") as file:
+        file.write(str(no))
+    return no
+
+random_no = write_random_to_file()
+```
+
+## References
+* Python: [Assignment statements](https://docs.python.org/reference/simple_stmts.html#assignment-statements), [The import statement](https://docs.python.org/reference/simple_stmts.html#the-import-statement).
+* Python Tutorial: [Importing * from a package](https://docs.python.org/2/tutorial/modules.html#importing-from-a-package).
+* Common Weakness Enumeration: [CWE-563](https://cwe.mitre.org/data/definitions/563.html).
+"""
+
+# Pre-built help text strings (reduces duplication)
+HELP_TEXT_UNUSED_LOCAL_VARIABLE = (
+    "A local variable is defined (by an assignment) but never used.\n" + _UNUSED_VARIABLE_HELP_BASE
+)
+HELP_TEXT_UNUSED_GLOBAL_VARIABLE = (
+    "A global (module-level) variable is defined (by an assignment) but never used and " + _UNUSED_GLOBAL_HELP_BASE
+)
 
 # Security issues list
 security_issues = [
@@ -34,58 +115,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 331,
@@ -104,58 +134,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 330,
@@ -174,58 +153,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 329,
@@ -244,58 +172,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 328,
@@ -314,58 +191,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 327,
@@ -384,58 +210,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 326,
@@ -454,58 +229,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 325,
@@ -524,58 +248,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 324,
@@ -594,58 +267,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE
-        + MSG_LOCAL_VAR_UNUSED
-        + "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to remove only the left hand side of "
-        "the assignment in line 10.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "def write_random():\n"
-        "    random_no = write_random_to_file()\n"
-        '    print "A random number was written to random.txt"\n'
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/2/reference/simple_stmts.html#assignment-statements).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_LOCAL_VARIABLE,
     },
     {
         "id": 323,
@@ -664,62 +286,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE
-        + MSG_GLOBAL_VAR_UNUSED
-        + "is not explicitly made public by inclusion in the `__all__` list.\n"
-        "\n"
-        "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to only remove the left hand side of "
-        "the assignment in line 9.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "random_no = write_random_to_file()\n"
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/reference/simple_stmts.html#assignment-statements), "
-        "[The import "
-        "statement](https:///docs.python.org/reference/simple_stmts.html#the-import-statement).\n"
-        "* Python Tutorial: [Importing \\* from a "
-        "package](https:///docs.python.org/2/tutorial/modules.html#importing-from-a-package).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE,
     },
     {
         "id": 321,
@@ -738,62 +305,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE
-        + MSG_GLOBAL_VAR_UNUSED
-        + "is not explicitly made public by inclusion in the `__all__` list.\n"
-        "\n"
-        "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to only remove the left hand side of "
-        "the assignment in line 9.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "random_no = write_random_to_file()\n"
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/reference/simple_stmts.html#assignment-statements), "
-        "[The import "
-        "statement](https:///docs.python.org/reference/simple_stmts.html#the-import-statement).\n"
-        "* Python Tutorial: [Importing \\* from a "
-        "package](https:///docs.python.org/2/tutorial/modules.html#importing-from-a-package).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE,
     },
     {
         "id": 320,
@@ -812,62 +324,7 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE
-        + MSG_GLOBAL_VAR_UNUSED
-        + "is not explicitly made public by inclusion in the `__all__` list.\n"
-        "\n"
-        "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to only remove the left hand side of "
-        "the assignment in line 9.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "random_no = write_random_to_file()\n"
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/reference/simple_stmts.html#assignment-statements), "
-        "[The import "
-        "statement](https:///docs.python.org/reference/simple_stmts.html#the-import-statement).\n"
-        "* Python Tutorial: [Importing \\* from a "
-        "package](https:///docs.python.org/2/tutorial/modules.html#importing-from-a-package).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE,
     },
     {
         "id": 319,
@@ -886,61 +343,6 @@ security_issues = [
         "created_at": TIMESTAMP_DEFAULT,
         "updated_at": TIMESTAMP_DEFAULT,
         "tags": [CWE_563, "maintainability", "quality", "useless-code"],
-        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE
-        + MSG_GLOBAL_VAR_UNUSED
-        + "is not explicitly made public by inclusion in the `__all__` list.\n"
-        "\n"
-        "It is sometimes necessary to have a variable which is not used. These unused "
-        "variables should have distinctive names, to make it clear to readers of the code "
-        "that they are deliberately not used. The most common conventions for indicating "
-        "this are to name the variable `_` or to start the name of the variable with "
-        "`unused` or `_unused`.\n"
-        "\n"
-        "The query accepts the following names for variables that are intended to be "
-        "unused:\n"
-        "\n"
-        "* Any name consisting entirely of underscores.\n"
-        "* Any name containing `unused`.\n"
-        "* The names `dummy` or `empty`.\n"
-        '* Any "special" name of the form `__xxx__`.\n'
-        "Variables that are defined in a group, for example `x, y = func()` are handled "
-        "collectively. If they are all unused, then this is reported. Otherwise they are "
-        "all treated as used.\n"
-        "\n"
-        "\n"
-        "## Recommendation\n"
-        "If the variable is included for documentation purposes or is otherwise "
-        "intentionally unused, then change its name to indicate that it is unused, "
-        "otherwise delete the assignment (taking care not to delete right hand side if it "
-        "has side effects).\n"
-        "\n"
-        "\n"
-        "## Example\n"
-        "In this example, the `random_no` variable is never read but its assignment has a "
-        "side effect. Because of this it is important to only remove the left hand side of "
-        "the assignment in line 9.\n"
-        "\n"
-        "\n"
-        "```python\n"
-        "import random\n"
-        "\n"
-        "def write_random_to_file():\n"
-        "    no = random.randint(1, 10)\n"
-        '    with open("random.txt", "w") as file:\n'
-        "        file.write(str(no))\n"
-        "    return no\n"
-        "\n"
-        "random_no = write_random_to_file()\n"
-        "```\n"
-        "\n"
-        "## References\n"
-        "* Python: [Assignment "
-        "statements](https:///docs.python.org/reference/simple_stmts.html#assignment-statements), "
-        "[The import "
-        "statement](https:///docs.python.org/reference/simple_stmts.html#the-import-statement).\n"
-        "* Python Tutorial: [Importing \\* from a "
-        "package](https:///docs.python.org/2/tutorial/modules.html#importing-from-a-package).\n"
-        "* Common Weakness Enumeration: "
-        "[CWE-563](https://cwe.mitre.org/data/definitions/563.html).\n",
+        "help_text": HELP_TEXT_UNUSED_GLOBAL_VARIABLE,
     },
 ]

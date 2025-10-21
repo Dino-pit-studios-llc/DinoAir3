@@ -6,18 +6,21 @@ Phase 4A Sprint 1 - Step 2.1
 
 import threading
 
-from utils.logger import Logger
+from .base_db import BaseDatabase
 
 
-class NotesServiceFactory:
+class NotesServiceFactory(BaseDatabase):
     """
     Factory for creating notes services with proper dependency injection.
     Eliminates circular dependencies by breaking direct imports.
+
+    Inherits from BaseDatabase to get consistent logger initialization
+    and error handling capabilities.
     """
 
     def __init__(self):
-        """Initialize factory."""
-        self.logger = Logger()
+        """Initialize factory with logger."""
+        super().__init__()
 
     def create_notes_service(self, user_name: str | None = None):
         """
@@ -119,12 +122,14 @@ def get_notes_service_factory() -> NotesServiceFactory:
     Returns:
         Global NotesServiceFactory instance
     """
-    global _notes_service_factory
-    if _notes_service_factory is None:
-        with _notes_service_factory_lock:
-            if _notes_service_factory is None:
-                _notes_service_factory = NotesServiceFactory()
-    return _notes_service_factory
+    if not hasattr(get_notes_service_factory, "_factory"):
+        get_notes_service_factory._factory = None
+        get_notes_service_factory._lock = threading.Lock()
+    if get_notes_service_factory._factory is None:
+        with get_notes_service_factory._lock:
+            if get_notes_service_factory._factory is None:
+                get_notes_service_factory._factory = NotesServiceFactory()
+    return get_notes_service_factory._factory
 
 
 def create_notes_service(user_name: str | None = None):
