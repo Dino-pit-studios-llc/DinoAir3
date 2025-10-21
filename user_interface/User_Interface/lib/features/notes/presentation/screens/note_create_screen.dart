@@ -28,7 +28,9 @@ class _NoteCreateScreenState extends ConsumerState<NoteCreateScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.existingNote != null) {
-        ref.read(noteFormProvider.notifier).initializeForEdit(widget.existingNote!);
+        ref
+            .read(noteFormProvider.notifier)
+            .initializeForEdit(widget.existingNote!);
         _titleController.text = widget.existingNote!.title;
         _contentController.text = widget.existingNote!.content;
       } else {
@@ -185,9 +187,8 @@ class _NoteCreateScreenState extends ConsumerState<NoteCreateScreen> {
               const SizedBox(height: 24),
               // Save button
               FilledButton.icon(
-                onPressed: formState.isValid && !formState.isSaving
-                    ? _save
-                    : null,
+                onPressed:
+                    formState.isValid && !formState.isSaving ? _save : null,
                 icon: const Icon(Icons.save),
                 label: Text(isEditing ? 'Update Note' : 'Create Note'),
                 style: FilledButton.styleFrom(

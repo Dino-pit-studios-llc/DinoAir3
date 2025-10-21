@@ -33,12 +33,15 @@ class _ProjectsListScreenState extends ConsumerState<ProjectsListScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.play_circle_outline, color: Colors.green),
+              leading:
+                  const Icon(Icons.play_circle_outline, color: Colors.green),
               title: const Text('Active'),
               onTap: () {
                 Navigator.pop(context);
                 setState(() => _statusFilter = 'active');
-                ref.read(projectsListProvider.notifier).filterByStatus('active');
+                ref
+                    .read(projectsListProvider.notifier)
+                    .filterByStatus('active');
               },
             ),
             ListTile(
@@ -98,7 +101,7 @@ class _ProjectsListScreenState extends ConsumerState<ProjectsListScreen> {
                   Icon(
                     Icons.work_outline,
                     size: 64,
-                    color: theme.colorScheme.primary.withOpacity(0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -107,7 +110,7 @@ class _ProjectsListScreenState extends ConsumerState<ProjectsListScreen> {
                         : 'No projects yet.\nTap + to create your first project.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -159,7 +162,7 @@ class _ProjectsListScreenState extends ConsumerState<ProjectsListScreen> {
                   error.toString(),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -118,9 +118,8 @@ void main() {
       await controller.setTarget('eth', 2.5);
       await controller.setTarget('doge', -0.5); // should not add
 
-      var targets = setup.container
-          .read(portfolioTargetAllocationsProvider)
-          .requireValue;
+      var targets =
+          setup.container.read(portfolioTargetAllocationsProvider).requireValue;
       expect(targets['btc'], isNotNull);
       expect(targets['btc']!, closeTo(0.3, 1e-9));
       expect(targets['eth'], isNotNull);
@@ -129,9 +128,8 @@ void main() {
       await controller.removeTarget('btc');
       await controller.setTarget('eth', 0);
 
-      targets = setup.container
-          .read(portfolioTargetAllocationsProvider)
-          .requireValue;
+      targets =
+          setup.container.read(portfolioTargetAllocationsProvider).requireValue;
       expect(targets, isEmpty);
     });
   });

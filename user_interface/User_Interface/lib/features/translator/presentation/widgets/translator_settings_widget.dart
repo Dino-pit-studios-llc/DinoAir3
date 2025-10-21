@@ -7,10 +7,12 @@ class TranslatorSettingsWidget extends ConsumerStatefulWidget {
   const TranslatorSettingsWidget({super.key});
 
   @override
-  ConsumerState<TranslatorSettingsWidget> createState() => _TranslatorSettingsWidgetState();
+  ConsumerState<TranslatorSettingsWidget> createState() =>
+      _TranslatorSettingsWidgetState();
 }
 
-class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWidget> {
+class _TranslatorSettingsWidgetState
+    extends ConsumerState<TranslatorSettingsWidget> {
   final _formKey = GlobalKey<FormState>();
   String _selectedDefaultLanguage = 'python';
   bool _isLoading = false;
@@ -31,8 +33,6 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final config = ref.watch(currentTranslatorConfigProvider);
     final isLoadingConfig = ref.watch(isLoadingTranslatorConfigProvider);
 
     return Dialog(
@@ -125,7 +125,7 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
             Text(
               'Choose the default programming language for translations',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -140,11 +140,12 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
               Builder(
                 builder: (context) {
                   // Compute safe value for dropdown
-                  final dropdownValue = availableLanguages.contains(_selectedDefaultLanguage)
-                      ? _selectedDefaultLanguage
-                      : availableLanguages.first;
+                  final dropdownValue =
+                      availableLanguages.contains(_selectedDefaultLanguage)
+                          ? _selectedDefaultLanguage
+                          : availableLanguages.first;
 
-                  // Update state if needed
+                  // Update state if our selected value is not valid anymore
                   if (_selectedDefaultLanguage != dropdownValue) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
@@ -161,7 +162,8 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                     ),
                     items: availableLanguages.map((language) {
                       return DropdownMenuItem(
@@ -215,7 +217,7 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
             Text(
               'Languages that can be selected for translation',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -242,7 +244,8 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
 
   Widget _buildModelSettingsSection() {
     final theme = Theme.of(context);
-    final modelSettings = ref.watch(currentTranslatorConfigProvider)?.modelSettings;
+    final modelSettings =
+        ref.watch(currentTranslatorConfigProvider)?.modelSettings;
 
     return Card(
       child: Padding(
@@ -260,13 +263,14 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
             Text(
               'Configure the translation model behavior',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Enable streaming'),
-              subtitle: const Text('Show translation results as they are generated'),
+              subtitle:
+                  const Text('Show translation results as they are generated'),
               value: modelSettings?['streaming'] ?? false,
               onChanged: (value) {
                 _updateModelSetting('streaming', value);
@@ -274,7 +278,8 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
             ),
             SwitchListTile(
               title: const Text('Show confidence scores'),
-              subtitle: const Text('Display translation confidence percentages'),
+              subtitle:
+                  const Text('Display translation confidence percentages'),
               value: modelSettings?['showConfidence'] ?? true,
               onChanged: (value) {
                 _updateModelSetting('showConfidence', value);
@@ -323,7 +328,7 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
             Text(
               'Advanced configuration options',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -400,10 +405,12 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
     final currentConfig = ref.read(currentTranslatorConfigProvider);
     if (currentConfig == null) return;
 
-    final currentSettings = Map<String, dynamic>.from(currentConfig.modelSettings ?? {});
+    final currentSettings =
+        Map<String, dynamic>.from(currentConfig.modelSettings ?? {});
     currentSettings[key] = value;
 
-    final updatedConfig = currentConfig.copyWith(modelSettings: currentSettings);
+    final updatedConfig =
+        currentConfig.copyWith(modelSettings: currentSettings);
     ref.read(translatorConfigProvider.notifier).updateConfig(updatedConfig);
   }
 
@@ -415,7 +422,9 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
   }
 
   void _removeLanguage(String language) {
-    ref.read(translatorConfigProvider.notifier).removeSupportedLanguage(language);
+    ref
+        .read(translatorConfigProvider.notifier)
+        .removeSupportedLanguage(language);
   }
 
   void _showCacheSettings() {
@@ -430,7 +439,8 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reset Settings'),
-        content: const Text('This will restore all settings to their default values. This action cannot be undone.'),
+        content: const Text(
+            'This will restore all settings to their default values. This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -458,7 +468,9 @@ class _TranslatorSettingsWidgetState extends ConsumerState<TranslatorSettingsWid
 
     try {
       // Update default language
-      await ref.read(translatorConfigProvider.notifier).updateDefaultLanguage(_selectedDefaultLanguage);
+      await ref
+          .read(translatorConfigProvider.notifier)
+          .updateDefaultLanguage(_selectedDefaultLanguage);
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -518,7 +530,7 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
             Text(
               'Language selector would be implemented here',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -530,10 +542,12 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _selectedLanguage != null ? () {
-            // Add the language
-            Navigator.of(context).pop();
-          } : null,
+          onPressed: _selectedLanguage != null
+              ? () {
+                  // Add the language
+                  Navigator.of(context).pop();
+                }
+              : null,
           child: const Text('Add'),
         ),
       ],

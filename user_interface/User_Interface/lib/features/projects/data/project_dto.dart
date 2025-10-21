@@ -38,10 +38,9 @@ class ProjectDto {
       color: json['color'] as String?,
       icon: json['icon'] as String?,
       parentProjectId: json['parent_project_id'] as String?,
-      tags: (json['tags'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+              [],
       metadata: json['metadata'] as Map<String, dynamic>?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,

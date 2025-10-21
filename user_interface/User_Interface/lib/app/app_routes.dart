@@ -13,7 +13,8 @@ class AppRoutes {
   static const projectCreate = '/projects/create';
   static const projectDetail = '/projects/:id';
   static String projectDetailPath(String projectId) => '/projects/$projectId';
-  static String projectEditPath(String projectId) => '/projects/edit/$projectId';
+  static String projectEditPath(String projectId) =>
+      '/projects/edit/$projectId';
 
   static const calendar = '/calendar';
   static const calendarCreate = '/calendar/new';

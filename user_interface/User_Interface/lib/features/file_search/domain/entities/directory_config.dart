@@ -37,8 +37,8 @@ class DirectoryConfig with _$DirectoryConfig {
   /// Get directory name from path
   String get directoryName {
     final parts = path.split(RegExp(r'[/\\]'));
-      final nonEmptyParts = parts.where((p) => p.isNotEmpty).toList();
-      return nonEmptyParts.isNotEmpty ? nonEmptyParts.last : path;
+    final nonEmptyParts = parts.where((p) => p.isNotEmpty).toList();
+    return nonEmptyParts.isNotEmpty ? nonEmptyParts.last : path;
   }
 
   /// Check if all file types are included

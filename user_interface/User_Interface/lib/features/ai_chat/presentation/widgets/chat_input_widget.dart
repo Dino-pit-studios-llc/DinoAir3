@@ -50,7 +50,8 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
     if (text.isNotEmpty && widget.enabled && canSend) {
       assert(() {
         final preview = text.length > 50 ? '${text.substring(0, 50)}...' : text;
-        debugPrint('ChatInputWidget: sending "$preview" | Primary focus=${FocusManager.instance.primaryFocus}');
+        debugPrint(
+            'ChatInputWidget: sending "$preview" | Primary focus=${FocusManager.instance.primaryFocus}');
         return true;
       }());
       widget.onSendMessage(text);
@@ -120,23 +121,28 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
                   constraints: const BoxConstraints(minHeight: 40),
                   child: Shortcuts(
                     shortcuts: <ShortcutActivator, Intent>{
-                      const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
-                      const SingleActivator(LogicalKeyboardKey.numpadEnter): const ActivateIntent(),
+                      const SingleActivator(LogicalKeyboardKey.enter):
+                          const ActivateIntent(),
+                      const SingleActivator(LogicalKeyboardKey.numpadEnter):
+                          const ActivateIntent(),
                     },
                     child: Actions(
                       actions: <Type, Action<Intent>>{
                         ActivateIntent: CallbackAction<ActivateIntent>(
                           onInvoke: (intent) {
-                            final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+                            final isShiftPressed =
+                                HardwareKeyboard.instance.isShiftPressed;
                             assert(() {
-                              debugPrint('ChatInputWidget: Enter pressed. Shift=$isShiftPressed, key=Enter/NumpadEnter');
+                              debugPrint(
+                                  'ChatInputWidget: Enter pressed. Shift=$isShiftPressed, key=Enter/NumpadEnter');
                               return true;
                             }());
                             if (isShiftPressed) {
                               // Shift+Enter inserts a newline at the current cursor position.
                               final selection = _textController.selection;
                               final insertionOffset = selection.isValid
-                                  ? selection.baseOffset.clamp(0, _textController.text.length)
+                                  ? selection.baseOffset
+                                      .clamp(0, _textController.text.length)
                                   : _textController.text.length;
                               final newText = _textController.text.replaceRange(
                                 insertionOffset,
@@ -145,7 +151,8 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
                               );
                               _textController.text = newText;
                               _textController.selection =
-                                  TextSelection.collapsed(offset: insertionOffset + 1);
+                                  TextSelection.collapsed(
+                                      offset: insertionOffset + 1);
                             } else {
                               // Enter sends the message.
                               _handleSend();
@@ -166,13 +173,15 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -210,7 +219,8 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
                             valueColor: AlwaysStoppedAnimation<Color>(
                               canSend && widget.enabled
                                   ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                  : theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
                             ),
                           ),
                         )
@@ -218,14 +228,16 @@ class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
                           Icons.send,
                           color: canSend && widget.enabled
                               ? theme.colorScheme.onPrimary
-                              : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
                         ),
                   style: IconButton.styleFrom(
                     backgroundColor: canSend && widget.enabled
                         ? theme.colorScheme.primary
                         : theme.colorScheme.surfaceContainerHighest,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    disabledBackgroundColor:
+                        theme.colorScheme.surfaceContainerHighest,
                     padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),

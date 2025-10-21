@@ -8,17 +8,20 @@ import 'translator_loading_provider.dart';
 import 'translator_repository_provider.dart';
 
 // Provider for get supported languages use case
-final getSupportedLanguagesUseCaseProvider = Provider<GetSupportedLanguagesUseCase>((ref) {
+final getSupportedLanguagesUseCaseProvider =
+    Provider<GetSupportedLanguagesUseCase>((ref) {
   return GetSupportedLanguagesUseCase(ref.watch(translatorRepositoryProvider));
 });
 
 // Provider for get translator config use case
-final getTranslatorConfigUseCaseProvider = Provider<GetTranslatorConfigUseCase>((ref) {
+final getTranslatorConfigUseCaseProvider =
+    Provider<GetTranslatorConfigUseCase>((ref) {
   return GetTranslatorConfigUseCase(ref.watch(translatorRepositoryProvider));
 });
 
 // Provider for update translator config use case
-final updateTranslatorConfigUseCaseProvider = Provider<UpdateTranslatorConfigUseCase>((ref) {
+final updateTranslatorConfigUseCaseProvider =
+    Provider<UpdateTranslatorConfigUseCase>((ref) {
   return UpdateTranslatorConfigUseCase(ref.watch(translatorRepositoryProvider));
 });
 
@@ -75,7 +78,9 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
       });
 
       if (state.hasError) {
-        ref.read(translatorLoadingProvider.notifier).setConfigError(state.error.toString());
+        ref
+            .read(translatorLoadingProvider.notifier)
+            .setConfigError(state.error.toString());
       }
     } finally {
       ref.read(translatorLoadingProvider.notifier).setLoadingConfig(false);
@@ -115,7 +120,9 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
       });
 
       if (state.hasError) {
-        ref.read(translatorLoadingProvider.notifier).setConfigError(state.error.toString());
+        ref
+            .read(translatorLoadingProvider.notifier)
+            .setConfigError(state.error.toString());
       }
     } finally {
       ref.read(translatorLoadingProvider.notifier).setLoadingConfig(false);
@@ -128,7 +135,8 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
   Future<bool> updateDefaultLanguage(String language) async {
     if (state.value?.config == null) return false;
 
-    final updatedConfig = state.value!.config!.copyWith(defaultLanguage: language);
+    final updatedConfig =
+        state.value!.config!.copyWith(defaultLanguage: language);
     return updateConfig(updatedConfig);
   }
 
@@ -136,8 +144,12 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
   Future<bool> addSupportedLanguage(String language) async {
     if (state.value?.config == null) return false;
 
-    final updatedLanguages = [...state.value!.config!.availableLanguages, language];
-    final updatedConfig = state.value!.config!.copyWith(availableLanguages: updatedLanguages);
+    final updatedLanguages = [
+      ...state.value!.config!.availableLanguages,
+      language
+    ];
+    final updatedConfig =
+        state.value!.config!.copyWith(availableLanguages: updatedLanguages);
     return updateConfig(updatedConfig);
   }
 
@@ -148,7 +160,8 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
     final updatedLanguages = state.value!.config!.availableLanguages
         .where((lang) => lang != language)
         .toList();
-    final updatedConfig = state.value!.config!.copyWith(availableLanguages: updatedLanguages);
+    final updatedConfig =
+        state.value!.config!.copyWith(availableLanguages: updatedLanguages);
     return updateConfig(updatedConfig);
   }
 
@@ -176,7 +189,8 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
   Future<bool> updateModelSettings(Map<String, dynamic> settings) async {
     if (state.value?.config == null) return false;
 
-    final updatedConfig = state.value!.config!.copyWith(modelSettings: settings);
+    final updatedConfig =
+        state.value!.config!.copyWith(modelSettings: settings);
     return updateConfig(updatedConfig);
   }
 
@@ -207,54 +221,56 @@ class TranslatorConfigNotifier extends AsyncNotifier<TranslatorConfigState> {
 }
 
 // Provider for translator configuration
-final translatorConfigProvider = AsyncNotifierProvider<TranslatorConfigNotifier, TranslatorConfigState>(
+final translatorConfigProvider =
+    AsyncNotifierProvider<TranslatorConfigNotifier, TranslatorConfigState>(
   () => TranslatorConfigNotifier(),
 );
 
 // Computed provider for current config
-final currentTranslatorConfigProvider = Provider<TranslatorConfigEntity?>((ref) {
+final currentTranslatorConfigProvider =
+    Provider<TranslatorConfigEntity?>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.config,
-    orElse: () => null,
-  );
+        data: (state) => state.config,
+        orElse: () => null,
+      );
 });
 
 // Computed provider for supported languages
 final supportedLanguagesProvider = Provider<List<String>>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.supportedLanguages,
-    orElse: () => [],
-  );
+        data: (state) => state.supportedLanguages,
+        orElse: () => [],
+      );
 });
 
 // Computed provider for default language
 final defaultLanguageProvider = Provider<String?>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.config?.defaultLanguage,
-    orElse: () => null,
-  );
+        data: (state) => state.config?.defaultLanguage,
+        orElse: () => null,
+      );
 });
 
 // Computed provider for available languages
 final availableLanguagesProvider = Provider<List<String>>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.config?.availableLanguages ?? [],
-    orElse: () => [],
-  );
+        data: (state) => state.config?.availableLanguages ?? [],
+        orElse: () => [],
+      );
 });
 
 // Computed provider for config loading state
 final isLoadingTranslatorConfigProvider = Provider<bool>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.isLoading,
-    orElse: () => false,
-  );
+        data: (state) => state.isLoading,
+        orElse: () => false,
+      );
 });
 
 // Computed provider for config error
 final translatorConfigErrorProvider = Provider<String?>((ref) {
   return ref.watch(translatorConfigProvider).maybeWhen(
-    data: (state) => state.error,
-    orElse: () => null,
-  );
+        data: (state) => state.error,
+        orElse: () => null,
+      );
 });

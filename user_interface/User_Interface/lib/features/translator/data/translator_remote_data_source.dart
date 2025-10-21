@@ -10,7 +10,8 @@ class TranslatorRemoteDataSource {
 
   final Dio _dio;
 
-  Future<TranslationResponseDto> translatePseudocode(TranslationRequestDto request) async {
+  Future<TranslationResponseDto> translatePseudocode(
+      TranslationRequestDto request) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         ApiEndpoints.translator,
@@ -18,11 +19,13 @@ class TranslatorRemoteDataSource {
       );
       final data = response.data;
       if (data == null) {
-        throw const ApiParsingException(message: 'Translation response was empty');
+        throw const ApiParsingException(
+            message: 'Translation response was empty');
       }
       return TranslationResponseDto.fromJson(data);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to translate pseudocode');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to translate pseudocode');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -43,7 +46,8 @@ class TranslatorRemoteDataSource {
           .map((item) => _decodeLanguageListItem(item))
           .toList(growable: false);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to load supported languages');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to load supported languages');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -61,11 +65,13 @@ class TranslatorRemoteDataSource {
       );
       final data = response.data;
       if (data == null) {
-        throw const ApiParsingException(message: 'Translator config response was empty');
+        throw const ApiParsingException(
+            message: 'Translator config response was empty');
       }
       return TranslatorConfigDto.fromJson(data);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to load translator config');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to load translator config');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -83,11 +89,13 @@ class TranslatorRemoteDataSource {
         data: config.toJson(),
       );
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to update translator config');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to update translator config');
     }
   }
 
-  Stream<TranslationResponseDto>? translateWithStreaming(TranslationRequestDto request) {
+  Stream<TranslationResponseDto>? translateWithStreaming(
+      TranslationRequestDto request) {
     // TODO: Implement streaming support when backend provides it
     // For now, return null to indicate streaming is not supported
     return null;
@@ -98,10 +106,14 @@ class TranslatorRemoteDataSource {
       return item;
     }
     if (item is Map<String, dynamic>) {
-      return item['code']?.toString() ?? item['name']?.toString() ?? item.toString();
+      return item['code']?.toString() ??
+          item['name']?.toString() ??
+          item.toString();
     }
     if (item is Map) {
-      return (item)['code']?.toString() ?? (item)['name']?.toString() ?? item.toString();
+      return (item)['code']?.toString() ??
+          (item)['name']?.toString() ??
+          item.toString();
     }
     return item.toString();
   }

@@ -90,15 +90,14 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
       body: Column(
         children: [
           // Progress indicator
-          if (isTranslating)
-            const TranslationProgressWidget(),
+          if (isTranslating) const TranslationProgressWidget(),
 
           // Split view for input and output
           Expanded(
             child: SplitView(
               controller: _splitViewController,
               viewMode: SplitViewMode.Horizontal,
-              gripColor: theme.colorScheme.outline.withOpacity(0.3),
+              gripColor: theme.colorScheme.outline.withValues(alpha: 0.3),
               gripColorActive: theme.colorScheme.primary,
               gripSize: 8,
               children: [
@@ -107,7 +106,7 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
                   decoration: BoxDecoration(
                     border: Border(
                       right: BorderSide(
-                        color: theme.colorScheme.outline.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -132,9 +131,9 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
           key: const Key('translator_translate_button'),
           onPressed: isFabDisabled ? null : _translate,
           backgroundColor: isFabDisabled ? theme.disabledColor : null,
-          foregroundColor: isFabDisabled
-              ? theme.colorScheme.onSurface.withOpacity(0.6)
-              : null,
+      foregroundColor: isFabDisabled
+        ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
+        : null,
           icon: isTranslating
               ? Container(
                   width: 16,
@@ -158,13 +157,13 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
           Icon(
             Icons.code_outlined,
             size: 64,
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'Enter pseudocode to translate',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -172,7 +171,7 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
             'Write your pseudocode in the left panel and click Translate to see the result',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -181,7 +180,8 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
   }
 
   Future<void> _translate() async {
-    final success = await ref.read(translatorInputProvider.notifier).translate();
+    final success =
+        await ref.read(translatorInputProvider.notifier).translate();
 
     if (!success && mounted) {
       // Show error message
@@ -267,12 +267,10 @@ class _SplitViewState extends State<SplitView> {
       builder: (context, constraints) {
         final isHorizontal = widget.viewMode == SplitViewMode.Horizontal;
 
-        final totalSize = isHorizontal
-            ? constraints.maxWidth
-            : constraints.maxHeight;
+        final totalSize =
+            isHorizontal ? constraints.maxWidth : constraints.maxHeight;
 
-        final firstSize = totalSize * widget.controller.dividerPosition;
-        final secondSize = totalSize - firstSize;
+  final firstSize = totalSize * widget.controller.dividerPosition;
 
         return Stack(
           children: [
@@ -307,9 +305,8 @@ class _SplitViewState extends State<SplitView> {
                   onHorizontalDragEnd: isHorizontal ? _onDragEnd : null,
                   onVerticalDragEnd: isHorizontal ? null : _onDragEnd,
                   child: Container(
-                    color: _isDragging
-                        ? widget.gripColorActive
-                        : widget.gripColor,
+                    color:
+                        _isDragging ? widget.gripColorActive : widget.gripColor,
                     child: Center(
                       child: Container(
                         width: isHorizontal ? 2 : null,

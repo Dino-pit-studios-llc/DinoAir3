@@ -123,8 +123,7 @@ class ChatInputNotifier extends Notifier<ChatInputState> {
 }
 
 // Provider for chat input state
-final chatInputProvider =
-    NotifierProvider<ChatInputNotifier, ChatInputState>(
+final chatInputProvider = NotifierProvider<ChatInputNotifier, ChatInputState>(
   () => ChatInputNotifier(),
 );
 

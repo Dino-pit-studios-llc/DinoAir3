@@ -34,7 +34,7 @@ class MessageBubbleWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: theme.shadowColor.withOpacity(0.1),
+                  color: theme.shadowColor.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -68,7 +68,7 @@ class MessageBubbleWidget extends StatelessWidget {
                         color: (isUser
                                 ? theme.colorScheme.onPrimary
                                 : theme.colorScheme.onSurfaceVariant)
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                         fontSize: 11,
                       ),
                     ),
@@ -84,10 +84,10 @@ class MessageBubbleWidget extends StatelessWidget {
                         child: Icon(
                           Icons.copy,
                           size: 14,
-                          color: (isUser
-                                  ? theme.colorScheme.onPrimary
-                                  : theme.colorScheme.onSurfaceVariant)
-                              .withOpacity(0.7),
+              color: (isUser
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurfaceVariant)
+                .withValues(alpha: 0.7),
                         ),
                       ),
                     ),

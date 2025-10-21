@@ -85,7 +85,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                   Icon(
                     _isSearching ? Icons.search_off : Icons.note_add_outlined,
                     size: 64,
-                    color: theme.colorScheme.primary.withOpacity(0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -94,7 +94,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                         : 'No notes yet.\nTap + to create your first note.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -146,7 +146,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                   error.toString(),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 16),

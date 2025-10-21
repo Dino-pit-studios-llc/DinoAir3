@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'translation_download_html_stub.dart'
-    if (dart.library.html) 'dart:html' as html;
+import 'translation_download_html_stub.dart' if (dart.library.html) 'dart:html'
+    as html;
 
 // Conditional import for platform-specific translation output helpers
 
@@ -18,10 +18,12 @@ class TranslationOutputWidget extends ConsumerStatefulWidget {
   final TranslationResultEntity result;
 
   @override
-  ConsumerState<TranslationOutputWidget> createState() => _TranslationOutputWidgetState();
+  ConsumerState<TranslationOutputWidget> createState() =>
+      _TranslationOutputWidgetState();
 }
 
-class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidget> {
+class _TranslationOutputWidgetState
+    extends ConsumerState<TranslationOutputWidget> {
   final _scrollController = ScrollController();
   bool _isExpanded = true;
 
@@ -33,8 +35,6 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       key: const Key('translation_output_panel'),
       children: [
@@ -43,14 +43,15 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
 
         // Content
         Expanded(
-          child: _isExpanded ? _buildExpandedContent() : _buildCollapsedContent(),
+          child:
+              _isExpanded ? _buildExpandedContent() : _buildCollapsedContent(),
         ),
       ],
     );
   }
 
   Widget _buildHeader() {
-    final theme = Theme.of(context);
+  final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -159,7 +160,7 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
                     widget.result.translatedCode,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontFamily: 'JetBrainsMono',
-                fontFamilyFallback: const ['monospace'],
+                      fontFamilyFallback: const ['monospace'],
                       fontSize: 14,
                       height: 1.5,
                     ),
@@ -230,9 +231,7 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 8),
-
           if (collapsed)
             Text(
               'Language: ${widget.result.language} | Confidence: ${(widget.result.confidence * 100).toInt()}%',
@@ -252,7 +251,8 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
                     Text(
                       'Language:',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     Text(
@@ -268,7 +268,8 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
                     Text(
                       'Confidence:',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     Text(
@@ -286,7 +287,8 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
                       Text(
                         'Model:',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                       Text(
@@ -302,7 +304,8 @@ class _TranslationOutputWidgetState extends ConsumerState<TranslationOutputWidge
                       Text(
                         'Tokens:',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                       Text(
@@ -429,7 +432,8 @@ class TranslationResultCard extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
@@ -486,7 +490,8 @@ class TranslationResultCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    _formatDateTime(result.metadata?['timestamp'] ?? DateTime.now()),
+                    _formatDateTime(
+                        result.metadata?['timestamp'] ?? DateTime.now()),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),

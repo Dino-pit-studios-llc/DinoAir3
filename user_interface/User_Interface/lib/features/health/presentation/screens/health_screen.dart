@@ -120,8 +120,7 @@ class HealthRepository {
         final st =
             (value['status'] ?? value['state'] ?? value['ok'] ?? 'unknown')
                 .toString();
-        final msg =
-            value['message']?.toString() ?? value['detail']?.toString();
+        final msg = value['message']?.toString() ?? value['detail']?.toString();
         services.add(ServiceStatus(name: name, status: st, detail: msg));
       } else {
         services.add(ServiceStatus(name: name, status: value.toString()));
@@ -211,8 +210,7 @@ class HealthScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildError(
-      BuildContext context, Object error, WidgetRef ref) {
+  Widget _buildError(BuildContext context, Object error, WidgetRef ref) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -296,7 +294,8 @@ class HealthScreen extends ConsumerWidget {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.all(12),
@@ -401,7 +400,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = (color ?? Colors.grey).withOpacity(0.15);
+  final bg = (color ?? Colors.grey).withValues(alpha: 0.15);
     final fg = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Container(
@@ -409,7 +408,7 @@ class _StatusChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: (color ?? Colors.grey).withOpacity(0.5)),
+  border: Border.all(color: (color ?? Colors.grey).withValues(alpha: 0.5)),
       ),
       child: Text(
         label,

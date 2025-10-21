@@ -11,10 +11,12 @@ class TranslationHistoryWidget extends ConsumerStatefulWidget {
   const TranslationHistoryWidget({super.key});
 
   @override
-  ConsumerState<TranslationHistoryWidget> createState() => _TranslationHistoryWidgetState();
+  ConsumerState<TranslationHistoryWidget> createState() =>
+      _TranslationHistoryWidgetState();
 }
 
-class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWidget> {
+class _TranslationHistoryWidgetState
+    extends ConsumerState<TranslationHistoryWidget> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _filterLanguage = 'All';
@@ -43,8 +45,7 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final historyAsync = ref.watch(translatorOutputProvider);
-    final isLoadingHistory = ref.watch(isLoadingTranslationHistoryProvider);
+  final historyAsync = ref.watch(translatorOutputProvider);
 
     return Dialog(
       child: Container(
@@ -98,12 +99,15 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                             error.toString(),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface
+                  .withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
-                            onPressed: () => ref.read(translatorOutputProvider.notifier).loadTranslationHistory(),
+                            onPressed: () => ref
+                                .read(translatorOutputProvider.notifier)
+                                .loadTranslationHistory(),
                             icon: const Icon(Icons.refresh),
                             label: const Text('Retry'),
                           ),
@@ -130,7 +134,7 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
         color: theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -173,10 +177,13 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                 child: DropdownButton<String>(
                   value: _filterLanguage,
                   isExpanded: true,
-                  items: ['All', ...availableLanguages].map<DropdownMenuItem<String>>((language) {
+                  items: ['All', ...availableLanguages]
+                      .map<DropdownMenuItem<String>>((language) {
                     return DropdownMenuItem<String>(
                       value: language,
-                      child: Text(language == 'All' ? 'All languages' : _getLanguageDisplayName(language)),
+                      child: Text(language == 'All'
+                          ? 'All languages'
+                          : _getLanguageDisplayName(language)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -223,7 +230,7 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
           Icon(
             Icons.history,
             size: 64,
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -231,7 +238,7 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                 ? 'No translations found'
                 : 'No translation history',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -241,7 +248,7 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                 : 'Your translation history will appear here',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -249,7 +256,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
     );
   }
 
-  List<TranslationResultEntity> _getFilteredHistory(List<TranslationResultEntity> history) {
+  List<TranslationResultEntity> _getFilteredHistory(
+      List<TranslationResultEntity> history) {
     return history.where((result) {
       // Filter by search query
       if (_searchQuery.isNotEmpty) {
@@ -309,7 +317,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                   icon: const Icon(Icons.copy),
                   onPressed: () async {
                     // Copy to clipboard
-                    await Clipboard.setData(ClipboardData(text: result.translatedCode));
+                    await Clipboard.setData(
+                        ClipboardData(text: result.translatedCode));
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
@@ -332,7 +341,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear History'),
-        content: const Text('This will permanently delete all translation history. This action cannot be undone.'),
+        content: const Text(
+            'This will permanently delete all translation history. This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -420,7 +430,8 @@ class CompactHistoryItem extends ConsumerWidget {
             icon: const Icon(Icons.copy, size: 18),
             onPressed: () async {
               // Copy to clipboard
-              await Clipboard.setData(ClipboardData(text: result.translatedCode));
+              await Clipboard.setData(
+                  ClipboardData(text: result.translatedCode));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Copied to clipboard')),
@@ -483,7 +494,7 @@ class HistoryStatsWidget extends ConsumerWidget {
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -500,7 +511,7 @@ class HistoryStatsWidget extends ConsumerWidget {
           Container(
             width: 1,
             height: 32,
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           Expanded(
             child: _buildStatItem(
@@ -513,7 +524,7 @@ class HistoryStatsWidget extends ConsumerWidget {
           Container(
             width: 1,
             height: 32,
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           Expanded(
             child: _buildStatItem(
@@ -528,7 +539,8 @@ class HistoryStatsWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatItem(ThemeData theme, String label, String value, IconData icon) {
+  Widget _buildStatItem(
+      ThemeData theme, String label, String value, IconData icon) {
     return Column(
       children: [
         Icon(
@@ -546,14 +558,15 @@ class HistoryStatsWidget extends ConsumerWidget {
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ],
     );
   }
 
-  Map<String, int> _calculateLanguageStats(List<TranslationResultEntity> history) {
+  Map<String, int> _calculateLanguageStats(
+      List<TranslationResultEntity> history) {
     final stats = <String, int>{};
     for (final result in history) {
       stats[result.language] = (stats[result.language] ?? 0) + 1;

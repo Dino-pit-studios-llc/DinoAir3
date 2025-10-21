@@ -24,7 +24,8 @@ class ChatMessageMapper {
     );
   }
 
-  static ChatMessageEntity fromUserMessage(String message, {String? sessionId}) {
+  static ChatMessageEntity fromUserMessage(String message,
+      {String? sessionId}) {
     return ChatMessageEntity(
       id: _generateMessageId(sessionId ?? 'default', message.hashCode),
       sessionId: sessionId ?? 'default',

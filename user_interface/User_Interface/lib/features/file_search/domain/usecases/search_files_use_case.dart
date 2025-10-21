@@ -30,12 +30,14 @@ class SearchFilesUseCase
   ) async {
     // Validate query
     if (params.query.trim().isEmpty) {
-      return const Left(ValidationFailure(message: 'Search query cannot be empty'));
+      return const Left(
+          ValidationFailure(message: 'Search query cannot be empty'));
     }
 
     // Validate max results
     if (params.maxResults != null && params.maxResults! < 1) {
-      return const Left(ValidationFailure(message: 'Max results must be greater than 0'));
+      return const Left(
+          ValidationFailure(message: 'Max results must be greater than 0'));
     }
 
     return await repository.searchFiles(

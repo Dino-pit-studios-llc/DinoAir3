@@ -26,8 +26,8 @@ class TranslationProgressWidget extends ConsumerWidget {
         border: Border(
           bottom: BorderSide(
             color: isTranslating
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : theme.colorScheme.error.withOpacity(0.3),
+                ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                : theme.colorScheme.error.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -73,7 +73,8 @@ class TranslationProgressWidget extends ConsumerWidget {
             Text(
               '${(progress * 100).toInt()}%',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+                color: theme.colorScheme.onPrimaryContainer
+                    .withValues(alpha: 0.8),
               ),
             ),
 
@@ -111,7 +112,7 @@ class StreamingProgressWidget extends ConsumerWidget {
           Text(
             'Generating translation...',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
 
@@ -137,7 +138,8 @@ class StreamingProgressWidget extends ConsumerWidget {
               child: Text(
                 '${(progress * 100).toInt()}% complete',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -213,11 +215,12 @@ class TranslationProgressWithTimeWidget extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  _formatTime(remainingTime),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
-                  ),
+                  Text(
+                    _formatTime(remainingTime),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color:
+                          theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                    ),
                 ),
               ],
             ),

@@ -112,7 +112,8 @@ class TranslatorLoadingNotifier extends Notifier<TranslatorLoadingState> {
 }
 
 // Provider for translator loading state
-final translatorLoadingProvider = NotifierProvider<TranslatorLoadingNotifier, TranslatorLoadingState>(
+final translatorLoadingProvider =
+    NotifierProvider<TranslatorLoadingNotifier, TranslatorLoadingState>(
   () => TranslatorLoadingNotifier(),
 );
 

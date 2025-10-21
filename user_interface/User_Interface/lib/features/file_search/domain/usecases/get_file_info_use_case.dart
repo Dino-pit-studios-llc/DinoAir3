@@ -23,7 +23,8 @@ class GetFileInfoUseCase
   ) async {
     // Validate file path
     if (params.filePath.trim().isEmpty) {
-      return const Left(ValidationFailure(message: 'File path cannot be empty'));
+      return const Left(
+          ValidationFailure(message: 'File path cannot be empty'));
     }
 
     return await repository.getFileInfo(filePath: params.filePath.trim());

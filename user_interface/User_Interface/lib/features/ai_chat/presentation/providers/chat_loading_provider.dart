@@ -58,7 +58,8 @@ class ChatLoadingNotifier extends StateNotifier<ChatLoadingStateModel> {
   /// Set loading state for sending message
   void setSendingMessage({bool isLoading = true}) {
     state = state.copyWith(
-      state: isLoading ? ChatLoadingState.sendingMessage : ChatLoadingState.idle,
+      state:
+          isLoading ? ChatLoadingState.sendingMessage : ChatLoadingState.idle,
       isLoading: isLoading,
       error: null,
     );
@@ -67,7 +68,8 @@ class ChatLoadingNotifier extends StateNotifier<ChatLoadingStateModel> {
   /// Set loading state for loading history
   void setLoadingHistory({bool isLoading = true}) {
     state = state.copyWith(
-      state: isLoading ? ChatLoadingState.loadingHistory : ChatLoadingState.idle,
+      state:
+          isLoading ? ChatLoadingState.loadingHistory : ChatLoadingState.idle,
       isLoading: isLoading,
       error: null,
     );
@@ -76,7 +78,8 @@ class ChatLoadingNotifier extends StateNotifier<ChatLoadingStateModel> {
   /// Set loading state for creating session
   void setCreatingSession({bool isLoading = true}) {
     state = state.copyWith(
-      state: isLoading ? ChatLoadingState.creatingSession : ChatLoadingState.idle,
+      state:
+          isLoading ? ChatLoadingState.creatingSession : ChatLoadingState.idle,
       isLoading: isLoading,
       error: null,
     );
@@ -85,7 +88,8 @@ class ChatLoadingNotifier extends StateNotifier<ChatLoadingStateModel> {
   /// Set loading state for deleting session
   void setDeletingSession({bool isLoading = true}) {
     state = state.copyWith(
-      state: isLoading ? ChatLoadingState.deletingSession : ChatLoadingState.idle,
+      state:
+          isLoading ? ChatLoadingState.deletingSession : ChatLoadingState.idle,
       isLoading: isLoading,
       error: null,
     );

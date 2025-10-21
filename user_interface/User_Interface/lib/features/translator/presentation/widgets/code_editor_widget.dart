@@ -15,11 +15,25 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
   final _scrollController = ScrollController();
+  TextSelection? _lastSelection;
+  VoidCallback? _selectionListener;
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
+
+    // Track selection changes separately and notify provider when cursor moves
+    _lastSelection = _textController.selection;
+    _selectionListener = () {
+      final sel = _textController.selection;
+      if (_lastSelection?.baseOffset != sel.baseOffset ||
+          _lastSelection?.extentOffset != sel.extentOffset) {
+        _lastSelection = sel;
+        _onSelectionChanged();
+      }
+    };
+    _textController.addListener(_selectionListener!);
 
     // Listen for changes in the provider state
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -32,6 +46,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
 
   @override
   void dispose() {
+    if (_selectionListener != null) {
+      _textController.removeListener(_selectionListener!);
+    }
     _textController.dispose();
     _focusNode.dispose();
     _scrollController.dispose();
@@ -44,14 +61,14 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
 
     // Update cursor position
     ref.read(translatorInputProvider.notifier).updateCursorPosition(
-      _textController.selection.baseOffset,
-    );
+          _textController.selection.baseOffset,
+        );
   }
 
   void _onSelectionChanged() {
     ref.read(translatorInputProvider.notifier).updateCursorPosition(
-      _textController.selection.baseOffset,
-    );
+          _textController.selection.baseOffset,
+        );
   }
 
   @override
@@ -95,19 +112,22 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
                     'END FUNCTION\n\n'
                     'add_numbers(5, 3)',
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   fontFamily: 'JetBrainsMono, monospace',
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: theme.colorScheme.outline.withOpacity(0.3),
+                    color:
+                        theme.colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: theme.colorScheme.outline.withOpacity(0.3),
+                    color:
+                        theme.colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -122,7 +142,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
                 contentPadding: const EdgeInsets.all(16),
               ),
               onChanged: (value) {
-                ref.read(translatorInputProvider.notifier).updatePseudocode(value);
+                ref
+                    .read(translatorInputProvider.notifier)
+                    .updatePseudocode(value);
               },
             ),
           ),
@@ -143,7 +165,7 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
         color: theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -186,7 +208,7 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -195,7 +217,8 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
           Text(
             'Lines: ${_getLineCount()} | Characters: ${_getCharacterCount()}',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color:
+                  theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const Spacer(),

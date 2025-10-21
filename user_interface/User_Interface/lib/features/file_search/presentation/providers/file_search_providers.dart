@@ -77,8 +77,7 @@ final addWatchedDirectoryUseCaseProvider =
 /// Provider for remove watched directory use case
 final removeWatchedDirectoryUseCaseProvider =
     Provider<RemoveWatchedDirectoryUseCase>((ref) {
-  return RemoveWatchedDirectoryUseCase(
-      ref.watch(fileSearchRepositoryProvider));
+  return RemoveWatchedDirectoryUseCase(ref.watch(fileSearchRepositoryProvider));
 });
 
 /// Provider for reindex all use case
@@ -214,7 +213,8 @@ class SearchStatisticsNotifier extends AsyncNotifier<SearchStatistics> {
     final result = await useCase(const NoParams());
 
     return result.fold(
-      (failure) => throw Exception(failure.message ?? 'Failed to load statistics'),
+      (failure) =>
+          throw Exception(failure.message ?? 'Failed to load statistics'),
       (stats) => stats,
     );
   }
@@ -237,8 +237,7 @@ final searchStatisticsProvider =
 // ============================================================================
 
 /// State notifier for watched directories
-class WatchedDirectoriesNotifier
-    extends AsyncNotifier<List<DirectoryConfig>> {
+class WatchedDirectoriesNotifier extends AsyncNotifier<List<DirectoryConfig>> {
   @override
   Future<List<DirectoryConfig>> build() async {
     return _fetchDirectories();
@@ -249,7 +248,8 @@ class WatchedDirectoriesNotifier
     final result = await useCase(const NoParams());
 
     return result.fold(
-      (failure) => throw Exception(failure.message ?? 'Failed to load directories'),
+      (failure) =>
+          throw Exception(failure.message ?? 'Failed to load directories'),
       (directories) => directories,
     );
   }

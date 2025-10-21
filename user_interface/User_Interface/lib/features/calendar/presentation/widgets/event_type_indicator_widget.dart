@@ -18,7 +18,7 @@ class EventTypeIndicatorWidget extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: config.color.withOpacity(0.2),
+        color: config.color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Icon(

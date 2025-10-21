@@ -16,10 +16,10 @@ class CalendarEventCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardColor = event.color != null
-        ? Color(int.parse(event.color!.substring(1), radix: 16) + 0xFF000000)
-            .withOpacity(0.1)
-        : null;
+  final cardColor = event.color != null
+    ? Color(int.parse(event.color!.substring(1), radix: 16) + 0xFF000000)
+      .withValues(alpha: 0.1)
+    : null;
 
     return Card(
       color: cardColor,
@@ -214,7 +214,7 @@ class CalendarEventCardWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.2),
+        color: badgeColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Text(

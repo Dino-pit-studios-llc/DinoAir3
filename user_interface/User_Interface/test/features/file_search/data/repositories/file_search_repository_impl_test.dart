@@ -116,7 +116,8 @@ void main() {
         // Assert
         expect(result, isA<Left<Failure, List<FileSearchResult>>>());
         final failure = (result as Left).value as UnknownFailure;
-        expect(failure.message, 'Unexpected error: Exception: Unexpected error');
+        expect(
+            failure.message, 'Unexpected error: Exception: Unexpected error');
         verify(mockDataSource.searchFiles(
           query: query,
           fileTypes: null,
@@ -140,8 +141,7 @@ void main() {
           matchedKeywords: ['test'],
         );
 
-        when(mockDataSource.getFileInfo(filePath))
-            .thenAnswer((_) async => dto);
+        when(mockDataSource.getFileInfo(filePath)).thenAnswer((_) async => dto);
 
         // Act
         final result = await repository.getFileInfo(filePath: filePath);
@@ -193,7 +193,8 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, void>>());
-        verify(mockDataSource.addToIndex(path, includeSubdirectories)).called(1);
+        verify(mockDataSource.addToIndex(path, includeSubdirectories))
+            .called(1);
       });
 
       test('should return ApiFailure on ServerException', () async {
@@ -219,7 +220,8 @@ void main() {
         final failure = (result as Left).value as ApiFailure;
         expect(failure.message, 'Index failed');
         expect(failure.statusCode, 500);
-        verify(mockDataSource.addToIndex(path, includeSubdirectories)).called(1);
+        verify(mockDataSource.addToIndex(path, includeSubdirectories))
+            .called(1);
       });
     });
 
@@ -228,8 +230,7 @@ void main() {
         // Arrange
         const path = '/test/directory';
 
-        when(mockDataSource.removeFromIndex(path))
-            .thenAnswer((_) async => ());
+        when(mockDataSource.removeFromIndex(path)).thenAnswer((_) async => ());
 
         // Act
         final result = await repository.removeFromIndex(path: path);
@@ -272,8 +273,7 @@ void main() {
           fileTypeDistribution: {'txt': 500, 'md': 300},
         );
 
-        when(mockDataSource.getSearchStatistics())
-            .thenAnswer((_) async => dto);
+        when(mockDataSource.getSearchStatistics()).thenAnswer((_) async => dto);
 
         // Act
         final result = await repository.getSearchStatistics();
@@ -422,7 +422,8 @@ void main() {
     });
 
     group('removeWatchedDirectory', () {
-      test('should return Right on successful removeWatchedDirectory', () async {
+      test('should return Right on successful removeWatchedDirectory',
+          () async {
         // Arrange
         const path = '/test/directory';
 

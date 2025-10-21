@@ -92,10 +92,12 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                   return ListView.builder(
                     controller: ref.watch(chatScrollControllerProvider),
                     padding: const EdgeInsets.all(16),
-                    itemCount: messages.length + (loadingState.isSendingMessage ? 1 : 0),
+                    itemCount: messages.length +
+                        (loadingState.isSendingMessage ? 1 : 0),
                     itemBuilder: (context, index) {
                       // Show typing indicator if sending message
-                      if (index == messages.length && loadingState.isSendingMessage) {
+                      if (index == messages.length &&
+                          loadingState.isSendingMessage) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
                           child: Text('AI is typing...'),
@@ -110,7 +112,9 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                           decoration: BoxDecoration(
                             color: message.role == MessageRole.user
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surfaceContainerHighest,
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -118,7 +122,9 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                             style: TextStyle(
                               color: message.role == MessageRole.user
                                   ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -137,8 +143,11 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                       Text(
                         'Loading messages...',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.6),
+                            ),
                       ),
                     ],
                   ),
@@ -163,9 +172,13 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                         Text(
                           error.toString(),
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
+                                  ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
@@ -190,7 +203,10 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               color: Theme.of(context).colorScheme.surface,
               border: Border(
                 top: BorderSide(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.2),
                 ),
               ),
             ),
@@ -218,18 +234,20 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                   onPressed: loadingState.isLoading ? null : () {
-                     final text = ref.read(chatInputProvider).text.trim();
-                     if (text.isNotEmpty) {
-                       _handleSendMessage(text);
-                     }
-                   },
-                   icon: const Icon(Icons.send),
-                   style: IconButton.styleFrom(
-                     backgroundColor: Theme.of(context).colorScheme.primary,
-                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                   ),
-                 ),
+                  onPressed: loadingState.isLoading
+                      ? null
+                      : () {
+                          final text = ref.read(chatInputProvider).text.trim();
+                          if (text.isNotEmpty) {
+                            _handleSendMessage(text);
+                          }
+                        },
+                  icon: const Icon(Icons.send),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ],
             ),
           ),
@@ -277,13 +295,16 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               Navigator.of(context).pop();
 
               // Create new session
-              final newSession = await ref.read(chatSessionsProvider.notifier).createSession(
-                title: title,
-              );
+              final newSession =
+                  await ref.read(chatSessionsProvider.notifier).createSession(
+                        title: title,
+                      );
 
               if (newSession != null) {
                 // Set as current session
-                ref.read(chatSessionsProvider.notifier).setCurrentSession(newSession);
+                ref
+                    .read(chatSessionsProvider.notifier)
+                    .setCurrentSession(newSession);
               }
             },
             child: const Text('Create'),
@@ -308,40 +329,46 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
             ),
             const SizedBox(height: 16),
             ref.watch(chatSessionsProvider).when(
-              data: (sessions) {
-                if (sessions.isEmpty) {
-                  return const Text('No sessions yet');
-                }
+                  data: (sessions) {
+                    if (sessions.isEmpty) {
+                      return const Text('No sessions yet');
+                    }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: sessions.length,
-                  itemBuilder: (context, index) {
-                    final session = sessions[index];
-                    final isCurrent = session.id == ref.watch(currentSessionProvider)?.id;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: sessions.length,
+                      itemBuilder: (context, index) {
+                        final session = sessions[index];
+                        final isCurrent =
+                            session.id == ref.watch(currentSessionProvider)?.id;
 
-                    return ListTile(
-                      title: Text(session.title),
-                      subtitle: Text(
-                        '${session.messageCount} messages • ${_formatDate(session.updatedAt)}',
-                      ),
-                      leading: CircleAvatar(
-                        child: Text(session.title.substring(0, 1).toUpperCase()),
-                      ),
-                      trailing: isCurrent
-                          ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
-                          : null,
-                      onTap: () {
-                        ref.read(chatSessionsProvider.notifier).setCurrentSession(session);
-                        Navigator.of(context).pop();
+                        return ListTile(
+                          title: Text(session.title),
+                          subtitle: Text(
+                            '${session.messageCount} messages • ${_formatDate(session.updatedAt)}',
+                          ),
+                          leading: CircleAvatar(
+                            child: Text(
+                                session.title.substring(0, 1).toUpperCase()),
+                          ),
+                          trailing: isCurrent
+                              ? Icon(Icons.check,
+                                  color: Theme.of(context).colorScheme.primary)
+                              : null,
+                          onTap: () {
+                            ref
+                                .read(chatSessionsProvider.notifier)
+                                .setCurrentSession(session);
+                            Navigator.of(context).pop();
+                          },
+                        );
                       },
                     );
                   },
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Error: $error'),
-            ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (error, stack) => Text('Error: $error'),
+                ),
           ],
         ),
       ),

@@ -35,7 +35,9 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
     // Initialize form state if editing
     if (widget.project != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(projectFormProvider.notifier).initializeForEdit(widget.project!);
+        ref
+            .read(projectFormProvider.notifier)
+            .initializeForEdit(widget.project!);
       });
     }
   }
@@ -62,10 +64,12 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
     }
 
     // Update form state with current values
-    ref.read(projectFormProvider.notifier).updateName(_titleController.text.trim());
+    ref
+        .read(projectFormProvider.notifier)
+        .updateName(_titleController.text.trim());
     ref.read(projectFormProvider.notifier).updateDescription(
-      _descriptionController.text.trim(),
-    );
+          _descriptionController.text.trim(),
+        );
 
     final success = await ref.read(projectFormProvider.notifier).save();
 

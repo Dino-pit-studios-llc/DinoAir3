@@ -75,11 +75,12 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: widget.bubbleColor ?? theme.colorScheme.surfaceContainerHighest,
+              color: widget.bubbleColor ??
+                  theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: theme.shadowColor.withOpacity(0.1),
+                  color: theme.shadowColor.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -147,7 +148,7 @@ class _AnimatedDot extends StatelessWidget {
           width: 4,
           height: 4,
           decoration: BoxDecoration(
-            color: color.withOpacity(animation.value),
+            color: color.withValues(alpha: animation.value),
             shape: BoxShape.circle,
           ),
         );

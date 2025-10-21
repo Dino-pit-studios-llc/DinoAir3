@@ -76,7 +76,7 @@ class ProjectCardWidget extends StatelessWidget {
                   Text(
                     project.description,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -119,7 +119,7 @@ class ProjectCardWidget extends StatelessWidget {
                                     '+${project.tags.length - 3}',
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.6),
+                                          .withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ),
@@ -136,13 +136,13 @@ class ProjectCardWidget extends StatelessWidget {
                     Icon(
                       Icons.event,
                       size: 14,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Updated ${dateFormatter.format(project.updatedAt)}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],

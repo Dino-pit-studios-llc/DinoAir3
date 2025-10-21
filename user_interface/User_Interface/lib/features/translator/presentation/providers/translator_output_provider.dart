@@ -6,7 +6,8 @@ import 'translator_loading_provider.dart';
 import 'translator_repository_provider.dart';
 
 // Provider for get translator config use case
-final getTranslatorConfigUseCaseProvider = Provider<GetTranslatorConfigUseCase>((ref) {
+final getTranslatorConfigUseCaseProvider =
+    Provider<GetTranslatorConfigUseCase>((ref) {
   return GetTranslatorConfigUseCase(ref.watch(translatorRepositoryProvider));
 });
 
@@ -75,7 +76,9 @@ class TranslatorOutputNotifier extends AsyncNotifier<TranslatorOutputState> {
       });
 
       if (state.hasError) {
-        ref.read(translatorLoadingProvider.notifier).setHistoryError(state.error.toString());
+        ref
+            .read(translatorLoadingProvider.notifier)
+            .setHistoryError(state.error.toString());
       }
     } finally {
       ref.read(translatorLoadingProvider.notifier).setLoadingHistory(false);
@@ -112,7 +115,9 @@ class TranslatorOutputNotifier extends AsyncNotifier<TranslatorOutputState> {
 
   /// Get translation by ID from history
   TranslationResultEntity? getTranslationById(String id) {
-    return state.value?.translationHistory.where((result) => result.id == id).firstOrNull;
+    return state.value?.translationHistory
+        .where((result) => result.id == id)
+        .firstOrNull;
   }
 
   /// Get recent translations (last N)
@@ -123,18 +128,25 @@ class TranslatorOutputNotifier extends AsyncNotifier<TranslatorOutputState> {
   /// Search history by language
   List<TranslationResultEntity> searchHistoryByLanguage(String language) {
     return state.value?.translationHistory
-        .where((result) => result.language.toLowerCase() == language.toLowerCase())
-        .toList() ?? [];
+            .where((result) =>
+                result.language.toLowerCase() == language.toLowerCase())
+            .toList() ??
+        [];
   }
 
   /// Search history by content
   List<TranslationResultEntity> searchHistoryByContent(String query) {
     final lowerQuery = query.toLowerCase();
     return state.value?.translationHistory
-        .where((result) =>
-            result.translatedCode.toLowerCase().contains(lowerQuery) ||
-            (result.metadata?.toString().toLowerCase().contains(lowerQuery) ?? false))
-        .toList() ?? [];
+            .where((result) =>
+                result.translatedCode.toLowerCase().contains(lowerQuery) ||
+                (result.metadata
+                        ?.toString()
+                        .toLowerCase()
+                        .contains(lowerQuery) ??
+                    false))
+            .toList() ??
+        [];
   }
 
   /// Set error
@@ -169,38 +181,41 @@ class TranslatorOutputNotifier extends AsyncNotifier<TranslatorOutputState> {
 }
 
 // Provider for translator output
-final translatorOutputProvider = AsyncNotifierProvider<TranslatorOutputNotifier, TranslatorOutputState>(
+final translatorOutputProvider =
+    AsyncNotifierProvider<TranslatorOutputNotifier, TranslatorOutputState>(
   () => TranslatorOutputNotifier(),
 );
 
 // Computed provider for current translation result
-final currentTranslationResultProvider = Provider<TranslationResultEntity?>((ref) {
+final currentTranslationResultProvider =
+    Provider<TranslationResultEntity?>((ref) {
   return ref.watch(translatorOutputProvider).maybeWhen(
-    data: (state) => state.currentResult,
-    orElse: () => null,
-  );
+        data: (state) => state.currentResult,
+        orElse: () => null,
+      );
 });
 
 // Computed provider for translation history
-final translationHistoryProvider = Provider<List<TranslationResultEntity>>((ref) {
+final translationHistoryProvider =
+    Provider<List<TranslationResultEntity>>((ref) {
   return ref.watch(translatorOutputProvider).maybeWhen(
-    data: (state) => state.translationHistory,
-    orElse: () => [],
-  );
+        data: (state) => state.translationHistory,
+        orElse: () => [],
+      );
 });
 
 // Computed provider for history loading state
 final isLoadingTranslationHistoryProvider = Provider<bool>((ref) {
   return ref.watch(translatorOutputProvider).maybeWhen(
-    data: (state) => state.isLoadingHistory,
-    orElse: () => false,
-  );
+        data: (state) => state.isLoadingHistory,
+        orElse: () => false,
+      );
 });
 
 // Computed provider for output error
 final translatorOutputErrorProvider = Provider<String?>((ref) {
   return ref.watch(translatorOutputProvider).maybeWhen(
-    data: (state) => state.error,
-    orElse: () => null,
-  );
+        data: (state) => state.error,
+        orElse: () => null,
+      );
 });

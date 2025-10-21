@@ -317,7 +317,8 @@ class _FiltersSection extends ConsumerWidget {
               ],
             ),
 
-            if (selectedFileTypes.isNotEmpty || selectedDirectories.isNotEmpty) ...[
+            if (selectedFileTypes.isNotEmpty ||
+                selectedDirectories.isNotEmpty) ...[
               const SizedBox(height: 12),
               TextButton.icon(
                 onPressed: () {

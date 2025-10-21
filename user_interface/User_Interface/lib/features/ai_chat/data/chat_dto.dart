@@ -31,7 +31,8 @@ class ChatRequestDto {
   factory ChatRequestDto.fromJson(Map<String, dynamic> json) {
     return ChatRequestDto(
       message: json['message']?.toString() ?? '',
-      sessionId: json['session_id']?.toString() ?? json['sessionId']?.toString(),
+      sessionId:
+          json['session_id']?.toString() ?? json['sessionId']?.toString(),
       toolCalls: json['tool_calls'] ?? json['toolCalls'],
     );
   }
@@ -65,7 +66,8 @@ class ChatResponseDto {
   factory ChatResponseDto.fromJson(Map<String, dynamic> json) {
     return ChatResponseDto(
       message: json['message']?.toString() ?? '',
-      sessionId: json['session_id']?.toString() ?? json['sessionId']?.toString() ?? '',
+      sessionId:
+          json['session_id']?.toString() ?? json['sessionId']?.toString() ?? '',
       toolCalls: json['tool_calls'] ?? json['toolCalls'],
     );
   }
@@ -101,8 +103,10 @@ class ChatSessionDto {
     return ChatSessionDto(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
-      createdAt: _tryParseDate(json['created_at'] ?? json['createdAt']) ?? DateTime.now().toUtc(),
-      updatedAt: _tryParseDate(json['updated_at'] ?? json['updatedAt']) ?? DateTime.now().toUtc(),
+      createdAt: _tryParseDate(json['created_at'] ?? json['createdAt']) ??
+          DateTime.now().toUtc(),
+      updatedAt: _tryParseDate(json['updated_at'] ?? json['updatedAt']) ??
+          DateTime.now().toUtc(),
       messageCount: json['message_count'] ?? json['messageCount'] ?? 0,
     );
   }

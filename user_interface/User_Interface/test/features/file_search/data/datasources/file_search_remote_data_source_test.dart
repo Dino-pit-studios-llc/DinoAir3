@@ -45,10 +45,10 @@ void main() {
           'http://localhost:8000/api/v1/file_search/search',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          data: responseData,
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              data: responseData,
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act
         final result = await dataSource.searchFiles(query: query);
@@ -73,10 +73,10 @@ void main() {
           'http://localhost:8000/api/v1/file_search/search',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          data: {'error': 'Bad request'},
-          statusCode: 400,
-          requestOptions: RequestOptions(),
-        ));
+              data: {'error': 'Bad request'},
+              statusCode: 400,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -129,10 +129,10 @@ void main() {
           'http://localhost:8000/api/v1/file_search/search',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          data: responseData,
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              data: responseData,
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act
         await dataSource.searchFiles(
@@ -173,10 +173,10 @@ void main() {
           'http://localhost:8000/api/v1/file_search/info',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          data: responseData,
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              data: responseData,
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act
         final result = await dataSource.getFileInfo(filePath);
@@ -198,10 +198,10 @@ void main() {
           'http://localhost:8000/api/v1/file_search/info',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          data: {'error': 'File not found'},
-          statusCode: 404,
-          requestOptions: RequestOptions(),
-        ));
+              data: {'error': 'File not found'},
+              statusCode: 404,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -225,9 +225,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/index',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -252,9 +252,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/index',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          statusCode: 400,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 400,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -280,9 +280,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/index',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -303,9 +303,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/index',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          statusCode: 400,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 400,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -332,10 +332,10 @@ void main() {
 
         when(mockDio.get('http://localhost:8000/api/v1/file_search/stats'))
             .thenAnswer((_) async => Response(
-          data: responseData,
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+                  data: responseData,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act
         final result = await dataSource.getSearchStatistics();
@@ -344,24 +344,26 @@ void main() {
         expect(result.totalFiles, 1000);
         expect(result.indexedFiles, 800);
         expect(result.totalDirectories, 50);
-        verify(mockDio.get('http://localhost:8000/api/v1/file_search/stats')).called(1);
+        verify(mockDio.get('http://localhost:8000/api/v1/file_search/stats'))
+            .called(1);
       });
 
       test('should throw ServerException on non-200 response', () async {
         // Arrange
         when(mockDio.get('http://localhost:8000/api/v1/file_search/stats'))
             .thenAnswer((_) async => Response(
-          data: {'error': 'Stats unavailable'},
-          statusCode: 500,
-          requestOptions: RequestOptions(),
-        ));
+                  data: {'error': 'Stats unavailable'},
+                  statusCode: 500,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act & Assert
         expect(
           () => dataSource.getSearchStatistics(),
           throwsA(isA<ServerException>()),
         );
-        verify(mockDio.get('http://localhost:8000/api/v1/file_search/stats')).called(1);
+        verify(mockDio.get('http://localhost:8000/api/v1/file_search/stats'))
+            .called(1);
       });
     });
 
@@ -379,12 +381,13 @@ void main() {
           ],
         };
 
-        when(mockDio.get('http://localhost:8000/api/v1/file_search/directories'))
+        when(mockDio
+                .get('http://localhost:8000/api/v1/file_search/directories'))
             .thenAnswer((_) async => Response(
-          data: responseData,
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+                  data: responseData,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act
         final result = await dataSource.getWatchedDirectories();
@@ -393,24 +396,29 @@ void main() {
         expect(result, hasLength(1));
         expect(result.first.path, '/test/dir1');
         expect(result.first.isWatched, true);
-        verify(mockDio.get('http://localhost:8000/api/v1/file_search/directories')).called(1);
+        verify(mockDio
+                .get('http://localhost:8000/api/v1/file_search/directories'))
+            .called(1);
       });
 
       test('should throw ServerException on non-200 response', () async {
         // Arrange
-        when(mockDio.get('http://localhost:8000/api/v1/file_search/directories'))
+        when(mockDio
+                .get('http://localhost:8000/api/v1/file_search/directories'))
             .thenAnswer((_) async => Response(
-          data: {'error': 'Directories unavailable'},
-          statusCode: 500,
-          requestOptions: RequestOptions(),
-        ));
+                  data: {'error': 'Directories unavailable'},
+                  statusCode: 500,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act & Assert
         expect(
           () => dataSource.getWatchedDirectories(),
           throwsA(isA<ServerException>()),
         );
-        verify(mockDio.get('http://localhost:8000/api/v1/file_search/directories')).called(1);
+        verify(mockDio
+                .get('http://localhost:8000/api/v1/file_search/directories'))
+            .called(1);
       });
     });
 
@@ -425,13 +433,14 @@ void main() {
           'http://localhost:8000/api/v1/file_search/directories',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
-          () => dataSource.addWatchedDirectory(path, includeSubdirectories, extensions),
+          () => dataSource.addWatchedDirectory(
+              path, includeSubdirectories, extensions),
           returnsNormally,
         );
         verify(mockDio.post(
@@ -454,13 +463,14 @@ void main() {
           'http://localhost:8000/api/v1/file_search/directories',
           data: anyNamed('data'),
         )).thenAnswer((_) async => Response(
-          statusCode: 400,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 400,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
-          () => dataSource.addWatchedDirectory(path, includeSubdirectories, extensions),
+          () => dataSource.addWatchedDirectory(
+              path, includeSubdirectories, extensions),
           throwsA(isA<ServerException>()),
         );
         verify(mockDio.post(
@@ -483,9 +493,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/directories',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 200,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -506,9 +516,9 @@ void main() {
           'http://localhost:8000/api/v1/file_search/directories',
           queryParameters: anyNamed('queryParameters'),
         )).thenAnswer((_) async => Response(
-          statusCode: 400,
-          requestOptions: RequestOptions(),
-        ));
+              statusCode: 400,
+              requestOptions: RequestOptions(),
+            ));
 
         // Act & Assert
         expect(
@@ -527,32 +537,34 @@ void main() {
         // Arrange
         when(mockDio.post('http://localhost:8000/api/v1/file_search/reindex'))
             .thenAnswer((_) async => Response(
-          statusCode: 200,
-          requestOptions: RequestOptions(),
-        ));
+                  statusCode: 200,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act & Assert
         expect(
           () => dataSource.reindexAll(),
           returnsNormally,
         );
-        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex')).called(1);
+        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex'))
+            .called(1);
       });
 
       test('should throw ServerException on error response', () async {
         // Arrange
         when(mockDio.post('http://localhost:8000/api/v1/file_search/reindex'))
             .thenAnswer((_) async => Response(
-          statusCode: 500,
-          requestOptions: RequestOptions(),
-        ));
+                  statusCode: 500,
+                  requestOptions: RequestOptions(),
+                ));
 
         // Act & Assert
         expect(
           () => dataSource.reindexAll(),
           throwsA(isA<ServerException>()),
         );
-        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex')).called(1);
+        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex'))
+            .called(1);
       });
 
       test('should throw ServerException on DioException', () async {
@@ -568,7 +580,8 @@ void main() {
           () => dataSource.reindexAll(),
           throwsA(isA<ServerException>()),
         );
-        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex')).called(1);
+        verify(mockDio.post('http://localhost:8000/api/v1/file_search/reindex'))
+            .called(1);
       });
     });
   });

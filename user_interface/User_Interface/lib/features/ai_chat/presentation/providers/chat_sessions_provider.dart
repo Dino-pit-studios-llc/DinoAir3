@@ -75,7 +75,9 @@ class ChatSessionsNotifier extends AsyncNotifier<List<ChatSessionEntity>> {
       // Remove from current sessions list
       state = await AsyncValue.guard(() async {
         final currentSessions = await _fetchSessions();
-        return currentSessions.where((session) => session.id != sessionId).toList();
+        return currentSessions
+            .where((session) => session.id != sessionId)
+            .toList();
       });
 
       // If the deleted session was current, clear current session

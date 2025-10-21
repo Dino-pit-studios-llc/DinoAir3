@@ -9,16 +9,17 @@ part 'file_search_result_dto.g.dart';
 /// This DTO handles JSON serialization/deserialization for API communication
 /// and provides conversion methods to/from domain entities.
 @freezed
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class FileSearchResultDTO with _$FileSearchResultDTO {
   const factory FileSearchResultDTO({
-    @JsonKey(name: 'file_path') required String filePath,
-    @JsonKey(name: 'file_name') required String fileName,
-    @JsonKey(name: 'file_type') required String fileType,
-    @JsonKey(name: 'file_size') required int fileSize,
-    @JsonKey(name: 'last_modified') required String lastModified,
-    @JsonKey(name: 'relevance_score') required double relevanceScore,
-    @JsonKey(name: 'matched_keywords') required List<String> matchedKeywords,
-    @JsonKey(name: 'file_content') String? fileContent,
+    required String filePath,
+    required String fileName,
+    required String fileType,
+    required int fileSize,
+    required String lastModified,
+    required double relevanceScore,
+    required List<String> matchedKeywords,
+    String? fileContent,
     Map<String, dynamic>? metadata,
   }) = _FileSearchResultDTO;
 
