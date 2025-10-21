@@ -37,6 +37,7 @@ ENV MCP_SERVER_HOST=0.0.0.0
 ENV MCP_SERVER_PORT=8080
 
 # Add health check
+# NOTE: The health check below assumes that mcp_qdrant_server.py implements a /health HTTP endpoint.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health').read()" || exit 1
 
