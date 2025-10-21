@@ -129,7 +129,7 @@ List<DuplicateAnnotationIssue> scanForIssues() {
       }
 
       // Check for @JsonSerializable (case-insensitive)
-      if (lowerLine.startsWith('@jsonserializable')) {
+      if (RegExp(r'^@jsonserializable\b', caseSensitive: false).hasMatch(line)) {
         hasJsonSerializable = true;
         jsonLine = i + 1;
       }
