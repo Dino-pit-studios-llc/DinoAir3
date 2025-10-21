@@ -1,5 +1,7 @@
 # DinoAir3 Control Center
 
+Housekeeping: many operational reports and checklists were moved from the repository root into docs/archive to keep the root clean. See docs/archive/ for historical reports.
+
 > **A comprehensive productivity and development platform with AI-powered tools**
 
 DinoAir3 is a modern full-stack application that combines productivity tools, AI-powered features, and development utilities into a unified control center. Built with Python/FastAPI backend and Flutter/React frontends.
