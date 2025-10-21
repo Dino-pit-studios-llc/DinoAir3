@@ -33,8 +33,6 @@ class _TranslatorSettingsWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final config = ref.watch(currentTranslatorConfigProvider);
     final isLoadingConfig = ref.watch(isLoadingTranslatorConfigProvider);
 
     return Dialog(
@@ -127,7 +125,7 @@ class _TranslatorSettingsWidgetState
             Text(
               'Choose the default programming language for translations',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -147,7 +145,7 @@ class _TranslatorSettingsWidgetState
                           ? _selectedDefaultLanguage
                           : availableLanguages.first;
 
-                  // Update state if needed
+                  // Update state if our selected value is not valid anymore
                   if (_selectedDefaultLanguage != dropdownValue) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
@@ -219,7 +217,7 @@ class _TranslatorSettingsWidgetState
             Text(
               'Languages that can be selected for translation',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -265,7 +263,7 @@ class _TranslatorSettingsWidgetState
             Text(
               'Configure the translation model behavior',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -330,7 +328,7 @@ class _TranslatorSettingsWidgetState
             Text(
               'Advanced configuration options',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -532,7 +530,7 @@ class _AddLanguageDialogState extends State<AddLanguageDialog> {
             Text(
               'Language selector would be implemented here',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],

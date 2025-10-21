@@ -41,7 +41,7 @@ class NoteCardWidget extends StatelessWidget {
                 Text(
                   note.content,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -76,13 +76,13 @@ class NoteCardWidget extends StatelessWidget {
                   Icon(
                     Icons.access_time,
                     size: 14,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(note.updatedAt),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

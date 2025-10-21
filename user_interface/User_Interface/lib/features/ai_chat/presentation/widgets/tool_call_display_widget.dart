@@ -25,10 +25,10 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.3),
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -50,7 +50,7 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -76,10 +76,10 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
                         if (_getFunctionDescription().isNotEmpty)
                           Text(
                             _getFunctionDescription(),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
-                            ),
+                style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface
+                  .withValues(alpha: 0.6),
+                ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -93,7 +93,8 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
                   Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
                     size: 20,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ],
               ),
@@ -124,7 +125,8 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
                         color: theme.colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: theme.colorScheme.outline.withOpacity(0.3),
+                          color: theme.colorScheme.outline
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                       child: SelectableText(

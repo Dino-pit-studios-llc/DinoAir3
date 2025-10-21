@@ -400,7 +400,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = (color ?? Colors.grey).withOpacity(0.15);
+  final bg = (color ?? Colors.grey).withValues(alpha: 0.15);
     final fg = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Container(
@@ -408,7 +408,7 @@ class _StatusChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: (color ?? Colors.grey).withOpacity(0.5)),
+  border: Border.all(color: (color ?? Colors.grey).withValues(alpha: 0.5)),
       ),
       child: Text(
         label,

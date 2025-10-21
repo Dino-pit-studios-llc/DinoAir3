@@ -9,13 +9,13 @@ part 'search_statistics_dto.g.dart';
 /// This DTO handles JSON serialization/deserialization for API communication
 /// and provides conversion methods to/from domain entities.
 @freezed
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class SearchStatisticsDTO with _$SearchStatisticsDTO {
   const factory SearchStatisticsDTO({
-    @JsonKey(name: 'total_files') required int totalFiles,
-    @JsonKey(name: 'indexed_files') required int indexedFiles,
-    @JsonKey(name: 'total_directories') required int totalDirectories,
-    @JsonKey(name: 'last_index_time') required String lastIndexTime,
-    @JsonKey(name: 'file_type_distribution')
+    required int totalFiles,
+    required int indexedFiles,
+    required int totalDirectories,
+    required String lastIndexTime,
     required Map<String, int> fileTypeDistribution,
   }) = _SearchStatisticsDTO;
 

@@ -35,8 +35,6 @@ class _TranslationOutputWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       key: const Key('translation_output_panel'),
       children: [
@@ -53,7 +51,7 @@ class _TranslationOutputWidgetState
   }
 
   Widget _buildHeader() {
-    final theme = Theme.of(context);
+  final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

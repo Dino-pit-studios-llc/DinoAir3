@@ -42,7 +42,7 @@ class TagChipListWidget extends StatelessWidget {
           Text(
             editable ? 'No tags yet. Tap Add to create one.' : 'No tags',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           )
         else

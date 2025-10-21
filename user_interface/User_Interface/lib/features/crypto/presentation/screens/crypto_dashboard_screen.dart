@@ -22,8 +22,7 @@ class CryptoDashboardScreen extends ConsumerWidget {
     final summaryAsync = ref.watch(portfolioSummaryProvider);
     final holdingsAsync = ref.watch(portfolioHoldingsProvider);
     final watchlistAsync = ref.watch(watchlistCoinsProvider);
-    final marketAsync = ref.watch(topCoinsProvider);
-    final theme = Theme.of(context);
+  final marketAsync = ref.watch(topCoinsProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -48,7 +47,7 @@ class CryptoDashboardScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             _buildMarketHighlightsSection(context, marketAsync),
             const SizedBox(height: 12),
-            _buildQuickNavSection(context, theme),
+            _buildQuickNavSection(context, Theme.of(context)),
           ],
         ),
       ),
@@ -68,7 +67,6 @@ class CryptoDashboardScreen extends ConsumerWidget {
 
   Widget _buildPortfolioSection(BuildContext context,
       AsyncValue<dynamic> summaryAsync, AsyncValue<dynamic> holdingsAsync) {
-    final theme = Theme.of(context);
     final holdingCount = holdingsAsync.maybeWhen(
         data: (list) => (list as List).length, orElse: () => 0);
     return summaryAsync.when(
@@ -109,7 +107,6 @@ class CryptoDashboardScreen extends ConsumerWidget {
 
   Widget _buildWatchlistSection(
       BuildContext context, AsyncValue<List<CoinEntity>> watchlistAsync) {
-    final theme = Theme.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -132,7 +129,7 @@ class CryptoDashboardScreen extends ConsumerWidget {
               error: (err, stack) => Padding(
                 padding: const EdgeInsets.all(12),
                 child: Text('Failed to load watchlist: $err',
-                    style: TextStyle(color: theme.colorScheme.error)),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error)),
               ),
               data: (coins) {
                 if (coins.isEmpty) {

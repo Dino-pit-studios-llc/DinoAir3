@@ -96,13 +96,9 @@ class _LanguageSelectorWidgetState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final selectedLanguage = ref.watch(selectedLanguageProvider);
-    final supportedLanguages = ref.watch(supportedLanguagesProvider);
-    final availableLanguages = ref.watch(availableLanguagesProvider);
+  final selectedLanguage = ref.watch(selectedLanguageProvider);
 
-    // Filter languages based on search query
-    final filteredLanguages =
-        _getFilteredLanguages(supportedLanguages, availableLanguages);
+  // Note: filtering is performed in the dropdown builder where the list is rendered.
 
     return GestureDetector(
       onTap: () {
@@ -139,7 +135,7 @@ class _LanguageSelectorWidgetState
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: theme.colorScheme.outline.withOpacity(0.3),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
                     borderRadius: BorderRadius.circular(8),
                     color: theme.colorScheme.surface,
@@ -158,7 +154,7 @@ class _LanguageSelectorWidgetState
                       Icon(
                         _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                         size: 18,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ],
                   ),
@@ -196,7 +192,7 @@ class _LanguageSelectorWidgetState
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
         child: Column(

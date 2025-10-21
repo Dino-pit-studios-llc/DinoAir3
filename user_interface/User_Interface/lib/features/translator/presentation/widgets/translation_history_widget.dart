@@ -45,8 +45,7 @@ class _TranslationHistoryWidgetState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final historyAsync = ref.watch(translatorOutputProvider);
-    final isLoadingHistory = ref.watch(isLoadingTranslationHistoryProvider);
+  final historyAsync = ref.watch(translatorOutputProvider);
 
     return Dialog(
       child: Container(
@@ -100,8 +99,8 @@ class _TranslationHistoryWidgetState
                             error.toString(),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface
+                  .withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -135,7 +134,7 @@ class _TranslationHistoryWidgetState
         color: theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -231,7 +230,7 @@ class _TranslationHistoryWidgetState
           Icon(
             Icons.history,
             size: 64,
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -239,7 +238,7 @@ class _TranslationHistoryWidgetState
                 ? 'No translations found'
                 : 'No translation history',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -249,7 +248,7 @@ class _TranslationHistoryWidgetState
                 : 'Your translation history will appear here',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -495,7 +494,7 @@ class HistoryStatsWidget extends ConsumerWidget {
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -512,7 +511,7 @@ class HistoryStatsWidget extends ConsumerWidget {
           Container(
             width: 1,
             height: 32,
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           Expanded(
             child: _buildStatItem(
@@ -525,7 +524,7 @@ class HistoryStatsWidget extends ConsumerWidget {
           Container(
             width: 1,
             height: 32,
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           Expanded(
             child: _buildStatItem(
@@ -559,7 +558,7 @@ class HistoryStatsWidget extends ConsumerWidget {
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ],
