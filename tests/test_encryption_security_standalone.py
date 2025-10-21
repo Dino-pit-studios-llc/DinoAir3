@@ -17,7 +17,7 @@ from encryption import ArtifactEncryption, DecryptionError, check_encryption_for
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import the actual module code directly
-exec(open("utils/artifact_encryption.py").read())
+from utils import artifact_encryption
 
 
 from encryption import ArtifactEncryption, DecryptionError
