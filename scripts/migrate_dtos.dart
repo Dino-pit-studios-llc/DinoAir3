@@ -121,14 +121,15 @@ List<DuplicateAnnotationIssue> scanForIssues() {
       final line = lines[i].trim();
       final lowerLine = line.toLowerCase();
 
-      // Check for @freezed (case-insensitive)
-      if (lowerLine.startsWith('@freezed')) {
+      // Check for @freezed (case-insensitive, precise)
+      if (lowerLine.startsWith('@freezed') &&
+          (lowerLine.length == 8 || !RegExp(r'[a-z]').hasMatch(lowerLine[8]))) {
         hasFreezed = true;
         freezedLine = i + 1;
       }
 
       // Check for @JsonSerializable (case-insensitive)
-      if (lowerLine.startsWith('@jsonserializable')) {
+      if (RegExp(r'^@jsonserializable\b', caseSensitive: false).hasMatch(line)) {
         hasJsonSerializable = true;
         jsonLine = i + 1;
       }
