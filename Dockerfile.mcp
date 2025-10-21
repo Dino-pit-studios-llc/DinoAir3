@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user to run the application
-RUN groupadd -r mcpuser && useradd -r -g mcpuser mcpuser
+RUN groupadd -r mcpuser && useradd -r -g mcpuser -M -s /bin/false mcpuser
 
 # Copy requirements and install Python dependencies
 COPY mcp_qdrant_requirements.txt .
