@@ -215,7 +215,7 @@ class AddColumnMigration(BaseMigration):
             r"^DEFAULT\s+\d+\.\d+$",  # DEFAULT 1.5
             r"^DEFAULT\s+CURRENT_TIMESTAMP$",  # DEFAULT CURRENT_TIMESTAMP
             r"^DEFAULT\s+CURRENT_DATE$",  # DEFAULT CURRENT_DATE
-            r"^DEFAULT\s+CURRENT_TIME$",  # DEFAULT CURRENT_TIME
+            f"or 'DEFAULT 'text''. Complex expressions not supported for security."
         ]
 
         normalized = default_clause.strip().upper()
