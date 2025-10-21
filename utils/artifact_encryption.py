@@ -30,12 +30,12 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class DecryptionError(Exception):
     """
     Generic decryption error to prevent oracle attacks.
-    
+
     This single error type is raised for all decryption failures,
     preventing attackers from distinguishing between padding errors,
     authentication failures, or other decryption issues.
     """
-    
+
     pass
 
 
@@ -44,7 +44,7 @@ class ArtifactEncryption:
     Handles field-level encryption for artifacts using AES-256-GCM
 
     Uses authenticated encryption (GCM mode) for security and data integrity.
-    
+
     Security Considerations:
     ========================
     1. All new encryptions use AES-GCM (authenticated encryption)
@@ -52,7 +52,7 @@ class ArtifactEncryption:
     3. DecryptionError provides generic error to prevent oracle attacks
     4. Callers MUST NOT expose detailed error information from decryption failures
     5. Strong key derivation enforced: PBKDF2-HMAC-SHA256 with 100,000 iterations
-    
+
     Migration Plan:
     ===============
     - All NEW data is encrypted with AES-GCM (nonce-based)
@@ -60,22 +60,22 @@ class ArtifactEncryption:
     - TODO: Implement batch migration utility to re-encrypt all CBC data to GCM
     - TODO: After migration complete, remove _decrypt_legacy_cbc() method
     - TODO: Add monitoring/alerting for remaining CBC decryptions
-    
+
     Error Handling Best Practices:
     ===============================
     - NEVER log or expose DecryptionError details to users
     - NEVER distinguish between "wrong password" vs "corrupted data" errors
     - Use generic "Decryption failed" message for ALL failures
     - Log failures to secure audit logs only (not user-facing logs)
-    
+
     Example Usage:
     ==============
     ```python
     encryptor = ArtifactEncryption(password="secure_password")
-    
+
     # Encrypt fields
     encrypted = encryptor.encrypt_fields(data, ["sensitive_field"])
-    
+
     # Decrypt fields
     try:
         decrypted = encryptor.decrypt_fields(encrypted, ["sensitive_field"])
@@ -182,7 +182,7 @@ class ArtifactEncryption:
 
         Returns:
             Decrypted data as bytes
-            
+
         Raises:
             DecryptionError: Generic error for all decryption failures to prevent oracle attacks
         """
@@ -205,11 +205,11 @@ class ArtifactEncryption:
                 # Decrypt using AES-GCM (authenticated encryption)
                 aesgcm = AESGCM(key)
                 return aesgcm.decrypt(nonce, encrypted, None)
-            
+
             # Legacy CBC format - maintain backward compatibility
             # Wrap ALL exceptions from CBC path to prevent oracle leaks
             return self._decrypt_legacy_cbc(encrypted_data, key)
-            
+
         except DecryptionError:
             # Re-raise our generic error as-is
             raise
@@ -221,23 +221,23 @@ class ArtifactEncryption:
     def _decrypt_legacy_cbc(self, encrypted_data: dict[str, str], key: bytes | None) -> bytes:
         """
         Decrypt legacy CBC-encrypted data
-        
+
         WARNING: This is for backward compatibility only. All new encryptions use GCM.
         TODO: Migrate all legacy ciphertexts to AES-GCM and remove this method.
-        
+
         Args:
             encrypted_data: Dictionary with encrypted data, salt, and iv
             key: Optional encryption key
-            
+
         Returns:
             Decrypted data as bytes
-            
+
         Raises:
             DecryptionError: Generic error for all CBC decryption failures
         """
         try:
-            from cryptography.hazmat.primitives import padding
             from cryptography.hazmat.backends import default_backend
+            from cryptography.hazmat.primitives import padding
             from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
             encrypted = base64.b64decode(encrypted_data["data"])
@@ -258,7 +258,7 @@ class ArtifactEncryption:
             # Remove PKCS7 padding using cryptography unpadder
             unpadder = padding.PKCS7(128).unpadder()
             return unpadder.update(decrypted_padded) + unpadder.finalize()
-            
+
         except Exception as e:
             # CRITICAL: Convert ALL CBC exceptions to generic DecryptionError
             # This prevents padding oracle attacks and other side-channel leaks
@@ -275,7 +275,7 @@ class ArtifactEncryption:
 
         Returns:
             Dictionary with specified fields encrypted
-            
+
         Note:
             All new encryptions use AES-GCM format with 'nonce' field.
             Legacy 'iv' field support maintained only for decryption.
@@ -322,7 +322,7 @@ class ArtifactEncryption:
 
         Returns:
             Dictionary with specified fields decrypted
-            
+
         Raises:
             DecryptionError: Generic error for decryption failures
         """
@@ -338,7 +338,7 @@ class ArtifactEncryption:
                     "data": data[field],
                     "salt": field_info["salt"],
                 }
-                
+
                 # Add nonce or iv field (backward compatibility)
                 if "nonce" in field_info:
                     encrypted_dict["nonce"] = field_info["nonce"]
@@ -436,7 +436,7 @@ def rotate_encryption(
 
     Returns:
         Dictionary with fields re-encrypted using new password
-        
+
     Raises:
         DecryptionError: If decryption with old password fails
     """
@@ -461,28 +461,28 @@ def migrate_cbc_to_gcm(
 ) -> dict[str, Any]:
     """
     Migrate legacy CBC-encrypted data to AES-GCM format
-    
+
     This utility should be used to migrate all legacy CBC ciphertexts to the
     secure AES-GCM format. After all data is migrated, CBC support can be removed.
-    
+
     Args:
         data: Dictionary containing CBC-encrypted data (with 'iv' fields)
         password: Password for decryption/re-encryption
         fields: List of encrypted field names
-        
+
     Returns:
         Dictionary with fields re-encrypted using AES-GCM (with 'nonce' fields)
-        
+
     Raises:
         DecryptionError: If decryption fails
-        
+
     Example:
         ```python
         # Migrate a single record
         migrated = ArtifactEncryption.migrate_cbc_to_gcm(
             old_record, password, ["sensitive_field"]
         )
-        
+
         # Batch migration (pseudo-code)
         for record in database.get_encrypted_records():
             try:
@@ -500,11 +500,11 @@ def migrate_cbc_to_gcm(
     if encryption_info and all("nonce" in info for info in encryption_info.values()):
         # Already migrated to GCM
         return data
-    
+
     # Decrypt with CBC support
     encryptor = ArtifactEncryption(password)
     decrypted_data = encryptor.decrypt_fields(data, fields)
-    
+
     # Re-encrypt with GCM (encrypt_fields always uses GCM now)
     return encryptor.encrypt_fields(decrypted_data, fields)
 
@@ -512,16 +512,16 @@ def migrate_cbc_to_gcm(
 def check_encryption_format(data: dict[str, Any]) -> str:
     """
     Check which encryption format is used in the data
-    
+
     Args:
         data: Dictionary potentially containing encrypted data
-        
+
     Returns:
         "gcm" if using AES-GCM (nonce-based)
         "cbc" if using legacy CBC (iv-based)
         "none" if no encryption metadata found
         "mixed" if different fields use different formats (should not happen)
-        
+
     Example:
         ```python
         format_type = check_encryption_format(artifact_data)
@@ -533,16 +533,15 @@ def check_encryption_format(data: dict[str, Any]) -> str:
     encryption_info = data.get("_encryption_info", {})
     if not encryption_info:
         return "none"
-    
+
     has_nonce = any("nonce" in info for info in encryption_info.values())
     has_iv = any("iv" in info for info in encryption_info.values())
-    
+
     if has_nonce and not has_iv:
         return "gcm"
     if has_iv and not has_nonce:
         return "cbc"
     if has_nonce and has_iv:
         return "mixed"  # Should not happen - indicates data corruption
-    
-    return "none"
 
+    return "none"
