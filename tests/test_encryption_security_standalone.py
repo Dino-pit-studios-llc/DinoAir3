@@ -11,20 +11,21 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from encryption import ArtifactEncryption, DecryptionError, check_encryption_format
+from encryption import ArtifactEncryption, check_encryption_format
 
 # Direct imports to avoid utils.__init__ dependency issues
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from encryption import ArtifactEncryption, DecryptionError
-
 # Import the actual module code directly
-from utils import artifact_encryption
-from utils.artifact_encryption import ArtifactEncryption, DecryptionError, check_encryption_format
+with open("utils/artifact_encryption.py") as f:
+    exec(f.read())
+from utils.artifact_encryption import *
 
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
+    from encryption import ArtifactEncryption, DecryptionError
+
     print("Testing DecryptionError wrapper...")
 
     encryptor = ArtifactEncryption("correct_password")
@@ -75,6 +76,9 @@ def test_corrupted_data_generic_error():
         return False
 
 
+from encryption_security import ArtifactEncryption
+
+
 def test_iv_nonce_fix():
     """Test that encrypt_fields uses 'nonce' not 'iv'"""
     print("Testing iv/nonce field fix...")
@@ -101,6 +105,8 @@ def test_iv_nonce_fix():
 
 def test_backward_compatibility():
     """Test that both nonce and iv formats can be decrypted"""
+    from encryption_security import ArtifactEncryption, DecryptionError
+
     print("Testing backward compatibility...")
 
     encryptor = ArtifactEncryption("password")
@@ -183,7 +189,7 @@ def test_key_derivation_strength():
     """Test that strong key derivation is enforced"""
     print("Testing key derivation strength...")
 
-    encryptor = ArtifactEncryption("password")
+    encryptor = ArtifactEncryptor("password")
 
     if encryptor.iterations < 100000:
         print(f"  ❌ FAIL: PBKDF2 iterations too low: {encryptor.iterations}")
@@ -201,11 +207,14 @@ def test_key_derivation_strength():
     return True
 
 
+from encryption import ArtifactEncryption
+
+
 def test_full_encryption_decryption_cycle():
     """Test complete encryption/decryption cycle"""
     print("Testing full encryption/decryption cycle...")
 
-    encryptor = ArtifactEncryptor("my_secure_password")
+    encryptor = ArtifactEncryption("my_secure_password")
 
     original_data = {"public_field": "visible", "sensitive_field": "secret_data", "another_secret": {"nested": "data"}}
 
