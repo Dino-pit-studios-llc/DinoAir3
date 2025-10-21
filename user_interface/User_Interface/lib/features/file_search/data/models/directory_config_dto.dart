@@ -8,7 +8,6 @@ part 'directory_config_dto.g.dart';
 ///
 /// This DTO handles JSON serialization/deserialization for API communication
 /// and provides conversion methods to/from domain entities.
-@JsonSerializable(fieldRename: FieldRename.snake)
 @freezed
 class DirectoryConfigDTO with _$DirectoryConfigDTO {
   const factory DirectoryConfigDTO({
