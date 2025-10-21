@@ -20,9 +20,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 exec(open("utils/artifact_encryption.py").read())
 from utils.artifact_encryption import *
 
+
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
     from encryption import ArtifactEncryption, DecryptionError
+
     print("Testing DecryptionError wrapper...")
 
     encryptor = ArtifactEncryption("correct_password")
@@ -74,6 +76,7 @@ def test_corrupted_data_generic_error():
 
 
 from encryption_security import ArtifactEncryption
+
 
 def test_iv_nonce_fix():
     """Test that encrypt_fields uses 'nonce' not 'iv'"""
@@ -204,6 +207,7 @@ def test_key_derivation_strength():
 
 
 from encryption import ArtifactEncryption
+
 
 def test_full_encryption_decryption_cycle():
     """Test complete encryption/decryption cycle"""
