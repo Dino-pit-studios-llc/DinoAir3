@@ -6,18 +6,21 @@ Phase 4A Sprint 1 - Step 2.1
 
 import threading
 
-from utils.logger import Logger
+from .base_db import BaseDatabase
 
 
-class NotesServiceFactory:
+class NotesServiceFactory(BaseDatabase):
     """
     Factory for creating notes services with proper dependency injection.
     Eliminates circular dependencies by breaking direct imports.
+    
+    Inherits from BaseDatabase to get consistent logger initialization
+    and error handling capabilities.
     """
 
     def __init__(self):
-        """Initialize factory."""
-        self.logger = Logger()
+        """Initialize factory with logger."""
+        super().__init__()
 
     def create_notes_service(self, user_name: str | None = None):
         """
