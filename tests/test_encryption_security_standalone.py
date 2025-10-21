@@ -21,7 +21,7 @@ from utils import artifact_encryption
 
 
 from encryption import ArtifactEncryption, DecryptionError
-
+from utils.artifact_encryption import ArtifactEncryption, DecryptionError, check_encryption_format
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
