@@ -39,6 +39,7 @@ class TimersDatabase(BaseDatabase):
         Returns:
             Standard response dict with success status
         """
+
         def _create() -> None:
             with self.db_manager.get_timers_connection() as conn:
                 cursor = conn.cursor()
@@ -50,5 +51,5 @@ class TimersDatabase(BaseDatabase):
                     (task_name, start_time, end_time, elapsed_seconds),
                 )
                 conn.commit()
-        
+
         return self.safe_execute(_create, error_context="create_timer_log")

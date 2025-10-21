@@ -89,8 +89,12 @@ random_no = write_random_to_file()
 """
 
 # Pre-built help text strings (reduces duplication)
-HELP_TEXT_UNUSED_LOCAL_VARIABLE = "A local variable is defined (by an assignment) but never used.\n" + _UNUSED_VARIABLE_HELP_BASE
-HELP_TEXT_UNUSED_GLOBAL_VARIABLE = "A global (module-level) variable is defined (by an assignment) but never used and " + _UNUSED_GLOBAL_HELP_BASE
+HELP_TEXT_UNUSED_LOCAL_VARIABLE = (
+    "A local variable is defined (by an assignment) but never used.\n" + _UNUSED_VARIABLE_HELP_BASE
+)
+HELP_TEXT_UNUSED_GLOBAL_VARIABLE = (
+    "A global (module-level) variable is defined (by an assignment) but never used and " + _UNUSED_GLOBAL_HELP_BASE
+)
 
 # Security issues list
 security_issues = [

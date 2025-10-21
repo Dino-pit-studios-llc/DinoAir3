@@ -12,15 +12,15 @@ def test_success_response():
     # Basic success
     result = success_response()
     assert result == {"success": True}
-    
+
     # With data
     result = success_response(data={"id": "123"})
     assert result == {"success": True, "data": {"id": "123"}}
-    
+
     # With message
     result = success_response(message="Operation completed")
     assert result == {"success": True, "message": "Operation completed"}
-    
+
     print("✅ success_response tests passed")
 
 
@@ -30,19 +30,15 @@ def test_error_response():
     result = error_response(ValueError("Bad input"))
     assert result["success"] is False
     assert result["error"] == "Bad input"
-    
+
     # With context
     result = error_response("Not found", context="User lookup")
-    assert result == {
-        "success": False,
-        "error": "Not found",
-        "context": "User lookup"
-    }
-    
+    assert result == {"success": False, "error": "Not found", "context": "User lookup"}
+
     # With type
     result = error_response(ValueError("Bad"), include_type=True)
     assert result["error_type"] == "ValueError"
-    
+
     print("✅ error_response tests passed")
 
 
@@ -52,12 +48,12 @@ def test_data_response():
     result = data_response(True, data={"count": 5})
     assert result["success"] is True
     assert result["data"] == {"count": 5}
-    
+
     # Failure with error
     result = data_response(False, error="Failed")
     assert result["success"] is False
     assert result["error"] == "Failed"
-    
+
     print("✅ data_response tests passed")
 
 

@@ -13,7 +13,7 @@ class NotesServiceFactory(BaseDatabase):
     """
     Factory for creating notes services with proper dependency injection.
     Eliminates circular dependencies by breaking direct imports.
-    
+
     Inherits from BaseDatabase to get consistent logger initialization
     and error handling capabilities.
     """
