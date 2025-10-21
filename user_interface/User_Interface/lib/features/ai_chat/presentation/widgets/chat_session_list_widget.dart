@@ -65,8 +65,11 @@ class ChatSessionListWidget extends ConsumerWidget {
                 error.toString(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.6),
+                    ),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
@@ -102,7 +105,7 @@ class _SessionListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       color: isSelected
-          ? theme.colorScheme.primary.withOpacity(0.1)
+          ? theme.colorScheme.primary.withValues(alpha: 0.1)
           : theme.colorScheme.surface,
       child: InkWell(
         onTap: onTap,
@@ -115,7 +118,7 @@ class _SessionListItem extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: isSelected
                     ? theme.colorScheme.primary
-                    : theme.colorScheme.primary.withOpacity(0.1),
+                    : theme.colorScheme.primary.withValues(alpha: 0.1),
                 foregroundColor: isSelected
                     ? theme.colorScheme.onPrimary
                     : theme.colorScheme.primary,
@@ -151,7 +154,8 @@ class _SessionListItem extends StatelessWidget {
                     Text(
                       '${session.messageCount} messages • ${_formatDate(session.updatedAt)}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -208,13 +212,13 @@ class _EmptySessionsView extends StatelessWidget {
           Icon(
             Icons.chat_bubble_outline,
             size: 64,
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'No chat sessions yet',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -222,7 +226,7 @@ class _EmptySessionsView extends StatelessWidget {
             'Start a new conversation to create your first session',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],

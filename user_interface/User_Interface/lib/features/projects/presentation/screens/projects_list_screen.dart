@@ -33,12 +33,15 @@ class _ProjectsListScreenState extends ConsumerState<ProjectsListScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.play_circle_outline, color: Colors.green),
+              leading:
+                  const Icon(Icons.play_circle_outline, color: Colors.green),
               title: const Text('Active'),
               onTap: () {
                 Navigator.pop(context);
                 setState(() => _statusFilter = 'active');
-                ref.read(projectsListProvider.notifier).filterByStatus('active');
+                ref
+                    .read(projectsListProvider.notifier)
+                    .filterByStatus('active');
               },
             ),
             ListTile(

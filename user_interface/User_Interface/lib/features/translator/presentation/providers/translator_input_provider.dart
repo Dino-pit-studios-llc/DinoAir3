@@ -7,7 +7,8 @@ import 'translator_output_provider.dart';
 import 'translator_repository_provider.dart';
 
 // Provider for translate pseudocode use case
-final translatePseudocodeUseCaseProvider = Provider<TranslatePseudocodeUseCase>((ref) {
+final translatePseudocodeUseCaseProvider =
+    Provider<TranslatePseudocodeUseCase>((ref) {
   return TranslatePseudocodeUseCase(ref.watch(translatorRepositoryProvider));
 });
 
@@ -105,7 +106,9 @@ class TranslatorInputNotifier extends Notifier<TranslatorInputState> {
       final result = await useCase(request);
 
       // Update output provider with result
-      await ref.read(translatorOutputProvider.notifier).setTranslationResult(result);
+      await ref
+          .read(translatorOutputProvider.notifier)
+          .setTranslationResult(result);
 
       // Clear dirty state
       state = state.copyWith(isDirty: false);
@@ -114,7 +117,9 @@ class TranslatorInputNotifier extends Notifier<TranslatorInputState> {
     } catch (e) {
       state = state.copyWith(error: 'Translation failed: ${e.toString()}');
       // Surface error in loading state for inline progress banner
-      ref.read(translatorLoadingProvider.notifier).setTranslationError(e.toString());
+      ref
+          .read(translatorLoadingProvider.notifier)
+          .setTranslationError(e.toString());
       return false;
     } finally {
       ref.read(translatorLoadingProvider.notifier).setTranslating(false);
@@ -137,7 +142,8 @@ class TranslatorInputNotifier extends Notifier<TranslatorInputState> {
 }
 
 // Provider for translator input
-final translatorInputProvider = NotifierProvider<TranslatorInputNotifier, TranslatorInputState>(
+final translatorInputProvider =
+    NotifierProvider<TranslatorInputNotifier, TranslatorInputState>(
   () => TranslatorInputNotifier(),
 );
 

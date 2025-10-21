@@ -7,6 +7,7 @@ class ListProjectsUseCase {
   final ProjectRepository _repository;
 
   Future<List<ProjectEntity>> call({String? statusFilter, String? parentId}) {
-    return _repository.listProjects(statusFilter: statusFilter, parentId: parentId);
+    return _repository.listProjects(
+        statusFilter: statusFilter, parentId: parentId);
   }
 }

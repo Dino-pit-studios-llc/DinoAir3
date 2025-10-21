@@ -150,7 +150,8 @@ class FileResultCardWidget extends ConsumerWidget {
                   ),
                   _MetadataChip(
                     icon: Icons.star,
-                    label: '${(result.relevanceScore * 100).toStringAsFixed(0)}%',
+                    label:
+                        '${(result.relevanceScore * 100).toStringAsFixed(0)}%',
                     color: Colors.amber,
                   ),
                 ],
@@ -218,8 +219,7 @@ class _MetadataChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final chipColor =
-        color ?? theme.colorScheme.surfaceContainerHighest;
+    final chipColor = color ?? theme.colorScheme.surfaceContainerHighest;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),

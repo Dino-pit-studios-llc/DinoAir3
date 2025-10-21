@@ -20,7 +20,8 @@ class ChatRepositoryImpl implements AiChatRepository {
   final ChatLocalDataSource _localDataSource;
 
   @override
-  Future<ChatMessageEntity> sendMessage(String message, {String? sessionId}) async {
+  Future<ChatMessageEntity> sendMessage(String message,
+      {String? sessionId}) async {
     return guardFuture(() async {
       // Create request DTO
       final requestDto = ChatRequestDto(
@@ -138,7 +139,8 @@ class ChatRepositoryImpl implements AiChatRepository {
   Future<void> _updateSessionMessageCount(String sessionId) async {
     try {
       final cachedMessages = await _localDataSource.getCachedHistory(sessionId);
-      await _localDataSource.updateSessionMessageCount(sessionId, cachedMessages.length);
+      await _localDataSource.updateSessionMessageCount(
+          sessionId, cachedMessages.length);
     } catch (error) {
       // Ignore errors when updating message count
     }

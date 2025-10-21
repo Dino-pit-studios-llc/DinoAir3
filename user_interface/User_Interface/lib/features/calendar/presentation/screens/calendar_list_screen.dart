@@ -8,8 +8,7 @@ class CalendarListScreen extends ConsumerStatefulWidget {
   const CalendarListScreen({super.key});
 
   @override
-  ConsumerState<CalendarListScreen> createState() =>
-      _CalendarListScreenState();
+  ConsumerState<CalendarListScreen> createState() => _CalendarListScreenState();
 }
 
 class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
@@ -32,9 +31,13 @@ class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
             endDate: _endDate!,
           );
     } else if (_selectedEventType != null) {
-      ref.read(calendarListProvider.notifier).loadEventsByType(_selectedEventType!);
+      ref
+          .read(calendarListProvider.notifier)
+          .loadEventsByType(_selectedEventType!);
     } else if (_selectedStatus != null) {
-      ref.read(calendarListProvider.notifier).loadEventsByStatus(_selectedStatus!);
+      ref
+          .read(calendarListProvider.notifier)
+          .loadEventsByStatus(_selectedStatus!);
     } else {
       ref.read(calendarListProvider.notifier).refresh();
     }
@@ -95,7 +98,9 @@ class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
       ),
       body: Column(
         children: [
-          if (_startDate != null || _selectedEventType != null || _selectedStatus != null)
+          if (_startDate != null ||
+              _selectedEventType != null ||
+              _selectedStatus != null)
             Container(
               padding: const EdgeInsets.all(8.0),
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -169,7 +174,10 @@ class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
                         const SizedBox(height: 8),
                         Text(
                           'Create your first event',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
                                 color: Theme.of(context).colorScheme.outline,
                               ),
                         ),
@@ -201,11 +209,13 @@ class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
                                   'Are you sure you want to delete this event?'),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
-                                  onPressed: () => Navigator.of(context).pop(true),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
                                   child: const Text('Delete'),
                                 ),
                               ],
@@ -326,10 +336,14 @@ class _CalendarListScreenState extends ConsumerState<CalendarListScreen> {
                 initialValue: _selectedStatus,
                 items: const [
                   DropdownMenuItem(value: null, child: Text('All Statuses')),
-                  DropdownMenuItem(value: 'scheduled', child: Text('Scheduled')),
-                  DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
-                  DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                  DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
+                  DropdownMenuItem(
+                      value: 'scheduled', child: Text('Scheduled')),
+                  DropdownMenuItem(
+                      value: 'in_progress', child: Text('In Progress')),
+                  DropdownMenuItem(
+                      value: 'completed', child: Text('Completed')),
+                  DropdownMenuItem(
+                      value: 'cancelled', child: Text('Cancelled')),
                 ],
                 onChanged: (value) {
                   setModalState(() {

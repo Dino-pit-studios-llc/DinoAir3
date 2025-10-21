@@ -44,14 +44,14 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
 
     // Update cursor position
     ref.read(translatorInputProvider.notifier).updateCursorPosition(
-      _textController.selection.baseOffset,
-    );
+          _textController.selection.baseOffset,
+        );
   }
 
   void _onSelectionChanged() {
     ref.read(translatorInputProvider.notifier).updateCursorPosition(
-      _textController.selection.baseOffset,
-    );
+          _textController.selection.baseOffset,
+        );
   }
 
   @override
@@ -122,7 +122,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
                 contentPadding: const EdgeInsets.all(16),
               ),
               onChanged: (value) {
-                ref.read(translatorInputProvider.notifier).updatePseudocode(value);
+                ref
+                    .read(translatorInputProvider.notifier)
+                    .updatePseudocode(value);
               },
             ),
           ),

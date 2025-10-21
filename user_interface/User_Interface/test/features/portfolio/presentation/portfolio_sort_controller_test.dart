@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<({ProviderContainer container, SharedPreferences prefs})>
-_createContainer(Map<String, Object> initialValues) async {
+    _createContainer(Map<String, Object> initialValues) async {
   SharedPreferences.setMockInitialValues(initialValues);
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(

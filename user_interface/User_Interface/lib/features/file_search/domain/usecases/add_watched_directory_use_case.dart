@@ -28,13 +28,15 @@ class AddWatchedDirectoryUseCase
   ) async {
     // Validate path
     if (params.path.trim().isEmpty) {
-      return const Left(ValidationFailure(message: 'Directory path cannot be empty'));
+      return const Left(
+          ValidationFailure(message: 'Directory path cannot be empty'));
     }
 
     // Validate file extensions if provided
     if (params.fileExtensions != null &&
         params.fileExtensions!.any((ext) => ext.trim().isEmpty)) {
-      return const Left(ValidationFailure(message: 'File extensions cannot be empty'));
+      return const Left(
+          ValidationFailure(message: 'File extensions cannot be empty'));
     }
 
     return await repository.addWatchedDirectory(

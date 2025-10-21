@@ -28,9 +28,8 @@ final apiBaseUrlProvider = Provider<String>((ref) {
   }
   // Log a warning when falling back to localhost
   print(
-    '[WARNING] DINO_API_BASE_URL is not configured. Falling back to default: http://localhost:24801. '
-    'Please set DINO_API_BASE_URL in your environment or via --dart-define to avoid production misconfiguration.'
-  );
+      '[WARNING] DINO_API_BASE_URL is not configured. Falling back to default: http://localhost:24801. '
+      'Please set DINO_API_BASE_URL in your environment or via --dart-define to avoid production misconfiguration.');
   return 'http://localhost:24801';
 });
 

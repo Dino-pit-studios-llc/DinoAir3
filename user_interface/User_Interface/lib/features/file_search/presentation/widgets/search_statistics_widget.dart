@@ -37,9 +37,8 @@ class SearchStatisticsWidget extends ConsumerWidget {
                   icon: Icons.pie_chart,
                   label: 'Indexing',
                   value: '${stats.indexingPercentage.toStringAsFixed(0)}%',
-                  color: stats.isIndexingComplete
-                      ? Colors.green
-                      : Colors.orange,
+                  color:
+                      stats.isIndexingComplete ? Colors.green : Colors.orange,
                 ),
               ],
             ),

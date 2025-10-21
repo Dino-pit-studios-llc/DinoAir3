@@ -293,7 +293,9 @@ class FileSearchRemoteDataSourceImpl implements FileSearchRemoteDataSource {
     try {
       final response = await client.post('$baseUrl/reindex');
 
-      if (response.statusCode == null || response.statusCode! < 200 || response.statusCode! >= 300) {
+      if (response.statusCode == null ||
+          response.statusCode! < 200 ||
+          response.statusCode! >= 300) {
         throw ServerException(
           message: 'Failed to trigger reindex',
           statusCode: response.statusCode,

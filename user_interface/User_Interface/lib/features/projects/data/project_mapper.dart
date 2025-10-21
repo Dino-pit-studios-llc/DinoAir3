@@ -12,7 +12,9 @@ class ProjectMapper {
       icon: dto.icon,
       parentProjectId: dto.parentProjectId,
       tags: List<String>.from(dto.tags),
-      metadata: dto.metadata != null ? Map<String, dynamic>.from(dto.metadata!) : null,
+      metadata: dto.metadata != null
+          ? Map<String, dynamic>.from(dto.metadata!)
+          : null,
       createdAt: _parseDateTime(dto.createdAt) ?? DateTime.now(),
       updatedAt: _parseDateTime(dto.updatedAt) ?? DateTime.now(),
       completedAt: _parseDateTime(dto.completedAt),
@@ -30,7 +32,9 @@ class ProjectMapper {
       icon: entity.icon,
       parentProjectId: entity.parentProjectId,
       tags: List<String>.from(entity.tags),
-      metadata: entity.metadata != null ? Map<String, dynamic>.from(entity.metadata!) : null,
+      metadata: entity.metadata != null
+          ? Map<String, dynamic>.from(entity.metadata!)
+          : null,
       createdAt: entity.createdAt.toIso8601String(),
       updatedAt: entity.updatedAt.toIso8601String(),
       completedAt: entity.completedAt?.toIso8601String(),

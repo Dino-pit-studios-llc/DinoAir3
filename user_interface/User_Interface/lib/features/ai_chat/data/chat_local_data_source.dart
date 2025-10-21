@@ -39,9 +39,8 @@ class ChatLocalDataSource {
     final box = Hive.box<ChatMessageEntity>(_messagesBox);
 
     // Filter messages by sessionId
-    final sessionMessages = box.values
-        .where((message) => message.sessionId == sessionId)
-        .toList();
+    final sessionMessages =
+        box.values.where((message) => message.sessionId == sessionId).toList();
 
     // Sort by timestamp
     sessionMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
@@ -81,7 +80,8 @@ class ChatLocalDataSource {
     await sessionBox.clear();
   }
 
-  Future<void> updateSessionMessageCount(String sessionId, int messageCount) async {
+  Future<void> updateSessionMessageCount(
+      String sessionId, int messageCount) async {
     final box = Hive.box<ChatSessionEntity>(_sessionsBox);
     final session = box.get(sessionId);
 
@@ -96,7 +96,6 @@ class ChatLocalDataSource {
       await box.put(sessionId, updatedSession);
     }
   }
-
 }
 
 // Hive adapters for complex objects

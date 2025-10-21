@@ -291,8 +291,7 @@ void main() {
       // Arrange
       const failure = ApiFailure(message: 'Reindex failed', statusCode: 500);
 
-      when(mockRepository.reindexAll())
-          .thenAnswer((_) async => Left(failure));
+      when(mockRepository.reindexAll()).thenAnswer((_) async => Left(failure));
 
       // Act
       final result = await mockRepository.reindexAll();

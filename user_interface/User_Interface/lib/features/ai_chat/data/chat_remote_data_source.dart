@@ -46,7 +46,8 @@ class ChatRemoteDataSource {
           .map((item) => _decodeChatResponse(item))
           .toList(growable: false);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to load chat history');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to load chat history');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -78,7 +79,8 @@ class ChatRemoteDataSource {
           .map((item) => _decodeChatSession(item))
           .toList(growable: false);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to load chat sessions');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to load chat sessions');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -102,17 +104,20 @@ class ChatRemoteDataSource {
       );
       final data = response.data;
       if (data == null) {
-        throw const ApiParsingException(message: 'Create session response was empty');
+        throw const ApiParsingException(
+            message: 'Create session response was empty');
       }
 
       final sessionId = data['session_id'] ?? data['sessionId'];
       if (sessionId == null || sessionId.toString().isEmpty) {
-        throw const ApiParsingException(message: 'Invalid session ID in response');
+        throw const ApiParsingException(
+            message: 'Invalid session ID in response');
       }
 
       return sessionId.toString();
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to create session');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to create session');
     } on ApiException {
       rethrow;
     } catch (error) {

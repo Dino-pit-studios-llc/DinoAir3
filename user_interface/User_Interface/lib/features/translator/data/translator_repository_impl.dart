@@ -55,13 +55,15 @@ class TranslatorRepositoryImpl implements TranslatorRepository {
   }
 
   @override
-  Future<TranslationResultEntity> translatePseudocode(TranslationRequestEntity request) {
+  Future<TranslationResultEntity> translatePseudocode(
+      TranslationRequestEntity request) {
     return guardFuture(() async {
       // Convert entity to DTO for remote call
       final requestDto = TranslatorMapper.fromTranslationRequestEntity(request);
 
       // Call remote data source
-      final responseDto = await _remoteDataSource.translatePseudocode(requestDto);
+      final responseDto =
+          await _remoteDataSource.translatePseudocode(requestDto);
 
       // Convert response DTO to entity
       final result = TranslatorMapper.toTranslationResultEntity(responseDto);
@@ -152,7 +154,8 @@ class TranslatorRepositoryImpl implements TranslatorRepository {
   }
 
   @override
-  Stream<TranslationResultEntity>? translateWithStreaming(TranslationRequestEntity request) {
+  Stream<TranslationResultEntity>? translateWithStreaming(
+      TranslationRequestEntity request) {
     try {
       // Fire-and-forget local init to prepare cache for streaming saves
       // ignore: unawaited_futures

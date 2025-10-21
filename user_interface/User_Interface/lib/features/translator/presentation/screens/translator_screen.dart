@@ -90,8 +90,7 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
       body: Column(
         children: [
           // Progress indicator
-          if (isTranslating)
-            const TranslationProgressWidget(),
+          if (isTranslating) const TranslationProgressWidget(),
 
           // Split view for input and output
           Expanded(
@@ -181,7 +180,8 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
   }
 
   Future<void> _translate() async {
-    final success = await ref.read(translatorInputProvider.notifier).translate();
+    final success =
+        await ref.read(translatorInputProvider.notifier).translate();
 
     if (!success && mounted) {
       // Show error message
@@ -267,9 +267,8 @@ class _SplitViewState extends State<SplitView> {
       builder: (context, constraints) {
         final isHorizontal = widget.viewMode == SplitViewMode.Horizontal;
 
-        final totalSize = isHorizontal
-            ? constraints.maxWidth
-            : constraints.maxHeight;
+        final totalSize =
+            isHorizontal ? constraints.maxWidth : constraints.maxHeight;
 
         final firstSize = totalSize * widget.controller.dividerPosition;
         final secondSize = totalSize - firstSize;
@@ -307,9 +306,8 @@ class _SplitViewState extends State<SplitView> {
                   onHorizontalDragEnd: isHorizontal ? _onDragEnd : null,
                   onVerticalDragEnd: isHorizontal ? null : _onDragEnd,
                   child: Container(
-                    color: _isDragging
-                        ? widget.gripColorActive
-                        : widget.gripColor,
+                    color:
+                        _isDragging ? widget.gripColorActive : widget.gripColor,
                     child: Center(
                       child: Container(
                         width: isHorizontal ? 2 : null,

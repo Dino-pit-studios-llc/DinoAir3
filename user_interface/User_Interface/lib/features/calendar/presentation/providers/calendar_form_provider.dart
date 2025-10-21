@@ -162,9 +162,8 @@ class CalendarFormNotifier extends StateNotifier<CalendarFormState> {
   }
 
   void removeParticipant(String participant) {
-    final updatedParticipants = state.participants
-        .where((p) => p != participant)
-        .toList();
+    final updatedParticipants =
+        state.participants.where((p) => p != participant).toList();
     state = state.copyWith(participants: updatedParticipants);
   }
 

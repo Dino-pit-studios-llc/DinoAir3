@@ -11,10 +11,12 @@ class TranslationHistoryWidget extends ConsumerStatefulWidget {
   const TranslationHistoryWidget({super.key});
 
   @override
-  ConsumerState<TranslationHistoryWidget> createState() => _TranslationHistoryWidgetState();
+  ConsumerState<TranslationHistoryWidget> createState() =>
+      _TranslationHistoryWidgetState();
 }
 
-class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWidget> {
+class _TranslationHistoryWidgetState
+    extends ConsumerState<TranslationHistoryWidget> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _filterLanguage = 'All';
@@ -98,12 +100,15 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                             error.toString(),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
-                            onPressed: () => ref.read(translatorOutputProvider.notifier).loadTranslationHistory(),
+                            onPressed: () => ref
+                                .read(translatorOutputProvider.notifier)
+                                .loadTranslationHistory(),
                             icon: const Icon(Icons.refresh),
                             label: const Text('Retry'),
                           ),
@@ -173,10 +178,13 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                 child: DropdownButton<String>(
                   value: _filterLanguage,
                   isExpanded: true,
-                  items: ['All', ...availableLanguages].map<DropdownMenuItem<String>>((language) {
+                  items: ['All', ...availableLanguages]
+                      .map<DropdownMenuItem<String>>((language) {
                     return DropdownMenuItem<String>(
                       value: language,
-                      child: Text(language == 'All' ? 'All languages' : _getLanguageDisplayName(language)),
+                      child: Text(language == 'All'
+                          ? 'All languages'
+                          : _getLanguageDisplayName(language)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -249,7 +257,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
     );
   }
 
-  List<TranslationResultEntity> _getFilteredHistory(List<TranslationResultEntity> history) {
+  List<TranslationResultEntity> _getFilteredHistory(
+      List<TranslationResultEntity> history) {
     return history.where((result) {
       // Filter by search query
       if (_searchQuery.isNotEmpty) {
@@ -309,7 +318,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
                   icon: const Icon(Icons.copy),
                   onPressed: () async {
                     // Copy to clipboard
-                    await Clipboard.setData(ClipboardData(text: result.translatedCode));
+                    await Clipboard.setData(
+                        ClipboardData(text: result.translatedCode));
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
@@ -332,7 +342,8 @@ class _TranslationHistoryWidgetState extends ConsumerState<TranslationHistoryWid
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear History'),
-        content: const Text('This will permanently delete all translation history. This action cannot be undone.'),
+        content: const Text(
+            'This will permanently delete all translation history. This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -420,7 +431,8 @@ class CompactHistoryItem extends ConsumerWidget {
             icon: const Icon(Icons.copy, size: 18),
             onPressed: () async {
               // Copy to clipboard
-              await Clipboard.setData(ClipboardData(text: result.translatedCode));
+              await Clipboard.setData(
+                  ClipboardData(text: result.translatedCode));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Copied to clipboard')),
@@ -528,7 +540,8 @@ class HistoryStatsWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatItem(ThemeData theme, String label, String value, IconData icon) {
+  Widget _buildStatItem(
+      ThemeData theme, String label, String value, IconData icon) {
     return Column(
       children: [
         Icon(
@@ -553,7 +566,8 @@ class HistoryStatsWidget extends ConsumerWidget {
     );
   }
 
-  Map<String, int> _calculateLanguageStats(List<TranslationResultEntity> history) {
+  Map<String, int> _calculateLanguageStats(
+      List<TranslationResultEntity> history) {
     final stats = <String, int>{};
     for (final result in history) {
       stats[result.language] = (stats[result.language] ?? 0) + 1;

@@ -21,7 +21,8 @@ class RemoveWatchedDirectoryUseCase
     RemoveWatchedDirectoryParams params,
   ) async {
     if (params.path.trim().isEmpty) {
-      return const Left(ValidationFailure(message: 'Directory path cannot be empty'));
+      return const Left(
+          ValidationFailure(message: 'Directory path cannot be empty'));
     }
 
     return await repository.removeWatchedDirectory(path: params.path.trim());

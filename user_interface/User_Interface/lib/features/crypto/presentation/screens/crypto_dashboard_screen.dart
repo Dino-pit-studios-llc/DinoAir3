@@ -13,7 +13,8 @@ import 'package:crypto_dash/features/market/domain/coin_entity.dart';
 class CryptoDashboardScreen extends ConsumerWidget {
   const CryptoDashboardScreen({super.key});
 
-  static final NumberFormat _priceFormat = NumberFormat.currency(locale: 'en_US', symbol: r'$', decimalDigits: 2);
+  static final NumberFormat _priceFormat =
+      NumberFormat.currency(locale: 'en_US', symbol: r'$', decimalDigits: 2);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,17 +66,23 @@ class CryptoDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPortfolioSection(BuildContext context, AsyncValue<dynamic> summaryAsync, AsyncValue<dynamic> holdingsAsync) {
+  Widget _buildPortfolioSection(BuildContext context,
+      AsyncValue<dynamic> summaryAsync, AsyncValue<dynamic> holdingsAsync) {
     final theme = Theme.of(context);
-    final holdingCount = holdingsAsync.maybeWhen(data: (list) => (list as List).length, orElse: () => 0);
+    final holdingCount = holdingsAsync.maybeWhen(
+        data: (list) => (list as List).length, orElse: () => 0);
     return summaryAsync.when(
-      loading: () => const Card(child: SizedBox(height: 110, child: Center(child: CircularProgressIndicator()))),
+      loading: () => const Card(
+          child: SizedBox(
+              height: 110, child: Center(child: CircularProgressIndicator()))),
       error: (err, stack) => Card(
         child: ListTile(
           leading: const Icon(Icons.error_outline, color: Colors.redAccent),
           title: const Text('Portfolio summary unavailable'),
           subtitle: Text('$err'),
-          trailing: TextButton(onPressed: () => context.go(AppRoutes.cryptoPortfolio), child: const Text('Open')),
+          trailing: TextButton(
+              onPressed: () => context.go(AppRoutes.cryptoPortfolio),
+              child: const Text('Open')),
         ),
       ),
       data: (summary) {
@@ -84,7 +91,9 @@ class CryptoDashboardScreen extends ConsumerWidget {
             child: ListTile(
               title: const Text('Portfolio'),
               subtitle: Text('You have $holdingCount holdings tracked'),
-              trailing: TextButton(onPressed: () => context.go(AppRoutes.cryptoPortfolio), child: const Text('Open')),
+              trailing: TextButton(
+                  onPressed: () => context.go(AppRoutes.cryptoPortfolio),
+                  child: const Text('Open')),
             ),
           );
         }
@@ -98,7 +107,8 @@ class CryptoDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWatchlistSection(BuildContext context, AsyncValue<List<CoinEntity>> watchlistAsync) {
+  Widget _buildWatchlistSection(
+      BuildContext context, AsyncValue<List<CoinEntity>> watchlistAsync) {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
@@ -109,7 +119,9 @@ class CryptoDashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 const Expanded(child: Text('Watchlist preview')),
-                TextButton(onPressed: () => context.go(AppRoutes.cryptoWatchlist), child: const Text('See all')),
+                TextButton(
+                    onPressed: () => context.go(AppRoutes.cryptoWatchlist),
+                    child: const Text('See all')),
               ],
             ),
             watchlistAsync.when(
@@ -119,7 +131,8 @@ class CryptoDashboardScreen extends ConsumerWidget {
               ),
               error: (err, stack) => Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text('Failed to load watchlist: $err', style: TextStyle(color: theme.colorScheme.error)),
+                child: Text('Failed to load watchlist: $err',
+                    style: TextStyle(color: theme.colorScheme.error)),
               ),
               data: (coins) {
                 if (coins.isEmpty) {
@@ -134,9 +147,11 @@ class CryptoDashboardScreen extends ConsumerWidget {
                     for (final c in preview)
                       ListTile(
                         dense: true,
-                        title: Text('${c.symbol.toUpperCase()} • ${c.name}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                        title: Text('${c.symbol.toUpperCase()} • ${c.name}',
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
                         trailing: Text(_priceFormat.format(c.price)),
-                        onTap: () => context.push(AppRoutes.coinDetailPath(c.id), extra: c),
+                        onTap: () => context
+                            .push(AppRoutes.coinDetailPath(c.id), extra: c),
                       ),
                   ],
                 );
@@ -148,7 +163,8 @@ class CryptoDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMarketHighlightsSection(BuildContext context, AsyncValue<List<CoinEntity>> marketAsync) {
+  Widget _buildMarketHighlightsSection(
+      BuildContext context, AsyncValue<List<CoinEntity>> marketAsync) {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
@@ -159,7 +175,9 @@ class CryptoDashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 const Expanded(child: Text('Market highlights')),
-                TextButton(onPressed: () => context.go(AppRoutes.cryptoMarket), child: const Text('See market')),
+                TextButton(
+                    onPressed: () => context.go(AppRoutes.cryptoMarket),
+                    child: const Text('See market')),
               ],
             ),
             marketAsync.when(
@@ -169,7 +187,8 @@ class CryptoDashboardScreen extends ConsumerWidget {
               ),
               error: (err, stack) => Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text('Failed to load market data: $err', style: TextStyle(color: theme.colorScheme.error)),
+                child: Text('Failed to load market data: $err',
+                    style: TextStyle(color: theme.colorScheme.error)),
               ),
               data: (coins) {
                 if (coins.isEmpty) {
@@ -187,10 +206,13 @@ class CryptoDashboardScreen extends ConsumerWidget {
                     for (final c in top)
                       ListTile(
                         dense: true,
-                        title: Text('${c.rank ?? '-'} • ${c.name} (${c.symbol.toUpperCase()})'),
-                        subtitle: Text('MC ${_abbrNumber(c.marketCap)} • Vol ${_abbrNumber(c.volume24h)}'),
+                        title: Text(
+                            '${c.rank ?? '-'} • ${c.name} (${c.symbol.toUpperCase()})'),
+                        subtitle: Text(
+                            'MC ${_abbrNumber(c.marketCap)} • Vol ${_abbrNumber(c.volume24h)}'),
                         trailing: _buildChangePill(context, c),
-                        onTap: () => context.push(AppRoutes.coinDetailPath(c.id), extra: c),
+                        onTap: () => context
+                            .push(AppRoutes.coinDetailPath(c.id), extra: c),
                       ),
                   ],
                 );
@@ -208,19 +230,34 @@ class CryptoDashboardScreen extends ConsumerWidget {
     final color = isUp ? theme.colorScheme.tertiary : theme.colorScheme.error;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(14)),
-      child: Text('${c.change24hPct.toStringAsFixed(2)}%', style: TextStyle(color: color, fontWeight: FontWeight.w700)),
+      decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(14)),
+      child: Text('${c.change24hPct.toStringAsFixed(2)}%',
+          style: TextStyle(color: color, fontWeight: FontWeight.w700)),
     );
   }
 
   Widget _buildQuickNavSection(BuildContext context, ThemeData theme) {
     return Row(
       children: [
-        Expanded(child: _QuickNavCard(icon: Icons.trending_up, label: 'Market', onTap: () => context.go(AppRoutes.cryptoMarket))),
+        Expanded(
+            child: _QuickNavCard(
+                icon: Icons.trending_up,
+                label: 'Market',
+                onTap: () => context.go(AppRoutes.cryptoMarket))),
         const SizedBox(width: 8),
-        Expanded(child: _QuickNavCard(icon: Icons.star_border, label: 'Watchlist', onTap: () => context.go(AppRoutes.cryptoWatchlist))),
+        Expanded(
+            child: _QuickNavCard(
+                icon: Icons.star_border,
+                label: 'Watchlist',
+                onTap: () => context.go(AppRoutes.cryptoWatchlist))),
         const SizedBox(width: 8),
-        Expanded(child: _QuickNavCard(icon: Icons.account_balance_wallet_outlined, label: 'Portfolio', onTap: () => context.go(AppRoutes.cryptoPortfolio))),
+        Expanded(
+            child: _QuickNavCard(
+                icon: Icons.account_balance_wallet_outlined,
+                label: 'Portfolio',
+                onTap: () => context.go(AppRoutes.cryptoPortfolio))),
       ],
     );
   }
@@ -239,7 +276,8 @@ class CryptoDashboardScreen extends ConsumerWidget {
 }
 
 class _QuickNavCard extends StatelessWidget {
-  const _QuickNavCard({required this.icon, required this.label, required this.onTap});
+  const _QuickNavCard(
+      {required this.icon, required this.label, required this.onTap});
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -254,7 +292,8 @@ class _QuickNavCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.06)),
+          border: Border.all(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.06)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

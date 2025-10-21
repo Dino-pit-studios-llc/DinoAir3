@@ -42,7 +42,8 @@ class CalendarEventEntity {
   final List<String>? participants;
   final String? projectId;
   final String? chatSessionId;
-  final String? recurrencePattern; // 'none', 'daily', 'weekly', 'monthly', 'yearly'
+  final String?
+      recurrencePattern; // 'none', 'daily', 'weekly', 'monthly', 'yearly'
   final String? recurrenceRule;
   final int? reminderMinutesBefore;
   final bool reminderSent;
@@ -65,7 +66,8 @@ class CalendarEventEntity {
   bool get isEvent => eventType == 'event';
 
   bool get hasReminder => reminderMinutesBefore != null;
-  bool get hasRecurrence => recurrencePattern != null && recurrencePattern != 'none';
+  bool get hasRecurrence =>
+      recurrencePattern != null && recurrencePattern != 'none';
   bool get isLinkedToProject => projectId != null && projectId!.isNotEmpty;
 
   /// Check if event is multi-day
@@ -126,7 +128,8 @@ class CalendarEventEntity {
       chatSessionId: chatSessionId ?? this.chatSessionId,
       recurrencePattern: recurrencePattern ?? this.recurrencePattern,
       recurrenceRule: recurrenceRule ?? this.recurrenceRule,
-      reminderMinutesBefore: reminderMinutesBefore ?? this.reminderMinutesBefore,
+      reminderMinutesBefore:
+          reminderMinutesBefore ?? this.reminderMinutesBefore,
       reminderSent: reminderSent ?? this.reminderSent,
       tags: tags ?? this.tags,
       notes: notes ?? this.notes,

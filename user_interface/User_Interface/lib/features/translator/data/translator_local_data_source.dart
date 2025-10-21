@@ -3,7 +3,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:crypto_dash/features/translator/domain/translation_result_entity.dart';
 import 'package:crypto_dash/features/translator/domain/translator_config_entity.dart';
 
-
 class TranslatorLocalDataSource {
   static const String _translationsBox = 'translator_translations';
   static const String _configBox = 'translator_config';
@@ -80,7 +79,8 @@ class TranslatorLocalDataSource {
     await configBox.clear();
   }
 
-  Future<List<TranslationResultEntity>> getTranslationsByRequestId(String requestId) async {
+  Future<List<TranslationResultEntity>> getTranslationsByRequestId(
+      String requestId) async {
     final box = Hive.box<TranslationResultEntity>(_translationsBox);
 
     // Look for all translations that belong to this request

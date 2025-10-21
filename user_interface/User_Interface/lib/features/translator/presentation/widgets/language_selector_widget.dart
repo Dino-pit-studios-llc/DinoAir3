@@ -9,10 +9,12 @@ class LanguageSelectorWidget extends ConsumerStatefulWidget {
   const LanguageSelectorWidget({super.key});
 
   @override
-  ConsumerState<LanguageSelectorWidget> createState() => _LanguageSelectorWidgetState();
+  ConsumerState<LanguageSelectorWidget> createState() =>
+      _LanguageSelectorWidgetState();
 }
 
-class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget> {
+class _LanguageSelectorWidgetState
+    extends ConsumerState<LanguageSelectorWidget> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _isOpen = false;
@@ -99,7 +101,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
     final availableLanguages = ref.watch(availableLanguagesProvider);
 
     // Filter languages based on search query
-    final filteredLanguages = _getFilteredLanguages(supportedLanguages, availableLanguages);
+    final filteredLanguages =
+        _getFilteredLanguages(supportedLanguages, availableLanguages);
 
     return GestureDetector(
       onTap: () {
@@ -132,7 +135,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
                 onTap: _toggleDropdown,
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: theme.colorScheme.outline.withOpacity(0.3),
@@ -179,7 +183,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
     final supportedLanguages = ref.watch(supportedLanguagesProvider);
     final availableLanguages = ref.watch(availableLanguagesProvider);
 
-    final filteredLanguages = _getFilteredLanguages(supportedLanguages, availableLanguages);
+    final filteredLanguages =
+        _getFilteredLanguages(supportedLanguages, availableLanguages);
 
     return Material(
       elevation: 4,
@@ -209,7 +214,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
                 style: theme.textTheme.bodySmall,
                 onChanged: (value) {
@@ -236,7 +242,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
                     return InkWell(
                       onTap: () => _selectLanguage(language),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         color: isSelected
                             ? theme.colorScheme.primaryContainer
                             : null,
@@ -261,7 +268,8 @@ class _LanguageSelectorWidgetState extends ConsumerState<LanguageSelectorWidget>
     );
   }
 
-  List<String> _getFilteredLanguages(List<String> supported, List<String> available) {
+  List<String> _getFilteredLanguages(
+      List<String> supported, List<String> available) {
     final allLanguages = {...supported, ...available}.toList();
     if (_searchQuery.isEmpty) {
       return allLanguages;

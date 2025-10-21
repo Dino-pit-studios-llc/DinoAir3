@@ -15,8 +15,7 @@ class CalendarFormScreen extends ConsumerStatefulWidget {
   final String? eventId;
 
   @override
-  ConsumerState<CalendarFormScreen> createState() =>
-      _CalendarFormScreenState();
+  ConsumerState<CalendarFormScreen> createState() => _CalendarFormScreenState();
 }
 
 class _CalendarFormScreenState extends ConsumerState<CalendarFormScreen> {
@@ -101,7 +100,9 @@ class _CalendarFormScreenState extends ConsumerState<CalendarFormScreen> {
               ],
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(calendarFormProvider.notifier).updateEventType(value);
+                  ref
+                      .read(calendarFormProvider.notifier)
+                      .updateEventType(value);
                 }
               },
             ),
@@ -115,7 +116,8 @@ class _CalendarFormScreenState extends ConsumerState<CalendarFormScreen> {
               ),
               items: const [
                 DropdownMenuItem(value: 'scheduled', child: Text('Scheduled')),
-                DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
+                DropdownMenuItem(
+                    value: 'in_progress', child: Text('In Progress')),
                 DropdownMenuItem(value: 'completed', child: Text('Completed')),
                 DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
               ],
@@ -383,7 +385,8 @@ class _CalendarFormScreenState extends ConsumerState<CalendarFormScreen> {
             height: 40,
             decoration: BoxDecoration(
               color: colorHex != null
-                  ? Color(int.parse(colorHex.substring(1), radix: 16) + 0xFF000000)
+                  ? Color(
+                      int.parse(colorHex.substring(1), radix: 16) + 0xFF000000)
                   : Colors.grey.shade300,
               border: Border.all(
                 color: isSelected
@@ -451,7 +454,9 @@ class _CalendarFormScreenState extends ConsumerState<CalendarFormScreen> {
       final isEditMode = widget.eventId != null;
 
       if (isEditMode) {
-        await ref.read(calendarDetailProvider(widget.eventId).notifier).updateEvent(
+        await ref
+            .read(calendarDetailProvider(widget.eventId).notifier)
+            .updateEvent(
               id: widget.eventId!,
               title: formState.titleController.text,
               description: formState.descriptionController.text,

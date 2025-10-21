@@ -216,7 +216,8 @@ class TranslationProgressWithTimeWidget extends ConsumerWidget {
                 Text(
                   _formatTime(remainingTime),
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+                    color:
+                        theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
                   ),
                 ),
               ],

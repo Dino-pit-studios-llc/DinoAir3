@@ -18,14 +18,17 @@ Future<void> main(List<String> arguments) async {
 
   if (settings.runTests) {
     stdout.writeln('Running flutter test with coverage…');
-    final process = await Process.start('flutter', [
-      'test',
-      '--coverage',
-      if (settings.coveragePathOverride != null) ...[
-        '--coverage-path',
-        settings.coveragePathOverride!,
-      ],
-    ], runInShell: true);
+    final process = await Process.start(
+        'flutter',
+        [
+          'test',
+          '--coverage',
+          if (settings.coveragePathOverride != null) ...[
+            '--coverage-path',
+            settings.coveragePathOverride!,
+          ],
+        ],
+        runInShell: true);
 
     unawaited(stdout.addStream(process.stdout));
     unawaited(stderr.addStream(process.stderr));

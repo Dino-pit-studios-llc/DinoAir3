@@ -149,7 +149,8 @@ class CalendarDetailScreen extends ConsumerWidget {
           ],
           if (event.location != null) ...[
             const SizedBox(height: 12),
-            _buildInfoRow(context, Icons.location_on, 'Location', event.location!),
+            _buildInfoRow(
+                context, Icons.location_on, 'Location', event.location!),
           ],
           if (event.participants != null && event.participants!.isNotEmpty) ...[
             const SizedBox(height: 24),

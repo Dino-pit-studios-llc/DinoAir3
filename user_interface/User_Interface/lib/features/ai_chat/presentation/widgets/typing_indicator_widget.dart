@@ -75,7 +75,8 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: widget.bubbleColor ?? theme.colorScheme.surfaceContainerHighest,
+              color: widget.bubbleColor ??
+                  theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(

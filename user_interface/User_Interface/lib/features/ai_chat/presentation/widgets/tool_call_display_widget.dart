@@ -77,7 +77,8 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
                           Text(
                             _getFunctionDescription(),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -160,7 +161,8 @@ class _ToolCallDisplayWidgetState extends State<ToolCallDisplayWidget> {
   }
 
   String _getFunctionName() {
-    return widget.toolCall['function']?['name'] as String? ?? 'Unknown Function';
+    return widget.toolCall['function']?['name'] as String? ??
+        'Unknown Function';
   }
 
   String _getFunctionDescription() {

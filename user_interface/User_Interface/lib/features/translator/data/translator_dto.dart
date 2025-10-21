@@ -36,7 +36,9 @@ class TranslationRequestDto {
   factory TranslationRequestDto.fromJson(Map<String, dynamic> json) {
     return TranslationRequestDto(
       pseudocode: json['pseudocode']?.toString() ?? '',
-      targetLanguage: json['target_language']?.toString() ?? json['targetLanguage']?.toString() ?? '',
+      targetLanguage: json['target_language']?.toString() ??
+          json['targetLanguage']?.toString() ??
+          '',
       options: json['options'] as Map<String, dynamic>?,
     );
   }
@@ -80,11 +82,14 @@ class TranslationResponseDto {
 
   factory TranslationResponseDto.fromJson(Map<String, dynamic> json) {
     return TranslationResponseDto(
-      translatedCode: json['translated_code']?.toString() ?? json['translatedCode']?.toString() ?? '',
+      translatedCode: json['translated_code']?.toString() ??
+          json['translatedCode']?.toString() ??
+          '',
       language: json['language']?.toString() ?? '',
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,
       metadata: json['metadata'] as Map<String, dynamic>?,
-      requestId: json['request_id']?.toString() ?? json['requestId']?.toString(),
+      requestId:
+          json['request_id']?.toString() ?? json['requestId']?.toString(),
     );
   }
 
@@ -129,9 +134,13 @@ class TranslatorConfigDto {
 
   factory TranslatorConfigDto.fromJson(Map<String, dynamic> json) {
     return TranslatorConfigDto(
-      defaultLanguage: json['default_language']?.toString() ?? json['defaultLanguage']?.toString() ?? '',
-      availableLanguages: _normalizeLanguages(json['available_languages'] ?? json['availableLanguages']),
-      modelSettings: json['model_settings'] as Map<String, dynamic>? ?? json['modelSettings'] as Map<String, dynamic>?,
+      defaultLanguage: json['default_language']?.toString() ??
+          json['defaultLanguage']?.toString() ??
+          '',
+      availableLanguages: _normalizeLanguages(
+          json['available_languages'] ?? json['availableLanguages']),
+      modelSettings: json['model_settings'] as Map<String, dynamic>? ??
+          json['modelSettings'] as Map<String, dynamic>?,
     );
   }
 
@@ -174,11 +183,14 @@ class TranslationResultDto {
 
   factory TranslationResultDto.fromJson(Map<String, dynamic> json) {
     return TranslationResultDto(
-      translatedCode: json['translated_code']?.toString() ?? json['translatedCode']?.toString() ?? '',
+      translatedCode: json['translated_code']?.toString() ??
+          json['translatedCode']?.toString() ??
+          '',
       language: json['language']?.toString() ?? '',
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,
       metadata: json['metadata'] as Map<String, dynamic>?,
-      requestId: json['request_id']?.toString() ?? json['requestId']?.toString(),
+      requestId:
+          json['request_id']?.toString() ?? json['requestId']?.toString(),
     );
   }
 

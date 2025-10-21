@@ -19,7 +19,8 @@ void main() {
       if (drawerButton.evaluate().isEmpty) {
         drawerButton = find.byTooltip('Open navigation menu');
       }
-      expect(drawerButton, findsOneWidget, reason: 'Drawer/menu button not found');
+      expect(drawerButton, findsOneWidget,
+          reason: 'Drawer/menu button not found');
       await tester.tap(drawerButton);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -41,7 +42,8 @@ void main() {
       const pseudocode =
           'Given a list of integers, return the list sorted ascending and remove duplicates.';
       final inputFinder = find.byKey(const Key('translator_input_field'));
-      expect(inputFinder, findsOneWidget, reason: 'Translator input field not found');
+      expect(inputFinder, findsOneWidget,
+          reason: 'Translator input field not found');
       await tester.ensureVisible(inputFinder);
       await tester.tap(inputFinder);
       await tester.pump(const Duration(milliseconds: 200));
@@ -49,7 +51,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 800));
 
       // f) Open language dropdown and select “Python” (best-effort, continue if unavailable)
-      final langSelector = find.byKey(const Key('translator_language_selector'));
+      final langSelector =
+          find.byKey(const Key('translator_language_selector'));
       if (langSelector.evaluate().isNotEmpty) {
         await tester.tap(langSelector);
         await tester.pumpAndSettle(const Duration(seconds: 1));
@@ -59,15 +62,18 @@ void main() {
           await tester.tap(pythonChoice.first);
           await tester.pumpAndSettle(const Duration(milliseconds: 800));
         } else {
-          debugPrint('Language option "Python" not found. Continuing with default language.');
+          debugPrint(
+              'Language option "Python" not found. Continuing with default language.');
         }
       } else {
-        debugPrint('Language selector not found. Continuing with default language.');
+        debugPrint(
+            'Language selector not found. Continuing with default language.');
       }
 
       // g) Tap Translate button
       final translateBtn = find.byKey(const Key('translator_translate_button'));
-      expect(translateBtn, findsOneWidget, reason: 'Translate button not found');
+      expect(translateBtn, findsOneWidget,
+          reason: 'Translate button not found');
       await tester.tap(translateBtn);
       await tester.pump();
 
@@ -82,7 +88,8 @@ void main() {
       expect(
         outputPanel,
         findsOneWidget,
-        reason: 'Timed out waiting for translation output panel (waited ${waitedMs}ms)',
+        reason:
+            'Timed out waiting for translation output panel (waited ${waitedMs}ms)',
       );
 
       // Extract translated text from SelectableText within the output panel
@@ -93,25 +100,31 @@ void main() {
 
       String captured = '';
       if (selectableFinder.evaluate().isNotEmpty) {
-        final selectable = tester.widget<SelectableText>(selectableFinder.first);
+        final selectable =
+            tester.widget<SelectableText>(selectableFinder.first);
         captured = selectable.data ?? selectable.textSpan?.toPlainText() ?? '';
       } else {
         // As a fallback, try to read any Text widget inside the output panel
-        final textDesc = find.descendant(of: outputPanel, matching: find.byType(Text));
+        final textDesc =
+            find.descendant(of: outputPanel, matching: find.byType(Text));
         if (textDesc.evaluate().isNotEmpty) {
           final textWidget = tester.widget<Text>(textDesc.first);
-          captured = textWidget.data ?? textWidget.textSpan?.toPlainText() ?? '';
+          captured =
+              textWidget.data ?? textWidget.textSpan?.toPlainText() ?? '';
         }
       }
 
       // Diagnostics
       debugPrint('Translation output length: ${captured.length}');
-      final preview = captured.length > 200 ? captured.substring(0, 200) : captured;
+      final preview =
+          captured.length > 200 ? captured.substring(0, 200) : captured;
       debugPrint('Translation output preview: $preview');
 
       // Assertions: non-empty and contains likely Python tokens
-      expect(captured.trim().isNotEmpty, true, reason: 'Translation output is empty');
-      final looksLikePython = captured.contains('def ') || captured.contains('sorted(');
+      expect(captured.trim().isNotEmpty, true,
+          reason: 'Translation output is empty');
+      final looksLikePython =
+          captured.contains('def ') || captured.contains('sorted(');
       expect(
         looksLikePython,
         true,

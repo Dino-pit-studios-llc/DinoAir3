@@ -10,7 +10,8 @@ class Blob {
 
 class Url {
   static String createObjectUrlFromBlob(Blob blob) {
-    throw UnsupportedError('createObjectUrlFromBlob is only available on web (dart:html).');
+    throw UnsupportedError(
+        'createObjectUrlFromBlob is only available on web (dart:html).');
   }
 
   static void revokeObjectUrl(String url) {

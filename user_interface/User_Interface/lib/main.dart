@@ -32,11 +32,11 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-       title: 'DinoAir Control Center',
-       themeMode: appThemeMode.material,
-       theme: light,
-       darkTheme: dark,
-       routerConfig: router,
-     );
+      title: 'DinoAir Control Center',
+      themeMode: appThemeMode.material,
+      theme: light,
+      darkTheme: dark,
+      routerConfig: router,
+    );
   }
 }

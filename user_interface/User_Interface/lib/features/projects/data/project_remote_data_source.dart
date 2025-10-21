@@ -75,7 +75,8 @@ class ProjectRemoteDataSource {
       final projectId = data['id'] as String;
       return fetchProject(projectId);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to create project');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to create project');
     } on ApiException {
       rethrow;
     } catch (error) {
@@ -95,7 +96,8 @@ class ProjectRemoteDataSource {
       // Backend returns success message, fetch updated project
       return fetchProject(payload.id);
     } on DioException catch (error) {
-      throw _mapDioException(error, fallbackMessage: 'Unable to update project');
+      throw _mapDioException(error,
+          fallbackMessage: 'Unable to update project');
     } on ApiException {
       rethrow;
     } catch (error) {

@@ -65,7 +65,8 @@ class EmptyChatWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                color:
+                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: theme.colorScheme.outline.withOpacity(0.3),
@@ -94,7 +95,8 @@ class EmptyChatWidget extends StatelessWidget {
                   const SizedBox(height: 12),
                   _TipItem(
                     icon: Icons.chat_bubble_outline,
-                    text: 'Be specific with your questions for better responses',
+                    text:
+                        'Be specific with your questions for better responses',
                     theme: theme,
                   ),
                   const SizedBox(height: 8),

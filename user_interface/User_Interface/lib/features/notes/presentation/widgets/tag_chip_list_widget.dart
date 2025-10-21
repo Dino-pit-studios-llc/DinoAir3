@@ -53,9 +53,7 @@ class TagChipListWidget extends StatelessWidget {
               return Chip(
                 label: Text(tag),
                 onDeleted: editable ? () => onRemoveTag(tag) : null,
-                deleteIcon: editable
-                    ? const Icon(Icons.close, size: 18)
-                    : null,
+                deleteIcon: editable ? const Icon(Icons.close, size: 18) : null,
               );
             }).toList(),
           ),
