@@ -16,12 +16,12 @@ from encryption import ArtifactEncryption, DecryptionError, check_encryption_for
 # Direct imports to avoid utils.__init__ dependency issues
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from encryption import ArtifactEncryption, DecryptionError
+
 # Import the actual module code directly
 from utils import artifact_encryption
-
-
-from encryption import ArtifactEncryption, DecryptionError
 from utils.artifact_encryption import ArtifactEncryption, DecryptionError, check_encryption_format
+
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
