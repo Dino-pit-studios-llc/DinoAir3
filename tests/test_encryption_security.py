@@ -20,7 +20,8 @@ from utils.artifact_encryption import ArtifactEncryption, DecryptionError, check
 class TestDecryptionErrorWrapper:
     """Test that DecryptionError properly wraps all exceptions"""
 
-    def test_wrong_password_raises_generic_error(self):
+    @staticmethod
+    def test_wrong_password_raises_generic_error():
         """Wrong password should raise generic DecryptionError, not specific error"""
         encryptor = ArtifactEncryption("correct_password")
         encrypted = encryptor.encrypt_data("sensitive_data")
@@ -35,7 +36,8 @@ class TestDecryptionErrorWrapper:
         assert "padding" not in str(exc_info.value).lower()
         assert "authentication" not in str(exc_info.value).lower()
 
-    def test_corrupted_data_raises_generic_error(self):
+    @staticmethod
+    def test_corrupted_data_raises_generic_error():
         """Corrupted ciphertext should raise generic DecryptionError"""
         encryptor = ArtifactEncryption("password123")
         encrypted = encryptor.encrypt_data("data")
@@ -48,7 +50,8 @@ class TestDecryptionErrorWrapper:
 
         assert str(exc_info.value) == "Decryption failed"
 
-    def test_missing_nonce_raises_generic_error(self):
+    @staticmethod
+    def test_missing_nonce_raises_generic_error():
         """Missing nonce/iv should raise generic DecryptionError"""
         encryptor = ArtifactEncryption("password123")
         encrypted = encryptor.encrypt_data("data")
@@ -59,7 +62,8 @@ class TestDecryptionErrorWrapper:
         with pytest.raises(DecryptionError):
             encryptor.decrypt_data(encrypted)
 
-    def test_cbc_padding_error_wrapped(self):
+    @staticmethod
+    def test_cbc_padding_error_wrapped():
         """Legacy CBC padding errors should be wrapped in DecryptionError"""
         # Create a fake legacy CBC encrypted data with invalid padding
         fake_cbc_data = {
@@ -79,7 +83,8 @@ class TestDecryptionErrorWrapper:
 class TestEncryptionFormatDetection:
     """Test encryption format detection utilities"""
 
-    def test_detect_gcm_format(self):
+    @staticmethod
+    def test_detect_gcm_format():
         """Should detect GCM format (nonce-based)"""
         encryptor = ArtifactEncryption("password")
         data = {"field1": "value1"}
@@ -87,7 +92,8 @@ class TestEncryptionFormatDetection:
 
         assert check_encryption_format(encrypted) == "gcm"
 
-    def test_detect_cbc_format(self):
+    @staticmethod
+    def test_detect_cbc_format():
         """Should detect legacy CBC format (iv-based)"""
         # Simulate legacy CBC encrypted data
         legacy_data = {
@@ -102,12 +108,14 @@ class TestEncryptionFormatDetection:
 
         assert check_encryption_format(legacy_data) == "cbc"
 
-    def test_detect_no_encryption(self):
+    @staticmethod
+    def test_detect_no_encryption():
         """Should detect unencrypted data"""
         plain_data = {"field1": "value1", "field2": "value2"}
         assert check_encryption_format(plain_data) == "none"
 
-    def test_detect_mixed_format(self):
+    @staticmethod
+    def test_detect_mixed_format():
         """Should detect mixed formats (corrupted state)"""
         mixed_data = {
             "_encryption_info": {
@@ -122,7 +130,8 @@ class TestEncryptionFormatDetection:
 class TestMigrationUtilities:
     """Test CBC to GCM migration"""
 
-    def test_migrate_cbc_to_gcm(self):
+    @staticmethod
+    def test_migrate_cbc_to_gcm():
         """Should migrate legacy CBC data to GCM format"""
         # Create legacy CBC-style data manually
         legacy_data = {
@@ -146,7 +155,8 @@ class TestMigrationUtilities:
         assert "nonce" in migrated["_encryption_info"]["field1"]
         assert "iv" not in migrated["_encryption_info"]["field1"]
 
-    def test_migrate_already_gcm_is_noop(self):
+    @staticmethod
+    def test_migrate_already_gcm_is_noop():
         """Migrating already-GCM data should be no-op"""
         encryptor = ArtifactEncryption("password")
         data = {"field1": "value"}
@@ -164,17 +174,20 @@ class TestMigrationUtilities:
 class TestKeyDerivationStrength:
     """Test that strong key derivation is enforced"""
 
-    def test_pbkdf2_iterations_sufficient(self):
+    @staticmethod
+    def test_pbkdf2_iterations_sufficient():
         """PBKDF2 should use at least 100,000 iterations"""
         encryptor = ArtifactEncryption("password")
         assert encryptor.iterations >= 100000, "PBKDF2 iterations too low"
 
-    def test_salt_length_sufficient(self):
+    @staticmethod
+    def test_salt_length_sufficient():
         """Salt should be at least 256 bits (32 bytes)"""
         encryptor = ArtifactEncryption("password")
         assert encryptor.salt_length >= 32, "Salt length too short"
 
-    def test_key_length_is_256_bits(self):
+    @staticmethod
+    def test_key_length_is_256_bits():
         """Encryption key should be 256 bits"""
         encryptor = ArtifactEncryption("password")
         assert encryptor.key_length == 32, "Key length should be 32 bytes (256 bits)"
@@ -183,7 +196,8 @@ class TestKeyDerivationStrength:
 class TestBackwardCompatibility:
     """Test backward compatibility with legacy CBC data"""
 
-    def test_decrypt_fields_supports_both_formats(self):
+    @staticmethod
+    def test_decrypt_fields_supports_both_formats():
         """decrypt_fields should handle both nonce and iv formats"""
         encryptor = ArtifactEncryption("password")
 
@@ -222,7 +236,8 @@ class TestBackwardCompatibility:
         except DecryptionError:
             pass  # Expected - fake encrypted data
 
-    def test_missing_nonce_and_iv_raises_error(self):
+    @staticmethod
+    def test_missing_nonce_and_iv_raises_error():
         """Missing both nonce and iv should raise DecryptionError"""
         encryptor = ArtifactEncryption("password")
 
@@ -245,7 +260,8 @@ class TestBackwardCompatibility:
 class TestErrorExposurePrevention:
     """Test that error details are not leaked"""
 
-    def test_error_does_not_contain_implementation_details(self):
+    @staticmethod
+    def test_error_does_not_contain_implementation_details():
         """DecryptionError should not expose implementation details"""
         encryptor = ArtifactEncryption("password")
         encrypted = encryptor.encrypt_data("data")
