@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user to run the application
-RUN groupadd -r mcpuser && useradd -r -g mcpuser mcpuser
+RUN groupadd -r mcpuser && useradd -r -g mcpuser -M -s /bin/false mcpuser
 
 # Copy requirements and install Python dependencies
 COPY mcp_qdrant_requirements.txt .
@@ -37,8 +37,9 @@ ENV MCP_SERVER_HOST=0.0.0.0
 ENV MCP_SERVER_PORT=8080
 
 # Add health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health').read()" || exit 1
+# NOTE: The health check below assumes that mcp_qdrant_server.py implements a /health HTTP endpoint.
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+#   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health').read()" || exit 1
 
 # Run the MCP server
 CMD ["python", "mcp_qdrant_server.py"]

@@ -7,26 +7,25 @@ dependency issues with other modules.
 """
 
 import base64
-import json
-import secrets
 import sys
 from pathlib import Path
 from typing import Any
 
+from encryption import ArtifactEncryption, check_encryption_format
+
 # Direct imports to avoid utils.__init__ dependency issues
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-
 # Import the actual module code directly
-exec(open("utils/artifact_encryption.py").read())
+with open("utils/artifact_encryption.py") as f:
+    exec(f.read())
+from utils.artifact_encryption import *
 
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
+    from encryption import ArtifactEncryption, DecryptionError
+
     print("Testing DecryptionError wrapper...")
 
     encryptor = ArtifactEncryption("correct_password")
@@ -77,6 +76,9 @@ def test_corrupted_data_generic_error():
         return False
 
 
+from encryption_security import ArtifactEncryption
+
+
 def test_iv_nonce_fix():
     """Test that encrypt_fields uses 'nonce' not 'iv'"""
     print("Testing iv/nonce field fix...")
@@ -103,6 +105,8 @@ def test_iv_nonce_fix():
 
 def test_backward_compatibility():
     """Test that both nonce and iv formats can be decrypted"""
+    from encryption_security import ArtifactEncryption, DecryptionError
+
     print("Testing backward compatibility...")
 
     encryptor = ArtifactEncryption("password")
@@ -185,7 +189,7 @@ def test_key_derivation_strength():
     """Test that strong key derivation is enforced"""
     print("Testing key derivation strength...")
 
-    encryptor = ArtifactEncryption("password")
+    encryptor = ArtifactEncryptor("password")
 
     if encryptor.iterations < 100000:
         print(f"  ❌ FAIL: PBKDF2 iterations too low: {encryptor.iterations}")
@@ -201,6 +205,9 @@ def test_key_derivation_strength():
 
     print(f"  ✅ PASS: Strong key derivation enforced (PBKDF2 {encryptor.iterations} iterations, 256-bit salt/key)")
     return True
+
+
+from encryption import ArtifactEncryption
 
 
 def test_full_encryption_decryption_cycle():
