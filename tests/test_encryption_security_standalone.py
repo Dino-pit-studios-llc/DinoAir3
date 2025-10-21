@@ -20,7 +20,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-
 # Import the actual module code directly
 exec(open("utils/artifact_encryption.py").read())
 
