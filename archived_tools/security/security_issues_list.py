@@ -84,7 +84,7 @@ random_no = write_random_to_file()
 
 ## References
 * Python: [Assignment statements](https://docs.python.org/reference/simple_stmts.html#assignment-statements), [The import statement](https://docs.python.org/reference/simple_stmts.html#the-import-statement).
-* Python Tutorial: [Importing \\* from a package](https://docs.python.org/2/tutorial/modules.html#importing-from-a-package).
+* Python Tutorial: [Importing * from a package](https://docs.python.org/2/tutorial/modules.html#importing-from-a-package).
 * Common Weakness Enumeration: [CWE-563](https://cwe.mitre.org/data/definitions/563.html).
 """
 
