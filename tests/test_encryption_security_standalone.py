@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 # Import the actual module code directly
 exec(open("utils/artifact_encryption.py").read())
-
+from utils.artifact_encryption import *
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
