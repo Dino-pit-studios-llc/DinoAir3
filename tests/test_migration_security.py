@@ -27,7 +27,7 @@ def test_valid_identifiers():
 
     for table, column, col_type in valid_cases:
         try:
-            migration = AddColumnMigration(
+            AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test migration",
@@ -63,7 +63,7 @@ def test_invalid_identifiers():
 
     for table, column, col_type, reason in invalid_cases:
         try:
-            migration = AddColumnMigration(
+            AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test migration",
@@ -87,7 +87,7 @@ def test_column_type_whitelist():
     valid_types = ["TEXT", "INTEGER", "REAL", "BLOB", "VARCHAR", "INT"]
     for col_type in valid_types:
         try:
-            migration = AddColumnMigration(
+            AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test",
@@ -111,7 +111,7 @@ def test_column_type_whitelist():
 
     for col_type in invalid_types:
         try:
-            migration = AddColumnMigration(
+            AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test",
@@ -143,7 +143,7 @@ def test_default_value_validation():
 
     for default in valid_defaults:
         try:
-            migration = AddColumnMigration(
+            _ = AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test",
@@ -168,7 +168,7 @@ def test_default_value_validation():
 
     for default in invalid_defaults:
         try:
-            migration = AddColumnMigration(
+            _ = AddColumnMigration(
                 version="001",
                 name="test",
                 description="Test",
@@ -208,7 +208,7 @@ def test_identifier_quoting():
     # Test quote escaping
     quoted = migration._quote_identifier('table"with"quotes')
     if quoted != '"table""with""quotes"':
-        print(f"  ❌ FAIL: Quote escaping failed")
+        print("  ❌ FAIL: Quote escaping failed")
         return False
     print(f"  ✅ Quote escaping works: {quoted}")
 

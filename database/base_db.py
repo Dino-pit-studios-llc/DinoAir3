@@ -140,8 +140,8 @@ class BaseDatabase:
             self.logger.error(f"{error_context} - Unexpected error: {e}")
             return default_value
 
+    @staticmethod
     def get_connection_context(
-        self,
         get_connection: Callable[[], sqlite3.Connection],
     ) -> AbstractContextManager[sqlite3.Connection]:
         """

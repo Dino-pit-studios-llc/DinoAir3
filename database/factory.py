@@ -122,12 +122,14 @@ def get_notes_service_factory() -> NotesServiceFactory:
     Returns:
         Global NotesServiceFactory instance
     """
-    global _notes_service_factory
-    if _notes_service_factory is None:
-        with _notes_service_factory_lock:
-            if _notes_service_factory is None:
-                _notes_service_factory = NotesServiceFactory()
-    return _notes_service_factory
+    if not hasattr(get_notes_service_factory, "_factory"):
+        get_notes_service_factory._factory = None
+        get_notes_service_factory._lock = threading.Lock()
+    if get_notes_service_factory._factory is None:
+        with get_notes_service_factory._lock:
+            if get_notes_service_factory._factory is None:
+                get_notes_service_factory._factory = NotesServiceFactory()
+    return get_notes_service_factory._factory
 
 
 def create_notes_service(user_name: str | None = None):
