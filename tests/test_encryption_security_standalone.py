@@ -10,6 +10,7 @@ import base64
 import sys
 from pathlib import Path
 from typing import Any
+
 from encryption import ArtifactEncryption, DecryptionError, check_encryption_format
 
 # Direct imports to avoid utils.__init__ dependency issues
@@ -20,6 +21,7 @@ exec(open("utils/artifact_encryption.py").read())
 
 
 from encryption import ArtifactEncryption, DecryptionError
+
 
 def test_decryption_error_wrapper():
     """Test that DecryptionError properly wraps exceptions"""
