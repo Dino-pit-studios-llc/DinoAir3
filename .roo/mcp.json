@@ -29,9 +29,9 @@
       "args": [
         "-y",
         "@playwright/mcp@0.0.38",
-        "--browser=",
-        "--headless=",
-        "--viewport-size="
+        "--browser=chromium",
+        "--headless=true",
+        "--viewport-size=1280x720"
       ]
     }
   }
