@@ -1,0 +1,289 @@
+Phase 1 — Critical Foundation Fixes (Week 1)
+
+Goal: Fix breaking issues and establish a stable baseline.
+
+Issue #1 — Fix Code Generation Setup
+
+Problem: Duplicate JSON serialization causing build failures.
+Tasks:
+
+ Audit all DTOs
+
+find . -name "*.dart" -path "*/models/*" -o -path "*/data/*" | xargs grep -l "@freezed\|@JsonSerializable"
+
+List all files using Freezed and/or JsonSerializable
+
+Document results → docs/architecture/dto_audit.md
+
+ Standardize on Freezed + JSON
+
+Apply consistent DTO template
+
+ Create migration script → scripts/migrate_dtos.dart
+
+Remove @JsonSerializable from classes using @freezed
+
+Update imports and part statements
+
+ Regenerate files
+
+flutter pub run build_runner build --delete-conflicting-outputs
+
+ Verify builds
+
+flutter analyze
+
+flutter test
+
+Document any breaking changes
+
+Issue #2 — Complete Incomplete Implementations
+
+Problem: Stub methods causing runtime failures.
+Priority Files:
+chat_local_data_source.dart
+
+Tasks:
+
+ Complete updateSessionMessageCount and clearAllCache
+
+ Search for all incomplete methods
+
+grep -r "// TODO\|// FIXME\|throw UnimplementedError" --include="*.dart"
+
+Issue #3 — Add Error Boundaries
+
+Problem: Lack of error handling causes app crashes.
+Tasks:
+
+ Create base error handler → lib/core/error/error_handler.dart
+
+ Wrap each feature in ErrorBoundaryWidget:
+
+ AI Chat
+
+ File Search
+
+ Translator
+
+ Crypto Dashboard
+
+ Health
+
+ Notes & Projects
+
+ Add repository-level safe calls
+
+Implement safeCall<T>(Future<T> Function())
+
+Phase 2 — Testing & Stability (Week 2)
+
+Goal: Add tests and fix deprecated APIs.
+
+Issue #4 — Setup Testing Infrastructure
+
+Tasks:
+
+ Add dev dependencies in pubspec.yaml
+
+ Create test/fixtures/fixture_reader.dart
+
+ Write unit tests for:
+
+ ChatRepository
+
+ FileSearchService
+
+ TranslationService
+
+ CryptoRepository
+
+Issue #5 — Migrate Deprecated APIs
+
+Tasks:
+
+ Replace .withOpacity() with .withValues(alpha:)
+
+grep -r "withOpacity" --include="*.dart"
+
+ Test UI consistency
+
+Verify color rendering
+
+Check theme on different screens
+
+Issue #6 — Integration Tests
+
+Tasks:
+
+ Write integration_test/app_test.dart
+
+ Cover critical user paths:
+
+File search
+
+Chat session
+
+Translation
+
+ Ensure all tests pass consistently
+
+Phase 3 — Performance & Architecture (Week 3)
+
+Goal: Optimize performance and standardize architecture.
+
+Issue #7 — Performance Optimization
+
+Tasks:
+
+ Add pagination to File Search
+
+ Implement debouncing utility
+
+ Optimize CodeEditorWidget:
+
+Use TextEditingController efficiently
+
+Add virtual scrolling for large files
+
+Cache syntax highlighting
+
+Issue #8 — Extract Common Widgets
+
+Tasks:
+
+ Create shared components under lib/shared/widgets/
+
+base_card_widget.dart
+
+loading_indicator.dart
+
+error_message_widget.dart
+
+empty_state_widget.dart
+
+ Refactor duplicate cards to use BaseCard
+
+ Standardize loading & error states
+
+Issue #9 — Standardize Architecture
+
+Tasks:
+
+ Create architecture template:
+
+feature/
+├── data/
+├── domain/
+└── presentation/
+
+
+ Migrate AI Chat as reference feature
+
+ Document structure → docs/architecture/clean_architecture.md
+
+Phase 4 — Security & Documentation (Week 4)
+
+Goal: Harden security and document systems.
+
+Issue #10 — Security Audit
+
+Tasks:
+
+ API Key validation → lib/core/config/env_config.dart
+
+ Input sanitization → lib/core/utils/sanitizer.dart
+
+ File access restrictions:
+
+Implement directory whitelist
+
+Validate extensions
+
+Issue #11 — Documentation Overhaul
+
+Tasks:
+
+ Add API documentation in all repositories
+
+ Create ADRs under docs/adr/:
+
+ 001-json-serialization.md
+
+ 002-state-management.md
+
+ 003-error-handling.md
+
+Issue #12 — Performance Profiling
+
+Tasks:
+
+ Create lib/core/monitoring/performance_monitor.dart
+
+ Run profiling sessions via Flutter DevTools
+
+ Identify memory leaks and frame jank
+
+ Document performance findings
+
+✅ Success Metrics
+
+Week 1:
+
+ All DTOs standardized
+
+ No incomplete methods
+
+ Error boundaries in place
+
+ Clean flutter analyze
+
+Week 2:
+
+ ≥50% unit test coverage
+
+ No deprecated APIs
+
+ All critical integration tests passing
+
+Week 3:
+
+ File search handles 10k+ results
+
+ Translation debounced
+
+ Common widgets extracted
+
+ One feature fully migrated
+
+Week 4:
+
+ API keys isolated in env vars
+
+ Inputs sanitized
+
+ Safe directory restrictions
+
+ Baseline profiling done
+
+🧩 Long-Term Maintenance
+
+Monthly:
+
+ Update dependencies
+
+ Run security audit
+
+ Review error logs
+
+ Refresh documentation
+
+Quarterly:
+
+ Architecture review
+
+ Performance profiling
+
+ Test coverage analysis
+
+ Code quality metrics
