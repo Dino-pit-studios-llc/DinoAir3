@@ -17,8 +17,8 @@ from encryption import ArtifactEncryption, check_encryption_format
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import the actual module code directly
-with open("utils/artifact_encryption.py") as f:
-    exec(f.read())
+# Use a safe import after setting sys.path above
+import utils.artifact_encryption
 from utils.artifact_encryption import *
 
 
