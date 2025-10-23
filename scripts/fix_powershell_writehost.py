@@ -84,7 +84,7 @@ class PowerShellFixer:
                 "-NonInteractive",
                 "-Command",
                 # Use $args[0] so input isn't directly interpolated
-                '$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path $args[0] -Raw), [ref]$null); '
+                "$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path $args[0] -Raw), [ref]$null); "
                 'if ($?) { Write-Output "VALID" } else { Write-Output "INVALID" }',
                 file_path_str,
             ]
