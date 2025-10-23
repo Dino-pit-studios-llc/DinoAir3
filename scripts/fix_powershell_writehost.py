@@ -23,17 +23,17 @@ class PowerShellFixer:
 
     # Patterns for different Write-Host scenarios
     patterns = {
-        "error": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red', re.IGNORECASE),
+        "error": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red", re.IGNORECASE),
         "warning": re.compile(
-            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)',
+            r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)",
             re.IGNORECASE,
         ),
         "success": re.compile(
-            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Green',
+            r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Green",
             re.IGNORECASE,
         ),
-        "info": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+', re.IGNORECASE),
-        "simple": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])', re.IGNORECASE),
+        "info": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+", re.IGNORECASE),
+        "simple": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])", re.IGNORECASE),
         "variable": re.compile(r"Write-Host\s+(\$\w+)", re.IGNORECASE),
     }
 
@@ -72,23 +72,29 @@ class PowerShellFixer:
             Tuple of (is_valid, error_message)
         """
         try:
-            # Use PowerShell to parse and validate the script
-            # File path is sanitized by using Path object
+            # Ensure the path is a real file and resolve to absolute path
+            file_path_str = str(file_path.resolve())
+            # Reject file paths containing unsafe characters (allowlist: alphanumerics, underscore, dash, dot, slash, backslash, colon)
+            if not re.fullmatch(r"[a-zA-Z0-9_\-./:\\]+", file_path_str):
+                return False, f"File path contains unsafe characters: {file_path_str}"
+            # Use argument variable to prevent interpolation and injection
             cmd = [
                 "pwsh",
                 "-NoProfile",
                 "-NonInteractive",
                 "-Command",
-                f'$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path "{file_path}" -Raw), [ref]$null); '
-                f'if ($?) {{ Write-Output "VALID" }} else {{ Write-Output "INVALID" }}',
+                # Use $args[0] so input isn't directly interpolated
+                "$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path $args[0] -Raw), [ref]$null); "
+                'if ($?) { Write-Output "VALID" } else { Write-Output "INVALID" }',
+                file_path_str,
             ]
 
-            # Command is safe: hardcoded executable and sanitized file path
+            # Command is safe: hardcoded executable; file path passed as argument, not interpolated
             result = subprocess.run(  # noqa: S603  # nosec B603
-                cmd, capture_output=True, text=True, timeout=10
+                cmd, capture_output=True, text=True, timeout=10, check=True
             )
 
-            if result.returncode == 0 and "VALID" in result.stdout:
+            if "VALID" in result.stdout:
                 return True, ""
             else:
                 return False, result.stderr or result.stdout
@@ -98,7 +104,8 @@ class PowerShellFixer:
         except Exception as e:
             return False, str(e)
 
-    def _check_color_category(self, line_lower: str) -> str:
+    @staticmethod
+    def _check_color_category(line_lower: str) -> str:
         """Check for color-based categorization."""
         if "-foregroundcolor red" in line_lower or "-backgroundcolor red" in line_lower:
             return "error"
@@ -110,7 +117,8 @@ class PowerShellFixer:
             return "info"
         return ""
 
-    def _check_keyword_category(self, line_lower: str) -> str:
+    @staticmethod
+    def _check_keyword_category(line_lower: str) -> str:
         """Check for keyword-based categorization."""
         keywords_error = ["error", "failed", "failure", "exception", "critical"]
         keywords_warning = ["warning", "caution", "deprecated"]
@@ -124,7 +132,8 @@ class PowerShellFixer:
             return "success"
         return ""
 
-    def analyze_write_host_context(self, line: str) -> str:
+    @staticmethod
+    def analyze_write_host_context(line: str) -> str:
         """
         Analyze the context of Write-Host usage to determine best replacement.
 
@@ -133,12 +142,12 @@ class PowerShellFixer:
         line_lower = line.lower()
 
         # Check for color parameters first
-        color_category = self._check_color_category(line_lower)
+        color_category = PowerShellFixer._check_color_category(line_lower)
         if color_category:
             return color_category
 
         # Check for keywords in the message
-        keyword_category = self._check_keyword_category(line_lower)
+        keyword_category = PowerShellFixer._check_keyword_category(line_lower)
         if keyword_category:
             return keyword_category
 
@@ -159,12 +168,12 @@ class PowerShellFixer:
         replacements = 0
 
         # Determine the best category for this line
-        category = self.analyze_write_host_context(line)
+        category = PowerShellFixer.analyze_write_host_context(line)
 
         # Error category
         if category == "error":
             new_line = re.sub(
-                r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+Red\b',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red\b",
                 r"Write-Error \1",
                 line,
                 flags=re.IGNORECASE,
@@ -175,7 +184,7 @@ class PowerShellFixer:
         # Warning category
         if category == "warning":
             new_line = re.sub(
-                r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+(Yellow|Orange)\b',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)\b",
                 r"Write-Warning \1",
                 line,
                 flags=re.IGNORECASE,
@@ -186,7 +195,7 @@ class PowerShellFixer:
         # Success/Info categories
         if category in ["success", "info"]:
             new_line = re.sub(
-                r'Write-Host\s+(['"'][^"']*['"'])\s+-ForegroundColor\s+\w+',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+",
                 r"Write-Output \1",
                 line,
                 flags=re.IGNORECASE,
