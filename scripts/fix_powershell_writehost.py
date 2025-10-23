@@ -94,7 +94,7 @@ class PowerShellFixer:
                 cmd, capture_output=True, text=True, timeout=10, check=True
             )
 
-            if result.returncode == 0 and "VALID" in result.stdout:
+            if "VALID" in result.stdout:
                 return True, ""
             else:
                 return False, result.stderr or result.stdout
