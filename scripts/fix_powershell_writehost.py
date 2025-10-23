@@ -23,17 +23,17 @@ class PowerShellFixer:
 
     # Patterns for different Write-Host scenarios
     patterns = {
-        "error": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red', re.IGNORECASE),
+        "error": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red", re.IGNORECASE),
         "warning": re.compile(
-            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)',
+            r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)",
             re.IGNORECASE,
         ),
         "success": re.compile(
-            r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Green',
+            r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Green",
             re.IGNORECASE,
         ),
-        "info": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+', re.IGNORECASE),
-        "simple": re.compile(r'Write-Host\s+([\'\"][^\'\"]*[\'\"])', re.IGNORECASE),
+        "info": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+", re.IGNORECASE),
+        "simple": re.compile(r"Write-Host\s+([\'\"][^\'\"]*[\'\"])", re.IGNORECASE),
         "variable": re.compile(r"Write-Host\s+(\$\w+)", re.IGNORECASE),
     }
 
@@ -164,8 +164,8 @@ class PowerShellFixer:
         # Error category
         if category == "error":
             new_line = re.sub(
-                r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red\b',
-                r'Write-Error \1',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+Red\b",
+                r"Write-Error \1",
                 line,
                 flags=re.IGNORECASE,
             )
@@ -175,8 +175,8 @@ class PowerShellFixer:
         # Warning category
         if category == "warning":
             new_line = re.sub(
-                r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)\b',
-                r'Write-Warning \1',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+(Yellow|Orange)\b",
+                r"Write-Warning \1",
                 line,
                 flags=re.IGNORECASE,
             )
@@ -186,8 +186,8 @@ class PowerShellFixer:
         # Success/Info categories
         if category in ["success", "info"]:
             new_line = re.sub(
-                r'Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+',
-                r'Write-Output \1',
+                r"Write-Host\s+([\'\"][^\'\"]*[\'\"])\s+-ForegroundColor\s+\w+",
+                r"Write-Output \1",
                 line,
                 flags=re.IGNORECASE,
             )
