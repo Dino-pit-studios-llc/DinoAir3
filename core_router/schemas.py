@@ -1,5 +1,4 @@
-"""
-Pydantic-backed JSON-schema-like validation helpers for core_router.
+"""Pydantic-backed JSON-schema-like validation helpers for core_router.
 
 Scope:
 - Dynamic BaseModel construction from a lightweight JSON-Schema-like dict
@@ -11,9 +10,9 @@ Scope:
 
 Exports:
 - validate_input(desc, payload)
-"""
-Module for schema-based validation and dynamic pydantic model building.
+- validate_output(desc, payload)
 
+Module for schema-based validation and dynamic pydantic model building.
 This module provides functions to map JSON Schema definitions to Python types,
 construct field definitions, and validate input/output payloads against
 service descriptors using dynamic pydantic models.
