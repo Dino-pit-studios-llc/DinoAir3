@@ -72,18 +72,24 @@ class PowerShellFixer:
             Tuple of (is_valid, error_message)
         """
         try:
-            # Use PowerShell to parse and validate the script
-            # File path is sanitized by using Path object
+            # Ensure the path is a real file and resolve to absolute path
+            file_path_str = str(file_path.resolve())
+            # Reject file paths containing single quote, backtick, or semicolon (basic sanitization)
+            if any(c in file_path_str for c in ["'", "`", ";"]):
+                return False, f"File path contains unsafe characters: {file_path_str}"
+            # Use argument variable to prevent interpolation and injection
             cmd = [
                 "pwsh",
                 "-NoProfile",
                 "-NonInteractive",
                 "-Command",
-                f'$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path "{file_path}" -Raw), [ref]$null); '
-                f'if ($?) {{ Write-Output "VALID" }} else {{ Write-Output "INVALID" }}',
+                # Use $args[0] so input isn't directly interpolated
+                '$null = [System.Management.Automation.PSParser]::Tokenize((Get-Content -Path $args[0] -Raw), [ref]$null); '
+                'if ($?) { Write-Output "VALID" } else { Write-Output "INVALID" }',
+                file_path_str,
             ]
 
-            # Command is safe: hardcoded executable and sanitized file path
+            # Command is safe: hardcoded executable; file path passed as argument, not interpolated
             result = subprocess.run(  # noqa: S603  # nosec B603
                 cmd, capture_output=True, text=True, timeout=10, check=True
             )
