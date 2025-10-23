@@ -132,7 +132,8 @@ class PowerShellFixer:
             return "success"
         return ""
 
-    def analyze_write_host_context(self, line: str) -> str:
+    @staticmethod
+    def analyze_write_host_context(line: str) -> str:
         """
         Analyze the context of Write-Host usage to determine best replacement.
 
@@ -167,7 +168,7 @@ class PowerShellFixer:
         replacements = 0
 
         # Determine the best category for this line
-        category = self.analyze_write_host_context(line)
+        category = PowerShellFixer.analyze_write_host_context(line)
 
         # Error category
         if category == "error":
