@@ -74,8 +74,8 @@ class PowerShellFixer:
         try:
             # Ensure the path is a real file and resolve to absolute path
             file_path_str = str(file_path.resolve())
-            # Reject file paths containing single quote, backtick, or semicolon (basic sanitization)
-            if any(c in file_path_str for c in ["'", "`", ";"]):
+            # Reject file paths containing unsafe characters (allowlist: alphanumerics, underscore, dash, dot, slash, backslash, colon)
+            if not re.fullmatch(r"[a-zA-Z0-9_\-./:\\]+", file_path_str):
                 return False, f"File path contains unsafe characters: {file_path_str}"
             # Use argument variable to prevent interpolation and injection
             cmd = [
