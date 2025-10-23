@@ -85,7 +85,7 @@ class PowerShellFixer:
 
             # Command is safe: hardcoded executable and sanitized file path
             result = subprocess.run(  # noqa: S603  # nosec B603
-                cmd, capture_output=True, text=True, timeout=10
+                cmd, capture_output=True, text=True, timeout=10, check=True
             )
 
             if result.returncode == 0 and "VALID" in result.stdout:
@@ -98,7 +98,8 @@ class PowerShellFixer:
         except Exception as e:
             return False, str(e)
 
-    def _check_color_category(self, line_lower: str) -> str:
+    @staticmethod
+    def _check_color_category(line_lower: str) -> str:
         """Check for color-based categorization."""
         if "-foregroundcolor red" in line_lower or "-backgroundcolor red" in line_lower:
             return "error"
@@ -110,7 +111,8 @@ class PowerShellFixer:
             return "info"
         return ""
 
-    def _check_keyword_category(self, line_lower: str) -> str:
+    @staticmethod
+    def _check_keyword_category(line_lower: str) -> str:
         """Check for keyword-based categorization."""
         keywords_error = ["error", "failed", "failure", "exception", "critical"]
         keywords_warning = ["warning", "caution", "deprecated"]
@@ -133,12 +135,12 @@ class PowerShellFixer:
         line_lower = line.lower()
 
         # Check for color parameters first
-        color_category = self._check_color_category(line_lower)
+        color_category = PowerShellFixer._check_color_category(line_lower)
         if color_category:
             return color_category
 
         # Check for keywords in the message
-        keyword_category = self._check_keyword_category(line_lower)
+        keyword_category = PowerShellFixer._check_keyword_category(line_lower)
         if keyword_category:
             return keyword_category
 
