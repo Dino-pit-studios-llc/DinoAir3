@@ -349,11 +349,20 @@ def main():
 
     if args.file:
         # Process single file
-        if not args.file.exists():
-            print(f"Error: File not found: {args.file}")
+        # Resolve without strict mode to avoid raising if the file doesn't exist yet
+        file_path = args.file.resolve(strict=False)
+        root_dir = args.root.resolve(strict=False)
+        try:
+            file_path.relative_to(root_dir)
+        except ValueError:
+            print(f"Error: File path escapes root directory: {file_path} not in {root_dir}")
+            sys.exit(1)
+        # Ensure the path exists and is a regular file (not a directory)
+        if not file_path.is_file():
+            print(f"Error: File not found or is not a file: {file_path}")
             sys.exit(1)
 
-        success = fixer.process_file(args.file)
+        success = fixer.process_file(file_path)
         fixer.print_summary()
         sys.exit(0 if success else 1)
 
